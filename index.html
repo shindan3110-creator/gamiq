@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>GAMIQ - TRUE GAMING SKILL</title>
 
 <style>
@@ -16,6 +16,7 @@
   --green:#76ffb2;
   --red:#ff4e70;
   --yellow:#ffe46b;
+  --orange:#ff9b54;
   --line:rgba(255,255,255,.08);
 }
 
@@ -29,7 +30,6 @@ body{
   width:100%;
   height:100%;
   margin:0;
-  padding:0;
   overflow:hidden;
   overscroll-behavior:none;
   background:#05070c;
@@ -113,28 +113,34 @@ button{
   display:block;
   font-size:20px;
   font-weight:1000;
+  transition:transform .2s ease,color .2s ease;
 }
 
 .live-value.flash-up{
-  animation:scoreUp .5s ease;
+  animation:scoreUp .6s ease;
 }
 
 .live-value.flash-down{
-  animation:scoreDown .5s ease;
+  animation:scoreDown .6s ease;
 }
 
 @keyframes scoreUp{
-  50%{
+  0%{transform:scale(1)}
+  45%{
     color:var(--green);
-    transform:scale(1.15);
+    transform:scale(1.22);
+    text-shadow:0 0 20px rgba(118,255,178,.7);
   }
+  100%{transform:scale(1)}
 }
 
 @keyframes scoreDown{
-  50%{
+  0%{transform:scale(1)}
+  45%{
     color:var(--red);
     transform:scale(1.15);
   }
+  100%{transform:scale(1)}
 }
 
 .feed{
@@ -151,6 +157,33 @@ button{
   touch-action:none;
 }
 
+.feed.shake{
+  animation:screenShake .15s linear;
+}
+
+@keyframes screenShake{
+  0%{transform:translate(0,0)}
+  25%{transform:translate(-2px,1px)}
+  50%{transform:translate(2px,-1px)}
+  75%{transform:translate(-1px,-1px)}
+  100%{transform:translate(0,0)}
+}
+
+.feed.miss-flash::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:200;
+  pointer-events:none;
+  background:rgba(255,78,112,.18);
+  animation:missFlash .18s ease-out forwards;
+}
+
+@keyframes missFlash{
+  from{opacity:1}
+  to{opacity:0}
+}
+
 .card{
   position:absolute;
   inset:0;
@@ -158,19 +191,22 @@ button{
     radial-gradient(circle at 50% 30%,rgba(97,234,255,.05),transparent 42%),
     radial-gradient(circle at 75% 80%,rgba(132,102,255,.06),transparent 42%),
     linear-gradient(180deg,#0b1019,#070a10);
-  will-change:transform;
+  will-change:transform,opacity,filter;
 }
 
 .card.current{
-  transform:translateY(0);
+  transform:translateY(0) scale(1);
 }
 
 .card.next{
-  transform:translateY(100%);
+  transform:translateY(100%) scale(.98);
 }
 
 .card.animating{
-  transition:transform .34s cubic-bezier(.22,.75,.28,1);
+  transition:
+    transform .34s cubic-bezier(.22,.75,.28,1),
+    opacity .34s ease,
+    filter .34s ease;
 }
 
 .card-content{
@@ -309,6 +345,18 @@ button{
   font-size:clamp(66px,10vw,120px);
   font-weight:1000;
   line-height:1;
+  animation:finishPop .28s ease-out;
+}
+
+@keyframes finishPop{
+  from{
+    opacity:0;
+    transform:scale(.55);
+  }
+  to{
+    opacity:1;
+    transform:scale(1);
+  }
 }
 
 .finish-skill{
@@ -336,6 +384,82 @@ button{
 @keyframes arrow{
   50%{transform:translateY(-7px)}
 }
+
+
+/* FEEDBACK */
+
+.feedback{
+  position:absolute;
+  z-index:120;
+  left:50%;
+  top:30%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  font-size:clamp(28px,6vw,64px);
+  font-weight:1000;
+  letter-spacing:-.04em;
+  text-shadow:0 5px 20px rgba(0,0,0,.45);
+  animation:feedbackPop .5s ease-out forwards;
+}
+
+.feedback.good{
+  color:var(--cyan);
+}
+
+.feedback.great{
+  color:var(--green);
+}
+
+.feedback.perfect{
+  color:var(--yellow);
+}
+
+.feedback.miss{
+  color:var(--red);
+}
+
+@keyframes feedbackPop{
+  0%{
+    opacity:0;
+    transform:translate(-50%,-30%) scale(.6);
+  }
+  35%{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1.18);
+  }
+  100%{
+    opacity:0;
+    transform:translate(-50%,-85%) scale(.92);
+  }
+}
+
+.combo{
+  position:absolute;
+  z-index:115;
+  top:18px;
+  right:18px;
+  padding:9px 13px;
+  border-radius:999px;
+  background:rgba(8,13,21,.78);
+  border:1px solid rgba(255,255,255,.10);
+  color:#fff;
+  font-size:15px;
+  font-weight:1000;
+  backdrop-filter:blur(7px);
+  animation:comboPop .2s ease-out;
+}
+
+.combo strong{
+  color:var(--yellow);
+}
+
+@keyframes comboPop{
+  from{transform:scale(.7)}
+  to{transform:scale(1)}
+}
+
+
+/* SIDE */
 
 .side{
   height:100%;
@@ -438,7 +562,7 @@ button{
 }
 
 
-/* common game controls */
+/* COMMON */
 
 .round-button{
   width:min(30vw,240px);
@@ -460,6 +584,11 @@ button{
   box-shadow:
     0 0 45px rgba(97,234,255,.2),
     inset 0 0 35px rgba(255,255,255,.15);
+  transition:transform .06s ease,filter .08s ease;
+}
+
+.round-button:active{
+  transform:scale(.94);
 }
 
 .center-game{
@@ -483,7 +612,7 @@ button{
 }
 
 
-/* reaction color */
+/* GREEN */
 
 .color-box{
   width:min(42vw,310px);
@@ -493,6 +622,11 @@ button{
   background:#141b26;
   cursor:pointer;
   touch-action:none;
+  transition:transform .08s ease,filter .08s ease;
+}
+
+.color-box:active{
+  transform:scale(.96);
 }
 
 .color-box.green{
@@ -506,7 +640,36 @@ button{
 }
 
 
-/* alternating */
+/* TAP / BOOST */
+
+.tap-energy{
+  width:min(360px,80vw);
+  height:10px;
+  margin:0 auto 18px;
+  background:rgba(255,255,255,.07);
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.tap-energy-fill{
+  width:0%;
+  height:100%;
+  background:linear-gradient(90deg,var(--violet),var(--cyan),var(--green));
+  box-shadow:0 0 15px rgba(97,234,255,.4);
+  transition:width .08s linear;
+}
+
+.boost-label{
+  height:24px;
+  margin-bottom:8px;
+  color:var(--yellow);
+  font-size:14px;
+  font-weight:1000;
+  letter-spacing:.1em;
+}
+
+
+/* ALTERNATE */
 
 .alt-grid{
   width:min(700px,100%);
@@ -524,6 +687,11 @@ button{
   font-size:30px;
   font-weight:1000;
   touch-action:none;
+  transition:transform .06s ease,box-shadow .1s ease;
+}
+
+.alt-btn:active{
+  transform:scale(.97);
 }
 
 .alt-btn.active{
@@ -532,7 +700,7 @@ button{
 }
 
 
-/* logic */
+/* LOGIC */
 
 .choice-wrap{
   width:100%;
@@ -552,6 +720,27 @@ button{
   font-size:clamp(46px,7vw,82px);
   font-weight:1000;
   touch-action:none;
+  transition:transform .08s ease,filter .08s ease;
+}
+
+.choice:active{
+  transform:scale(.95);
+}
+
+.choice.correct-pop{
+  animation:correctNumber .34s ease-out;
+}
+
+@keyframes correctNumber{
+  0%{transform:scale(1)}
+  45%{
+    transform:scale(1.28) translateY(-8px);
+    filter:brightness(1.8);
+  }
+  100%{
+    transform:scale(.6) translateY(-45px);
+    opacity:0;
+  }
 }
 
 .logic-label{
@@ -562,7 +751,7 @@ button{
 }
 
 
-/* memory */
+/* MEMORY */
 
 .memory-grid{
   display:grid;
@@ -576,17 +765,20 @@ button{
   border-radius:16px;
   background:#141b27;
   touch-action:none;
+  transition:transform .08s ease,background .08s ease;
 }
 
 .memory-cell.demo,
 .memory-cell.correct{
   background:#75efff;
   box-shadow:0 0 25px rgba(97,234,255,.55);
+  transform:scale(.92);
 }
 
 .memory-cell.wrong{
   background:var(--red);
   box-shadow:0 0 25px rgba(255,78,112,.55);
+  transform:scale(.92);
 }
 
 .position-grid{
@@ -617,7 +809,7 @@ button{
 }
 
 
-/* aim */
+/* AIM */
 
 .aim{
   position:absolute;
@@ -686,6 +878,21 @@ button{
   box-shadow:0 0 25px rgba(97,234,255,.5);
 }
 
+.target.hit{
+  animation:targetHit .2s ease-out forwards;
+}
+
+@keyframes targetHit{
+  from{
+    transform:translate(-50%,-50%) scale(1);
+    opacity:1;
+  }
+  to{
+    transform:translate(-50%,-50%) scale(1.7);
+    opacity:0;
+  }
+}
+
 .laser{
   position:absolute;
   z-index:15;
@@ -697,6 +904,21 @@ button{
     0 0 7px var(--cyan),
     0 0 16px rgba(97,234,255,.8);
   animation:laserFade .18s linear forwards;
+}
+
+.laser.lv2{
+  height:6px;
+  box-shadow:
+    0 0 10px var(--cyan),
+    0 0 24px rgba(97,234,255,.95);
+}
+
+.laser.lv3{
+  height:9px;
+  background:linear-gradient(90deg,rgba(255,228,107,.05),var(--yellow),white);
+  box-shadow:
+    0 0 12px var(--yellow),
+    0 0 28px rgba(255,228,107,.9);
 }
 
 @keyframes laserFade{
@@ -730,8 +952,46 @@ button{
   }
 }
 
+.spark{
+  position:absolute;
+  z-index:19;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  pointer-events:none;
+  background:#fff;
+  box-shadow:0 0 9px var(--cyan);
+  animation:spark .32s ease-out forwards;
+}
 
-/* joystick */
+@keyframes spark{
+  from{
+    opacity:1;
+    transform:translate(0,0) scale(1);
+  }
+  to{
+    opacity:0;
+    transform:translate(var(--sx),var(--sy)) scale(.2);
+  }
+}
+
+.weapon-level{
+  position:absolute;
+  top:14px;
+  left:14px;
+  z-index:30;
+  padding:8px 11px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(5,8,14,.65);
+  color:#fff;
+  font-size:11px;
+  font-weight:1000;
+  backdrop-filter:blur(7px);
+}
+
+
+/* JOYSTICK */
 
 .mobile-controls{
   display:none;
@@ -778,7 +1038,7 @@ button{
 }
 
 
-/* start */
+/* START */
 
 .start-screen{
   position:absolute;
@@ -831,11 +1091,7 @@ button{
 }
 
 
-/* mobile */
-
-.mobile-hud{
-  display:none;
-}
+/* MOBILE */
 
 @media(max-width:900px){
 
@@ -926,6 +1182,22 @@ button{
   .aim{
     cursor:default;
   }
+
+}
+
+
+/* REDUCED MOTION */
+
+@media(prefers-reduced-motion:reduce){
+
+  *,
+  *::before,
+  *::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+
 }
 
 </style>
@@ -969,7 +1241,6 @@ button{
 
       <div class="card current" id="cardA"></div>
       <div class="card next" id="cardB"></div>
-
 
       <div class="start-screen" id="startScreen">
 
@@ -1157,8 +1428,8 @@ const games = [
 
 {
   id:"tap",
-  title:"RUSH",
-  rule:"できるだけ速く連打",
+  title:"BOOST",
+  rule:"連打してエネルギーを溜めろ",
   skill:"SPEED",
   duration:8000,
   start:tapGame
@@ -1239,7 +1510,10 @@ function clamp(v,min,max){
 }
 
 function avg(values){
-  if(!values.length) return null;
+
+  if(!values.length){
+    return null;
+  }
 
   return values.reduce(
     (a,b)=>a+b,
@@ -1266,9 +1540,147 @@ function shuffle(array){
   return a;
 }
 
+function shake(){
+
+  feed.classList.remove("shake");
+
+  void feed.offsetWidth;
+
+  feed.classList.add("shake");
+
+}
+
+function missFlash(){
+
+  feed.classList.remove("miss-flash");
+
+  void feed.offsetWidth;
+
+  feed.classList.add("miss-flash");
+
+}
+
+function showFeedback(
+  board,
+  text,
+  type="good"
+){
+
+  const el =
+    document.createElement("div");
+
+  el.className =
+    `feedback ${type}`;
+
+  el.textContent =
+    text;
+
+  board.appendChild(el);
+
+  setTimeout(
+    () => el.remove(),
+    520
+  );
+
+}
+
+function showCombo(
+  board,
+  combo
+){
+
+  board
+    .querySelectorAll(".combo")
+    .forEach(el=>el.remove());
+
+
+  if(combo < 2){
+    return;
+  }
+
+
+  const el =
+    document.createElement("div");
+
+  el.className =
+    "combo";
+
+  el.innerHTML =
+    `COMBO <strong>×${combo}</strong>`;
+
+  board.appendChild(el);
+
+  setTimeout(
+    () => {
+
+      if(el.isConnected){
+        el.remove();
+      }
+
+    },
+    700
+  );
+
+}
+
+function successFeedback(
+  board,
+  combo
+){
+
+  shake();
+
+  showCombo(
+    board,
+    combo
+  );
+
+
+  if(combo >= 8){
+
+    showFeedback(
+      board,
+      "PERFECT",
+      "perfect"
+    );
+
+  }
+  else if(combo >= 4){
+
+    showFeedback(
+      board,
+      "GREAT",
+      "great"
+    );
+
+  }
+  else{
+
+    showFeedback(
+      board,
+      "GOOD",
+      "good"
+    );
+
+  }
+
+}
+
+function failFeedback(board){
+
+  missFlash();
+
+  showFeedback(
+    board,
+    "MISS",
+    "miss"
+  );
+
+}
+
 
 /* ==================================================
-RANDOM GAME BAG
+RANDOM BAG
 ================================================== */
 
 function getNextGame(){
@@ -1306,7 +1718,7 @@ function getNextGame(){
 
 
 /* ==================================================
-CARD HTML
+CARD
 ================================================== */
 
 function renderCard(
@@ -1344,6 +1756,7 @@ function renderCard(
 
         <div class="play"></div>
 
+
         <div class="rule">
 
           <div class="rule-inner">
@@ -1370,7 +1783,9 @@ function renderCard(
           <div>
 
             <div class="finish-score">
-              <span class="finish-score-value">+0</span>
+              <span class="finish-score-value">
+                +0
+              </span>
             </div>
 
             <div class="finish-skill">
@@ -1401,7 +1816,7 @@ function renderCard(
 
 
 /* ==================================================
-START / FLOW
+FLOW
 ================================================== */
 
 function start(){
@@ -1409,10 +1824,8 @@ function start(){
   startScreen.style.display =
     "none";
 
-
   currentGame =
     getNextGame();
-
 
   nextGame =
     getNextGame();
@@ -1424,31 +1837,33 @@ function start(){
     false
   );
 
-
   renderCard(
     nextCard,
     nextGame,
     true
   );
 
-
   beginCurrentGame();
 
 }
-
 
 function beginCurrentGame(){
 
   cleanupGame();
 
   canSwipe = false;
+
   gameActive = false;
 
+
   const rule =
-    currentCard.querySelector(".rule");
+    currentCard
+      .querySelector(".rule");
+
 
   const bar =
-    currentCard.querySelector(".rule-bar-fill");
+    currentCard
+      .querySelector(".rule-bar-fill");
 
 
   rule.style.display =
@@ -1462,40 +1877,52 @@ function beginCurrentGame(){
   bar.classList.add("go");
 
 
-  setTimeout(
-    () => {
+  const ruleTimer =
+    setTimeout(
+      () => {
 
-      rule.style.display =
-        "none";
-
-      gameActive =
-        true;
-
-      const play =
-        currentCard.querySelector(".play");
-
-      finishCurrentGame =
-        currentGame.start(play);
+        rule.style.display =
+          "none";
 
 
-      gameEndTimer =
-        setTimeout(
-          finishGame,
-          currentGame.duration
-        );
+        gameActive =
+          true;
 
-    },
-    900
+
+        const play =
+          currentCard
+            .querySelector(".play");
+
+
+        finishCurrentGame =
+          currentGame.start(play);
+
+
+        gameEndTimer =
+          setTimeout(
+            finishGame,
+            currentGame.duration
+          );
+
+      },
+      900
+    );
+
+
+  cleanupFns.push(
+    () => clearTimeout(ruleTimer)
   );
 
 }
 
-
 function finishGame(){
 
-  if(!gameActive) return;
+  if(!gameActive){
+    return;
+  }
 
-  gameActive = false;
+  gameActive =
+    false;
 
 
   const result =
@@ -1544,23 +1971,23 @@ function finishGame(){
 
 
   const finish =
-    currentCard.querySelector(".finish");
+    currentCard
+      .querySelector(".finish");
 
 
   finish
-    .querySelector(".finish-score-value")
+    .querySelector(
+      ".finish-score-value"
+    )
     .textContent =
       `+${score}`;
 
 
-  finish.classList.add(
-    "show"
-  );
+  finish.classList.add("show");
 
 
   swipeUnlockAt =
-    performance.now()
-    + 500;
+    performance.now()+500;
 
 
   setTimeout(
@@ -1576,12 +2003,12 @@ function finishGame(){
 
 
 /* ==================================================
-GAMIQ CALC
+GAMIQ
 ================================================== */
 
 function updateGamiq(){
 
-  const mainSkills = [
+  const keys = [
     "REFLEX",
     "SPEED",
     "AIM",
@@ -1591,14 +2018,14 @@ function updateGamiq(){
 
 
   const available =
-    mainSkills
+    keys
       .map(
-        key => avg(
-          skillScores[key]
-        )
+        key =>
+          avg(skillScores[key])
       )
       .filter(
-        value => value !== null
+        value =>
+          value !== null
       );
 
 
@@ -1609,22 +2036,20 @@ function updateGamiq(){
 
 
   const adapt =
-    avg(
-      skillScores.ADAPT
-    );
+    avg(skillScores.ADAPT);
 
 
   const combined =
     adapt === null
     ? base
-    : base * .85
-      + adapt * .15;
+    : base*.85
+      + adapt*.15;
 
 
   const newGamiq =
     Math.round(
       300
-      + combined * 7
+      + combined*7
     );
 
 
@@ -1644,7 +2069,7 @@ function updateGamiq(){
         (
           1 -
           Math.exp(
-            -played / 18
+            -played/18
           )
         )
       )
@@ -1658,19 +2083,13 @@ function updateGamiq(){
 
 }
 
-
-/* ==================================================
-HUD
-================================================== */
-
 function updateHud(
   confidence,
-  previousGamiq
+  previous
 ){
 
   $("playedTop").textContent =
     played;
-
 
   $("playedSide").textContent =
     played;
@@ -1679,21 +2098,18 @@ function updateHud(
   $("gamiqTop").textContent =
     gamiq ?? "---";
 
-
   $("gamiqSide").textContent =
     gamiq ?? "---";
 
 
   $("confidenceTop").textContent =
-    confidence + "%";
-
+    confidence+"%";
 
   $("confidenceSide").textContent =
-    confidence + "%";
-
+    confidence+"%";
 
   $("confidenceFill").style.width =
-    confidence + "%";
+    confidence+"%";
 
 
   const map = {
@@ -1706,54 +2122,53 @@ function updateHud(
   };
 
 
-  Object.entries(map).forEach(
-    ([key,id]) => {
+  Object.entries(map)
+    .forEach(
+      ([key,id]) => {
 
-      const value =
-        avg(
-          skillScores[key]
-        );
+        const value =
+          avg(skillScores[key]);
 
 
-      $(id).textContent =
-        value === null
-        ? "--"
-        : Math.round(value);
+        $(id).textContent =
+          value === null
+          ? "--"
+          : Math.round(value);
 
-    }
-  );
+      }
+    );
 
 
   if(
-    previousGamiq !== null &&
-    previousGamiq !== undefined
+    previous !== null &&
+    previous !== undefined
   ){
 
-    const top =
+    const el =
       $("gamiqTop");
 
 
-    top.classList.remove(
+    el.classList.remove(
       "flash-up",
       "flash-down"
     );
 
 
-    void top.offsetWidth;
+    void el.offsetWidth;
 
 
-    if(gamiq > previousGamiq){
+    if(gamiq > previous){
 
-      top.classList.add(
+      el.classList.add(
         "flash-up"
       );
 
     }
     else if(
-      gamiq < previousGamiq
+      gamiq < previous
     ){
 
-      top.classList.add(
+      el.classList.add(
         "flash-down"
       );
 
@@ -1765,7 +2180,7 @@ function updateHud(
 
 
 /* ==================================================
-SWIPE FEED
+SWIPE
 ================================================== */
 
 let touchStartY = null;
@@ -1779,8 +2194,8 @@ feed.addEventListener(
 
     if(
       !canSwipe ||
-      performance.now() <
-      swipeUnlockAt
+      performance.now()
+      < swipeUnlockAt
     ){
       return;
     }
@@ -1794,17 +2209,18 @@ feed.addEventListener(
       touchStartY;
 
 
-    dragging = true;
+    dragging =
+      true;
 
 
-    currentCard.classList.remove(
-      "animating"
-    );
+    currentCard
+      .classList
+      .remove("animating");
 
 
-    nextCard.classList.remove(
-      "animating"
-    );
+    nextCard
+      .classList
+      .remove("animating");
 
   },
   {
@@ -1817,7 +2233,9 @@ feed.addEventListener(
   "touchmove",
   event => {
 
-    if(!dragging) return;
+    if(!dragging){
+      return;
+    }
 
 
     event.preventDefault();
@@ -1842,12 +2260,25 @@ feed.addEventListener(
       );
 
 
+    const progress =
+      Math.min(
+        1,
+        Math.abs(dy)
+        /
+        feed.clientHeight
+      );
+
+
     currentCard.style.transform =
-      `translateY(${dy}px)`;
+      `translateY(${dy}px) scale(${1-progress*.04})`;
+
+
+    currentCard.style.filter =
+      `brightness(${1-progress*.2})`;
 
 
     nextCard.style.transform =
-      `translateY(calc(100% + ${dy}px))`;
+      `translateY(calc(100% + ${dy}px)) scale(${.98+progress*.02})`;
 
   },
   {
@@ -1860,10 +2291,13 @@ feed.addEventListener(
   "touchend",
   () => {
 
-    if(!dragging) return;
+    if(!dragging){
+      return;
+    }
 
 
-    dragging = false;
+    dragging =
+      false;
 
 
     const dy =
@@ -1888,53 +2322,66 @@ feed.addEventListener(
   }
 );
 
-
 function cancelSwipe(){
 
-  currentCard.classList.add(
-    "animating"
-  );
+  currentCard
+    .classList
+    .add("animating");
 
 
-  nextCard.classList.add(
-    "animating"
-  );
+  nextCard
+    .classList
+    .add("animating");
 
 
   currentCard.style.transform =
-    "translateY(0)";
+    "translateY(0) scale(1)";
+
+
+  currentCard.style.filter =
+    "brightness(1)";
 
 
   nextCard.style.transform =
-    "translateY(100%)";
+    "translateY(100%) scale(.98)";
 
 }
 
-
 function commitSwipe(){
 
-  if(!canSwipe) return;
+  if(!canSwipe){
+    return;
+  }
 
 
-  canSwipe = false;
+  canSwipe =
+    false;
 
 
-  currentCard.classList.add(
-    "animating"
-  );
+  currentCard
+    .classList
+    .add("animating");
 
 
-  nextCard.classList.add(
-    "animating"
-  );
+  nextCard
+    .classList
+    .add("animating");
 
 
   currentCard.style.transform =
-    "translateY(-100%)";
+    "translateY(-100%) scale(.95)";
+
+
+  currentCard.style.opacity =
+    ".55";
+
+
+  currentCard.style.filter =
+    "brightness(.7)";
 
 
   nextCard.style.transform =
-    "translateY(0)";
+    "translateY(0) scale(1)";
 
 
   setTimeout(
@@ -1944,13 +2391,12 @@ function commitSwipe(){
 
 }
 
-
 function completeSwipe(){
 
   cleanupGame();
 
 
-  const oldCard =
+  const old =
     currentCard;
 
 
@@ -1959,7 +2405,7 @@ function completeSwipe(){
 
 
   nextCard =
-    oldCard;
+    old;
 
 
   currentCard.className =
@@ -1967,7 +2413,15 @@ function completeSwipe(){
 
 
   currentCard.style.transform =
-    "translateY(0)";
+    "translateY(0) scale(1)";
+
+
+  currentCard.style.opacity =
+    "1";
+
+
+  currentCard.style.filter =
+    "brightness(1)";
 
 
   nextCard.className =
@@ -1975,7 +2429,11 @@ function completeSwipe(){
 
 
   nextCard.style.transform =
-    "translateY(100%)";
+    "translateY(100%) scale(.98)";
+
+
+  nextCard.style.opacity =
+    "1";
 
 
   currentGame =
@@ -2018,7 +2476,8 @@ window.addEventListener(
     }
 
 
-    wheelLock = true;
+    wheelLock =
+      true;
 
 
     commitSwipe();
@@ -2042,11 +2501,14 @@ window.addEventListener(
   "keydown",
   event => {
 
-    if(!canSwipe) return;
+    if(!canSwipe){
+      return;
+    }
 
 
     if(
-      event.key === "ArrowDown"
+      event.key ===
+      "ArrowDown"
     ){
 
       commitSwipe();
@@ -2063,16 +2525,17 @@ CLEANUP
 
 function cleanupGame(){
 
-  cleanupFns.forEach(
-    fn => {
+  cleanupFns
+    .forEach(
+      fn => {
 
-      try{
-        fn();
+        try{
+          fn();
+        }
+        catch(e){}
+
       }
-      catch(e){}
-
-    }
-  );
+    );
 
 
   cleanupFns = [];
@@ -2093,22 +2556,21 @@ function cleanupGame(){
 
 
 /* ==================================================
-ADAPT HELPER
+ADAPT
 ================================================== */
 
-function adaptScore(
-  series
-){
+function adaptScore(series){
 
   if(series.length < 4){
 
     const overall =
       avg(series);
 
+
     return overall === null
     ? 50
     : clamp(
-        35 + overall * .3,
+        35+overall*.3,
         25,
         75
       );
@@ -2120,7 +2582,7 @@ function adaptScore(
     Math.max(
       1,
       Math.floor(
-        series.length * .35
+        series.length*.35
       )
     );
 
@@ -2145,9 +2607,8 @@ function adaptScore(
   return clamp(
     50
     + (
-      last -
-      first
-    ) * .9,
+      last-first
+    )*.9,
     0,
     100
   );
@@ -2156,7 +2617,7 @@ function adaptScore(
 
 
 /* ==================================================
-GAME 1 REACTION
+REACTION
 ================================================== */
 
 function reactionGame(play){
@@ -2164,9 +2625,13 @@ function reactionGame(play){
   let success = 0;
   let falseStart = 0;
   let totalReaction = 0;
+
   let ready = false;
   let shownAt = 0;
+
   let timer = null;
+
+  let combo = 0;
 
   const rounds = [];
 
@@ -2194,20 +2659,30 @@ function reactionGame(play){
   `;
 
 
+  const board =
+    play.closest(".board");
+
+
   const btn =
-    play.querySelector("#reactionBtn");
+    play.querySelector(
+      "#reactionBtn"
+    );
 
 
   const msg =
-    play.querySelector("#reactionMsg");
+    play.querySelector(
+      "#reactionMsg"
+    );
 
 
   function schedule(){
 
     ready = false;
 
+
     btn.textContent =
       "WAIT";
+
 
     btn.style.filter =
       "brightness(.35)";
@@ -2220,18 +2695,25 @@ function reactionGame(play){
       setTimeout(
         () => {
 
-          if(!gameActive) return;
+          if(!gameActive){
+            return;
+          }
 
-          ready = true;
+
+          ready =
+            true;
+
 
           shownAt =
             performance.now();
 
+
           btn.textContent =
             "GO";
 
+
           btn.style.filter =
-            "brightness(1.2)";
+            "brightness(1.25)";
 
         },
         450
@@ -2243,17 +2725,23 @@ function reactionGame(play){
 
   function press(){
 
-    if(!gameActive) return;
+    if(!gameActive){
+      return;
+    }
 
 
     if(!ready){
 
       falseStart++;
 
+      combo = 0;
+
       rounds.push(0);
 
       msg.textContent =
         "TOO EARLY";
+
+      failFeedback(board);
 
       schedule();
 
@@ -2273,23 +2761,40 @@ function reactionGame(play){
       reaction;
 
 
-    const round =
+    const score =
       clamp(
         100
         - (
-          reaction - 180
-        ) / 5,
+          reaction-180
+        )/5,
         0,
         100
       );
 
 
-    rounds.push(round);
+    rounds.push(score);
+
+
+    if(score >= 55){
+
+      combo++;
+
+      successFeedback(
+        board,
+        combo
+      );
+
+    }
+    else{
+
+      combo = 0;
+
+    }
 
 
     msg.textContent =
       Math.round(reaction)
-      + " ms";
+      +" ms";
 
 
     schedule();
@@ -2308,6 +2813,7 @@ function reactionGame(play){
 
       clearTimeout(timer);
 
+
       btn.removeEventListener(
         "pointerdown",
         press
@@ -2324,7 +2830,7 @@ function reactionGame(play){
 
     const reaction =
       success
-      ? totalReaction / success
+      ? totalReaction/success
       : 1000;
 
 
@@ -2332,9 +2838,9 @@ function reactionGame(play){
       clamp(
         100
         - (
-          reaction - 180
-        ) / 5
-        - falseStart * 8,
+          reaction-180
+        )/5
+        - falseStart*8,
         0,
         100
       );
@@ -2352,7 +2858,7 @@ function reactionGame(play){
 
 
 /* ==================================================
-GAME 2 GREEN
+GREEN
 ================================================== */
 
 function greenGame(play){
@@ -2360,8 +2866,12 @@ function greenGame(play){
   let correct = 0;
   let wrong = 0;
   let missed = 0;
+
   let state = null;
+
   let timer = null;
+
+  let combo = 0;
 
   const rounds = [];
 
@@ -2387,17 +2897,27 @@ function greenGame(play){
   `;
 
 
+  const board =
+    play.closest(".board");
+
+
   const box =
-    play.querySelector("#colorBox");
+    play.querySelector(
+      "#colorBox"
+    );
 
 
   const msg =
-    play.querySelector("#colorMsg");
+    play.querySelector(
+      "#colorMsg"
+    );
 
 
   function next(){
 
-    if(!gameActive) return;
+    if(!gameActive){
+      return;
+    }
 
 
     state = null;
@@ -2411,7 +2931,9 @@ function greenGame(play){
       setTimeout(
         () => {
 
-          if(!gameActive) return;
+          if(!gameActive){
+            return;
+          }
 
 
           state =
@@ -2425,7 +2947,7 @@ function greenGame(play){
           );
 
 
-          const windowTime =
+          const delay =
             state === "green"
             ? 620
             : 480;
@@ -2441,6 +2963,8 @@ function greenGame(play){
 
                   missed++;
 
+                  combo = 0;
+
                   rounds.push(0);
 
                 }
@@ -2454,7 +2978,7 @@ function greenGame(play){
                 next();
 
               },
-              windowTime
+              delay
             );
 
         },
@@ -2467,7 +2991,9 @@ function greenGame(play){
 
   function press(){
 
-    if(!gameActive) return;
+    if(!gameActive){
+      return;
+    }
 
 
     clearTimeout(timer);
@@ -2477,20 +3003,33 @@ function greenGame(play){
 
       correct++;
 
+      combo++;
+
       rounds.push(100);
 
       msg.textContent =
         "GOOD";
+
+
+      successFeedback(
+        board,
+        combo
+      );
 
     }
     else{
 
       wrong++;
 
+      combo = 0;
+
       rounds.push(0);
 
       msg.textContent =
         "MISS";
+
+
+      failFeedback(board);
 
     }
 
@@ -2510,6 +3049,7 @@ function greenGame(play){
     () => {
 
       clearTimeout(timer);
+
 
       box.removeEventListener(
         "pointerdown",
@@ -2531,21 +3071,21 @@ function greenGame(play){
       + missed;
 
 
-    const score =
-      total
-      ? clamp(
-          correct / total * 100
-          - wrong * 5,
-          0,
-          100
-        )
-      : 0;
-
-
     return {
-      score,
+
+      score:
+        total
+        ? clamp(
+            correct/total*100
+            - wrong*5,
+            0,
+            100
+          )
+        : 0,
+
       adapt:
         adaptScore(rounds)
+
     };
 
   };
@@ -2554,38 +3094,37 @@ function greenGame(play){
 
 
 /* ==================================================
-GAME 3 TAP
+TAP BOOST
 ================================================== */
 
 function tapGame(play){
 
   let count = 0;
 
-  const chunks = [];
   let currentChunk = 0;
 
-  let chunkTimer =
-    setInterval(
-      () => {
+  let boostLevel = 0;
 
-        chunks.push(
-          clamp(
-            currentChunk * 14,
-            0,
-            100
-          )
-        );
-
-        currentChunk = 0;
-
-      },
-      1000
-    );
+  const chunks = [];
 
 
   play.innerHTML = `
 
     <div class="center-game">
+
+      <div
+        class="boost-label"
+        id="boostLabel"
+      ></div>
+
+      <div class="tap-energy">
+
+        <div
+          class="tap-energy-fill"
+          id="energyFill"
+        ></div>
+
+      </div>
 
       <span
         class="counter"
@@ -2606,24 +3145,121 @@ function tapGame(play){
   `;
 
 
+  const board =
+    play.closest(".board");
+
+
   const btn =
-    play.querySelector("#tapBtn");
+    play.querySelector(
+      "#tapBtn"
+    );
 
 
   const countEl =
-    play.querySelector("#tapCount");
+    play.querySelector(
+      "#tapCount"
+    );
+
+
+  const fill =
+    play.querySelector(
+      "#energyFill"
+    );
+
+
+  const boost =
+    play.querySelector(
+      "#boostLabel"
+    );
+
+
+  const chunkTimer =
+    setInterval(
+      () => {
+
+        chunks.push(
+          clamp(
+            currentChunk*14,
+            0,
+            100
+          )
+        );
+
+
+        currentChunk = 0;
+
+      },
+      1000
+    );
 
 
   function press(){
 
-    if(!gameActive) return;
+    if(!gameActive){
+      return;
+    }
+
 
     count++;
 
     currentChunk++;
 
+
     countEl.textContent =
       count;
+
+
+    const percent =
+      Math.min(
+        100,
+        count/75*100
+      );
+
+
+    fill.style.width =
+      percent+"%";
+
+
+    const oldLevel =
+      boostLevel;
+
+
+    if(count >= 55){
+
+      boostLevel = 3;
+
+      boost.textContent =
+        "MAX BOOST";
+
+    }
+    else if(count >= 35){
+
+      boostLevel = 2;
+
+      boost.textContent =
+        "BOOST ×2";
+
+    }
+    else if(count >= 18){
+
+      boostLevel = 1;
+
+      boost.textContent =
+        "BOOST";
+
+    }
+
+
+    if(
+      boostLevel > oldLevel
+    ){
+
+      successFeedback(
+        board,
+        boostLevel*3
+      );
+
+    }
 
   }
 
@@ -2640,6 +3276,7 @@ function tapGame(play){
       clearInterval(
         chunkTimer
       );
+
 
       btn.removeEventListener(
         "pointerdown",
@@ -2659,7 +3296,7 @@ function tapGame(play){
 
     chunks.push(
       clamp(
-        currentChunk * 14,
+        currentChunk*14,
         0,
         100
       )
@@ -2670,7 +3307,7 @@ function tapGame(play){
 
       score:
         clamp(
-          count / 1.05,
+          count/1.05,
           0,
           100
         ),
@@ -2686,7 +3323,7 @@ function tapGame(play){
 
 
 /* ==================================================
-GAME 4 ALTERNATE
+ALTERNATE
 ================================================== */
 
 function alternateGame(play){
@@ -2696,6 +3333,8 @@ function alternateGame(play){
 
   let expected =
     "L";
+
+  let combo = 0;
 
   const rounds = [];
 
@@ -2723,6 +3362,10 @@ function alternateGame(play){
   `;
 
 
+  const board =
+    play.closest(".board");
+
+
   const buttons =
     [...play.querySelectorAll(
       ".alt-btn"
@@ -2731,24 +3374,27 @@ function alternateGame(play){
 
   function render(){
 
-    buttons.forEach(
-      btn => {
+    buttons
+      .forEach(
+        btn => {
 
-        btn.classList.toggle(
-          "active",
-          btn.dataset.side
-          === expected
-        );
+          btn.classList.toggle(
+            "active",
+            btn.dataset.side
+            === expected
+          );
 
-      }
-    );
+        }
+      );
 
   }
 
 
   function press(event){
 
-    if(!gameActive) return;
+    if(!gameActive){
+      return;
+    }
 
 
     const side =
@@ -2760,19 +3406,36 @@ function alternateGame(play){
 
       correct++;
 
+      combo++;
+
       rounds.push(100);
+
 
       expected =
         expected === "L"
         ? "R"
         : "L";
 
+
+      if(combo % 5 === 0){
+
+        successFeedback(
+          board,
+          combo
+        );
+
+      }
+
     }
     else{
 
       wrong++;
 
+      combo = 0;
+
       rounds.push(0);
+
+      failFeedback(board);
 
     }
 
@@ -2810,8 +3473,8 @@ function alternateGame(play){
 
     score:
       clamp(
-        correct * 2
-        - wrong * 3,
+        correct*2
+        - wrong*3,
         0,
         100
       ),
@@ -2844,6 +3507,7 @@ function aimEngine(
 
   let shots = 0;
   let hits = 0;
+
   let reactionTotal = 0;
 
   let shownAt = 0;
@@ -2857,6 +3521,9 @@ function aimEngine(
   let joyX = 0;
   let joyY = 0;
 
+  let combo = 0;
+  let weaponLevel = 1;
+
   const rounds = [];
 
 
@@ -2866,6 +3533,13 @@ function aimEngine(
       class="aim"
       id="aimBoard"
     >
+
+      <div
+        class="weapon-level"
+        id="weaponLevel"
+      >
+        WEAPON LV.1
+      </div>
 
       <div
         class="target"
@@ -2909,28 +3583,57 @@ function aimEngine(
 
 
   const board =
-    play.querySelector("#aimBoard");
+    play.querySelector(
+      "#aimBoard"
+    );
+
+
+  const outerBoard =
+    play.closest(".board");
+
 
   const target =
-    play.querySelector("#target");
+    play.querySelector(
+      "#target"
+    );
+
 
   const crosshair =
-    play.querySelector("#crosshair");
+    play.querySelector(
+      "#crosshair"
+    );
+
 
   const joystick =
-    play.querySelector("#joystick");
+    play.querySelector(
+      "#joystick"
+    );
+
 
   const knob =
-    play.querySelector("#joyKnob");
+    play.querySelector(
+      "#joyKnob"
+    );
+
 
   const fireBtn =
-    play.querySelector("#fireBtn");
+    play.querySelector(
+      "#fireBtn"
+    );
+
+
+  const levelEl =
+    play.querySelector(
+      "#weaponLevel"
+    );
 
 
   function size(){
 
     const r =
-      board.getBoundingClientRect();
+      board
+        .getBoundingClientRect();
+
 
     return {
       w:r.width,
@@ -2943,17 +3646,20 @@ function aimEngine(
   function renderCross(){
 
     crosshair.style.left =
-      crossX + "px";
+      crossX+"px";
+
 
     crosshair.style.top =
-      crossY + "px";
+      crossY+"px";
 
   }
 
 
   function spawn(){
 
-    if(!gameActive) return;
+    if(!gameActive){
+      return;
+    }
 
 
     const s =
@@ -2965,7 +3671,7 @@ function aimEngine(
       + Math.random()
       * Math.max(
           20,
-          s.w - 100
+          s.w-100
         );
 
 
@@ -2974,24 +3680,33 @@ function aimEngine(
       + Math.random()
       * Math.max(
           20,
-          s.h - 130
+          s.h-130
         );
 
 
     target.style.left =
-      targetX + "px";
+      targetX+"px";
+
 
     target.style.top =
-      targetY + "px";
+      targetY+"px";
+
 
     target.style.width =
-      targetSize + "px";
+      targetSize+"px";
+
 
     target.style.height =
-      targetSize + "px";
+      targetSize+"px";
+
 
     target.style.opacity =
       "1";
+
+
+    target.classList.remove(
+      "hit"
+    );
 
 
     shownAt =
@@ -3000,7 +3715,7 @@ function aimEngine(
 
     vx =
       (
-        Math.random() < .5
+        Math.random()<.5
         ? -1
         : 1
       )
@@ -3013,7 +3728,7 @@ function aimEngine(
 
     vy =
       (
-        Math.random() < .5
+        Math.random()<.5
         ? -1
         : 1
       )
@@ -3022,6 +3737,65 @@ function aimEngine(
         1
         + Math.random()*1.1
       );
+
+  }
+
+
+  function createSparks(
+    x,
+    y
+  ){
+
+    for(let i=0;i<7;i++){
+
+      const spark =
+        document
+          .createElement(
+            "div"
+          );
+
+
+      spark.className =
+        "spark";
+
+
+      spark.style.left =
+        x+"px";
+
+
+      spark.style.top =
+        y+"px";
+
+
+      spark.style.setProperty(
+        "--sx",
+        (
+          Math.random()*70
+          -35
+        )+"px"
+      );
+
+
+      spark.style.setProperty(
+        "--sy",
+        (
+          Math.random()*70
+          -35
+        )+"px"
+      );
+
+
+      board.appendChild(
+        spark
+      );
+
+
+      setTimeout(
+        () => spark.remove(),
+        350
+      );
+
+    }
 
   }
 
@@ -3037,22 +3811,26 @@ function aimEngine(
 
 
     const sx =
-      s.w / 2;
+      s.w/2;
+
 
     const sy =
-      s.h - 8;
+      s.h-8;
 
 
     const dx =
-      x - sx;
+      x-sx;
+
 
     const dy =
-      y - sy;
+      y-sy;
 
 
     const length =
       Math.sqrt(
-        dx*dx + dy*dy
+        dx*dx
+        +
+        dy*dy
       );
 
 
@@ -3061,27 +3839,49 @@ function aimEngine(
         dy,
         dx
       )
-      * 180 / Math.PI;
+      *180/Math.PI;
 
 
     const beam =
-      document.createElement(
-        "div"
-      );
+      document
+        .createElement(
+          "div"
+        );
 
 
     beam.className =
       "laser";
 
 
+    if(weaponLevel === 2){
+
+      beam.classList.add(
+        "lv2"
+      );
+
+    }
+
+
+    if(weaponLevel >= 3){
+
+      beam.classList.add(
+        "lv3"
+      );
+
+    }
+
+
     beam.style.left =
-      sx + "px";
+      sx+"px";
+
 
     beam.style.top =
-      sy + "px";
+      sy+"px";
+
 
     beam.style.width =
-      length + "px";
+      length+"px";
+
 
     beam.style.transform =
       `rotate(${angle}deg)`;
@@ -3093,9 +3893,10 @@ function aimEngine(
 
 
     const impact =
-      document.createElement(
-        "div"
-      );
+      document
+        .createElement(
+          "div"
+        );
 
 
     impact.className =
@@ -3105,15 +3906,26 @@ function aimEngine(
 
 
     impact.style.left =
-      x + "px";
+      x+"px";
+
 
     impact.style.top =
-      y + "px";
+      y+"px";
 
 
     board.appendChild(
       impact
     );
+
+
+    if(hit){
+
+      createSparks(
+        x,
+        y
+      );
+
+    }
 
 
     setTimeout(
@@ -3132,7 +3944,9 @@ function aimEngine(
 
   function fire(){
 
-    if(!gameActive) return;
+    if(!gameActive){
+      return;
+    }
 
 
     shots++;
@@ -3140,8 +3954,8 @@ function aimEngine(
 
     const distance =
       Math.hypot(
-        crossX - targetX,
-        crossY - targetY
+        crossX-targetX,
+        crossY-targetY
       );
 
 
@@ -3161,6 +3975,41 @@ function aimEngine(
 
       hits++;
 
+      combo++;
+
+
+      if(combo >= 6){
+
+        weaponLevel = 3;
+
+      }
+      else if(combo >= 3){
+
+        weaponLevel = 2;
+
+      }
+      else{
+
+        weaponLevel = 1;
+
+      }
+
+
+      levelEl.textContent =
+        "WEAPON LV."
+        + weaponLevel;
+
+
+      successFeedback(
+        outerBoard,
+        combo
+      );
+
+
+      target.classList.add(
+        "hit"
+      );
+
 
       const reaction =
         performance.now()
@@ -3171,37 +4020,48 @@ function aimEngine(
         reaction;
 
 
-      const roundScore =
+      rounds.push(
         clamp(
           100
           - (
-            reaction - 350
-          ) / 22,
+            reaction-350
+          )/22,
           0,
           100
-        );
-
-
-      rounds.push(
-        roundScore
+        )
       );
 
 
-      spawn();
+      setTimeout(
+        spawn,
+        110
+      );
 
     }
     else{
 
+      combo = 0;
+
+      weaponLevel = 1;
+
+
+      levelEl.textContent =
+        "WEAPON LV.1";
+
+
       rounds.push(0);
+
+
+      failFeedback(
+        outerBoard
+      );
 
     }
 
   }
 
 
-  function mouseMove(
-    event
-  ){
+  function mouseMove(event){
 
     if(
       window.innerWidth
@@ -3212,17 +4072,16 @@ function aimEngine(
 
 
     const r =
-      board.getBoundingClientRect();
+      board
+        .getBoundingClientRect();
 
 
     crossX =
-      event.clientX
-      - r.left;
+      event.clientX-r.left;
 
 
     crossY =
-      event.clientY
-      - r.top;
+      event.clientY-r.top;
 
 
     renderCross();
@@ -3230,9 +4089,7 @@ function aimEngine(
   }
 
 
-  function desktopFire(
-    event
-  ){
+  function desktopFire(event){
 
     if(
       window.innerWidth
@@ -3249,9 +4106,7 @@ function aimEngine(
   }
 
 
-  function joystickMove(
-    event
-  ){
+  function joystickMove(event){
 
     if(
       window.innerWidth
@@ -3271,35 +4126,41 @@ function aimEngine(
 
 
     const r =
-      joystick.getBoundingClientRect();
+      joystick
+        .getBoundingClientRect();
 
 
     const cx =
-      r.left + r.width/2;
+      r.left+r.width/2;
+
 
     const cy =
-      r.top + r.height/2;
+      r.top+r.height/2;
 
 
     let dx =
-      touch.clientX - cx;
+      touch.clientX-cx;
+
 
     let dy =
-      touch.clientY - cy;
+      touch.clientY-cy;
 
 
-    const max =
-      32;
+    const max = 32;
 
 
     const length =
-      Math.hypot(dx,dy);
+      Math.hypot(
+        dx,
+        dy
+      );
 
 
     if(length > max){
 
       dx =
         dx/length*max;
+
 
       dy =
         dy/length*max;
@@ -3309,6 +4170,7 @@ function aimEngine(
 
     joyX =
       dx/max;
+
 
     joyY =
       dy/max;
@@ -3324,6 +4186,7 @@ function aimEngine(
 
     joyX = 0;
     joyY = 0;
+
 
     knob.style.transform =
       "translate(0,0)";
@@ -3341,7 +4204,7 @@ function aimEngine(
 
       crossX =
         clamp(
-          crossX + joyX*5.5,
+          crossX+joyX*5.5,
           0,
           s.w
         );
@@ -3349,7 +4212,7 @@ function aimEngine(
 
       crossY =
         clamp(
-          crossY + joyY*5.5,
+          crossY+joyY*5.5,
           0,
           s.h
         );
@@ -3380,6 +4243,7 @@ function aimEngine(
 
 
       targetX += vx;
+
       targetY += vy;
 
 
@@ -3424,10 +4288,11 @@ function aimEngine(
 
 
       target.style.left =
-        targetX + "px";
+        targetX+"px";
+
 
       target.style.top =
-        targetY + "px";
+        targetY+"px";
 
     }
 
@@ -3446,6 +4311,7 @@ function aimEngine(
 
   crossX =
     s.w/2;
+
 
   crossY =
     s.h/2;
@@ -3577,32 +4443,31 @@ function aimEngine(
       : 2000;
 
 
-    const score =
-      clamp(
-        accuracy*70
-        +
-        Math.max(
-          0,
-          30
-          - (
-            reaction-400
-          )/45
-        ),
-        0,
-        100
-      );
-
-
     return {
-      score,
+
+      score:
+        clamp(
+          accuracy*70
+          +
+          Math.max(
+            0,
+            30
+            - (
+              reaction-400
+            )/45
+          ),
+          0,
+          100
+        ),
+
       adapt:
         adaptScore(rounds)
+
     };
 
   };
 
 }
-
 
 function aimStaticGame(play){
 
@@ -3612,7 +4477,6 @@ function aimStaticGame(play){
   );
 
 }
-
 
 function aimMovingGame(play){
 
@@ -3625,7 +4489,7 @@ function aimMovingGame(play){
 
 
 /* ==================================================
-GAME 7 HIGH LOW
+HIGH LOW
 ================================================== */
 
 function highLowGame(play){
@@ -3633,12 +4497,16 @@ function highLowGame(play){
   let correct = 0;
   let attempts = 0;
 
+  let combo = 0;
+
   const rounds = [];
 
 
   function next(){
 
-    if(!gameActive) return;
+    if(!gameActive){
+      return;
+    }
 
 
     let a =
@@ -3690,49 +4558,89 @@ function highLowGame(play){
     `;
 
 
-    play.querySelectorAll(
-      ".choice"
-    )
-    .forEach(
-      btn => {
-
-        btn.addEventListener(
-          "pointerdown",
-          () => {
-
-            if(!gameActive) return;
+    const board =
+      play.closest(".board");
 
 
-            attempts++;
+    play
+      .querySelectorAll(
+        ".choice"
+      )
+      .forEach(
+        btn => {
+
+          btn.addEventListener(
+            "pointerdown",
+            () => {
+
+              if(!gameActive){
+                return;
+              }
 
 
-            const good =
-              Number(
-                btn.dataset.value
-              )
-              === answer;
+              attempts++;
 
 
-            if(good){
-              correct++;
+              const good =
+                Number(
+                  btn.dataset.value
+                )
+                === answer;
+
+
+              if(good){
+
+                correct++;
+
+                combo++;
+
+                rounds.push(100);
+
+
+                btn.classList.add(
+                  "correct-pop"
+                );
+
+
+                successFeedback(
+                  board,
+                  combo
+                );
+
+
+                setTimeout(
+                  next,
+                  180
+                );
+
+              }
+              else{
+
+                combo = 0;
+
+                rounds.push(0);
+
+
+                failFeedback(
+                  board
+                );
+
+
+                setTimeout(
+                  next,
+                  120
+                );
+
+              }
+
+            },
+            {
+              once:true
             }
+          );
 
-
-            rounds.push(
-              good ? 100 : 0
-            );
-
-
-            next();
-
-          },
-          {
-            once:true
-          }
-        );
-
-      }
-    );
+        }
+      );
 
   }
 
@@ -3761,13 +4669,15 @@ function highLowGame(play){
 
 
 /* ==================================================
-GAME 8 CONDITION
+CONDITION
 ================================================== */
 
 function conditionGame(play){
 
   let correct = 0;
   let attempts = 0;
+
+  let combo = 0;
 
   const rounds = [];
 
@@ -3795,7 +4705,9 @@ function conditionGame(play){
 
   function next(){
 
-    if(!gameActive) return;
+    if(!gameActive){
+      return;
+    }
 
 
     const rule =
@@ -3888,46 +4800,80 @@ function conditionGame(play){
     `;
 
 
-    play.querySelectorAll(
-      ".choice"
-    )
-    .forEach(
-      btn => {
-
-        btn.addEventListener(
-          "pointerdown",
-          () => {
-
-            attempts++;
+    const board =
+      play.closest(".board");
 
 
-            const good =
-              Number(
-                btn.dataset.value
-              )
-              === answer;
+    play
+      .querySelectorAll(
+        ".choice"
+      )
+      .forEach(
+        btn => {
+
+          btn.addEventListener(
+            "pointerdown",
+            () => {
+
+              if(!gameActive){
+                return;
+              }
 
 
-            if(good){
-              correct++;
+              attempts++;
+
+
+              const good =
+                Number(
+                  btn.dataset.value
+                )
+                === answer;
+
+
+              if(good){
+
+                correct++;
+
+                combo++;
+
+                rounds.push(100);
+
+                btn.classList.add(
+                  "correct-pop"
+                );
+
+                successFeedback(
+                  board,
+                  combo
+                );
+
+              }
+              else{
+
+                combo = 0;
+
+                rounds.push(0);
+
+                failFeedback(
+                  board
+                );
+
+              }
+
+
+              setTimeout(
+                next,
+                good ? 180 : 120
+              );
+
+            },
+            {
+              once:true
             }
+          );
 
-
-            rounds.push(
-              good ? 100 : 0
-            );
-
-
-            next();
-
-          },
-          {
-            once:true
-          }
-        );
-
-      }
-    );
+        }
+      );
 
   }
 
@@ -3956,18 +4902,23 @@ function conditionGame(play){
 
 
 /* ==================================================
-GAME 9 SEQUENCE
+SEQUENCE
 ================================================== */
 
 function sequenceGame(play){
 
   let rounds = 0;
   let success = 0;
+
   let sequence = [];
+
   let inputIndex = 0;
+
   let accepting = false;
 
   let timers = [];
+
+  let combo = 0;
 
   const roundScores = [];
 
@@ -4002,6 +4953,10 @@ function sequenceGame(play){
   `;
 
 
+  const board =
+    play.closest(".board");
+
+
   const cells =
     [...play.querySelectorAll(
       ".memory-cell"
@@ -4009,7 +4964,9 @@ function sequenceGame(play){
 
 
   const msg =
-    play.querySelector("#seqMsg");
+    play.querySelector(
+      "#seqMsg"
+    );
 
 
   function clearTimers(){
@@ -4049,6 +5006,7 @@ function sequenceGame(play){
     clearTimers();
 
     accepting = false;
+
     inputIndex = 0;
 
 
@@ -4168,12 +5126,15 @@ function sequenceGame(play){
 
 
               if(
-                inputIndex ===
-                sequence.length
+                inputIndex
+                === sequence.length
               ){
 
                 success++;
+
                 rounds++;
+
+                combo++;
 
                 roundScores.push(100);
 
@@ -4181,6 +5142,12 @@ function sequenceGame(play){
 
                 msg.textContent =
                   "CLEAR";
+
+
+                successFeedback(
+                  board,
+                  combo
+                );
 
 
                 timers.push(
@@ -4197,12 +5164,19 @@ function sequenceGame(play){
 
               rounds++;
 
+              combo = 0;
+
               roundScores.push(0);
 
               accepting = false;
 
               msg.textContent =
                 "MISS";
+
+
+              failFeedback(
+                board
+              );
 
 
               timers.push(
@@ -4277,7 +5251,7 @@ function sequenceGame(play){
 
 
 /* ==================================================
-GAME 10 POSITION
+POSITION
 ================================================== */
 
 function positionGame(play){
@@ -4292,7 +5266,10 @@ function positionGame(play){
     new Set();
 
   let accepting = false;
+
   let timer = null;
+
+  let combo = 0;
 
   const roundScores = [];
 
@@ -4327,6 +5304,10 @@ function positionGame(play){
   `;
 
 
+  const board =
+    play.closest(".board");
+
+
   const cells =
     [...play.querySelectorAll(
       ".position-cell"
@@ -4334,7 +5315,9 @@ function positionGame(play){
 
 
   const msg =
-    play.querySelector("#posMsg");
+    play.querySelector(
+      "#posMsg"
+    );
 
 
   function round(){
@@ -4433,15 +5416,11 @@ function positionGame(play){
             }
 
 
-            selected.add(
-              index
-            );
+            selected.add(index);
 
 
             const good =
-              targets.has(
-                index
-              );
+              targets.has(index);
 
 
             cell.classList.add(
@@ -4449,6 +5428,15 @@ function positionGame(play){
               ? "correct"
               : "wrong"
             );
+
+
+            if(!good){
+
+              failFeedback(
+                board
+              );
+
+            }
 
 
             if(
@@ -4486,7 +5474,22 @@ function positionGame(play){
               if(
                 correctCount === 4
               ){
+
                 success++;
+
+                combo++;
+
+
+                successFeedback(
+                  board,
+                  combo
+                );
+
+              }
+              else{
+
+                combo = 0;
+
               }
 
 
@@ -4570,13 +5573,14 @@ function positionGame(play){
 
 
 /* ==================================================
-START BUTTON
+START
 ================================================== */
 
-$("startBtn").addEventListener(
-  "click",
-  start
-);
+$("startBtn")
+  .addEventListener(
+    "click",
+    start
+  );
 
 })();
 </script>
