@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>GAMIQ - あなたは本当にゲームが上手い？</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: #0b0d12;
+      color: #ffffff;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Noto Sans JP",
+        sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 0 16px 32px;
+    }
+
+    #app {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 2px 14px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+    }
+
+    .header-score {
+      font-size: 13px;
+      color: #a9b1c3;
+      text-align: right;
+    }
+
+    .header-score strong {
+      display: block;
+      color: #ffffff;
+      font-size: 18px;
+    }
+
+    .card {
+      background: #141821;
+      border: 1px solid #252b38;
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .start-card {
+      text-align: center;
+      padding-top: 50px;
+      padding-bottom: 50px;
+    }
+
+    .eyebrow {
+      margin-bottom: 10px;
+      color: #7e8aa5;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(30px, 8vw, 42px);
+      line-height: 1.25;
+    }
+
+    .lead {
+      margin: 0 auto 32px;
+      max-width: 360px;
+      color: #a9b1c3;
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .primary-button {
+      width: 100%;
+      min-height: 58px;
+      border: 0;
+      border-radius: 16px;
+      background: #ffffff;
+      color: #0b0d12;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .primary-button:active {
+      transform: scale(0.98);
+    }
+
+    .secondary-button {
+      width: 100%;
+      min-height: 52px;
+      border: 1px solid #384052;
+      border-radius: 16px;
+      background: transparent;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .game-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .game-count {
+      font-size: 13px;
+      color: #7e8aa5;
+      font-weight: 800;
+    }
+
+    .skill-tag {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #202634;
+      color: #aab6d0;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .game-title {
+      margin: 0;
+      text-align: center;
+      font-size: 27px;
+    }
+
+    .game-rule {
+      margin: 8px 0 24px;
+      color: #9da6ba;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .game-area {
+      position: relative;
+      width: 100%;
+      min-height: 330px;
+      overflow: hidden;
+      border-radius: 20px;
+      background: #090b10;
+      border: 1px solid #242a36;
+    }
+
+    .game-center {
+      min-height: 330px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .huge-number {
+      font-size: 76px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .sub-text {
+      margin-top: 16px;
+      color: #7f899e;
+      font-size: 14px;
+    }
+
+    .tap-button {
+      width: 190px;
+      height: 190px;
+      border: 0;
+      border-radius: 50%;
+      background: #252c39;
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    .tap-button.ready {
+      background: #ffffff;
+      color: #0b0d12;
+    }
+
+    .small-action {
+      min-width: 150px;
+      min-height: 54px;
+      margin: 8px;
+      padding: 0 20px;
+      border: 1px solid #374052;
+      border-radius: 14px;
+      background: #171c26;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 82px);
+      gap: 10px;
+    }
+
+    .memory-cell {
+      width: 82px;
+      height: 82px;
+      border: 0;
+      border-radius: 14px;
+      background: #252b38;
+      cursor: pointer;
+    }
+
+    .memory-cell.on {
+      background: #ffffff;
+    }
+
+    .target {
+      position: absolute;
+      width: 62px;
+      height: 62px;
+      border: 0;
+      border-radius: 50%;
+      background: #ffffff;
+      cursor: pointer;
+    }
+
+    .meter-wrapper {
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .meter {
+      position: relative;
+      width: 100%;
+      height: 36px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #242a36;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: #ffffff;
+    }
+
+    .meter-number {
+      margin: 22px 0;
+      font-size: 52px;
+      font-weight: 900;
+    }
+
+    .result-card {
+      text-align: center;
+    }
+
+    .result-label {
+      margin-bottom: 8px;
+      color: #7e8aa5;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+    }
+
+    .result-score {
+      margin: 0;
+      font-size: 72px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .result-score span {
+      font-size: 20px;
+      color: #7e8aa5;
+    }
+
+    .result-message {
+      margin: 16px 0 28px;
+      color: #a7b0c3;
+    }
+
+    .final-score {
+      margin: 10px 0;
+      font-size: 68px;
+      font-weight: 900;
+    }
+
+    .final-score small {
+      display: block;
+      margin-bottom: 6px;
+      color: #818ba0;
+      font-size: 13px;
+      letter-spacing: 2px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 28px 0;
+      text-align: left;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 15px;
+      background: #0d1016;
+    }
+
+    .stat-name {
+      color: #7e879a;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .stat-value {
+      margin-top: 4px;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .ad-slot {
+      margin-top: 14px;
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed #343b49;
+      border-radius: 16px;
+      color: #596274;
+      font-size: 12px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .countdown {
+      font-size: 82px;
+      font-weight: 900;
+    }
+
+    .flash-text {
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 420px) {
+      .card {
+        padding: 19px;
+      }
+
+      .game-area,
+      .game-center {
+        min-height: 300px;
+      }
+
+      .memory-grid {
+        grid-template-columns: repeat(3, 70px);
+      }
+
+      .memory-cell {
+        width: 70px;
+        height: 70px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="app">
+
+  <header class="header">
+    <div class="logo">GAMIQ</div>
+
+    <div class="header-score hidden" id="headerScore">
+      TOTAL
+      <strong id="totalScoreText">0</strong>
+    </div>
+  </header>
+
+
+  <!-- START -->
+
+  <section class="card start-card" id="startScreen">
+
+    <div class="eyebrow">
+      TRUE GAMING SKILL
+    </div>
+
+    <h1>
+      あなたは本当に<br>
+      ゲームが上手い？
+    </h1>
+
+    <p class="lead">
+      ゲームは完全ランダム。<br>
+      選べない。練習できない。戻れない。<br><br>
+      試されるのは、あなたのゲーム地力。
+    </p>
+
+    <button class="primary-button" id="startButton">
+      START
+    </button>
+
+  </section>
+
+
+  <!-- GAME -->
+
+  <section class="card hidden" id="gameScreen">
+
+    <div class="game-meta">
+
+      <div class="game-count" id="gameCount">
+        GAME 1 / 5
+      </div>
+
+      <div class="skill-tag" id="skillTag">
+        REFLEX
+      </div>
+
+    </div>
+
+    <h2 class="game-title" id="gameTitle">
+      ゲームタイトル
+    </h2>
+
+    <p class="game-rule" id="gameRule">
+      ルール
+    </p>
+
+    <div class="game-area" id="gameArea"></div>
+
+  </section>
+
+
+  <!-- RESULT -->
+
+  <section class="card result-card hidden" id="resultScreen">
+
+    <div class="result-label">
+      GAME RESULT
+    </div>
+
+    <p class="result-score">
+      <span id="gameResultScore">0</span><span> / 100</span>
+    </p>
+
+    <p class="result-message" id="resultMessage">
+      GOOD!
+    </p>
+
+    <button class="primary-button" id="nextButton">
+      NEXT GAME
+    </button>
+
+  </section>
+
+
+  <!-- FINAL -->
+
+  <section class="card result-card hidden" id="finalScreen">
+
+    <div class="result-label">
+      YOUR GAMIQ
+    </div>
+
+    <div class="final-score">
+      <small>GAMIQ</small>
+      <span id="finalScoreText">0</span>
+    </div>
+
+    <p class="result-message" id="finalMessage">
+      あなたのゲーム地力
+    </p>
+
+    <div class="stats">
+
+      <div class="stat">
+        <div class="stat-name">REFLEX</div>
+        <div class="stat-value" id="reflexStat">--</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-name">SPEED</div>
+        <div class="stat-value" id="speedStat">--</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-name">MEMORY</div>
+        <div class="stat-value" id="memoryStat">--</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-name">AIM</div>
+        <div class="stat-value" id="aimStat">--</div>
+      </div>
+
+    </div>
+
+    <button class="primary-button" id="retryButton">
+      もう一度挑戦
+    </button>
+
+  </section>
+
+
+  <!-- AD -->
+
+  <div class="ad-slot">
+    AD SPACE
+  </div>
+
+</div>
+
+
+<script>
+
+(() => {
+
+  const TOTAL_GAMES = 5;
+
+  let currentGameIndex = 0;
+  let totalScore = 0;
+  let gameScores = [];
+
+  let skillScores = {
+    REFLEX: [],
+    SPEED: [],
+    MEMORY: [],
+    AIM: [],
+    LOGIC: []
+  };
+
+  let gameQueue = [];
+
+
+
+  const startScreen =
+    document.getElementById("startScreen");
+
+  const gameScreen =
+    document.getElementById("gameScreen");
+
+  const resultScreen =
+    document.getElementById("resultScreen");
+
+  const finalScreen =
+    document.getElementById("finalScreen");
+
+  const gameArea =
+    document.getElementById("gameArea");
+
+  const gameTitle =
+    document.getElementById("gameTitle");
+
+  const gameRule =
+    document.getElementById("gameRule");
+
+  const gameCount =
+    document.getElementById("gameCount");
+
+  const skillTag =
+    document.getElementById("skillTag");
+
+  const gameResultScore =
+    document.getElementById("gameResultScore");
+
+  const resultMessage =
+    document.getElementById("resultMessage");
+
+  const headerScore =
+    document.getElementById("headerScore");
+
+  const totalScoreText =
+    document.getElementById("totalScoreText");
+
+
+
+  const games = [
+
+    {
+      id: "reaction",
+      name: "反射神経",
+      rule: "白くなった瞬間に押せ",
+      skill: "REFLEX",
+      start: reactionGame
+    },
+
+    {
+      id: "tap",
+      name: "10秒連打",
+      rule: "10秒間、ひたすら連打",
+      skill: "SPEED",
+      start: tapGame
+    },
+
+    {
+      id: "memory",
+      name: "瞬間記憶",
+      rule: "光った場所を順番どおり押せ",
+      skill: "MEMORY",
+      start: memoryGame
+    },
+
+    {
+      id: "aim",
+      name: "ターゲット",
+      rule: "出てくる丸をできるだけ速く押せ",
+      skill: "AIM",
+      start: aimGame
+    },
+
+    {
+      id: "meter",
+      name: "99%で止めろ",
+      rule: "できるだけ99%に近いところで止めろ",
+      skill: "AIM",
+      start: meterGame
+    }
+
+  ];
+
+
+
+  function showOnly(screen) {
+
+    [
+      startScreen,
+      gameScreen,
+      resultScreen,
+      finalScreen
+    ].forEach(el => el.classList.add("hidden"));
+
+    screen.classList.remove("hidden");
+
+  }
+
+
+
+  function shuffle(array) {
+
+    const arr = [...array];
+
+    for (let i = arr.length - 1; i > 0; i--) {
+
+      const j =
+        Math.floor(Math.random() * (i + 1));
+
+      [
+        arr[i],
+        arr[j]
+      ] = [
+        arr[j],
+        arr[i]
+      ];
+
+    }
+
+    return arr;
+
+  }
+
+
+
+  function startRun() {
+
+    currentGameIndex = 0;
+    totalScore = 0;
+    gameScores = [];
+
+    skillScores = {
+      REFLEX: [],
+      SPEED: [],
+      MEMORY: [],
+      AIM: [],
+      LOGIC: []
+    };
+
+    gameQueue = shuffle(games);
+
+    headerScore.classList.remove("hidden");
+
+    updateTotalScore();
+
+    playNextGame();
+
+  }
+
+
+
+  function playNextGame() {
+
+    if (currentGameIndex >= TOTAL_GAMES) {
+
+      showFinalResult();
+      return;
+
+    }
+
+    const game =
+      gameQueue[currentGameIndex];
+
+    gameTitle.textContent =
+      game.name;
+
+    gameRule.textContent =
+      game.rule;
+
+    gameCount.textContent =
+      `GAME ${currentGameIndex + 1} / ${TOTAL_GAMES}`;
+
+    skillTag.textContent =
+      game.skill;
+
+    gameArea.innerHTML = "";
+
+    showOnly(gameScreen);
+
+    setTimeout(() => {
+
+      game.start();
+
+    }, 500);
+
+  }
+
+
+
+  function finishGame(score, skill) {
+
+    score =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          Math.round(score)
+        )
+      );
+
+    totalScore += score;
+
+    gameScores.push(score);
+
+    if (skillScores[skill]) {
+
+      skillScores[skill].push(score);
+
+    }
+
+    updateTotalScore();
+
+    gameResultScore.textContent =
+      score;
+
+    if (score >= 90) {
+
+      resultMessage.textContent =
+        "化け物級。";
+
+    } else if (score >= 75) {
+
+      resultMessage.textContent =
+        "かなり強い。";
+
+    } else if (score >= 60) {
+
+      resultMessage.textContent =
+        "いい感じ。";
+
+    } else if (score >= 40) {
+
+      resultMessage.textContent =
+        "まだ伸びる。";
+
+    } else {
+
+      resultMessage.textContent =
+        "次で取り返そう。";
+
+    }
+
+    showOnly(resultScreen);
+
+  }
+
+
+
+  function updateTotalScore() {
+
+    totalScoreText.textContent =
+      totalScore;
+
+  }
+
+
+
+  function average(array) {
+
+    if (!array.length) {
+      return null;
+    }
+
+    return Math.round(
+      array.reduce(
+        (a, b) => a + b,
+        0
+      ) / array.length
+    );
+
+  }
+
+
+
+  function showFinalResult() {
+
+    showOnly(finalScreen);
+
+    const avg =
+      Math.round(
+        gameScores.reduce(
+          (a, b) => a + b,
+          0
+        ) / gameScores.length
+      );
+
+    const gamiq =
+      Math.round(
+        300 + avg * 7
+      );
+
+    document.getElementById(
+      "finalScoreText"
+    ).textContent =
+      gamiq;
+
+    document.getElementById(
+      "reflexStat"
+    ).textContent =
+      average(skillScores.REFLEX) ?? "--";
+
+    document.getElementById(
+      "speedStat"
+    ).textContent =
+      average(skillScores.SPEED) ?? "--";
+
+    document.getElementById(
+      "memoryStat"
+    ).textContent =
+      average(skillScores.MEMORY) ?? "--";
+
+    document.getElementById(
+      "aimStat"
+    ).textContent =
+      average(skillScores.AIM) ?? "--";
+
+
+    const message =
+      gamiq >= 900
+        ? "初見対応力、かなり異常。"
+        : gamiq >= 800
+        ? "かなりゲームが上手い。"
+        : gamiq >= 700
+        ? "ゲームセンスあり。"
+        : gamiq >= 600
+        ? "平均以上のゲーム力。"
+        : "まだ本気を出していない。";
+
+
+    document.getElementById(
+      "finalMessage"
+    ).textContent =
+      message;
+
+  }
+
+
+
+  /*
+  ==========================
+  GAME 1
+  反射神経
+  ==========================
+  */
+
+  function reactionGame() {
+
+    gameArea.innerHTML = `
+      <div class="game-center">
+
+        <button
+          class="tap-button"
+          id="reactionButton"
+        >
+          待て
+        </button>
+
+        <div class="sub-text">
+          フライングすると0点
+        </div>
+
+      </div>
+    `;
+
+    const button =
+      document.getElementById(
+        "reactionButton"
+      );
+
+    let ready = false;
+
+    let startTime = null;
+
+    const wait =
+      1500 +
+      Math.random() * 2500;
+
+
+    const timer =
+      setTimeout(() => {
+
+        ready = true;
+
+        startTime =
+          performance.now();
+
+        button.classList.add(
+          "ready"
+        );
+
+        button.textContent =
+          "押せ！";
+
+      }, wait);
+
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        if (!ready) {
+
+          clearTimeout(timer);
+
+          finishGame(
+            0,
+            "REFLEX"
+          );
+
+          return;
+
+        }
+
+
+        const reaction =
+          performance.now()
+          - startTime;
+
+
+        let score =
+          100
+          - (
+            reaction - 180
+          ) / 5;
+
+
+        finishGame(
+          score,
+          "REFLEX"
+        );
+
+      },
+      { once: true }
+    );
+
+  }
+
+
+
+  /*
+  ==========================
+  GAME 2
+  10秒連打
+  ==========================
+  */
+
+  function tapGame() {
+
+    let count = 0;
+    let started = false;
+    let ended = false;
+
+    gameArea.innerHTML = `
+      <div class="game-center">
+
+        <div
+          class="huge-number"
+          id="tapCount"
+        >
+          0
+        </div>
+
+        <button
+          class="tap-button ready"
+          id="tapGameButton"
+        >
+          連打
+        </button>
+
+        <div class="sub-text">
+          最初のタップから10秒
+        </div>
+
+      </div>
+    `;
+
+
+    const button =
+      document.getElementById(
+        "tapGameButton"
+      );
+
+
+    const countText =
+      document.getElementById(
+        "tapCount"
+      );
+
+
+    button.addEventListener(
+      "pointerdown",
+      () => {
+
+        if (ended) {
+          return;
+        }
+
+
+        if (!started) {
+
+          started = true;
+
+          setTimeout(
+            () => {
+
+              ended = true;
+
+              const score =
+                Math.min(
+                  100,
+                  count * 1.45
+                );
+
+
+              finishGame(
+                score,
+                "SPEED"
+              );
+
+            },
+            10000
+          );
+
+        }
+
+
+        count++;
+
+        countText.textContent =
+          count;
+
+      }
+    );
+
+  }
+
+
+
+  /*
+  ==========================
+  GAME 3
+  記憶
+  ==========================
+  */
+
+  function memoryGame() {
+
+    const sequenceLength = 4;
+
+    const sequence =
+      Array.from(
+        { length: sequenceLength },
+        () =>
+          Math.floor(
+            Math.random() * 9
+          )
+      );
+
+
+    let userIndex = 0;
+
+
+    gameArea.innerHTML = `
+      <div class="game-center">
+
+        <div
+          class="memory-grid"
+          id="memoryGrid"
+        >
+          ${Array.from(
+            { length: 9 },
+            (_, i) =>
+              `<button
+                class="memory-cell"
+                data-index="${i}"
+              ></button>`
+          ).join("")}
+        </div>
+
+        <div class="sub-text">
+          順番を覚えろ
+        </div>
+
+      </div>
+    `;
+
+
+    const cells =
+      Array.from(
+        document.querySelectorAll(
+          ".memory-cell"
+        )
+      );
+
+
+    cells.forEach(
+      cell => {
+        cell.disabled = true;
+      }
+    );
+
+
+    let delay = 500;
+
+
+    sequence.forEach(
+      index => {
+
+        setTimeout(
+          () => {
+
+            cells[index]
+              .classList
+              .add("on");
+
+          },
+          delay
+        );
+
+
+        setTimeout(
+          () => {
+
+            cells[index]
+              .classList
+              .remove("on");
+
+          },
+          delay + 400
+        );
+
+
+        delay += 650;
+
+      }
+    );
+
+
+    setTimeout(
+      () => {
+
+        cells.forEach(
+          cell => {
+            cell.disabled = false;
+          }
+        );
+
+      },
+      delay
+    );
+
+
+    cells.forEach(
+      cell => {
+
+        cell.addEventListener(
+          "click",
+          () => {
+
+            const clicked =
+              Number(
+                cell.dataset.index
+              );
+
+
+            if (
+              clicked ===
+              sequence[userIndex]
+            ) {
+
+              userIndex++;
+
+
+              if (
+                userIndex ===
+                sequence.length
+              ) {
+
+                finishGame(
+                  100,
+                  "MEMORY"
+                );
+
+              }
+
+            } else {
+
+              const score =
+                (
+                  userIndex
+                  / sequence.length
+                ) * 100;
+
+
+              finishGame(
+                score,
+                "MEMORY"
+              );
+
+            }
+
+          }
+        );
+
+      }
+    );
+
+  }
+
+
+
+  /*
+  ==========================
+  GAME 4
+  AIM
+  ==========================
+  */
+
+  function aimGame() {
+
+    let hits = 0;
+
+    const requiredHits = 5;
+
+    const times = [];
+
+    let appearedAt = null;
+
+
+    function spawn() {
+
+      gameArea.innerHTML = "";
+
+      const target =
+        document.createElement(
+          "button"
+        );
+
+
+      target.className =
+        "target";
+
+
+      const maxX =
+        gameArea.clientWidth
+        - 70;
+
+
+      const maxY =
+        gameArea.clientHeight
+        - 70;
+
+
+      target.style.left =
+        Math.random()
+        * maxX
+        + "px";
+
+
+      target.style.top =
+        Math.random()
+        * maxY
+        + "px";
+
+
+      appearedAt =
+        performance.now();
+
+
+      target.addEventListener(
+        "click",
+        () => {
+
+          const hitTime =
+            performance.now()
+            - appearedAt;
+
+
+          times.push(hitTime);
+
+          hits++;
+
+
+          if (
+            hits >= requiredHits
+          ) {
+
+            const avgTime =
+              times.reduce(
+                (a, b) => a + b,
+                0
+              ) / times.length;
+
+
+            const score =
+              100
+              - (
+                avgTime - 300
+              ) / 8;
+
+
+            finishGame(
+              score,
+              "AIM"
+            );
+
+          } else {
+
+            spawn();
+
+          }
+
+        }
+      );
+
+
+      gameArea.appendChild(
+        target
+      );
+
+    }
+
+
+    spawn();
+
+  }
+
+
+
+  /*
+  ==========================
+  GAME 5
+  99% STOP
+  ==========================
+  */
+
+  function meterGame() {
+
+    gameArea.innerHTML = `
+      <div class="game-center">
+
+        <div class="meter-wrapper">
+
+          <div class="meter">
+
+            <div
+              class="meter-fill"
+              id="meterFill"
+            ></div>
+
+          </div>
+
+          <div
+            class="meter-number"
+            id="meterNumber"
+          >
+            0%
+          </div>
+
+          <button
+            class="primary-button"
+            id="stopMeter"
+          >
+            STOP
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+
+    const fill =
+      document.getElementById(
+        "meterFill"
+      );
+
+
+    const number =
+      document.getElementById(
+        "meterNumber"
+      );
+
+
+    const stop =
+      document.getElementById(
+        "stopMeter"
+      );
+
+
+    let value = 0;
+
+    let direction = 1;
+
+    let stopped = false;
+
+    let lastTime =
+      performance.now();
+
+
+    function animate(now) {
+
+      if (stopped) {
+        return;
+      }
+
+
+      const delta =
+        now - lastTime;
+
+      lastTime = now;
+
+
+      value +=
+        direction
+        * delta
+        * 0.065;
+
+
+      if (value >= 100) {
+
+        value = 100;
+
+        direction = -1;
+
+      }
+
+
+      if (value <= 0) {
+
+        value = 0;
+
+        direction = 1;
+
+      }
+
+
+      fill.style.width =
+        value + "%";
+
+
+      number.textContent =
+        Math.round(value)
+        + "%";
+
+
+      requestAnimationFrame(
+        animate
+      );
+
+    }
+
+
+    requestAnimationFrame(
+      animate
+    );
+
+
+    stop.addEventListener(
+      "click",
+      () => {
+
+        stopped = true;
+
+
+        const distance =
+          Math.abs(
+            99 - value
+          );
+
+
+        const score =
+          100
+          - distance * 7;
+
+
+        finishGame(
+          score,
+          "AIM"
+        );
+
+      },
+      { once: true }
+    );
+
+  }
+
+
+
+  document
+    .getElementById(
+      "startButton"
+    )
+    .addEventListener(
+      "click",
+      startRun
+    );
+
+
+  document
+    .getElementById(
+      "nextButton"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        currentGameIndex++;
+
+        playNextGame();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "retryButton"
+    )
+    .addEventListener(
+      "click",
+      startRun
+    );
+
+})();
+
+</script>
+
+</body>
+</html>
