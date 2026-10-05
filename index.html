@@ -3,22 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
 <title>GAMIQ - TRUE GAMING SKILL</title>
 
 <style>
-
 :root{
   --bg:#05070c;
   --panel:#0a0e16;
-  --text:#f7fbff;
-  --muted:#7f899c;
-  --cyan:#62eaff;
-  --blue:#43a8ff;
-  --purple:#8466ff;
+  --text:#f8fbff;
+  --muted:#818ca1;
+  --cyan:#61eaff;
+  --violet:#8466ff;
+  --green:#76ffb2;
   --red:#ff4e70;
-  --green:#77ffb4;
-  --yellow:#ffe66b;
+  --yellow:#ffe46b;
   --line:rgba(255,255,255,.08);
 }
 
@@ -29,16 +26,14 @@
 
 html,
 body{
+  width:100%;
+  height:100%;
   margin:0;
-  min-height:100%;
-
-  background:
-    radial-gradient(circle at 10% 0%,rgba(132,102,255,.15),transparent 28%),
-    radial-gradient(circle at 90% 10%,rgba(98,234,255,.10),transparent 25%),
-    #05070c;
-
+  padding:0;
+  overflow:hidden;
+  overscroll-behavior:none;
+  background:#05070c;
   color:var(--text);
-
   font-family:
     Inter,
     -apple-system,
@@ -46,5625 +41,4544 @@ body{
     "Segoe UI",
     "Noto Sans JP",
     sans-serif;
-
-  overflow-x:hidden;
 }
 
-body::before{
-  content:"";
-
+body{
   position:fixed;
   inset:0;
-
-  pointer-events:none;
-
-  background-image:
-    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
-
-  background-size:40px 40px;
-
-  mask-image:
-    linear-gradient(to bottom,black,transparent 90%);
 }
 
 button{
   font:inherit;
 }
 
-
-/* ==================================================
-LAYOUT
-================================================== */
-
-.shell{
-  width:min(1500px,100%);
-  min-height:100vh;
-
-  margin:auto;
-  padding:18px;
-
+.app{
+  width:100%;
+  height:100%;
   display:grid;
-
-  grid-template-columns:
-    minmax(0,1fr)
-    300px;
-
-  gap:18px;
+  grid-template-columns:minmax(0,1fr) 300px;
+  gap:16px;
+  padding:16px;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(132,102,255,.16),transparent 30%),
+    radial-gradient(circle at 90% 10%,rgba(97,234,255,.10),transparent 25%),
+    #05070c;
 }
 
 .main{
   min-width:0;
-
+  height:100%;
   display:flex;
   flex-direction:column;
-
-  gap:14px;
+  gap:12px;
 }
 
-
-/* ==================================================
-HEADER
-================================================== */
-
-.topbar{
-  min-height:48px;
-
+.header{
+  height:54px;
+  flex:0 0 54px;
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
 }
 
 .brand{
-  font-size:25px;
+  font-size:24px;
   font-weight:1000;
-
-  letter-spacing:.14em;
+  letter-spacing:.15em;
 }
 
 .brand span{
   color:var(--cyan);
 }
 
-.top-info{
+.live{
   display:flex;
+  gap:24px;
   align-items:center;
-
-  gap:22px;
 }
 
-.top-item{
+.live-block{
   text-align:right;
 }
 
-.top-label{
+.live-label{
   display:block;
-
   color:var(--muted);
-
   font-size:9px;
   font-weight:900;
-
   letter-spacing:.16em;
 }
 
-.top-value{
-  font-size:18px;
+.live-value{
+  display:block;
+  font-size:20px;
   font-weight:1000;
 }
 
+.live-value.flash-up{
+  animation:scoreUp .5s ease;
+}
 
-/* ==================================================
-STAGE
-================================================== */
+.live-value.flash-down{
+  animation:scoreDown .5s ease;
+}
 
-.stage{
+@keyframes scoreUp{
+  50%{
+    color:var(--green);
+    transform:scale(1.15);
+  }
+}
+
+@keyframes scoreDown{
+  50%{
+    color:var(--red);
+    transform:scale(1.15);
+  }
+}
+
+.feed{
   position:relative;
-
   flex:1;
-
-  min-height:720px;
-
+  min-height:0;
   overflow:hidden;
-
-  border:
-    1px solid var(--line);
-
-  border-radius:
-    30px;
-
-  background:
-    radial-gradient(circle at 50% 0%,rgba(98,234,255,.06),transparent 38%),
-    radial-gradient(circle at 30% 80%,rgba(132,102,255,.07),transparent 40%),
-    linear-gradient(180deg,#0a0e17,#070a10);
-
+  border:1px solid var(--line);
+  border-radius:30px;
+  background:#080c13;
   box-shadow:
-    0 25px 70px rgba(0,0,0,.5),
+    0 28px 70px rgba(0,0,0,.46),
     inset 0 1px 0 rgba(255,255,255,.04);
+  touch-action:none;
 }
 
-.screen{
+.card{
   position:absolute;
-
   inset:0;
-
-  display:flex;
-
-  align-items:center;
-  justify-content:center;
-
-  padding:
-    clamp(20px,4vw,50px);
-
-  transition:
-    transform .42s cubic-bezier(.22,.8,.3,1),
-    opacity .32s ease;
-}
-
-.screen.hidden{
-  display:none;
-}
-
-.screen.off-top{
-  transform:
-    translateY(-110%);
-
-  opacity:0;
-}
-
-.screen.from-bottom{
-  transform:
-    translateY(110%);
-
-  opacity:0;
-}
-
-
-/* ==================================================
-START
-================================================== */
-
-.start{
-  width:100%;
-
-  max-width:820px;
-
-  text-align:center;
-}
-
-.kicker{
-  margin-bottom:16px;
-
-  color:var(--cyan);
-
-  font-size:12px;
-  font-weight:1000;
-
-  letter-spacing:.24em;
-}
-
-.start h1{
-  margin:
-    0 0 24px;
-
-  font-size:
-    clamp(46px,6vw,86px);
-
-  line-height:1.05;
-
-  letter-spacing:-.045em;
-}
-
-.lead{
-  margin:
-    0 auto 34px;
-
-  max-width:650px;
-
-  color:#9ca8bc;
-
-  font-size:
-    clamp(16px,1.8vw,20px);
-
-  line-height:1.9;
-}
-
-.cta{
-  min-width:220px;
-  min-height:64px;
-
-  padding:
-    0 32px;
-
-  border:0;
-
-  border-radius:18px;
-
-  cursor:pointer;
-
-  color:#041014;
-
   background:
-    linear-gradient(
-      180deg,
-      #c6f9ff,
-      #5ee4f8
-    );
-
-  font-size:19px;
-  font-weight:1000;
-
-  box-shadow:
-    0 15px 35px rgba(98,234,255,.2),
-    inset 0 1px 0 white;
+    radial-gradient(circle at 50% 30%,rgba(97,234,255,.05),transparent 42%),
+    radial-gradient(circle at 75% 80%,rgba(132,102,255,.06),transparent 42%),
+    linear-gradient(180deg,#0b1019,#070a10);
+  will-change:transform;
 }
 
-.cta:active{
-  transform:scale(.98);
+.card.current{
+  transform:translateY(0);
 }
 
+.card.next{
+  transform:translateY(100%);
+}
 
-/* ==================================================
-GAME AREA
-================================================== */
+.card.animating{
+  transition:transform .34s cubic-bezier(.22,.75,.28,1);
+}
 
-.game-wrap{
+.card-content{
   width:100%;
   height:100%;
-
+  padding:30px;
   display:flex;
   flex-direction:column;
-
-  min-height:0;
 }
 
 .game-head{
+  flex:0 0 auto;
   display:flex;
-
-  align-items:flex-end;
   justify-content:space-between;
-
+  align-items:flex-start;
   margin-bottom:14px;
 }
 
-.game-no{
+.game-number{
   color:var(--muted);
-
-  font-size:11px;
+  font-size:10px;
   font-weight:900;
-
   letter-spacing:.16em;
 }
 
 .game-title{
-  margin:
-    5px 0 0;
-
-  font-size:
-    clamp(30px,4vw,50px);
-
+  margin:4px 0 0;
+  font-size:clamp(28px,4vw,48px);
   letter-spacing:-.04em;
 }
 
-.game-board{
+.skill-badge{
+  padding:8px 11px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:999px;
+  color:#aeb9cb;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+
+.board{
   position:relative;
-
   flex:1;
-
   min-height:0;
-
   overflow:hidden;
-
-  border:
-    1px solid rgba(255,255,255,.07);
-
-  border-radius:25px;
-
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:24px;
   background:
-    radial-gradient(circle at 50% 40%,rgba(98,234,255,.05),transparent 40%),
-    radial-gradient(circle at 70% 80%,rgba(132,102,255,.06),transparent 40%),
+    radial-gradient(circle at 50% 40%,rgba(97,234,255,.04),transparent 45%),
     #070a11;
-
-  cursor:default;
 }
 
-.play-area{
+.play{
   position:absolute;
-
   inset:0;
-
+  display:flex;
+  justify-content:center;
+  align-items:center;
   overflow:hidden;
-
-  display:flex;
-
-  align-items:center;
-  justify-content:center;
-
-  padding:24px;
+  padding:22px;
 }
 
-
-/* ==================================================
-RULE
-================================================== */
-
-.rule-layer{
+.rule{
   position:absolute;
-
   inset:0;
-
   z-index:50;
-
   display:flex;
-
   align-items:center;
   justify-content:center;
-
   padding:30px;
-
-  background:
-    rgba(6,9,15,.77);
-
-  backdrop-filter:
-    blur(15px);
+  background:rgba(5,8,14,.78);
+  backdrop-filter:blur(14px);
 }
 
-.rule-card{
-  width:100%;
-  max-width:760px;
-
+.rule-inner{
+  width:min(720px,100%);
   text-align:center;
 }
 
 .rule-label{
   color:var(--cyan);
-
-  font-size:11px;
+  font-size:10px;
   font-weight:1000;
-
   letter-spacing:.22em;
 }
 
 .rule-text{
-  margin-top:15px;
-
-  font-size:
-    clamp(30px,4vw,52px);
-
+  margin-top:13px;
+  font-size:clamp(27px,4vw,50px);
   line-height:1.3;
-
   font-weight:1000;
-
   letter-spacing:-.03em;
 }
 
-.ready-line{
-  width:120px;
+.rule-bar{
+  width:105px;
   height:3px;
-
-  margin:
-    28px auto 0;
-
+  margin:24px auto 0;
+  border-radius:999px;
   overflow:hidden;
-
-  border-radius:99px;
-
-  background:
-    rgba(255,255,255,.08);
+  background:rgba(255,255,255,.08);
 }
 
-.ready-progress{
-  width:0%;
+.rule-bar-fill{
+  width:0;
   height:100%;
-
-  border-radius:inherit;
-
-  background:
-    linear-gradient(
-      90deg,
-      var(--purple),
-      var(--cyan)
-    );
+  background:linear-gradient(90deg,var(--violet),var(--cyan));
 }
 
-.ready-progress.run{
-  animation:
-    ruleProgress 3s linear forwards;
+.rule-bar-fill.go{
+  animation:ruleReady .9s linear forwards;
 }
 
-@keyframes ruleProgress{
-
-  from{
-    width:0;
-  }
-
-  to{
-    width:100%;
-  }
-
+@keyframes ruleReady{
+  to{width:100%}
 }
 
-
-/* ==================================================
-FINISH
-================================================== */
-
-.finish-layer{
+.finish{
   position:absolute;
-
   inset:0;
-
-  z-index:80;
-
+  z-index:60;
   display:none;
-
   align-items:center;
   justify-content:center;
-
   text-align:center;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(5,8,14,.6),
-      rgba(5,8,14,.95)
-    );
-
-  backdrop-filter:
-    blur(10px);
+  background:rgba(5,8,14,.78);
+  backdrop-filter:blur(9px);
 }
 
-.finish-layer.show{
+.finish.show{
   display:flex;
 }
 
-.score-pop{
-  font-size:
-    clamp(70px,10vw,130px);
-
+.finish-score{
+  font-size:clamp(66px,10vw,120px);
   font-weight:1000;
-
   line-height:1;
 }
 
-.score-label{
-  display:block;
-
-  margin-bottom:10px;
-
-  color:var(--muted);
-
-  font-size:11px;
-  font-weight:900;
-
-  letter-spacing:.2em;
-}
-
-.next-hint{
-  margin-top:28px;
-
-  color:#adb8cb;
-
+.finish-skill{
+  margin-top:10px;
+  color:#9da8bb;
   font-size:13px;
   font-weight:900;
+}
 
+.swipe-hint{
+  margin-top:25px;
+  color:#a9b5c8;
+  font-size:12px;
+  font-weight:900;
   letter-spacing:.12em;
 }
 
-.next-arrow{
+.swipe-arrow{
   display:block;
-
-  margin-bottom:5px;
-
-  font-size:34px;
-
-  animation:
-    arrowMove 1s ease-in-out infinite;
+  font-size:32px;
+  margin-bottom:4px;
+  animation:arrow .9s ease-in-out infinite;
 }
 
-@keyframes arrowMove{
-
-  50%{
-    transform:
-      translateY(-8px);
-  }
-
+@keyframes arrow{
+  50%{transform:translateY(-7px)}
 }
-
-
-/* ==================================================
-SIDE
-================================================== */
 
 .side{
+  height:100%;
+  min-height:0;
   display:flex;
-
   flex-direction:column;
-
-  gap:14px;
+  gap:12px;
 }
 
-.side-card{
-  padding:19px;
-
-  border:
-    1px solid var(--line);
-
+.panel{
+  border:1px solid var(--line);
   border-radius:22px;
-
+  padding:18px;
   background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.035),
-      rgba(255,255,255,.012)
-    ),
+    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012)),
     #0a0e16;
 }
 
-.side-label{
-  margin-bottom:12px;
-
+.panel-title{
   color:var(--muted);
-
   font-size:10px;
   font-weight:900;
-
-  letter-spacing:.16em;
+  letter-spacing:.15em;
+  margin-bottom:10px;
 }
 
-.run-score{
-  font-size:46px;
-
+.gamiq-big{
+  font-size:52px;
+  line-height:1;
   font-weight:1000;
 }
 
-.ability{
-  display:flex;
-
-  justify-content:space-between;
-
-  padding:
-    11px 0;
-
-  border-bottom:
-    1px solid rgba(255,255,255,.045);
+.confidence{
+  margin-top:14px;
 }
 
-.ability:last-child{
+.conf-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  color:#aeb8c9;
+  font-size:11px;
+  font-weight:900;
+}
+
+.conf-track{
+  width:100%;
+  height:6px;
+  margin-top:8px;
+  background:rgba(255,255,255,.07);
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.conf-fill{
+  height:100%;
+  width:0;
+  border-radius:inherit;
+  background:linear-gradient(90deg,var(--violet),var(--cyan));
+  transition:width .45s ease;
+}
+
+.skill-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.045);
+}
+
+.skill-row:last-child{
   border-bottom:0;
 }
 
-.ability span{
+.skill-row span{
   color:var(--muted);
-
-  font-size:11px;
+  font-size:10px;
   font-weight:900;
-
-  letter-spacing:.08em;
+  letter-spacing:.1em;
 }
 
-.ability b{
+.skill-row b{
   font-size:17px;
 }
 
+.play-count{
+  font-size:34px;
+  font-weight:1000;
+}
+
 .ad{
-  min-height:250px;
-
+  flex:1;
+  min-height:170px;
   display:flex;
-
   align-items:center;
   justify-content:center;
-
+  color:#586375;
   text-align:center;
-
-  color:#596477;
-
   border-style:dashed;
 }
 
 
-/* ==================================================
-FINAL
-================================================== */
-
-.final{
-  width:100%;
-
-  max-width:900px;
-
-  text-align:center;
-}
-
-.final h2{
-  margin:0;
-
-  font-size:
-    clamp(38px,5vw,64px);
-}
-
-.gamiq-score{
-  margin:
-    26px 0 32px;
-
-  font-size:
-    clamp(90px,13vw,160px);
-
-  font-weight:1000;
-
-  line-height:.95;
-
-  background:
-    linear-gradient(
-      180deg,
-      white,
-      #73efff 60%,
-      #8466ff
-    );
-
-  -webkit-background-clip:text;
-  background-clip:text;
-
-  color:transparent;
-}
-
-.final-grid{
-  display:grid;
-
-  grid-template-columns:
-    repeat(5,1fr);
-
-  gap:10px;
-
-  margin-bottom:30px;
-}
-
-.final-stat{
-  padding:
-    18px 10px;
-
-  border:
-    1px solid var(--line);
-
-  border-radius:18px;
-
-  background:
-    rgba(255,255,255,.025);
-}
-
-.final-stat span{
-  display:block;
-
-  color:var(--muted);
-
-  font-size:10px;
-  font-weight:900;
-
-  letter-spacing:.1em;
-}
-
-.final-stat b{
-  display:block;
-
-  margin-top:6px;
-
-  font-size:27px;
-}
-
-
-/* ==================================================
-COMMON BUTTON
-================================================== */
+/* common game controls */
 
 .round-button{
-  width:
-    min(34vw,260px);
-
+  width:min(30vw,240px);
   aspect-ratio:1;
-
-  border:
-    1px solid rgba(255,255,255,.15);
-
+  border:1px solid rgba(255,255,255,.15);
   border-radius:50%;
-
   cursor:pointer;
-
   color:#031218;
-
-  font-size:33px;
-
+  font-size:32px;
   font-weight:1000;
-
+  touch-action:none;
   background:
-    radial-gradient(
-      circle at 35% 28%,
-      white 0 7%,
-      #a8f7ff 8%,
-      #49d9ee 32%,
-      #154958 70%,
-      #081319 100%
-    );
-
+    radial-gradient(circle at 35% 28%,
+    #fff 0 7%,
+    #a8f7ff 8%,
+    #49d9ee 32%,
+    #154958 70%,
+    #081319 100%);
   box-shadow:
-    0 0 50px rgba(98,234,255,.20),
+    0 0 45px rgba(97,234,255,.2),
     inset 0 0 35px rgba(255,255,255,.15);
-
-  touch-action:manipulation;
 }
 
-
-/* ==================================================
-REACTION
-================================================== */
-
-.reaction-zone{
+.center-game{
   text-align:center;
 }
 
-.reaction-message{
+.counter{
   display:block;
-
-  margin-top:18px;
-
-  color:var(--muted);
-
-  font-size:14px;
-  font-weight:900;
+  margin-bottom:15px;
+  font-size:48px;
+  font-weight:1000;
 }
 
-
-/* ==================================================
-COLOR REACTION
-================================================== */
-
-.color-react{
-  width:
-    min(45vw,330px);
-
-  aspect-ratio:1;
-
-  border-radius:35px;
-
-  cursor:pointer;
-
-  border:
-    1px solid rgba(255,255,255,.1);
-
-  background:#131a24;
-
-  box-shadow:
-    0 25px 60px rgba(0,0,0,.3);
-
-  transition:
-    background .08s ease,
-    box-shadow .08s ease;
-}
-
-.color-react.green{
-  background:
-    #72ffad;
-
-  box-shadow:
-    0 0 60px rgba(114,255,173,.5);
-}
-
-.color-react.red{
-  background:
-    #ff4f70;
-
-  box-shadow:
-    0 0 60px rgba(255,79,112,.4);
-}
-
-
-/* ==================================================
-TAP
-================================================== */
-
-.tap-zone{
-  text-align:center;
-}
-
-.tap-count{
+.message{
   display:block;
-
-  margin-bottom:20px;
-
-  font-size:58px;
-  font-weight:1000;
-}
-
-
-/* ==================================================
-ALTERNATE TAP
-================================================== */
-
-.alt-area{
-  width:100%;
-  max-width:700px;
-
-  display:grid;
-
-  grid-template-columns:1fr 1fr;
-
-  gap:20px;
-}
-
-.alt-button{
-  min-height:270px;
-
-  border:
-    1px solid rgba(255,255,255,.09);
-
-  border-radius:26px;
-
-  cursor:pointer;
-
-  color:white;
-
-  font-size:36px;
-  font-weight:1000;
-
-  background:
-    linear-gradient(
-      180deg,
-      #121927,
-      #080c13
-    );
-}
-
-.alt-button.active{
-  border-color:
-    rgba(98,234,255,.45);
-
-  box-shadow:
-    0 0 35px rgba(98,234,255,.16);
-}
-
-
-/* ==================================================
-AIM
-================================================== */
-
-.aim-board{
-  position:absolute;
-
-  inset:0;
-
-  cursor:none;
-
-  overflow:hidden;
-}
-
-.crosshair{
-  position:absolute;
-
-  z-index:20;
-
-  width:42px;
-  height:42px;
-
-  transform:
-    translate(-50%,-50%);
-
-  pointer-events:none;
-}
-
-.crosshair::before,
-.crosshair::after{
-  content:"";
-
-  position:absolute;
-
-  background:
-    rgba(255,255,255,.95);
-
-  box-shadow:
-    0 0 8px rgba(98,234,255,.9);
-}
-
-.crosshair::before{
-  width:42px;
-  height:2px;
-
-  top:20px;
-  left:0;
-}
-
-.crosshair::after{
-  width:2px;
-  height:42px;
-
-  top:0;
-  left:20px;
-}
-
-.crosshair-circle{
-  position:absolute;
-
-  width:14px;
-  height:14px;
-
-  border:
-    2px solid var(--cyan);
-
-  border-radius:50%;
-
-  top:14px;
-  left:14px;
-
-  box-shadow:
-    0 0 10px var(--cyan);
-}
-
-.target{
-  position:absolute;
-
-  width:72px;
-  height:72px;
-
-  border-radius:50%;
-
-  pointer-events:none;
-
-  background:
-    radial-gradient(
-      circle,
-      white 0 10%,
-      #62eaff 11% 25%,
-      #15394a 26% 44%,
-      #8466ff 45% 63%,
-      #17132f 64% 100%
-    );
-
-  box-shadow:
-    0 0 25px rgba(98,234,255,.5);
-
-  transform:
-    translate(-50%,-50%);
-}
-
-.target.hit{
-  animation:
-    targetHit .18s ease-out forwards;
-}
-
-@keyframes targetHit{
-
-  from{
-    transform:
-      translate(-50%,-50%)
-      scale(1);
-  }
-
-  to{
-    transform:
-      translate(-50%,-50%)
-      scale(1.7);
-
-    opacity:0;
-  }
-
-}
-
-.laser{
-  position:absolute;
-
-  z-index:15;
-
-  height:4px;
-
-  pointer-events:none;
-
-  transform-origin:
-    0 50%;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(98,234,255,.05),
-      #62eaff,
-      white
-    );
-
-  box-shadow:
-    0 0 7px #62eaff,
-    0 0 18px rgba(98,234,255,.9);
-
-  animation:
-    laserFade .18s linear forwards;
-}
-
-@keyframes laserFade{
-
-  to{
-    opacity:0;
-  }
-
-}
-
-.hit-ring{
-  position:absolute;
-
-  z-index:18;
-
-  width:80px;
-  height:80px;
-
-  border:
-    2px solid var(--cyan);
-
-  border-radius:50%;
-
-  pointer-events:none;
-
-  transform:
-    translate(-50%,-50%);
-
-  animation:
-    ringExpand .25s ease-out forwards;
-}
-
-.hit-ring.miss{
-  border-color:
-    var(--red);
-}
-
-@keyframes ringExpand{
-
-  from{
-    opacity:1;
-
-    transform:
-      translate(-50%,-50%)
-      scale(.3);
-  }
-
-  to{
-    opacity:0;
-
-    transform:
-      translate(-50%,-50%)
-      scale(1.6);
-  }
-
-}
-
-.fire-button{
-  position:absolute;
-
-  right:18px;
-  bottom:18px;
-
-  z-index:30;
-
-  width:90px;
-  height:90px;
-
-  border:0;
-
-  border-radius:50%;
-
-  background:
-    linear-gradient(
-      180deg,
-      #ff7590,
-      #ff3d63
-    );
-
-  color:white;
-
-  font-size:16px;
-  font-weight:1000;
-
-  box-shadow:
-    0 0 30px rgba(255,61,99,.3);
-
-  display:none;
-}
-
-
-/* ==================================================
-LOGIC
-================================================== */
-
-.choice-wrap{
-  width:100%;
-
-  display:flex;
-
-  justify-content:center;
-  align-items:center;
-
-  gap:28px;
-}
-
-.choice{
-  width:
-    min(28vw,230px);
-
-  aspect-ratio:1;
-
-  border:
-    1px solid rgba(255,255,255,.11);
-
-  border-radius:27px;
-
-  cursor:pointer;
-
-  color:white;
-
-  font-size:
-    clamp(50px,7vw,88px);
-
-  font-weight:1000;
-
-  background:
-    linear-gradient(
-      180deg,
-      #161e2e,
-      #090e16
-    );
-
-  box-shadow:
-    0 15px 35px rgba(0,0,0,.3),
-    inset 0 1px 0 rgba(255,255,255,.06);
-}
-
-.logic-question{
-  text-align:center;
-}
-
-.logic-label{
-  margin-bottom:22px;
-
-  color:#9ea9bc;
-
-  font-size:18px;
-  font-weight:900;
-}
-
-
-/* ==================================================
-CATEGORY LOGIC
-================================================== */
-
-.symbol-grid{
-  display:grid;
-
-  grid-template-columns:
-    repeat(2,min(30vw,220px));
-
-  gap:18px;
-}
-
-.symbol-button{
-  min-height:160px;
-
-  border:
-    1px solid rgba(255,255,255,.09);
-
-  border-radius:25px;
-
-  cursor:pointer;
-
-  background:
-    linear-gradient(
-      180deg,
-      #151c29,
-      #090d15
-    );
-
-  color:white;
-
-  font-size:50px;
-
-  font-weight:1000;
-}
-
-
-/* ==================================================
-MEMORY
-================================================== */
-
-.memory-holder{
-  text-align:center;
-}
-
-.memory-grid{
-  display:grid;
-
-  grid-template-columns:
-    repeat(3,min(18vw,125px));
-
-  gap:12px;
-}
-
-.memory-cell{
-  aspect-ratio:1;
-
-  border:
-    1px solid rgba(255,255,255,.08);
-
-  border-radius:18px;
-
-  cursor:pointer;
-
-  background:
-    #131a27;
-
-  transition:
-    background .07s ease,
-    box-shadow .07s ease,
-    transform .07s ease;
-}
-
-.memory-cell.demo{
-  background:
-    linear-gradient(
-      180deg,
-      white,
-      #78efff
-    );
-
-  box-shadow:
-    0 0 30px rgba(98,234,255,.6);
-
-  transform:
-    scale(.95);
-}
-
-.memory-cell.user-hit{
-  background:
-    linear-gradient(
-      180deg,
-      white,
-      #72f4ff
-    );
-
-  box-shadow:
-    0 0 32px rgba(98,234,255,.75);
-
-  transform:
-    scale(.94);
-}
-
-.memory-cell.user-miss{
-  background:
-    linear-gradient(
-      180deg,
-      #ffb3c0,
-      #ff496b
-    );
-
-  box-shadow:
-    0 0 30px rgba(255,73,107,.7);
-
-  transform:
-    scale(.94);
-}
-
-.memory-message{
   min-height:20px;
-
-  margin-top:20px;
-
+  margin-top:15px;
   color:var(--muted);
-
   font-size:13px;
   font-weight:900;
 }
 
 
-/* ==================================================
-POSITION MEMORY
-================================================== */
+/* reaction color */
+
+.color-box{
+  width:min(42vw,310px);
+  aspect-ratio:1;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:34px;
+  background:#141b26;
+  cursor:pointer;
+  touch-action:none;
+}
+
+.color-box.green{
+  background:#77ffb1;
+  box-shadow:0 0 55px rgba(119,255,177,.45);
+}
+
+.color-box.red{
+  background:#ff4e70;
+  box-shadow:0 0 55px rgba(255,78,112,.35);
+}
+
+
+/* alternating */
+
+.alt-grid{
+  width:min(700px,100%);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.alt-btn{
+  min-height:230px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:25px;
+  background:linear-gradient(180deg,#141c29,#090d14);
+  color:#fff;
+  font-size:30px;
+  font-weight:1000;
+  touch-action:none;
+}
+
+.alt-btn.active{
+  border-color:rgba(97,234,255,.45);
+  box-shadow:0 0 25px rgba(97,234,255,.15);
+}
+
+
+/* logic */
+
+.choice-wrap{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:24px;
+}
+
+.choice{
+  width:min(27vw,220px);
+  aspect-ratio:1;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:25px;
+  background:linear-gradient(180deg,#151d2b,#090d15);
+  color:#fff;
+  font-size:clamp(46px,7vw,82px);
+  font-weight:1000;
+  touch-action:none;
+}
+
+.logic-label{
+  margin-bottom:18px;
+  color:#a9b4c7;
+  font-size:17px;
+  font-weight:900;
+}
+
+
+/* memory */
+
+.memory-grid{
+  display:grid;
+  grid-template-columns:repeat(3,min(17vw,112px));
+  gap:10px;
+}
+
+.memory-cell{
+  aspect-ratio:1;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  background:#141b27;
+  touch-action:none;
+}
+
+.memory-cell.demo,
+.memory-cell.correct{
+  background:#75efff;
+  box-shadow:0 0 25px rgba(97,234,255,.55);
+}
+
+.memory-cell.wrong{
+  background:var(--red);
+  box-shadow:0 0 25px rgba(255,78,112,.55);
+}
 
 .position-grid{
   display:grid;
-
-  grid-template-columns:
-    repeat(4,min(14vw,90px));
-
-  gap:10px;
+  grid-template-columns:repeat(4,min(13vw,82px));
+  gap:9px;
 }
 
 .position-cell{
   aspect-ratio:1;
-
-  border:
-    1px solid rgba(255,255,255,.07);
-
-  border-radius:15px;
-
-  cursor:pointer;
-
-  background:
-    #111824;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:13px;
+  background:#131a25;
+  touch-action:none;
 }
 
 .position-cell.preview{
-  background:
-    var(--cyan);
-
-  box-shadow:
-    0 0 25px rgba(98,234,255,.45);
+  background:var(--cyan);
+  box-shadow:0 0 22px rgba(97,234,255,.45);
 }
 
 .position-cell.correct{
-  background:
-    var(--green);
+  background:var(--green);
 }
 
 .position-cell.wrong{
-  background:
-    var(--red);
+  background:var(--red);
 }
 
 
-/* ==================================================
-MOBILE
-================================================== */
+/* aim */
 
-.mobile-ad{
+.aim{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  cursor:none;
+  touch-action:none;
+}
+
+.crosshair{
+  position:absolute;
+  z-index:20;
+  width:44px;
+  height:44px;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+
+.crosshair:before,
+.crosshair:after{
+  content:"";
+  position:absolute;
+  background:#fff;
+  box-shadow:0 0 7px var(--cyan);
+}
+
+.crosshair:before{
+  width:44px;
+  height:2px;
+  left:0;
+  top:21px;
+}
+
+.crosshair:after{
+  width:2px;
+  height:44px;
+  left:21px;
+  top:0;
+}
+
+.crosshair-center{
+  position:absolute;
+  width:13px;
+  height:13px;
+  left:15.5px;
+  top:15.5px;
+  border:2px solid var(--cyan);
+  border-radius:50%;
+  box-shadow:0 0 9px var(--cyan);
+}
+
+.target{
+  position:absolute;
+  width:67px;
+  height:67px;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  background:
+    radial-gradient(circle,
+    white 0 10%,
+    #62eaff 11% 25%,
+    #163b4b 26% 43%,
+    #8466ff 44% 62%,
+    #17132f 63%);
+  box-shadow:0 0 25px rgba(97,234,255,.5);
+}
+
+.laser{
+  position:absolute;
+  z-index:15;
+  height:4px;
+  transform-origin:0 50%;
+  pointer-events:none;
+  background:linear-gradient(90deg,rgba(97,234,255,.05),#62eaff,#fff);
+  box-shadow:
+    0 0 7px var(--cyan),
+    0 0 16px rgba(97,234,255,.8);
+  animation:laserFade .18s linear forwards;
+}
+
+@keyframes laserFade{
+  to{opacity:0}
+}
+
+.impact{
+  position:absolute;
+  z-index:18;
+  width:72px;
+  height:72px;
+  transform:translate(-50%,-50%);
+  border:2px solid var(--cyan);
+  border-radius:50%;
+  pointer-events:none;
+  animation:impact .25s ease-out forwards;
+}
+
+.impact.miss{
+  border-color:var(--red);
+}
+
+@keyframes impact{
+  from{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(.3);
+  }
+  to{
+    opacity:0;
+    transform:translate(-50%,-50%) scale(1.6);
+  }
+}
+
+
+/* joystick */
+
+.mobile-controls{
+  display:none;
+}
+
+.joystick{
+  position:absolute;
+  left:18px;
+  bottom:18px;
+  width:115px;
+  height:115px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:50%;
+  background:rgba(255,255,255,.045);
+  backdrop-filter:blur(6px);
+  touch-action:none;
+}
+
+.joystick-knob{
+  position:absolute;
+  width:48px;
+  height:48px;
+  left:33.5px;
+  top:33.5px;
+  border-radius:50%;
+  background:linear-gradient(180deg,#edfaff,#75eaff);
+  box-shadow:0 0 20px rgba(97,234,255,.35);
+}
+
+.fire{
+  position:absolute;
+  right:22px;
+  bottom:28px;
+  width:88px;
+  height:88px;
+  border:0;
+  border-radius:50%;
+  background:linear-gradient(180deg,#ff7691,#ff3e63);
+  color:#fff;
+  font-size:15px;
+  font-weight:1000;
+  box-shadow:0 0 26px rgba(255,62,99,.3);
+  touch-action:none;
+}
+
+
+/* start */
+
+.start-screen{
+  position:absolute;
+  inset:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 50% 20%,rgba(97,234,255,.08),transparent 35%),
+    #070a11;
+}
+
+.start-inner{
+  text-align:center;
+  padding:30px;
+}
+
+.start-kicker{
+  color:var(--cyan);
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.23em;
+}
+
+.start-title{
+  margin:15px 0 20px;
+  font-size:clamp(44px,7vw,85px);
+  line-height:1.04;
+  letter-spacing:-.045em;
+}
+
+.start-copy{
+  color:#9da9bc;
+  line-height:1.8;
+  font-size:16px;
+}
+
+.start-btn{
+  margin-top:25px;
+  min-width:210px;
+  min-height:60px;
+  border:0;
+  border-radius:17px;
+  background:linear-gradient(180deg,#c5f9ff,#62e5f7);
+  color:#031014;
+  font-weight:1000;
+  font-size:18px;
+  cursor:pointer;
+}
+
+
+/* mobile */
+
+.mobile-hud{
   display:none;
 }
 
 @media(max-width:900px){
 
-  .shell{
+  .app{
+    display:block;
     padding:0;
-
-    grid-template-columns:1fr;
   }
 
   .main{
+    width:100%;
+    height:100%;
     gap:0;
   }
 
-  .topbar{
-    min-height:62px;
+  .header{
+    height:58px;
+    flex:0 0 58px;
+    padding:0 14px;
+  }
 
-    padding:
-      10px 16px;
+  .brand{
+    font-size:20px;
+  }
+
+  .live{
+    gap:13px;
+  }
+
+  .live-value{
+    font-size:17px;
   }
 
   .side{
     display:none;
   }
 
-  .stage{
-    min-height:
-      calc(100vh - 62px);
-
-    border-left:0;
-    border-right:0;
-
+  .feed{
+    flex:1;
+    border:0;
     border-radius:0;
-
     box-shadow:none;
   }
 
-  .screen{
-    padding:15px;
-  }
-
-  .game-board{
-    border-radius:20px;
-  }
-
-  .game-head{
-    margin-bottom:10px;
+  .card-content{
+    padding:14px;
   }
 
   .game-title{
-    font-size:29px;
+    font-size:28px;
+  }
+
+  .board{
+    border-radius:19px;
   }
 
   .round-button{
-    width:
-      min(62vw,250px);
-  }
-
-  .choice-wrap{
-    gap:12px;
+    width:min(60vw,240px);
   }
 
   .choice{
-    width:
-      min(40vw,180px);
+    width:min(40vw,170px);
   }
 
-  .alt-area{
+  .choice-wrap{
+    gap:11px;
+  }
+
+  .alt-grid{
     gap:10px;
   }
 
-  .alt-button{
-    min-height:220px;
+  .alt-btn{
+    min-height:210px;
   }
 
   .memory-grid{
-    grid-template-columns:
-      repeat(3,min(27vw,105px));
+    grid-template-columns:repeat(3,min(27vw,100px));
   }
 
   .position-grid{
-    grid-template-columns:
-      repeat(4,min(20vw,75px));
+    grid-template-columns:repeat(4,min(20vw,72px));
   }
 
-  .final-grid{
-    grid-template-columns:
-      repeat(2,1fr);
-  }
-
-  .fire-button{
+  .mobile-controls{
     display:block;
   }
 
-  .aim-board{
+  .aim{
     cursor:default;
   }
-
-  .mobile-ad{
-    display:flex;
-
-    min-height:60px;
-
-    margin:
-      12px 16px 16px;
-
-    justify-content:center;
-    align-items:center;
-
-    border:
-      1px dashed rgba(255,255,255,.1);
-
-    border-radius:14px;
-
-    color:#596477;
-
-    font-size:10px;
-  }
-
 }
 
 </style>
 </head>
 
-
 <body>
 
-<div class="shell">
+<div class="app">
 
-<main class="main">
+  <main class="main">
 
-<header class="topbar">
+    <header class="header">
 
-<div class="brand">
-GAM<span>IQ</span>
-</div>
+      <div class="brand">
+        GAM<span>IQ</span>
+      </div>
 
-<div class="top-info">
+      <div class="live">
 
-<div class="top-item">
+        <div class="live-block">
+          <span class="live-label">PLAYED</span>
+          <span class="live-value" id="playedTop">0</span>
+        </div>
 
-<span class="top-label">
-GAME
-</span>
+        <div class="live-block">
+          <span class="live-label">GAMIQ</span>
+          <span class="live-value" id="gamiqTop">---</span>
+        </div>
 
-<span
-class="top-value"
-id="gameTop"
->
-0 / 10
-</span>
+        <div class="live-block">
+          <span class="live-label">ACCURACY</span>
+          <span class="live-value" id="confidenceTop">0%</span>
+        </div>
 
-</div>
+      </div>
 
-<div class="top-item">
-
-<span class="top-label">
-SCORE
-</span>
-
-<span
-class="top-value"
-id="scoreTop"
->
-0
-</span>
-
-</div>
-
-</div>
-
-</header>
+    </header>
 
 
-<section
-class="stage"
-id="stage"
->
+    <section class="feed" id="feed">
+
+      <div class="card current" id="cardA"></div>
+      <div class="card next" id="cardB"></div>
 
 
-<!-- START -->
+      <div class="start-screen" id="startScreen">
 
-<div
-class="screen"
-id="startScreen"
->
+        <div class="start-inner">
 
-<div class="start">
+          <div class="start-kicker">
+            TRUE GAMING SKILL
+          </div>
 
-<div class="kicker">
-TRUE GAMING SKILL
-</div>
+          <div class="start-title">
+            あなたは、本当に<br>
+            ゲームが上手い？
+          </div>
 
-<h1>
-あなたは、本当に<br>
-ゲームが上手い？
-</h1>
+          <div class="start-copy">
+            次に何が来るかは分からない。<br>
+            遊ぶほど、あなたの本当のゲーム地力が見えてくる。
+          </div>
 
-<p class="lead">
+          <button class="start-btn" id="startBtn">
+            START
+          </button>
 
-ゲームは完全ランダム。<br>
+        </div>
 
-選べない。
-練習できない。
-戻れない。
+      </div>
 
-<br><br>
+    </section>
 
-初見で対応できる<br>
-
-“ゲーム地力”を試す。
-
-</p>
-
-<button
-class="cta"
-id="startBtn"
->
-START
-</button>
-
-</div>
-
-</div>
+  </main>
 
 
-<!-- GAME -->
+  <aside class="side">
 
-<div
-class="screen hidden from-bottom"
-id="gameScreen"
->
+    <div class="panel">
 
-<div class="game-wrap">
+      <div class="panel-title">
+        LIVE GAMIQ
+      </div>
 
-<div class="game-head">
+      <div class="gamiq-big" id="gamiqSide">
+        ---
+      </div>
 
-<div>
+      <div class="confidence">
 
-<div
-class="game-no"
-id="gameNo"
->
-GAME 1 / 10
-</div>
+        <div class="conf-row">
+          <span>測定精度</span>
+          <span id="confidenceSide">0%</span>
+        </div>
 
-<h2
-class="game-title"
-id="gameTitle"
->
-GAME
-</h2>
+        <div class="conf-track">
+          <div class="conf-fill" id="confidenceFill"></div>
+        </div>
 
-</div>
+      </div>
 
-</div>
+    </div>
 
 
-<div
-class="game-board"
-id="gameBoard"
->
+    <div class="panel">
+
+      <div class="panel-title">
+        ABILITIES
+      </div>
+
+      <div class="skill-row">
+        <span>REFLEX</span>
+        <b id="skillReflex">--</b>
+      </div>
+
+      <div class="skill-row">
+        <span>SPEED</span>
+        <b id="skillSpeed">--</b>
+      </div>
+
+      <div class="skill-row">
+        <span>AIM</span>
+        <b id="skillAim">--</b>
+      </div>
+
+      <div class="skill-row">
+        <span>LOGIC</span>
+        <b id="skillLogic">--</b>
+      </div>
+
+      <div class="skill-row">
+        <span>MEMORY</span>
+        <b id="skillMemory">--</b>
+      </div>
+
+      <div class="skill-row">
+        <span>ADAPT</span>
+        <b id="skillAdapt">--</b>
+      </div>
+
+    </div>
 
 
-<div
-class="play-area"
-id="playArea"
-></div>
+    <div class="panel">
+
+      <div class="panel-title">
+        GAMES PLAYED
+      </div>
+
+      <div class="play-count" id="playedSide">
+        0
+      </div>
+
+    </div>
 
 
-<div
-class="rule-layer"
-id="ruleLayer"
->
+    <div class="panel ad">
+      AD SPACE
+    </div>
 
-<div class="rule-card">
-
-<div class="rule-label">
-RULE
-</div>
-
-<div
-class="rule-text"
-id="ruleText"
->
-RULE
-</div>
-
-<div class="ready-line">
-
-<div
-class="ready-progress"
-id="readyProgress"
-></div>
+  </aside>
 
 </div>
-
-</div>
-
-</div>
-
-
-<div
-class="finish-layer"
-id="finishLayer"
->
-
-<div>
-
-<div class="score-pop">
-
-<span class="score-label">
-SCORE
-</span>
-
-<span
-id="gameScore"
->
-+0
-</span>
-
-</div>
-
-<div class="next-hint">
-
-<span class="next-arrow">
-↑
-</span>
-
-<span id="nextText">
-SWIPE UP
-</span>
-
-</div>
-
-</div>
-
-</div>
-
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- FINAL -->
-
-<div
-class="screen hidden from-bottom"
-id="finalScreen"
->
-
-<div class="final">
-
-<div class="kicker">
-RESULT
-</div>
-
-<h2>
-あなたのゲーム地力
-</h2>
-
-<div
-class="gamiq-score"
-id="gamiqScore"
->
-0
-</div>
-
-
-<div class="final-grid">
-
-<div class="final-stat">
-
-<span>
-REFLEX
-</span>
-
-<b id="finalReflex">
---
-</b>
-
-</div>
-
-
-<div class="final-stat">
-
-<span>
-SPEED
-</span>
-
-<b id="finalSpeed">
---
-</b>
-
-</div>
-
-
-<div class="final-stat">
-
-<span>
-AIM
-</span>
-
-<b id="finalAim">
---
-</b>
-
-</div>
-
-
-<div class="final-stat">
-
-<span>
-LOGIC
-</span>
-
-<b id="finalLogic">
---
-</b>
-
-</div>
-
-
-<div class="final-stat">
-
-<span>
-MEMORY
-</span>
-
-<b id="finalMemory">
---
-</b>
-
-</div>
-
-</div>
-
-
-<button
-class="cta"
-id="retryBtn"
->
-RETRY
-</button>
-
-</div>
-
-</div>
-
-
-</section>
-
-
-<div class="mobile-ad">
-AD SPACE
-</div>
-
-</main>
-
-
-<aside class="side">
-
-<div class="side-card">
-
-<div class="side-label">
-CURRENT RUN
-</div>
-
-<div
-class="run-score"
-id="sideScore"
->
-0
-</div>
-
-</div>
-
-
-<div class="side-card">
-
-<div class="side-label">
-ABILITIES
-</div>
-
-
-<div class="ability">
-
-<span>
-REFLEX
-</span>
-
-<b id="sideReflex">
---
-</b>
-
-</div>
-
-
-<div class="ability">
-
-<span>
-SPEED
-</span>
-
-<b id="sideSpeed">
---
-</b>
-
-</div>
-
-
-<div class="ability">
-
-<span>
-AIM
-</span>
-
-<b id="sideAim">
---
-</b>
-
-</div>
-
-
-<div class="ability">
-
-<span>
-LOGIC
-</span>
-
-<b id="sideLogic">
---
-</b>
-
-</div>
-
-
-<div class="ability">
-
-<span>
-MEMORY
-</span>
-
-<b id="sideMemory">
---
-</b>
-
-</div>
-
-</div>
-
-
-<div class="side-card ad">
-
-AD SPACE
-
-<br>
-
-将来の常設広告枠
-
-</div>
-
-</aside>
-
-</div>
-
 
 
 <script>
 
 (() => {
 
-const RULE_TIME = 3000;
+const $ = id => document.getElementById(id);
 
-const GAME_TIME = 15000;
+const feed = $("feed");
+const startScreen = $("startScreen");
 
-const TOTAL_GAMES = 10;
+let currentCard = $("cardA");
+let nextCard = $("cardB");
 
+let currentGame = null;
+let nextGame = null;
 
-const $ =
-id =>
-document.getElementById(id);
+let played = 0;
+let gamiq = null;
 
-
-
-const startScreen =
-$("startScreen");
-
-const gameScreen =
-$("gameScreen");
-
-const finalScreen =
-$("finalScreen");
-
-const playArea =
-$("playArea");
-
-const gameBoard =
-$("gameBoard");
-
-const ruleLayer =
-$("ruleLayer");
-
-const readyProgress =
-$("readyProgress");
-
-const finishLayer =
-$("finishLayer");
-
-
-
-let queue = [];
-
-let current = 0;
-
-let total = 0;
+let canSwipe = false;
+let swipeUnlockAt = 0;
 
 let gameActive = false;
-
-let canAdvance = false;
+let finishCurrentGame = null;
 
 let cleanupFns = [];
+let gameEndTimer = null;
 
-let gameTimeout = null;
+let bag = [];
+let lastGameId = null;
 
-let finishFunction = null;
+const skillScores = {
+  REFLEX: [],
+  SPEED: [],
+  AIM: [],
+  LOGIC: [],
+  MEMORY: [],
+  ADAPT: []
+};
 
 
-
-let abilities = {};
-
-
+/* ==================================================
+GAME POOL
+================================================== */
 
 const games = [
 
 {
-
-title:
-"反射",
-
-rule:
-"光った瞬間だけ押せ。",
-
-skill:
-"REFLEX",
-
-start:
-reactionGame
-
+  id:"reaction",
+  title:"FLASH",
+  rule:"光った瞬間だけ押せ",
+  skill:"REFLEX",
+  duration:8000,
+  start:reactionGame
 },
 
 {
-
-title:
-"GREENだけ押せ",
-
-rule:
-"緑なら押せ。赤なら絶対に押すな。",
-
-skill:
-"REFLEX",
-
-start:
-colorReactionGame
-
+  id:"green",
+  title:"GREEN",
+  rule:"緑だけ押せ。赤は押すな",
+  skill:"REFLEX",
+  duration:8500,
+  start:greenGame
 },
 
 {
-
-title:
-"連打",
-
-rule:
-"できるだけ速く押し続けろ。",
-
-skill:
-"SPEED",
-
-start:
-tapGame
-
+  id:"tap",
+  title:"RUSH",
+  rule:"できるだけ速く連打",
+  skill:"SPEED",
+  duration:8000,
+  start:tapGame
 },
 
 {
-
-title:
-"左右交互",
-
-rule:
-"LEFT → RIGHT → LEFT の順番で高速タップ。",
-
-skill:
-"SPEED",
-
-start:
-alternateTapGame
-
+  id:"alternate",
+  title:"LEFT / RIGHT",
+  rule:"左右交互に高速タップ",
+  skill:"SPEED",
+  duration:8000,
+  start:alternateGame
 },
 
 {
-
-title:
-"射撃",
-
-rule:
-"照準を合わせて撃て。ターゲットを直接押すな。",
-
-skill:
-"AIM",
-
-start:
-staticAimGame
-
+  id:"aim",
+  title:"SHOOT",
+  rule:"照準を合わせて撃て",
+  skill:"AIM",
+  duration:10000,
+  start:aimStaticGame
 },
 
 {
-
-title:
-"追跡射撃",
-
-rule:
-"動くターゲットに照準を合わせて撃て。",
-
-skill:
-"AIM",
-
-start:
-movingAimGame
-
+  id:"aimmove",
+  title:"TRACK",
+  rule:"動くターゲットを撃て",
+  skill:"AIM",
+  duration:10000,
+  start:aimMovingGame
 },
 
 {
-
-title:
-"ハイ・ロー",
-
-rule:
-"大きい数字を瞬時に選べ。",
-
-skill:
-"LOGIC",
-
-start:
-highLowGame
-
+  id:"highlow",
+  title:"HIGH",
+  rule:"大きい数字を選べ",
+  skill:"LOGIC",
+  duration:8000,
+  start:highLowGame
 },
 
 {
-
-title:
-"条件判断",
-
-rule:
-"表示された条件に合うものを選べ。",
-
-skill:
-"LOGIC",
-
-start:
-conditionGame
-
+  id:"condition",
+  title:"RULE SWITCH",
+  rule:"表示された条件に従え",
+  skill:"LOGIC",
+  duration:8500,
+  start:conditionGame
 },
 
 {
-
-title:
-"順番記憶",
-
-rule:
-"光った順番を覚えて、同じ順番で押せ。",
-
-skill:
-"MEMORY",
-
-start:
-sequenceMemoryGame
-
+  id:"sequence",
+  title:"SEQUENCE",
+  rule:"光った順番を再現",
+  skill:"MEMORY",
+  duration:10000,
+  start:sequenceGame
 },
 
 {
-
-title:
-"配置記憶",
-
-rule:
-"光った場所を覚えて、同じ場所を押せ。",
-
-skill:
-"MEMORY",
-
-start:
-positionMemoryGame
-
+  id:"position",
+  title:"POSITION",
+  rule:"光った場所を覚えろ",
+  skill:"MEMORY",
+  duration:9000,
+  start:positionGame
 }
 
 ];
 
 
-
 /* ==================================================
-BASIC
+UTIL
 ================================================== */
 
+function clamp(v,min,max){
+  return Math.max(min,Math.min(max,v));
+}
+
+function avg(values){
+  if(!values.length) return null;
+
+  return values.reduce(
+    (a,b)=>a+b,
+    0
+  ) / values.length;
+}
 
 function shuffle(array){
 
-const result =
-[...array];
+  const a = [...array];
 
+  for(let i=a.length-1;i>0;i--){
 
-for(
-let i = result.length - 1;
-i > 0;
-i--
-){
+    const j =
+      Math.floor(
+        Math.random()*(i+1)
+      );
 
-const j =
-Math.floor(
-Math.random() * (i + 1)
-);
+    [a[i],a[j]] =
+    [a[j],a[i]];
 
+  }
 
-[
-result[i],
-result[j]
-]
-=
-[
-result[j],
-result[i]
-];
-
+  return a;
 }
-
-
-return result;
-
-}
-
-
-
-function average(values){
-
-if(
-!values ||
-!values.length
-){
-
-return "--";
-
-}
-
-
-return Math.round(
-
-values.reduce(
-(a,b) => a + b,
-0
-)
-
-/
-
-values.length
-
-);
-
-}
-
-
-
-function cleanGame(){
-
-cleanupFns.forEach(
-fn => {
-
-try{
-fn();
-}
-catch(e){}
-
-}
-);
-
-
-cleanupFns = [];
-
-
-if(
-gameTimeout
-){
-
-clearTimeout(
-gameTimeout
-);
-
-gameTimeout = null;
-
-}
-
-
-playArea.innerHTML = "";
-
-}
-
-
-
-function resetRun(){
-
-cleanGame();
-
-
-queue =
-shuffle(games);
-
-
-current = 0;
-
-total = 0;
-
-
-abilities = {
-
-REFLEX: [],
-
-SPEED: [],
-
-AIM: [],
-
-LOGIC: [],
-
-MEMORY: []
-
-};
-
-
-updateHud();
-
-}
-
-
-
-function updateHud(){
-
-$("scoreTop")
-.textContent =
-total;
-
-
-$("sideScore")
-.textContent =
-total;
-
-
-$("gameTop")
-.textContent =
-current === 0
-
-? `0 / ${TOTAL_GAMES}`
-
-: `${Math.min(current + 1,TOTAL_GAMES)} / ${TOTAL_GAMES}`;
-
-
-$("sideReflex")
-.textContent =
-average(
-abilities.REFLEX || []
-);
-
-
-$("sideSpeed")
-.textContent =
-average(
-abilities.SPEED || []
-);
-
-
-$("sideAim")
-.textContent =
-average(
-abilities.AIM || []
-);
-
-
-$("sideLogic")
-.textContent =
-average(
-abilities.LOGIC || []
-);
-
-
-$("sideMemory")
-.textContent =
-average(
-abilities.MEMORY || []
-);
-
-}
-
-
-
-function showScreen(screen){
-
-[
-startScreen,
-gameScreen,
-finalScreen
-]
-.forEach(
-item => {
-
-if(
-item !== screen
-){
-
-item.classList.add(
-"hidden"
-);
-
-}
-
-}
-);
-
-
-screen.classList.remove(
-"hidden"
-);
-
-
-screen.classList.remove(
-"off-top"
-);
-
-
-screen.classList.add(
-"from-bottom"
-);
-
-
-requestAnimationFrame(
-() => {
-
-requestAnimationFrame(
-() => {
-
-screen.classList.remove(
-"from-bottom"
-);
-
-}
-);
-
-}
-);
-
-}
-
 
 
 /* ==================================================
-FLOW
+RANDOM GAME BAG
 ================================================== */
 
+function getNextGame(){
 
-function startRun(){
+  if(!bag.length){
 
-resetRun();
+    bag =
+      shuffle(games);
 
-showScreen(
-gameScreen
-);
+  }
 
-loadGame();
+  let game =
+    bag.shift();
 
+
+  if(
+    game.id === lastGameId &&
+    bag.length
+  ){
+
+    const second =
+      bag.shift();
+
+    bag.push(game);
+
+    game = second;
+
+  }
+
+  lastGameId =
+    game.id;
+
+  return game;
 }
-
-
-
-function loadGame(){
-
-cleanGame();
-
-
-gameActive = false;
-
-canAdvance = false;
-
-
-finishLayer.classList.remove(
-"show"
-);
-
-
-const game =
-queue[current];
-
-
-$("gameNo")
-.textContent =
-`GAME ${current + 1} / ${TOTAL_GAMES}`;
-
-
-$("gameTop")
-.textContent =
-`${current + 1} / ${TOTAL_GAMES}`;
-
-
-$("gameTitle")
-.textContent =
-game.title;
-
-
-$("ruleText")
-.textContent =
-game.rule;
-
-
-ruleLayer.style.display =
-"flex";
-
-
-readyProgress.classList.remove(
-"run"
-);
-
-
-void readyProgress.offsetWidth;
-
-
-readyProgress.classList.add(
-"run"
-);
-
-
-const timeout =
-setTimeout(
-() => {
-
-ruleLayer.style.display =
-"none";
-
-
-startCurrentGame(
-game
-);
-
-},
-RULE_TIME
-);
-
-
-cleanupFns.push(
-() =>
-clearTimeout(
-timeout
-)
-);
-
-}
-
-
-
-function startCurrentGame(game){
-
-gameActive = true;
-
-
-finishFunction =
-game.start();
-
-
-gameTimeout =
-setTimeout(
-() => {
-
-if(
-!gameActive
-){
-return;
-}
-
-
-const score =
-finishFunction
-? finishFunction()
-: 0;
-
-
-endGame(
-score,
-game.skill
-);
-
-},
-GAME_TIME
-);
-
-}
-
-
-
-function endGame(
-score,
-skill
-){
-
-if(
-!gameActive
-){
-return;
-}
-
-
-gameActive = false;
-
-
-score =
-Math.max(
-0,
-Math.min(
-100,
-Math.round(
-score || 0
-)
-)
-);
-
-
-total +=
-score;
-
-
-abilities[
-skill
-]
-.push(
-score
-);
-
-
-updateHud();
-
-
-$("gameScore")
-.textContent =
-`+${score}`;
-
-
-$("nextText")
-.textContent =
-current === TOTAL_GAMES - 1
-
-? "SWIPE UP TO RESULT"
-
-: "SWIPE UP";
-
-
-finishLayer.classList.add(
-"show"
-);
-
-
-canAdvance = true;
-
-}
-
-
-
-function advance(){
-
-if(
-!canAdvance
-){
-return;
-}
-
-
-canAdvance = false;
-
-
-gameScreen.classList.add(
-"off-top"
-);
-
-
-setTimeout(
-() => {
-
-current++;
-
-
-if(
-current >= TOTAL_GAMES
-){
-
-showFinal();
-
-return;
-
-}
-
-
-gameScreen.classList.remove(
-"off-top"
-);
-
-
-gameScreen.classList.add(
-"from-bottom"
-);
-
-
-requestAnimationFrame(
-() => {
-
-requestAnimationFrame(
-() => {
-
-gameScreen.classList.remove(
-"from-bottom"
-);
-
-
-loadGame();
-
-}
-);
-
-}
-);
-
-},
-380
-);
-
-}
-
-
-
-function showFinal(){
-
-cleanGame();
-
-
-const reflex =
-average(
-abilities.REFLEX
-);
-
-
-const speed =
-average(
-abilities.SPEED
-);
-
-
-const aim =
-average(
-abilities.AIM
-);
-
-
-const logic =
-average(
-abilities.LOGIC
-);
-
-
-const memory =
-average(
-abilities.MEMORY
-);
-
-
-
-const scores = [
-
-Number(reflex) || 0,
-
-Number(speed) || 0,
-
-Number(aim) || 0,
-
-Number(logic) || 0,
-
-Number(memory) || 0
-
-];
-
-
-const overall =
-scores.reduce(
-(a,b) =>
-a + b,
-0
-)
-
-/ scores.length;
-
-
-const gamiq =
-Math.round(
-300 +
-overall * 7
-);
-
-
-$("gamiqScore")
-.textContent =
-gamiq;
-
-
-$("finalReflex")
-.textContent =
-reflex;
-
-
-$("finalSpeed")
-.textContent =
-speed;
-
-
-$("finalAim")
-.textContent =
-aim;
-
-
-$("finalLogic")
-.textContent =
-logic;
-
-
-$("finalMemory")
-.textContent =
-memory;
-
-
-showScreen(
-finalScreen
-);
-
-}
-
 
 
 /* ==================================================
-REFLEX 1
+CARD HTML
 ================================================== */
 
-
-function reactionGame(){
-
-let totalReaction = 0;
-
-let successful = 0;
-
-let falseStarts = 0;
-
-let ready = false;
-
-let appearedAt = 0;
-
-let signalTimeout = null;
-
-
-playArea.innerHTML = `
-
-<div class="reaction-zone">
-
-<button
-class="round-button"
-id="reactionButton"
->
-WAIT
-</button>
-
-<span
-class="reaction-message"
-id="reactionMessage"
->
-光ったら押せ
-</span>
-
-</div>
-
-`;
-
-
-const button =
-$("reactionButton");
-
-
-const message =
-$("reactionMessage");
-
-
-
-function signal(){
-
-ready = false;
-
-
-button.textContent =
-"WAIT";
-
-
-button.style.filter =
-"brightness(.36)";
-
-
-clearTimeout(
-signalTimeout
-);
-
-
-signalTimeout =
-setTimeout(
-() => {
-
-if(
-!gameActive
-){
-return;
-}
-
-
-ready = true;
-
-
-appearedAt =
-performance.now();
-
-
-button.textContent =
-"GO";
-
-
-button.style.filter =
-"brightness(1.25)";
-
-},
-500 + Math.random() * 1100
-);
-
-}
-
-
-
-function press(){
-
-if(
-!gameActive
-){
-return;
-}
-
-
-if(
-!ready
+function renderCard(
+  card,
+  game,
+  previewOnly=false
 ){
 
-falseStarts++;
+  card.innerHTML = `
+
+    <div class="card-content">
+
+      <div class="game-head">
+
+        <div>
+
+          <div class="game-number">
+            GAME ${played + (previewOnly ? 2 : 1)}
+          </div>
+
+          <h2 class="game-title">
+            ${game.title}
+          </h2>
+
+        </div>
+
+        <div class="skill-badge">
+          ${game.skill}
+        </div>
+
+      </div>
 
 
-message.textContent =
-"TOO EARLY";
+      <div class="board">
+
+        <div class="play"></div>
+
+        <div class="rule">
+
+          <div class="rule-inner">
+
+            <div class="rule-label">
+              ${game.skill}
+            </div>
+
+            <div class="rule-text">
+              ${game.rule}
+            </div>
+
+            <div class="rule-bar">
+              <div class="rule-bar-fill"></div>
+            </div>
+
+          </div>
+
+        </div>
 
 
-signal();
+        <div class="finish">
 
+          <div>
 
-return;
+            <div class="finish-score">
+              <span class="finish-score-value">+0</span>
+            </div>
+
+            <div class="finish-skill">
+              ${game.skill}
+            </div>
+
+            <div class="swipe-hint">
+
+              <span class="swipe-arrow">
+                ↑
+              </span>
+
+              SWIPE UP
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
 
 }
-
-
-const reaction =
-performance.now()
-- appearedAt;
-
-
-successful++;
-
-
-totalReaction +=
-reaction;
-
-
-message.textContent =
-`${Math.round(reaction)} ms`;
-
-
-signal();
-
-}
-
-
-
-button.addEventListener(
-"pointerdown",
-press
-);
-
-
-cleanupFns.push(
-() => {
-
-clearTimeout(
-signalTimeout
-);
-
-
-button.removeEventListener(
-"pointerdown",
-press
-);
-
-}
-);
-
-
-signal();
-
-
-
-return () => {
-
-const avg =
-successful
-? totalReaction / successful
-: 1000;
-
-
-return Math.max(
-0,
-100
--
-(avg - 180) / 5
--
-falseStarts * 10
-);
-
-};
-
-}
-
 
 
 /* ==================================================
-REFLEX 2
+START / FLOW
 ================================================== */
 
+function start(){
 
-function colorReactionGame(){
-
-let correct = 0;
-
-let wrong = 0;
-
-let missedGreen = 0;
-
-let state = null;
-
-let stateTimeout = null;
+  startScreen.style.display =
+    "none";
 
 
-playArea.innerHTML = `
-
-<div>
-
-<button
-class="color-react"
-id="colorReact"
-></button>
-
-<div
-class="reaction-message"
-id="colorMessage"
->
-GREENだけ押せ
-</div>
-
-</div>
-
-`;
+  currentGame =
+    getNextGame();
 
 
-const box =
-$("colorReact");
+  nextGame =
+    getNextGame();
 
 
-const message =
-$("colorMessage");
+  renderCard(
+    currentCard,
+    currentGame,
+    false
+  );
 
 
-
-function next(){
-
-if(
-!gameActive
-){
-return;
-}
+  renderCard(
+    nextCard,
+    nextGame,
+    true
+  );
 
 
-box.classList.remove(
-"green",
-"red"
-);
-
-
-state =
-null;
-
-
-stateTimeout =
-setTimeout(
-() => {
-
-if(
-!gameActive
-){
-return;
-}
-
-
-state =
-Math.random() < .55
-? "green"
-: "red";
-
-
-box.classList.add(
-state
-);
-
-
-if(
-state === "green"
-){
-
-stateTimeout =
-setTimeout(
-() => {
-
-if(
-state === "green"
-){
-
-missedGreen++;
-
-state = null;
-
-box.classList.remove(
-"green"
-);
-
-
-next();
-
-}
-
-},
-800
-);
-
-}
-else{
-
-stateTimeout =
-setTimeout(
-() => {
-
-state = null;
-
-box.classList.remove(
-"red"
-);
-
-
-next();
-
-},
-650
-);
-
-}
-
-},
-300 + Math.random() * 500
-);
+  beginCurrentGame();
 
 }
 
 
+function beginCurrentGame(){
 
-function press(){
+  cleanupGame();
 
-if(
-!gameActive
-){
-return;
-}
+  canSwipe = false;
+  gameActive = false;
 
+  const rule =
+    currentCard.querySelector(".rule");
 
-if(
-state === "green"
-){
-
-correct++;
-
-message.textContent =
-"GOOD";
-
-}
-else{
-
-wrong++;
-
-message.textContent =
-"MISS";
-
-}
+  const bar =
+    currentCard.querySelector(".rule-bar-fill");
 
 
-state = null;
+  rule.style.display =
+    "flex";
 
 
-clearTimeout(
-stateTimeout
-);
+  bar.classList.remove("go");
+
+  void bar.offsetWidth;
+
+  bar.classList.add("go");
 
 
-box.classList.remove(
-"green",
-"red"
-);
+  setTimeout(
+    () => {
+
+      rule.style.display =
+        "none";
+
+      gameActive =
+        true;
+
+      const play =
+        currentCard.querySelector(".play");
+
+      finishCurrentGame =
+        currentGame.start(play);
 
 
-next();
+      gameEndTimer =
+        setTimeout(
+          finishGame,
+          currentGame.duration
+        );
 
-}
-
-
-
-box.addEventListener(
-"pointerdown",
-press
-);
-
-
-cleanupFns.push(
-() => {
-
-clearTimeout(
-stateTimeout
-);
-
-
-box.removeEventListener(
-"pointerdown",
-press
-);
-
-}
-);
-
-
-next();
-
-
-
-return () => {
-
-const total =
-correct +
-wrong +
-missedGreen;
-
-
-if(
-!total
-){
-return 0;
-}
-
-
-return Math.max(
-0,
-correct / total * 100
--
-wrong * 6
-);
-
-};
+    },
+    900
+  );
 
 }
 
+
+function finishGame(){
+
+  if(!gameActive) return;
+
+  gameActive = false;
+
+
+  const result =
+    finishCurrentGame
+    ? finishCurrentGame()
+    : {
+        score:0,
+        adapt:50
+      };
+
+
+  const score =
+    clamp(
+      Math.round(
+        result.score || 0
+      ),
+      0,
+      100
+    );
+
+
+  const adapt =
+    clamp(
+      Math.round(
+        result.adapt ?? 50
+      ),
+      0,
+      100
+    );
+
+
+  skillScores[
+    currentGame.skill
+  ].push(score);
+
+
+  skillScores.ADAPT.push(
+    adapt
+  );
+
+
+  played++;
+
+
+  updateGamiq();
+
+
+  const finish =
+    currentCard.querySelector(".finish");
+
+
+  finish
+    .querySelector(".finish-score-value")
+    .textContent =
+      `+${score}`;
+
+
+  finish.classList.add(
+    "show"
+  );
+
+
+  swipeUnlockAt =
+    performance.now()
+    + 500;
+
+
+  setTimeout(
+    () => {
+
+      canSwipe = true;
+
+    },
+    500
+  );
+
+}
 
 
 /* ==================================================
-SPEED 1
+GAMIQ CALC
 ================================================== */
 
+function updateGamiq(){
 
-function tapGame(){
-
-let count = 0;
-
-
-playArea.innerHTML = `
-
-<div class="tap-zone">
-
-<span
-class="tap-count"
-id="tapCount"
->
-0
-</span>
-
-<button
-class="round-button"
-id="tapButton"
->
-TAP
-</button>
-
-</div>
-
-`;
+  const mainSkills = [
+    "REFLEX",
+    "SPEED",
+    "AIM",
+    "LOGIC",
+    "MEMORY"
+  ];
 
 
-const button =
-$("tapButton");
+  const available =
+    mainSkills
+      .map(
+        key => avg(
+          skillScores[key]
+        )
+      )
+      .filter(
+        value => value !== null
+      );
 
 
-const counter =
-$("tapCount");
+  const base =
+    available.length
+    ? avg(available)
+    : 50;
 
 
-
-function press(){
-
-if(
-!gameActive
-){
-return;
-}
+  const adapt =
+    avg(
+      skillScores.ADAPT
+    );
 
 
-count++;
+  const combined =
+    adapt === null
+    ? base
+    : base * .85
+      + adapt * .15;
 
 
-counter.textContent =
-count;
-
-}
-
-
-
-button.addEventListener(
-"pointerdown",
-press
-);
+  const newGamiq =
+    Math.round(
+      300
+      + combined * 7
+    );
 
 
-cleanupFns.push(
-() =>
-button.removeEventListener(
-"pointerdown",
-press
-)
-);
+  const old =
+    gamiq;
 
 
+  gamiq =
+    newGamiq;
 
-return () =>
-Math.min(
-100,
-count / 1.9
-);
+
+  const confidence =
+    Math.min(
+      99,
+      Math.round(
+        100 *
+        (
+          1 -
+          Math.exp(
+            -played / 18
+          )
+        )
+      )
+    );
+
+
+  updateHud(
+    confidence,
+    old
+  );
 
 }
-
 
 
 /* ==================================================
-SPEED 2
+HUD
 ================================================== */
 
-
-function alternateTapGame(){
-
-let count = 0;
-
-let expected =
-"left";
-
-let mistakes = 0;
-
-
-playArea.innerHTML = `
-
-<div class="alt-area">
-
-<button
-class="alt-button active"
-id="leftAlt"
->
-LEFT
-</button>
-
-<button
-class="alt-button"
-id="rightAlt"
->
-RIGHT
-</button>
-
-</div>
-
-`;
-
-
-const left =
-$("leftAlt");
-
-
-const right =
-$("rightAlt");
-
-
-
-function update(){
-
-left.classList.toggle(
-"active",
-expected === "left"
-);
-
-
-right.classList.toggle(
-"active",
-expected === "right"
-);
-
-}
-
-
-
-function press(side){
-
-if(
-!gameActive
-){
-return;
-}
-
-
-if(
-side === expected
+function updateHud(
+  confidence,
+  previousGamiq
 ){
 
-count++;
+  $("playedTop").textContent =
+    played;
 
 
-expected =
-expected === "left"
-? "right"
-: "left";
+  $("playedSide").textContent =
+    played;
 
 
-update();
+  $("gamiqTop").textContent =
+    gamiq ?? "---";
+
+
+  $("gamiqSide").textContent =
+    gamiq ?? "---";
+
+
+  $("confidenceTop").textContent =
+    confidence + "%";
+
+
+  $("confidenceSide").textContent =
+    confidence + "%";
+
+
+  $("confidenceFill").style.width =
+    confidence + "%";
+
+
+  const map = {
+    REFLEX:"skillReflex",
+    SPEED:"skillSpeed",
+    AIM:"skillAim",
+    LOGIC:"skillLogic",
+    MEMORY:"skillMemory",
+    ADAPT:"skillAdapt"
+  };
+
+
+  Object.entries(map).forEach(
+    ([key,id]) => {
+
+      const value =
+        avg(
+          skillScores[key]
+        );
+
+
+      $(id).textContent =
+        value === null
+        ? "--"
+        : Math.round(value);
+
+    }
+  );
+
+
+  if(
+    previousGamiq !== null &&
+    previousGamiq !== undefined
+  ){
+
+    const top =
+      $("gamiqTop");
+
+
+    top.classList.remove(
+      "flash-up",
+      "flash-down"
+    );
+
+
+    void top.offsetWidth;
+
+
+    if(gamiq > previousGamiq){
+
+      top.classList.add(
+        "flash-up"
+      );
+
+    }
+    else if(
+      gamiq < previousGamiq
+    ){
+
+      top.classList.add(
+        "flash-down"
+      );
+
+    }
+
+  }
 
 }
-else{
 
-mistakes++;
+
+/* ==================================================
+SWIPE FEED
+================================================== */
+
+let touchStartY = null;
+let touchLastY = null;
+let dragging = false;
+
+
+feed.addEventListener(
+  "touchstart",
+  event => {
+
+    if(
+      !canSwipe ||
+      performance.now() <
+      swipeUnlockAt
+    ){
+      return;
+    }
+
+
+    touchStartY =
+      event.touches[0].clientY;
+
+
+    touchLastY =
+      touchStartY;
+
+
+    dragging = true;
+
+
+    currentCard.classList.remove(
+      "animating"
+    );
+
+
+    nextCard.classList.remove(
+      "animating"
+    );
+
+  },
+  {
+    passive:false
+  }
+);
+
+
+feed.addEventListener(
+  "touchmove",
+  event => {
+
+    if(!dragging) return;
+
+
+    event.preventDefault();
+
+
+    const y =
+      event.touches[0].clientY;
+
+
+    touchLastY =
+      y;
+
+
+    let dy =
+      y - touchStartY;
+
+
+    dy =
+      Math.min(
+        0,
+        dy
+      );
+
+
+    currentCard.style.transform =
+      `translateY(${dy}px)`;
+
+
+    nextCard.style.transform =
+      `translateY(calc(100% + ${dy}px))`;
+
+  },
+  {
+    passive:false
+  }
+);
+
+
+feed.addEventListener(
+  "touchend",
+  () => {
+
+    if(!dragging) return;
+
+
+    dragging = false;
+
+
+    const dy =
+      touchLastY
+      - touchStartY;
+
+
+    if(dy < -75){
+
+      commitSwipe();
+
+    }
+    else{
+
+      cancelSwipe();
+
+    }
+
+  },
+  {
+    passive:false
+  }
+);
+
+
+function cancelSwipe(){
+
+  currentCard.classList.add(
+    "animating"
+  );
+
+
+  nextCard.classList.add(
+    "animating"
+  );
+
+
+  currentCard.style.transform =
+    "translateY(0)";
+
+
+  nextCard.style.transform =
+    "translateY(100%)";
 
 }
 
-}
+
+function commitSwipe(){
+
+  if(!canSwipe) return;
 
 
-
-const leftPress =
-() => press("left");
+  canSwipe = false;
 
 
-const rightPress =
-() => press("right");
+  currentCard.classList.add(
+    "animating"
+  );
 
 
-left.addEventListener(
-"pointerdown",
-leftPress
-);
+  nextCard.classList.add(
+    "animating"
+  );
 
 
-right.addEventListener(
-"pointerdown",
-rightPress
-);
+  currentCard.style.transform =
+    "translateY(-100%)";
 
 
-cleanupFns.push(
-() => {
-
-left.removeEventListener(
-"pointerdown",
-leftPress
-);
+  nextCard.style.transform =
+    "translateY(0)";
 
 
-right.removeEventListener(
-"pointerdown",
-rightPress
-);
-
-}
-);
-
-
-
-return () =>
-Math.max(
-0,
-Math.min(
-100,
-count / 1.55
--
-mistakes * 3
-)
-);
+  setTimeout(
+    completeSwipe,
+    350
+  );
 
 }
 
+
+function completeSwipe(){
+
+  cleanupGame();
+
+
+  const oldCard =
+    currentCard;
+
+
+  currentCard =
+    nextCard;
+
+
+  nextCard =
+    oldCard;
+
+
+  currentCard.className =
+    "card current";
+
+
+  currentCard.style.transform =
+    "translateY(0)";
+
+
+  nextCard.className =
+    "card next";
+
+
+  nextCard.style.transform =
+    "translateY(100%)";
+
+
+  currentGame =
+    nextGame;
+
+
+  nextGame =
+    getNextGame();
+
+
+  renderCard(
+    nextCard,
+    nextGame,
+    true
+  );
+
+
+  beginCurrentGame();
+
+}
+
+
+/* ==================================================
+DESKTOP NEXT
+================================================== */
+
+let wheelLock = false;
+
+
+window.addEventListener(
+  "wheel",
+  event => {
+
+    if(
+      !canSwipe ||
+      wheelLock ||
+      event.deltaY < 45
+    ){
+      return;
+    }
+
+
+    wheelLock = true;
+
+
+    commitSwipe();
+
+
+    setTimeout(
+      () => {
+        wheelLock = false;
+      },
+      700
+    );
+
+  },
+  {
+    passive:true
+  }
+);
+
+
+window.addEventListener(
+  "keydown",
+  event => {
+
+    if(!canSwipe) return;
+
+
+    if(
+      event.key === "ArrowDown"
+    ){
+
+      commitSwipe();
+
+    }
+
+  }
+);
+
+
+/* ==================================================
+CLEANUP
+================================================== */
+
+function cleanupGame(){
+
+  cleanupFns.forEach(
+    fn => {
+
+      try{
+        fn();
+      }
+      catch(e){}
+
+    }
+  );
+
+
+  cleanupFns = [];
+
+
+  if(gameEndTimer){
+
+    clearTimeout(
+      gameEndTimer
+    );
+
+    gameEndTimer =
+      null;
+
+  }
+
+}
+
+
+/* ==================================================
+ADAPT HELPER
+================================================== */
+
+function adaptScore(
+  series
+){
+
+  if(series.length < 4){
+
+    const overall =
+      avg(series);
+
+    return overall === null
+    ? 50
+    : clamp(
+        35 + overall * .3,
+        25,
+        75
+      );
+
+  }
+
+
+  const chunk =
+    Math.max(
+      1,
+      Math.floor(
+        series.length * .35
+      )
+    );
+
+
+  const first =
+    avg(
+      series.slice(
+        0,
+        chunk
+      )
+    );
+
+
+  const last =
+    avg(
+      series.slice(
+        -chunk
+      )
+    );
+
+
+  return clamp(
+    50
+    + (
+      last -
+      first
+    ) * .9,
+    0,
+    100
+  );
+
+}
+
+
+/* ==================================================
+GAME 1 REACTION
+================================================== */
+
+function reactionGame(play){
+
+  let success = 0;
+  let falseStart = 0;
+  let totalReaction = 0;
+  let ready = false;
+  let shownAt = 0;
+  let timer = null;
+
+  const rounds = [];
+
+
+  play.innerHTML = `
+
+    <div class="center-game">
+
+      <button
+        class="round-button"
+        id="reactionBtn"
+      >
+        WAIT
+      </button>
+
+      <span
+        class="message"
+        id="reactionMsg"
+      >
+        光ったら押せ
+      </span>
+
+    </div>
+
+  `;
+
+
+  const btn =
+    play.querySelector("#reactionBtn");
+
+
+  const msg =
+    play.querySelector("#reactionMsg");
+
+
+  function schedule(){
+
+    ready = false;
+
+    btn.textContent =
+      "WAIT";
+
+    btn.style.filter =
+      "brightness(.35)";
+
+
+    clearTimeout(timer);
+
+
+    timer =
+      setTimeout(
+        () => {
+
+          if(!gameActive) return;
+
+          ready = true;
+
+          shownAt =
+            performance.now();
+
+          btn.textContent =
+            "GO";
+
+          btn.style.filter =
+            "brightness(1.2)";
+
+        },
+        450
+        + Math.random()*850
+      );
+
+  }
+
+
+  function press(){
+
+    if(!gameActive) return;
+
+
+    if(!ready){
+
+      falseStart++;
+
+      rounds.push(0);
+
+      msg.textContent =
+        "TOO EARLY";
+
+      schedule();
+
+      return;
+
+    }
+
+
+    const reaction =
+      performance.now()
+      - shownAt;
+
+
+    success++;
+
+    totalReaction +=
+      reaction;
+
+
+    const round =
+      clamp(
+        100
+        - (
+          reaction - 180
+        ) / 5,
+        0,
+        100
+      );
+
+
+    rounds.push(round);
+
+
+    msg.textContent =
+      Math.round(reaction)
+      + " ms";
+
+
+    schedule();
+
+  }
+
+
+  btn.addEventListener(
+    "pointerdown",
+    press
+  );
+
+
+  cleanupFns.push(
+    () => {
+
+      clearTimeout(timer);
+
+      btn.removeEventListener(
+        "pointerdown",
+        press
+      );
+
+    }
+  );
+
+
+  schedule();
+
+
+  return () => {
+
+    const reaction =
+      success
+      ? totalReaction / success
+      : 1000;
+
+
+    const score =
+      clamp(
+        100
+        - (
+          reaction - 180
+        ) / 5
+        - falseStart * 8,
+        0,
+        100
+      );
+
+
+    return {
+      score,
+      adapt:
+        adaptScore(rounds)
+    };
+
+  };
+
+}
+
+
+/* ==================================================
+GAME 2 GREEN
+================================================== */
+
+function greenGame(play){
+
+  let correct = 0;
+  let wrong = 0;
+  let missed = 0;
+  let state = null;
+  let timer = null;
+
+  const rounds = [];
+
+
+  play.innerHTML = `
+
+    <div class="center-game">
+
+      <button
+        class="color-box"
+        id="colorBox"
+      ></button>
+
+      <span
+        class="message"
+        id="colorMsg"
+      >
+        GREENだけ押せ
+      </span>
+
+    </div>
+
+  `;
+
+
+  const box =
+    play.querySelector("#colorBox");
+
+
+  const msg =
+    play.querySelector("#colorMsg");
+
+
+  function next(){
+
+    if(!gameActive) return;
+
+
+    state = null;
+
+
+    box.className =
+      "color-box";
+
+
+    timer =
+      setTimeout(
+        () => {
+
+          if(!gameActive) return;
+
+
+          state =
+            Math.random() < .58
+            ? "green"
+            : "red";
+
+
+          box.classList.add(
+            state
+          );
+
+
+          const windowTime =
+            state === "green"
+            ? 620
+            : 480;
+
+
+          timer =
+            setTimeout(
+              () => {
+
+                if(
+                  state === "green"
+                ){
+
+                  missed++;
+
+                  rounds.push(0);
+
+                }
+                else{
+
+                  rounds.push(100);
+
+                }
+
+
+                next();
+
+              },
+              windowTime
+            );
+
+        },
+        220
+        + Math.random()*350
+      );
+
+  }
+
+
+  function press(){
+
+    if(!gameActive) return;
+
+
+    clearTimeout(timer);
+
+
+    if(state === "green"){
+
+      correct++;
+
+      rounds.push(100);
+
+      msg.textContent =
+        "GOOD";
+
+    }
+    else{
+
+      wrong++;
+
+      rounds.push(0);
+
+      msg.textContent =
+        "MISS";
+
+    }
+
+
+    next();
+
+  }
+
+
+  box.addEventListener(
+    "pointerdown",
+    press
+  );
+
+
+  cleanupFns.push(
+    () => {
+
+      clearTimeout(timer);
+
+      box.removeEventListener(
+        "pointerdown",
+        press
+      );
+
+    }
+  );
+
+
+  next();
+
+
+  return () => {
+
+    const total =
+      correct
+      + wrong
+      + missed;
+
+
+    const score =
+      total
+      ? clamp(
+          correct / total * 100
+          - wrong * 5,
+          0,
+          100
+        )
+      : 0;
+
+
+    return {
+      score,
+      adapt:
+        adaptScore(rounds)
+    };
+
+  };
+
+}
+
+
+/* ==================================================
+GAME 3 TAP
+================================================== */
+
+function tapGame(play){
+
+  let count = 0;
+
+  const chunks = [];
+  let currentChunk = 0;
+
+  let chunkTimer =
+    setInterval(
+      () => {
+
+        chunks.push(
+          clamp(
+            currentChunk * 14,
+            0,
+            100
+          )
+        );
+
+        currentChunk = 0;
+
+      },
+      1000
+    );
+
+
+  play.innerHTML = `
+
+    <div class="center-game">
+
+      <span
+        class="counter"
+        id="tapCount"
+      >
+        0
+      </span>
+
+      <button
+        class="round-button"
+        id="tapBtn"
+      >
+        TAP
+      </button>
+
+    </div>
+
+  `;
+
+
+  const btn =
+    play.querySelector("#tapBtn");
+
+
+  const countEl =
+    play.querySelector("#tapCount");
+
+
+  function press(){
+
+    if(!gameActive) return;
+
+    count++;
+
+    currentChunk++;
+
+    countEl.textContent =
+      count;
+
+  }
+
+
+  btn.addEventListener(
+    "pointerdown",
+    press
+  );
+
+
+  cleanupFns.push(
+    () => {
+
+      clearInterval(
+        chunkTimer
+      );
+
+      btn.removeEventListener(
+        "pointerdown",
+        press
+      );
+
+    }
+  );
+
+
+  return () => {
+
+    clearInterval(
+      chunkTimer
+    );
+
+
+    chunks.push(
+      clamp(
+        currentChunk * 14,
+        0,
+        100
+      )
+    );
+
+
+    return {
+
+      score:
+        clamp(
+          count / 1.05,
+          0,
+          100
+        ),
+
+      adapt:
+        adaptScore(chunks)
+
+    };
+
+  };
+
+}
+
+
+/* ==================================================
+GAME 4 ALTERNATE
+================================================== */
+
+function alternateGame(play){
+
+  let correct = 0;
+  let wrong = 0;
+
+  let expected =
+    "L";
+
+  const rounds = [];
+
+
+  play.innerHTML = `
+
+    <div class="alt-grid">
+
+      <button
+        class="alt-btn active"
+        data-side="L"
+      >
+        LEFT
+      </button>
+
+      <button
+        class="alt-btn"
+        data-side="R"
+      >
+        RIGHT
+      </button>
+
+    </div>
+
+  `;
+
+
+  const buttons =
+    [...play.querySelectorAll(
+      ".alt-btn"
+    )];
+
+
+  function render(){
+
+    buttons.forEach(
+      btn => {
+
+        btn.classList.toggle(
+          "active",
+          btn.dataset.side
+          === expected
+        );
+
+      }
+    );
+
+  }
+
+
+  function press(event){
+
+    if(!gameActive) return;
+
+
+    const side =
+      event.currentTarget
+        .dataset.side;
+
+
+    if(side === expected){
+
+      correct++;
+
+      rounds.push(100);
+
+      expected =
+        expected === "L"
+        ? "R"
+        : "L";
+
+    }
+    else{
+
+      wrong++;
+
+      rounds.push(0);
+
+    }
+
+
+    render();
+
+  }
+
+
+  buttons.forEach(
+    btn =>
+      btn.addEventListener(
+        "pointerdown",
+        press
+      )
+  );
+
+
+  cleanupFns.push(
+    () => {
+
+      buttons.forEach(
+        btn =>
+          btn.removeEventListener(
+            "pointerdown",
+            press
+          )
+      );
+
+    }
+  );
+
+
+  return () => ({
+
+    score:
+      clamp(
+        correct * 2
+        - wrong * 3,
+        0,
+        100
+      ),
+
+    adapt:
+      adaptScore(rounds)
+
+  });
+
+}
 
 
 /* ==================================================
 AIM ENGINE
 ================================================== */
 
-
-function createAimGame(
-moving = false
+function aimEngine(
+  play,
+  moving
 ){
 
-let targetX = 0;
+  let targetX = 0;
+  let targetY = 0;
 
-let targetY = 0;
+  let crossX = 0;
+  let crossY = 0;
 
-let targetSize = 72;
+  let targetSize =
+    moving ? 58 : 65;
 
-let hits = 0;
+  let shots = 0;
+  let hits = 0;
+  let reactionTotal = 0;
 
-let shots = 0;
+  let shownAt = 0;
 
-let reactionTotal = 0;
+  let moveRAF = null;
+  let joystickRAF = null;
 
-let targetShownAt = 0;
+  let vx = 2;
+  let vy = 1.5;
 
-let crossX = 0;
+  let joyX = 0;
+  let joyY = 0;
 
-let crossY = 0;
-
-let moveRaf = null;
-
-let velocityX = 2.1;
-
-let velocityY = 1.7;
-
-
-
-playArea.innerHTML = `
-
-<div
-class="aim-board"
-id="aimBoard"
->
-
-<div
-class="crosshair"
-id="crosshair"
->
-
-<div
-class="crosshair-circle"
-></div>
-
-</div>
-
-<div
-class="target"
-id="aimTarget"
-></div>
-
-<button
-class="fire-button"
-id="fireButton"
->
-FIRE
-</button>
-
-</div>
-
-`;
+  const rounds = [];
 
 
-const board =
-$("aimBoard");
+  play.innerHTML = `
+
+    <div
+      class="aim"
+      id="aimBoard"
+    >
+
+      <div
+        class="target"
+        id="target"
+      ></div>
+
+      <div
+        class="crosshair"
+        id="crosshair"
+      >
+        <div class="crosshair-center"></div>
+      </div>
 
 
-const crosshair =
-$("crosshair");
+      <div class="mobile-controls">
+
+        <div
+          class="joystick"
+          id="joystick"
+        >
+
+          <div
+            class="joystick-knob"
+            id="joyKnob"
+          ></div>
+
+        </div>
+
+        <button
+          class="fire"
+          id="fireBtn"
+        >
+          FIRE
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
 
 
-const target =
-$("aimTarget");
+  const board =
+    play.querySelector("#aimBoard");
+
+  const target =
+    play.querySelector("#target");
+
+  const crosshair =
+    play.querySelector("#crosshair");
+
+  const joystick =
+    play.querySelector("#joystick");
+
+  const knob =
+    play.querySelector("#joyKnob");
+
+  const fireBtn =
+    play.querySelector("#fireBtn");
 
 
-const fireButton =
-$("fireButton");
+  function size(){
+
+    const r =
+      board.getBoundingClientRect();
+
+    return {
+      w:r.width,
+      h:r.height
+    };
+
+  }
 
 
+  function renderCross(){
 
-function getSize(){
+    crosshair.style.left =
+      crossX + "px";
 
-const rect =
-board.getBoundingClientRect();
+    crosshair.style.top =
+      crossY + "px";
+
+  }
 
 
-return {
+  function spawn(){
 
-width:
-rect.width,
+    if(!gameActive) return;
 
-height:
-rect.height
 
-};
+    const s =
+      size();
+
+
+    targetX =
+      50
+      + Math.random()
+      * Math.max(
+          20,
+          s.w - 100
+        );
+
+
+    targetY =
+      50
+      + Math.random()
+      * Math.max(
+          20,
+          s.h - 130
+        );
+
+
+    target.style.left =
+      targetX + "px";
+
+    target.style.top =
+      targetY + "px";
+
+    target.style.width =
+      targetSize + "px";
+
+    target.style.height =
+      targetSize + "px";
+
+    target.style.opacity =
+      "1";
+
+
+    shownAt =
+      performance.now();
+
+
+    vx =
+      (
+        Math.random() < .5
+        ? -1
+        : 1
+      )
+      *
+      (
+        1.6
+        + Math.random()*1.4
+      );
+
+
+    vy =
+      (
+        Math.random() < .5
+        ? -1
+        : 1
+      )
+      *
+      (
+        1
+        + Math.random()*1.1
+      );
+
+  }
+
+
+  function laser(
+    x,
+    y,
+    hit
+  ){
+
+    const s =
+      size();
+
+
+    const sx =
+      s.w / 2;
+
+    const sy =
+      s.h - 8;
+
+
+    const dx =
+      x - sx;
+
+    const dy =
+      y - sy;
+
+
+    const length =
+      Math.sqrt(
+        dx*dx + dy*dy
+      );
+
+
+    const angle =
+      Math.atan2(
+        dy,
+        dx
+      )
+      * 180 / Math.PI;
+
+
+    const beam =
+      document.createElement(
+        "div"
+      );
+
+
+    beam.className =
+      "laser";
+
+
+    beam.style.left =
+      sx + "px";
+
+    beam.style.top =
+      sy + "px";
+
+    beam.style.width =
+      length + "px";
+
+    beam.style.transform =
+      `rotate(${angle}deg)`;
+
+
+    board.appendChild(
+      beam
+    );
+
+
+    const impact =
+      document.createElement(
+        "div"
+      );
+
+
+    impact.className =
+      hit
+      ? "impact"
+      : "impact miss";
+
+
+    impact.style.left =
+      x + "px";
+
+    impact.style.top =
+      y + "px";
+
+
+    board.appendChild(
+      impact
+    );
+
+
+    setTimeout(
+      () => {
+
+        beam.remove();
+
+        impact.remove();
+
+      },
+      280
+    );
+
+  }
+
+
+  function fire(){
+
+    if(!gameActive) return;
+
+
+    shots++;
+
+
+    const distance =
+      Math.hypot(
+        crossX - targetX,
+        crossY - targetY
+      );
+
+
+    const hit =
+      distance
+      <= targetSize/2;
+
+
+    laser(
+      crossX,
+      crossY,
+      hit
+    );
+
+
+    if(hit){
+
+      hits++;
+
+
+      const reaction =
+        performance.now()
+        - shownAt;
+
+
+      reactionTotal +=
+        reaction;
+
+
+      const roundScore =
+        clamp(
+          100
+          - (
+            reaction - 350
+          ) / 22,
+          0,
+          100
+        );
+
+
+      rounds.push(
+        roundScore
+      );
+
+
+      spawn();
+
+    }
+    else{
+
+      rounds.push(0);
+
+    }
+
+  }
+
+
+  function mouseMove(
+    event
+  ){
+
+    if(
+      window.innerWidth
+      <= 900
+    ){
+      return;
+    }
+
+
+    const r =
+      board.getBoundingClientRect();
+
+
+    crossX =
+      event.clientX
+      - r.left;
+
+
+    crossY =
+      event.clientY
+      - r.top;
+
+
+    renderCross();
+
+  }
+
+
+  function desktopFire(
+    event
+  ){
+
+    if(
+      window.innerWidth
+      <= 900
+    ){
+      return;
+    }
+
+
+    event.preventDefault();
+
+    fire();
+
+  }
+
+
+  function joystickMove(
+    event
+  ){
+
+    if(
+      window.innerWidth
+      > 900
+    ){
+      return;
+    }
+
+
+    event.preventDefault();
+
+
+    const touch =
+      event.touches
+      ? event.touches[0]
+      : event;
+
+
+    const r =
+      joystick.getBoundingClientRect();
+
+
+    const cx =
+      r.left + r.width/2;
+
+    const cy =
+      r.top + r.height/2;
+
+
+    let dx =
+      touch.clientX - cx;
+
+    let dy =
+      touch.clientY - cy;
+
+
+    const max =
+      32;
+
+
+    const length =
+      Math.hypot(dx,dy);
+
+
+    if(length > max){
+
+      dx =
+        dx/length*max;
+
+      dy =
+        dy/length*max;
+
+    }
+
+
+    joyX =
+      dx/max;
+
+    joyY =
+      dy/max;
+
+
+    knob.style.transform =
+      `translate(${dx}px,${dy}px)`;
+
+  }
+
+
+  function joystickEnd(){
+
+    joyX = 0;
+    joyY = 0;
+
+    knob.style.transform =
+      "translate(0,0)";
+
+  }
+
+
+  function joystickLoop(){
+
+    if(gameActive){
+
+      const s =
+        size();
+
+
+      crossX =
+        clamp(
+          crossX + joyX*5.5,
+          0,
+          s.w
+        );
+
+
+      crossY =
+        clamp(
+          crossY + joyY*5.5,
+          0,
+          s.h
+        );
+
+
+      renderCross();
+
+    }
+
+
+    joystickRAF =
+      requestAnimationFrame(
+        joystickLoop
+      );
+
+  }
+
+
+  function moveTarget(){
+
+    if(
+      gameActive &&
+      moving
+    ){
+
+      const s =
+        size();
+
+
+      targetX += vx;
+      targetY += vy;
+
+
+      const r =
+        targetSize/2;
+
+
+      if(
+        targetX < r ||
+        targetX > s.w-r
+      ){
+
+        vx *= -1;
+
+      }
+
+
+      if(
+        targetY < r ||
+        targetY > s.h-r-90
+      ){
+
+        vy *= -1;
+
+      }
+
+
+      targetX =
+        clamp(
+          targetX,
+          r,
+          s.w-r
+        );
+
+
+      targetY =
+        clamp(
+          targetY,
+          r,
+          s.h-r-90
+        );
+
+
+      target.style.left =
+        targetX + "px";
+
+      target.style.top =
+        targetY + "px";
+
+    }
+
+
+    moveRAF =
+      requestAnimationFrame(
+        moveTarget
+      );
+
+  }
+
+
+  const s =
+    size();
+
+
+  crossX =
+    s.w/2;
+
+  crossY =
+    s.h/2;
+
+
+  renderCross();
+
+  spawn();
+
+
+  board.addEventListener(
+    "mousemove",
+    mouseMove
+  );
+
+
+  board.addEventListener(
+    "pointerdown",
+    desktopFire
+  );
+
+
+  joystick.addEventListener(
+    "touchstart",
+    joystickMove,
+    {
+      passive:false
+    }
+  );
+
+
+  joystick.addEventListener(
+    "touchmove",
+    joystickMove,
+    {
+      passive:false
+    }
+  );
+
+
+  joystick.addEventListener(
+    "touchend",
+    joystickEnd
+  );
+
+
+  fireBtn.addEventListener(
+    "pointerdown",
+    event => {
+
+      event.stopPropagation();
+
+      fire();
+
+    }
+  );
+
+
+  joystickLoop();
+
+  moveTarget();
+
+
+  cleanupFns.push(
+    () => {
+
+      board.removeEventListener(
+        "mousemove",
+        mouseMove
+      );
+
+
+      board.removeEventListener(
+        "pointerdown",
+        desktopFire
+      );
+
+
+      joystick.removeEventListener(
+        "touchstart",
+        joystickMove
+      );
+
+
+      joystick.removeEventListener(
+        "touchmove",
+        joystickMove
+      );
+
+
+      joystick.removeEventListener(
+        "touchend",
+        joystickEnd
+      );
+
+
+      cancelAnimationFrame(
+        joystickRAF
+      );
+
+
+      cancelAnimationFrame(
+        moveRAF
+      );
+
+    }
+  );
+
+
+  return () => {
+
+    if(!shots){
+
+      return {
+        score:0,
+        adapt:50
+      };
+
+    }
+
+
+    const accuracy =
+      hits/shots;
+
+
+    const reaction =
+      hits
+      ? reactionTotal/hits
+      : 2000;
+
+
+    const score =
+      clamp(
+        accuracy*70
+        +
+        Math.max(
+          0,
+          30
+          - (
+            reaction-400
+          )/45
+        ),
+        0,
+        100
+      );
+
+
+    return {
+      score,
+      adapt:
+        adaptScore(rounds)
+    };
+
+  };
 
 }
 
 
+function aimStaticGame(play){
 
-function resetCrosshair(){
-
-const size =
-getSize();
-
-
-crossX =
-size.width / 2;
-
-
-crossY =
-size.height / 2;
-
-
-renderCrosshair();
+  return aimEngine(
+    play,
+    false
+  );
 
 }
 
 
+function aimMovingGame(play){
 
-function renderCrosshair(){
-
-crosshair.style.left =
-crossX + "px";
-
-
-crosshair.style.top =
-crossY + "px";
+  return aimEngine(
+    play,
+    true
+  );
 
 }
-
-
-
-function spawnTarget(){
-
-const size =
-getSize();
-
-
-targetSize =
-moving
-? 66
-: 72;
-
-
-targetX =
-50 +
-Math.random()
-*
-Math.max(
-10,
-size.width - 100
-);
-
-
-targetY =
-50 +
-Math.random()
-*
-Math.max(
-10,
-size.height - 130
-);
-
-
-target.style.width =
-targetSize + "px";
-
-
-target.style.height =
-targetSize + "px";
-
-
-target.style.left =
-targetX + "px";
-
-
-target.style.top =
-targetY + "px";
-
-
-target.classList.remove(
-"hit"
-);
-
-
-target.style.opacity =
-"1";
-
-
-velocityX =
-(Math.random() < .5 ? -1 : 1)
-*
-(1.5 + Math.random() * 1.7);
-
-
-velocityY =
-(Math.random() < .5 ? -1 : 1)
-*
-(1.1 + Math.random() * 1.3);
-
-
-targetShownAt =
-performance.now();
-
-}
-
-
-
-function drawLaser(
-x,
-y,
-hit
-){
-
-const size =
-getSize();
-
-
-const startX =
-size.width / 2;
-
-
-const startY =
-size.height - 8;
-
-
-const dx =
-x - startX;
-
-
-const dy =
-y - startY;
-
-
-const distance =
-Math.sqrt(
-dx * dx +
-dy * dy
-);
-
-
-const angle =
-Math.atan2(
-dy,
-dx
-)
-* 180
-/ Math.PI;
-
-
-const laser =
-document.createElement(
-"div"
-);
-
-
-laser.className =
-"laser";
-
-
-laser.style.left =
-startX + "px";
-
-
-laser.style.top =
-startY + "px";
-
-
-laser.style.width =
-distance + "px";
-
-
-laser.style.transform =
-`rotate(${angle}deg)`;
-
-
-board.appendChild(
-laser
-);
-
-
-const ring =
-document.createElement(
-"div"
-);
-
-
-ring.className =
-hit
-? "hit-ring"
-: "hit-ring miss";
-
-
-ring.style.left =
-x + "px";
-
-
-ring.style.top =
-y + "px";
-
-
-board.appendChild(
-ring
-);
-
-
-setTimeout(
-() => {
-
-laser.remove();
-
-ring.remove();
-
-},
-300
-);
-
-}
-
-
-
-function fire(){
-
-if(
-!gameActive
-){
-return;
-}
-
-
-shots++;
-
-
-const distance =
-Math.sqrt(
-
-(crossX - targetX)
-*
-(crossX - targetX)
-
-+
-
-(crossY - targetY)
-*
-(crossY - targetY)
-
-);
-
-
-const hit =
-distance <= targetSize / 2;
-
-
-drawLaser(
-crossX,
-crossY,
-hit
-);
-
-
-if(
-hit
-){
-
-hits++;
-
-
-reactionTotal +=
-performance.now()
--
-targetShownAt;
-
-
-target.classList.add(
-"hit"
-);
-
-
-setTimeout(
-spawnTarget,
-120
-);
-
-}
-
-}
-
-
-
-function desktopMove(
-event
-){
-
-const rect =
-board.getBoundingClientRect();
-
-
-crossX =
-event.clientX
--
-rect.left;
-
-
-crossY =
-event.clientY
--
-rect.top;
-
-
-renderCrosshair();
-
-}
-
-
-
-function desktopFire(
-event
-){
-
-if(
-window.innerWidth <= 900
-){
-return;
-}
-
-
-event.preventDefault();
-
-
-fire();
-
-}
-
-
-
-let dragging = false;
-
-
-
-function touchStart(
-event
-){
-
-if(
-window.innerWidth > 900
-){
-return;
-}
-
-
-dragging = true;
-
-
-updateTouchAim(
-event
-);
-
-}
-
-
-
-function touchMove(
-event
-){
-
-if(
-!dragging
-){
-return;
-}
-
-
-updateTouchAim(
-event
-);
-
-}
-
-
-
-function touchEnd(){
-
-dragging = false;
-
-}
-
-
-
-function updateTouchAim(
-event
-){
-
-const touch =
-event.touches[0];
-
-
-if(
-!touch
-){
-return;
-}
-
-
-const rect =
-board.getBoundingClientRect();
-
-
-crossX =
-Math.max(
-0,
-Math.min(
-rect.width,
-touch.clientX - rect.left
-)
-);
-
-
-crossY =
-Math.max(
-0,
-Math.min(
-rect.height,
-touch.clientY - rect.top
-)
-);
-
-
-renderCrosshair();
-
-}
-
-
-
-function animateTarget(){
-
-if(
-!gameActive ||
-!moving
-){
-return;
-}
-
-
-const size =
-getSize();
-
-
-targetX +=
-velocityX;
-
-
-targetY +=
-velocityY;
-
-
-const radius =
-targetSize / 2;
-
-
-if(
-targetX < radius ||
-targetX > size.width - radius
-){
-
-velocityX *= -1;
-
-}
-
-
-if(
-targetY < radius ||
-targetY > size.height - 110
-){
-
-velocityY *= -1;
-
-}
-
-
-targetX =
-Math.max(
-radius,
-Math.min(
-size.width - radius,
-targetX
-)
-);
-
-
-targetY =
-Math.max(
-radius,
-Math.min(
-size.height - 110,
-targetY
-)
-);
-
-
-target.style.left =
-targetX + "px";
-
-
-target.style.top =
-targetY + "px";
-
-
-moveRaf =
-requestAnimationFrame(
-animateTarget
-);
-
-}
-
-
-
-board.addEventListener(
-"mousemove",
-desktopMove
-);
-
-
-board.addEventListener(
-"pointerdown",
-desktopFire
-);
-
-
-board.addEventListener(
-"touchstart",
-touchStart,
-{
-passive:true
-}
-);
-
-
-board.addEventListener(
-"touchmove",
-touchMove,
-{
-passive:true
-}
-);
-
-
-board.addEventListener(
-"touchend",
-touchEnd,
-{
-passive:true
-}
-);
-
-
-fireButton.addEventListener(
-"pointerdown",
-event => {
-
-event.stopPropagation();
-
-fire();
-
-}
-);
-
-
-cleanupFns.push(
-() => {
-
-board.removeEventListener(
-"mousemove",
-desktopMove
-);
-
-
-board.removeEventListener(
-"pointerdown",
-desktopFire
-);
-
-
-board.removeEventListener(
-"touchstart",
-touchStart
-);
-
-
-board.removeEventListener(
-"touchmove",
-touchMove
-);
-
-
-board.removeEventListener(
-"touchend",
-touchEnd
-);
-
-
-if(
-moveRaf
-){
-
-cancelAnimationFrame(
-moveRaf
-);
-
-}
-
-}
-);
-
-
-resetCrosshair();
-
-spawnTarget();
-
-
-if(
-moving
-){
-
-animateTarget();
-
-}
-
-
-
-return () => {
-
-if(
-!shots
-){
-return 0;
-}
-
-
-const accuracy =
-hits / shots;
-
-
-const avgReaction =
-hits
-? reactionTotal / hits
-: 2000;
-
-
-const accuracyScore =
-accuracy * 65;
-
-
-const reactionScore =
-Math.max(
-0,
-35
--
-(avgReaction - 350)
-/
-45
-);
-
-
-return Math.min(
-100,
-accuracyScore
-+
-reactionScore
-);
-
-};
-
-}
-
-
-
-function staticAimGame(){
-
-return createAimGame(
-false
-);
-
-}
-
-
-
-function movingAimGame(){
-
-return createAimGame(
-true
-);
-
-}
-
 
 
 /* ==================================================
-LOGIC 1
+GAME 7 HIGH LOW
 ================================================== */
 
+function highLowGame(play){
 
-function highLowGame(){
+  let correct = 0;
+  let attempts = 0;
 
-let correct = 0;
-
-let totalQuestions = 0;
-
-
-
-function next(){
-
-if(
-!gameActive
-){
-return;
-}
+  const rounds = [];
 
 
-let left =
-Math.floor(
-Math.random() * 90
-)
-+ 10;
+  function next(){
+
+    if(!gameActive) return;
 
 
-let right =
-Math.floor(
-Math.random() * 90
-)
-+ 10;
+    let a =
+      Math.floor(
+        Math.random()*90
+      )+10;
 
 
-while(
-left === right
-){
-
-right =
-Math.floor(
-Math.random() * 90
-)
-+ 10;
-
-}
+    let b =
+      Math.floor(
+        Math.random()*90
+      )+10;
 
 
-const answer =
-Math.max(
-left,
-right
-);
+    while(a === b){
+
+      b =
+        Math.floor(
+          Math.random()*90
+        )+10;
+
+    }
 
 
-playArea.innerHTML = `
-
-<div class="choice-wrap">
-
-<button
-class="choice"
-data-value="${left}"
->
-${left}
-</button>
-
-<button
-class="choice"
-data-value="${right}"
->
-${right}
-</button>
-
-</div>
-
-`;
+    const answer =
+      Math.max(a,b);
 
 
-playArea
-.querySelectorAll(
-".choice"
-)
-.forEach(
-button => {
+    play.innerHTML = `
 
-button.addEventListener(
-"pointerdown",
-() => {
+      <div class="choice-wrap">
 
-if(
-!gameActive
-){
-return;
-}
+        <button
+          class="choice"
+          data-value="${a}"
+        >
+          ${a}
+        </button>
 
+        <button
+          class="choice"
+          data-value="${b}"
+        >
+          ${b}
+        </button>
 
-totalQuestions++;
+      </div>
 
-
-if(
-Number(
-button.dataset.value
-)
-=== answer
-){
-
-correct++;
-
-}
+    `;
 
 
-next();
+    play.querySelectorAll(
+      ".choice"
+    )
+    .forEach(
+      btn => {
 
-},
-{
-once:true
-}
-);
+        btn.addEventListener(
+          "pointerdown",
+          () => {
 
-}
-);
-
-}
-
-
-next();
+            if(!gameActive) return;
 
 
-
-return () => {
-
-if(
-!totalQuestions
-){
-return 0;
-}
+            attempts++;
 
 
-const accuracy =
-correct /
-totalQuestions;
+            const good =
+              Number(
+                btn.dataset.value
+              )
+              === answer;
 
 
-const pace =
-Math.min(
-35,
-totalQuestions * 3
-);
+            if(good){
+              correct++;
+            }
 
 
-return (
-accuracy * 65
-+
-pace
-);
+            rounds.push(
+              good ? 100 : 0
+            );
 
-};
+
+            next();
+
+          },
+          {
+            once:true
+          }
+        );
+
+      }
+    );
+
+  }
+
+
+  next();
+
+
+  return () => ({
+
+    score:
+      attempts
+      ? clamp(
+          correct/attempts*70
+          + attempts*2.2,
+          0,
+          100
+        )
+      : 0,
+
+    adapt:
+      adaptScore(rounds)
+
+  });
 
 }
-
 
 
 /* ==================================================
-LOGIC 2
+GAME 8 CONDITION
 ================================================== */
 
+function conditionGame(play){
 
-function conditionGame(){
+  let correct = 0;
+  let attempts = 0;
 
-let correct = 0;
-
-let attempts = 0;
-
-
-
-const questions = [
-
-{
-
-label:
-"偶数を選べ",
-
-make(){
-
-const correct =
-Math.floor(
-Math.random() * 40
-) * 2 + 2;
+  const rounds = [];
 
 
-let wrong =
-Math.floor(
-Math.random() * 40
-) * 2 + 1;
+  const rules = [
+
+    {
+      label:"大きい方",
+      answer:(a,b)=>Math.max(a,b)
+    },
+
+    {
+      label:"小さい方",
+      answer:(a,b)=>Math.min(a,b)
+    },
+
+    {
+      label:"偶数",
+      answer:(a,b)=>
+        a%2===0 ? a : b
+    }
+
+  ];
 
 
-return {
-values:[
-correct,
-wrong
-],
-answer:
-correct
-};
+  function next(){
+
+    if(!gameActive) return;
+
+
+    const rule =
+      rules[
+        Math.floor(
+          Math.random()
+          * rules.length
+        )
+      ];
+
+
+    let a;
+    let b;
+
+
+    if(rule.label === "偶数"){
+
+      a =
+        Math.floor(
+          Math.random()*40
+        )*2+2;
+
+
+      b =
+        Math.floor(
+          Math.random()*40
+        )*2+1;
+
+
+      if(Math.random() < .5){
+
+        [a,b] = [b,a];
+
+      }
+
+    }
+    else{
+
+      a =
+        Math.floor(
+          Math.random()*90
+        )+10;
+
+
+      b =
+        Math.floor(
+          Math.random()*90
+        )+10;
+
+
+      while(a === b){
+        b++;
+      }
+
+    }
+
+
+    const answer =
+      rule.answer(a,b);
+
+
+    play.innerHTML = `
+
+      <div class="center-game">
+
+        <div class="logic-label">
+          ${rule.label}
+        </div>
+
+        <div class="choice-wrap">
+
+          <button
+            class="choice"
+            data-value="${a}"
+          >
+            ${a}
+          </button>
+
+          <button
+            class="choice"
+            data-value="${b}"
+          >
+            ${b}
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    play.querySelectorAll(
+      ".choice"
+    )
+    .forEach(
+      btn => {
+
+        btn.addEventListener(
+          "pointerdown",
+          () => {
+
+            attempts++;
+
+
+            const good =
+              Number(
+                btn.dataset.value
+              )
+              === answer;
+
+
+            if(good){
+              correct++;
+            }
+
+
+            rounds.push(
+              good ? 100 : 0
+            );
+
+
+            next();
+
+          },
+          {
+            once:true
+          }
+        );
+
+      }
+    );
+
+  }
+
+
+  next();
+
+
+  return () => ({
+
+    score:
+      attempts
+      ? clamp(
+          correct/attempts*70
+          + attempts*2,
+          0,
+          100
+        )
+      : 0,
+
+    adapt:
+      adaptScore(rounds)
+
+  });
 
 }
-
-},
-
-{
-
-label:
-"小さい数字を選べ",
-
-make(){
-
-let a =
-Math.floor(
-Math.random() * 90
-)
-+ 10;
-
-
-let b =
-Math.floor(
-Math.random() * 90
-)
-+ 10;
-
-
-while(
-a === b
-){
-
-b++;
-
-}
-
-
-return {
-
-values:[
-a,
-b
-],
-
-answer:
-Math.min(
-a,
-b
-)
-
-};
-
-}
-
-},
-
-{
-
-label:
-"3の倍数を選べ",
-
-make(){
-
-const correct =
-(
-Math.floor(
-Math.random() * 25
-)
-+ 2
-)
-* 3;
-
-
-let wrong =
-Math.floor(
-Math.random() * 80
-)
-+ 10;
-
-
-while(
-wrong % 3 === 0
-){
-
-wrong++;
-
-}
-
-
-return {
-
-values:[
-correct,
-wrong
-],
-
-answer:
-correct
-
-};
-
-}
-
-}
-
-];
-
-
-
-function next(){
-
-if(
-!gameActive
-){
-return;
-}
-
-
-const q =
-questions[
-Math.floor(
-Math.random()
-*
-questions.length
-)
-];
-
-
-const made =
-q.make();
-
-
-const values =
-Math.random() < .5
-
-? made.values
-
-: [
-made.values[1],
-made.values[0]
-];
-
-
-playArea.innerHTML = `
-
-<div class="logic-question">
-
-<div class="logic-label">
-${q.label}
-</div>
-
-<div class="choice-wrap">
-
-<button
-class="choice"
-data-value="${values[0]}"
->
-${values[0]}
-</button>
-
-<button
-class="choice"
-data-value="${values[1]}"
->
-${values[1]}
-</button>
-
-</div>
-
-</div>
-
-`;
-
-
-playArea
-.querySelectorAll(
-".choice"
-)
-.forEach(
-button => {
-
-button.addEventListener(
-"pointerdown",
-() => {
-
-if(
-!gameActive
-){
-return;
-}
-
-
-attempts++;
-
-
-if(
-Number(
-button.dataset.value
-)
-===
-made.answer
-){
-
-correct++;
-
-}
-
-
-next();
-
-},
-{
-once:true
-}
-);
-
-}
-);
-
-}
-
-
-next();
-
-
-
-return () => {
-
-if(
-!attempts
-){
-return 0;
-}
-
-
-return Math.min(
-100,
-correct / attempts * 70
-+
-attempts * 2.5
-);
-
-};
-
-}
-
 
 
 /* ==================================================
-MEMORY 1
+GAME 9 SEQUENCE
 ================================================== */
 
+function sequenceGame(play){
 
-function sequenceMemoryGame(){
+  let rounds = 0;
+  let success = 0;
+  let sequence = [];
+  let inputIndex = 0;
+  let accepting = false;
 
-let rounds = 0;
+  let timers = [];
 
-let successes = 0;
-
-let sequence = [];
-
-let inputIndex = 0;
-
-let accepting = false;
-
-let timers = [];
+  const roundScores = [];
 
 
-playArea.innerHTML = `
+  play.innerHTML = `
 
-<div class="memory-holder">
+    <div class="center-game">
 
-<div
-class="memory-grid"
->
+      <div class="memory-grid">
 
-${Array.from(
-{
-length:9
-},
-(_,index) =>
-`
+        ${Array.from(
+          {length:9},
+          (_,i)=>`
+            <button
+              class="memory-cell"
+              data-index="${i}"
+            ></button>
+          `
+        ).join("")}
 
-<button
-class="memory-cell"
-data-index="${index}"
-></button>
+      </div>
 
-`
-).join("")}
+      <span
+        class="message"
+        id="seqMsg"
+      >
+        覚えろ
+      </span>
 
-</div>
+    </div>
 
-<div
-class="memory-message"
-id="sequenceMessage"
->
-覚えろ
-</div>
-
-</div>
-
-`;
+  `;
 
 
-const cells =
-[
-...playArea.querySelectorAll(
-".memory-cell"
-)
-];
+  const cells =
+    [...play.querySelectorAll(
+      ".memory-cell"
+    )];
 
 
-const message =
-$("sequenceMessage");
+  const msg =
+    play.querySelector("#seqMsg");
 
 
+  function clearTimers(){
 
-function clearTimers(){
+    timers.forEach(
+      clearTimeout
+    );
 
-timers.forEach(
-clearTimeout
-);
+    timers = [];
+
+  }
 
 
-timers = [];
+  function flash(
+    cell,
+    className
+  ){
+
+    cell.classList.add(
+      className
+    );
+
+
+    setTimeout(
+      () =>
+        cell.classList.remove(
+          className
+        ),
+      130
+    );
+
+  }
+
+
+  function round(){
+
+    clearTimers();
+
+    accepting = false;
+    inputIndex = 0;
+
+
+    const len =
+      Math.min(
+        5,
+        3
+        + Math.floor(
+            rounds/2
+          )
+      );
+
+
+    sequence =
+      Array.from(
+        {length:len},
+        () =>
+          Math.floor(
+            Math.random()*9
+          )
+      );
+
+
+    msg.textContent =
+      "覚えろ";
+
+
+    let delay = 180;
+
+
+    sequence.forEach(
+      index => {
+
+        timers.push(
+          setTimeout(
+            () =>
+              cells[index]
+                .classList
+                .add("demo"),
+            delay
+          )
+        );
+
+
+        timers.push(
+          setTimeout(
+            () =>
+              cells[index]
+                .classList
+                .remove("demo"),
+            delay+190
+          )
+        );
+
+
+        delay += 290;
+
+      }
+    );
+
+
+    timers.push(
+      setTimeout(
+        () => {
+
+          accepting = true;
+
+          msg.textContent =
+            "再現";
+
+        },
+        delay+50
+      )
+    );
+
+  }
+
+
+  const handlers =
+    cells.map(
+      cell => {
+
+        const fn =
+          () => {
+
+            if(
+              !gameActive ||
+              !accepting
+            ){
+              return;
+            }
+
+
+            const index =
+              Number(
+                cell.dataset.index
+              );
+
+
+            const good =
+              index
+              ===
+              sequence[inputIndex];
+
+
+            flash(
+              cell,
+              good
+              ? "correct"
+              : "wrong"
+            );
+
+
+            if(good){
+
+              inputIndex++;
+
+
+              if(
+                inputIndex ===
+                sequence.length
+              ){
+
+                success++;
+                rounds++;
+
+                roundScores.push(100);
+
+                accepting = false;
+
+                msg.textContent =
+                  "CLEAR";
+
+
+                timers.push(
+                  setTimeout(
+                    round,
+                    300
+                  )
+                );
+
+              }
+
+            }
+            else{
+
+              rounds++;
+
+              roundScores.push(0);
+
+              accepting = false;
+
+              msg.textContent =
+                "MISS";
+
+
+              timers.push(
+                setTimeout(
+                  round,
+                  350
+                )
+              );
+
+            }
+
+          };
+
+
+        cell.addEventListener(
+          "pointerdown",
+          fn
+        );
+
+
+        return {
+          cell,
+          fn
+        };
+
+      }
+    );
+
+
+  cleanupFns.push(
+    () => {
+
+      clearTimers();
+
+
+      handlers.forEach(
+        item =>
+          item.cell
+            .removeEventListener(
+              "pointerdown",
+              item.fn
+            )
+      );
+
+    }
+  );
+
+
+  round();
+
+
+  return () => ({
+
+    score:
+      rounds
+      ? clamp(
+          success/rounds*85
+          + success*5,
+          0,
+          100
+        )
+      : 0,
+
+    adapt:
+      adaptScore(
+        roundScores
+      )
+
+  });
 
 }
-
-
-
-function flash(
-cell,
-className
-){
-
-cell.classList.add(
-className
-);
-
-
-setTimeout(
-() =>
-cell.classList.remove(
-className
-),
-150
-);
-
-}
-
-
-
-function nextRound(){
-
-clearTimers();
-
-
-accepting = false;
-
-inputIndex = 0;
-
-
-const length =
-Math.min(
-5,
-3 +
-Math.floor(
-rounds / 2
-)
-);
-
-
-sequence =
-Array.from(
-{
-length
-},
-() =>
-Math.floor(
-Math.random() * 9
-)
-);
-
-
-message.textContent =
-"覚えろ";
-
-
-let delay =
-250;
-
-
-sequence.forEach(
-index => {
-
-timers.push(
-
-setTimeout(
-() => {
-
-cells[index]
-.classList.add(
-"demo"
-);
-
-},
-delay
-)
-
-);
-
-
-timers.push(
-
-setTimeout(
-() => {
-
-cells[index]
-.classList.remove(
-"demo"
-);
-
-},
-delay + 220
-)
-
-);
-
-
-delay +=
-340;
-
-}
-);
-
-
-timers.push(
-
-setTimeout(
-() => {
-
-accepting = true;
-
-message.textContent =
-"再現";
-
-},
-delay + 80
-)
-
-);
-
-}
-
-
-
-const handlers =
-cells.map(
-cell => {
-
-const handler =
-() => {
-
-if(
-!gameActive ||
-!accepting
-){
-return;
-}
-
-
-const index =
-Number(
-cell.dataset.index
-);
-
-
-const correct =
-index ===
-sequence[
-inputIndex
-];
-
-
-flash(
-cell,
-correct
-? "user-hit"
-: "user-miss"
-);
-
-
-if(
-correct
-){
-
-inputIndex++;
-
-
-if(
-inputIndex ===
-sequence.length
-){
-
-successes++;
-
-rounds++;
-
-accepting = false;
-
-
-message.textContent =
-"CLEAR";
-
-
-timers.push(
-
-setTimeout(
-nextRound,
-350
-)
-
-);
-
-}
-
-}
-else{
-
-rounds++;
-
-accepting = false;
-
-
-message.textContent =
-"MISS";
-
-
-timers.push(
-
-setTimeout(
-nextRound,
-420
-)
-
-);
-
-}
-
-};
-
-
-cell.addEventListener(
-"pointerdown",
-handler
-);
-
-
-return {
-cell,
-handler
-};
-
-}
-);
-
-
-cleanupFns.push(
-() => {
-
-clearTimers();
-
-
-handlers.forEach(
-item => {
-
-item.cell.removeEventListener(
-"pointerdown",
-item.handler
-);
-
-}
-);
-
-}
-);
-
-
-nextRound();
-
-
-
-return () => {
-
-if(
-!rounds
-){
-return 0;
-}
-
-
-return Math.min(
-100,
-successes / rounds * 80
-+
-successes * 7
-);
-
-};
-
-}
-
 
 
 /* ==================================================
-MEMORY 2
+GAME 10 POSITION
 ================================================== */
 
+function positionGame(play){
 
-function positionMemoryGame(){
+  let rounds = 0;
+  let success = 0;
 
-let rounds = 0;
+  let targets =
+    new Set();
 
-let success = 0;
+  let selected =
+    new Set();
 
-let targetSet = new Set();
+  let accepting = false;
+  let timer = null;
 
-let selected = new Set();
-
-let accepting = false;
-
-let timer = null;
-
-
-playArea.innerHTML = `
-
-<div class="memory-holder">
-
-<div
-class="position-grid"
->
-
-${Array.from(
-{
-length:16
-},
-(_,index) =>
-`
-
-<button
-class="position-cell"
-data-index="${index}"
-></button>
-
-`
-).join("")}
-
-</div>
-
-<div
-class="memory-message"
-id="positionMessage"
->
-覚えろ
-</div>
-
-</div>
-
-`;
+  const roundScores = [];
 
 
-const cells =
-[
-...playArea.querySelectorAll(
-".position-cell"
-)
-];
+  play.innerHTML = `
+
+    <div class="center-game">
+
+      <div class="position-grid">
+
+        ${Array.from(
+          {length:16},
+          (_,i)=>`
+            <button
+              class="position-cell"
+              data-index="${i}"
+            ></button>
+          `
+        ).join("")}
+
+      </div>
+
+      <span
+        class="message"
+        id="posMsg"
+      >
+        覚えろ
+      </span>
+
+    </div>
+
+  `;
 
 
-const message =
-$("positionMessage");
+  const cells =
+    [...play.querySelectorAll(
+      ".position-cell"
+    )];
 
 
-
-function round(){
-
-accepting = false;
-
-selected =
-new Set();
+  const msg =
+    play.querySelector("#posMsg");
 
 
-targetSet =
-new Set();
+  function round(){
+
+    selected =
+      new Set();
 
 
-cells.forEach(
-cell =>
-cell.className =
-"position-cell"
-);
+    targets =
+      new Set();
 
 
-while(
-targetSet.size < 4
-){
+    accepting = false;
 
-targetSet.add(
-Math.floor(
-Math.random() * 16
-)
-);
+
+    cells.forEach(
+      cell =>
+        cell.className =
+          "position-cell"
+    );
+
+
+    while(
+      targets.size < 4
+    ){
+
+      targets.add(
+        Math.floor(
+          Math.random()*16
+        )
+      );
+
+    }
+
+
+    targets.forEach(
+      index =>
+        cells[index]
+          .classList
+          .add("preview")
+    );
+
+
+    msg.textContent =
+      "覚えろ";
+
+
+    timer =
+      setTimeout(
+        () => {
+
+          cells.forEach(
+            cell =>
+              cell.classList
+                .remove("preview")
+          );
+
+
+          accepting = true;
+
+          msg.textContent =
+            "再現";
+
+        },
+        650
+      );
+
+  }
+
+
+  const handlers =
+    cells.map(
+      cell => {
+
+        const fn =
+          () => {
+
+            if(
+              !gameActive ||
+              !accepting
+            ){
+              return;
+            }
+
+
+            const index =
+              Number(
+                cell.dataset.index
+              );
+
+
+            if(
+              selected.has(index)
+            ){
+              return;
+            }
+
+
+            selected.add(
+              index
+            );
+
+
+            const good =
+              targets.has(
+                index
+              );
+
+
+            cell.classList.add(
+              good
+              ? "correct"
+              : "wrong"
+            );
+
+
+            if(
+              selected.size === 4
+            ){
+
+              rounds++;
+
+
+              let correctCount = 0;
+
+
+              selected.forEach(
+                value => {
+
+                  if(
+                    targets.has(value)
+                  ){
+                    correctCount++;
+                  }
+
+                }
+              );
+
+
+              const roundScore =
+                correctCount/4*100;
+
+
+              roundScores.push(
+                roundScore
+              );
+
+
+              if(
+                correctCount === 4
+              ){
+                success++;
+              }
+
+
+              accepting = false;
+
+
+              msg.textContent =
+                correctCount === 4
+                ? "CLEAR"
+                : `${correctCount}/4`;
+
+
+              timer =
+                setTimeout(
+                  round,
+                  350
+                );
+
+            }
+
+          };
+
+
+        cell.addEventListener(
+          "pointerdown",
+          fn
+        );
+
+
+        return {
+          cell,
+          fn
+        };
+
+      }
+    );
+
+
+  cleanupFns.push(
+    () => {
+
+      clearTimeout(timer);
+
+
+      handlers.forEach(
+        item =>
+          item.cell
+            .removeEventListener(
+              "pointerdown",
+              item.fn
+            )
+      );
+
+    }
+  );
+
+
+  round();
+
+
+  return () => ({
+
+    score:
+      rounds
+      ? clamp(
+          success/rounds*90
+          + success*4,
+          0,
+          100
+        )
+      : 0,
+
+    adapt:
+      adaptScore(
+        roundScores
+      )
+
+  });
 
 }
-
-
-targetSet.forEach(
-index => {
-
-cells[index]
-.classList.add(
-"preview"
-);
-
-}
-);
-
-
-message.textContent =
-"覚えろ";
-
-
-timer =
-setTimeout(
-() => {
-
-cells.forEach(
-cell =>
-cell.classList.remove(
-"preview"
-)
-);
-
-
-accepting = true;
-
-
-message.textContent =
-"同じ場所を押せ";
-
-},
-900
-);
-
-}
-
-
-
-const handlers =
-cells.map(
-cell => {
-
-const handler =
-() => {
-
-if(
-!gameActive ||
-!accepting
-){
-return;
-}
-
-
-const index =
-Number(
-cell.dataset.index
-);
-
-
-if(
-selected.has(
-index
-)
-){
-return;
-}
-
-
-selected.add(
-index
-);
-
-
-if(
-targetSet.has(
-index
-)
-){
-
-cell.classList.add(
-"correct"
-);
-
-}
-else{
-
-cell.classList.add(
-"wrong"
-);
-
-}
-
-
-if(
-selected.size === 4
-){
-
-rounds++;
-
-
-let correctCount = 0;
-
-
-selected.forEach(
-value => {
-
-if(
-targetSet.has(
-value
-)
-){
-
-correctCount++;
-
-}
-
-}
-);
-
-
-if(
-correctCount === 4
-){
-
-success++;
-
-}
-
-
-accepting = false;
-
-
-message.textContent =
-correctCount === 4
-? "CLEAR"
-: `${correctCount} / 4`;
-
-
-timer =
-setTimeout(
-round,
-450
-);
-
-}
-
-};
-
-
-cell.addEventListener(
-"pointerdown",
-handler
-);
-
-
-return {
-cell,
-handler
-};
-
-}
-);
-
-
-cleanupFns.push(
-() => {
-
-clearTimeout(
-timer
-);
-
-
-handlers.forEach(
-item => {
-
-item.cell.removeEventListener(
-"pointerdown",
-item.handler
-);
-
-}
-);
-
-}
-);
-
-
-round();
-
-
-
-return () => {
-
-if(
-!rounds
-){
-return 0;
-}
-
-
-return Math.min(
-100,
-success / rounds * 85
-+
-success * 5
-);
-
-};
-
-}
-
 
 
 /* ==================================================
-SWIPE
+START BUTTON
 ================================================== */
 
-
-let touchStartY = null;
-
-
-gameBoard.addEventListener(
-"touchstart",
-event => {
-
-if(
-!canAdvance
-){
-return;
-}
-
-
-touchStartY =
-event.touches[0]
-.clientY;
-
-},
-{
-passive:true
-}
+$("startBtn").addEventListener(
+  "click",
+  start
 );
-
-
-gameBoard.addEventListener(
-"touchend",
-event => {
-
-if(
-!canAdvance ||
-touchStartY === null
-){
-return;
-}
-
-
-const endY =
-event.changedTouches[0]
-.clientY;
-
-
-const delta =
-endY - touchStartY;
-
-
-touchStartY = null;
-
-
-if(
-delta < -50
-){
-
-advance();
-
-}
-
-},
-{
-passive:true
-}
-);
-
-
-
-/* ==================================================
-PC WHEEL
-================================================== */
-
-
-let wheelLocked = false;
-
-
-window.addEventListener(
-"wheel",
-event => {
-
-if(
-!canAdvance ||
-wheelLocked
-){
-return;
-}
-
-
-if(
-event.deltaY > 40
-){
-
-wheelLocked = true;
-
-
-advance();
-
-
-setTimeout(
-() => {
-
-wheelLocked = false;
-
-},
-850
-);
-
-}
-
-},
-{
-passive:true
-}
-);
-
-
-
-/* ==================================================
-KEYBOARD
-================================================== */
-
-
-window.addEventListener(
-"keydown",
-event => {
-
-if(
-!canAdvance
-){
-return;
-}
-
-
-if(
-event.key === "ArrowDown"
-||
-event.key === "Enter"
-||
-event.key === " "
-){
-
-advance();
-
-}
-
-}
-);
-
-
-
-finishLayer.addEventListener(
-"click",
-advance
-);
-
-
-$("startBtn")
-.addEventListener(
-"click",
-startRun
-);
-
-
-$("retryBtn")
-.addEventListener(
-"click",
-startRun
-);
-
 
 })();
-
 </script>
 
 </body>
