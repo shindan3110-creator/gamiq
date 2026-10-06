@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>GAMIQ - TRUE GAMING SKILL</title>
+<title>GAMIQ v0.6 - 50 GAME FEED</title>
 
 <style>
 :root{
@@ -16,7 +16,6 @@
   --green:#76ffb2;
   --red:#ff4e70;
   --yellow:#ffe46b;
-  --orange:#ff9b54;
   --line:rgba(255,255,255,.08);
 }
 
@@ -93,7 +92,7 @@ button{
 
 .live{
   display:flex;
-  gap:24px;
+  gap:22px;
   align-items:center;
 }
 
@@ -113,34 +112,6 @@ button{
   display:block;
   font-size:20px;
   font-weight:1000;
-  transition:transform .2s ease,color .2s ease;
-}
-
-.live-value.flash-up{
-  animation:scoreUp .6s ease;
-}
-
-.live-value.flash-down{
-  animation:scoreDown .6s ease;
-}
-
-@keyframes scoreUp{
-  0%{transform:scale(1)}
-  45%{
-    color:var(--green);
-    transform:scale(1.22);
-    text-shadow:0 0 20px rgba(118,255,178,.7);
-  }
-  100%{transform:scale(1)}
-}
-
-@keyframes scoreDown{
-  0%{transform:scale(1)}
-  45%{
-    color:var(--red);
-    transform:scale(1.15);
-  }
-  100%{transform:scale(1)}
 }
 
 .feed{
@@ -158,71 +129,81 @@ button{
 }
 
 .feed.shake{
-  animation:screenShake .15s linear;
+  animation:shake .14s linear;
 }
 
-@keyframes screenShake{
-  0%{transform:translate(0,0)}
+@keyframes shake{
   25%{transform:translate(-2px,1px)}
   50%{transform:translate(2px,-1px)}
   75%{transform:translate(-1px,-1px)}
-  100%{transform:translate(0,0)}
 }
 
-.feed.miss-flash::after{
+.feed.miss::after{
   content:"";
   position:absolute;
   inset:0;
   z-index:200;
   pointer-events:none;
   background:rgba(255,78,112,.18);
-  animation:missFlash .18s ease-out forwards;
+  animation:fade .2s ease-out forwards;
 }
 
-@keyframes missFlash{
-  from{opacity:1}
+@keyframes fade{
   to{opacity:0}
 }
 
 .card{
   position:absolute;
   inset:0;
-  background:
-    radial-gradient(circle at 50% 30%,rgba(97,234,255,.05),transparent 42%),
-    radial-gradient(circle at 75% 80%,rgba(132,102,255,.06),transparent 42%),
-    linear-gradient(180deg,#0b1019,#070a10);
+  background:linear-gradient(180deg,#0b1019,#070a10);
   will-change:transform,opacity,filter;
 }
 
 .card.current{
-  transform:translateY(0) scale(1);
+  transform:translateY(0);
 }
 
 .card.next{
-  transform:translateY(100%) scale(.98);
+  transform:translateY(100%);
 }
 
 .card.animating{
   transition:
     transform .34s cubic-bezier(.22,.75,.28,1),
-    opacity .34s ease,
-    filter .34s ease;
+    opacity .34s,
+    filter .34s;
 }
 
 .card-content{
   width:100%;
   height:100%;
-  padding:30px;
+  padding:28px;
   display:flex;
   flex-direction:column;
+  position:relative;
+}
+
+.card-content::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 70% 25%,var(--themeGlow,rgba(97,234,255,.10)),transparent 32%),
+    linear-gradient(135deg,var(--themeA,#0b1019),var(--themeB,#070a10));
+  opacity:.95;
+}
+
+.card-content>*{
+  position:relative;
+  z-index:1;
 }
 
 .game-head{
-  flex:0 0 auto;
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
-  margin-bottom:14px;
+  margin-bottom:12px;
 }
 
 .game-number{
@@ -238,14 +219,22 @@ button{
   letter-spacing:-.04em;
 }
 
+.game-sub{
+  margin-top:4px;
+  color:#aab4c4;
+  font-size:12px;
+  font-weight:800;
+}
+
 .skill-badge{
   padding:8px 11px;
-  border:1px solid rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.10);
   border-radius:999px;
-  color:#aeb9cb;
+  color:#d2dae7;
   font-size:10px;
   font-weight:900;
   letter-spacing:.12em;
+  background:rgba(0,0,0,.18);
 }
 
 .board{
@@ -253,11 +242,10 @@ button{
   flex:1;
   min-height:0;
   overflow:hidden;
-  border:1px solid rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.08);
   border-radius:24px;
-  background:
-    radial-gradient(circle at 50% 40%,rgba(97,234,255,.04),transparent 45%),
-    #070a11;
+  background:rgba(4,7,12,.75);
+  backdrop-filter:blur(2px);
 }
 
 .play{
@@ -278,13 +266,13 @@ button{
   align-items:center;
   justify-content:center;
   padding:30px;
-  background:rgba(5,8,14,.78);
+  background:rgba(5,8,14,.75);
   backdrop-filter:blur(14px);
 }
 
 .rule-inner{
-  width:min(720px,100%);
   text-align:center;
+  width:min(720px,100%);
 }
 
 .rule-label{
@@ -295,17 +283,21 @@ button{
 }
 
 .rule-text{
-  margin-top:13px;
-  font-size:clamp(27px,4vw,50px);
-  line-height:1.3;
+  margin-top:12px;
+  font-size:clamp(26px,4vw,48px);
   font-weight:1000;
-  letter-spacing:-.03em;
+  line-height:1.3;
+}
+
+.rule-icon{
+  font-size:60px;
+  margin-bottom:16px;
 }
 
 .rule-bar{
-  width:105px;
+  width:100px;
   height:3px;
-  margin:24px auto 0;
+  margin:22px auto 0;
   border-radius:999px;
   overflow:hidden;
   background:rgba(255,255,255,.08);
@@ -318,10 +310,10 @@ button{
 }
 
 .rule-bar-fill.go{
-  animation:ruleReady .9s linear forwards;
+  animation:rule .9s linear forwards;
 }
 
-@keyframes ruleReady{
+@keyframes rule{
   to{width:100%}
 }
 
@@ -333,7 +325,7 @@ button{
   align-items:center;
   justify-content:center;
   text-align:center;
-  background:rgba(5,8,14,.78);
+  background:rgba(5,8,14,.74);
   backdrop-filter:blur(9px);
 }
 
@@ -342,32 +334,20 @@ button{
 }
 
 .finish-score{
-  font-size:clamp(66px,10vw,120px);
+  font-size:clamp(64px,10vw,116px);
   font-weight:1000;
   line-height:1;
-  animation:finishPop .28s ease-out;
 }
 
-@keyframes finishPop{
-  from{
-    opacity:0;
-    transform:scale(.55);
-  }
-  to{
-    opacity:1;
-    transform:scale(1);
-  }
-}
-
-.finish-skill{
-  margin-top:10px;
-  color:#9da8bb;
+.finish-theme{
   font-size:13px;
+  color:#b1bbca;
   font-weight:900;
+  margin-top:9px;
 }
 
 .swipe-hint{
-  margin-top:25px;
+  margin-top:24px;
   color:#a9b5c8;
   font-size:12px;
   font-weight:900;
@@ -377,16 +357,12 @@ button{
 .swipe-arrow{
   display:block;
   font-size:32px;
-  margin-bottom:4px;
   animation:arrow .9s ease-in-out infinite;
 }
 
 @keyframes arrow{
   50%{transform:translateY(-7px)}
 }
-
-
-/* FEEDBACK */
 
 .feedback{
   position:absolute;
@@ -395,11 +371,10 @@ button{
   top:30%;
   transform:translate(-50%,-50%);
   pointer-events:none;
-  font-size:clamp(28px,6vw,64px);
+  font-size:clamp(28px,6vw,62px);
   font-weight:1000;
-  letter-spacing:-.04em;
-  text-shadow:0 5px 20px rgba(0,0,0,.45);
-  animation:feedbackPop .5s ease-out forwards;
+  animation:pop .48s ease-out forwards;
+  text-shadow:0 6px 22px rgba(0,0,0,.5);
 }
 
 .feedback.good{
@@ -414,164 +389,72 @@ button{
   color:var(--yellow);
 }
 
-.feedback.miss{
+.feedback.bad{
   color:var(--red);
 }
 
-@keyframes feedbackPop{
+@keyframes pop{
   0%{
     opacity:0;
     transform:translate(-50%,-30%) scale(.6);
   }
   35%{
     opacity:1;
-    transform:translate(-50%,-50%) scale(1.18);
+    transform:translate(-50%,-50%) scale(1.16);
   }
   100%{
     opacity:0;
-    transform:translate(-50%,-85%) scale(.92);
+    transform:translate(-50%,-85%) scale(.9);
   }
 }
 
 .combo{
   position:absolute;
   z-index:115;
-  top:18px;
-  right:18px;
-  padding:9px 13px;
+  top:16px;
+  right:16px;
+  padding:8px 12px;
   border-radius:999px;
-  background:rgba(8,13,21,.78);
-  border:1px solid rgba(255,255,255,.10);
-  color:#fff;
-  font-size:15px;
+  background:rgba(8,13,21,.82);
+  border:1px solid rgba(255,255,255,.1);
+  font-size:14px;
   font-weight:1000;
-  backdrop-filter:blur(7px);
-  animation:comboPop .2s ease-out;
 }
 
 .combo strong{
   color:var(--yellow);
 }
 
-@keyframes comboPop{
-  from{transform:scale(.7)}
-  to{transform:scale(1)}
+.world-object{
+  font-size:clamp(70px,12vw,150px);
+  filter:drop-shadow(0 15px 30px rgba(0,0,0,.35));
+  user-select:none;
 }
 
-
-/* SIDE */
-
-.side{
-  height:100%;
-  min-height:0;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.panel{
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:18px;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012)),
-    #0a0e16;
-}
-
-.panel-title{
-  color:var(--muted);
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:.15em;
-  margin-bottom:10px;
-}
-
-.gamiq-big{
-  font-size:52px;
-  line-height:1;
-  font-weight:1000;
-}
-
-.confidence{
-  margin-top:14px;
-}
-
-.conf-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  color:#aeb8c9;
-  font-size:11px;
-  font-weight:900;
-}
-
-.conf-track{
-  width:100%;
-  height:6px;
-  margin-top:8px;
-  background:rgba(255,255,255,.07);
-  border-radius:999px;
-  overflow:hidden;
-}
-
-.conf-fill{
-  height:100%;
-  width:0;
-  border-radius:inherit;
-  background:linear-gradient(90deg,var(--violet),var(--cyan));
-  transition:width .45s ease;
-}
-
-.skill-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 0;
-  border-bottom:1px solid rgba(255,255,255,.045);
-}
-
-.skill-row:last-child{
-  border-bottom:0;
-}
-
-.skill-row span{
-  color:var(--muted);
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:.1em;
-}
-
-.skill-row b{
-  font-size:17px;
-}
-
-.play-count{
-  font-size:34px;
-  font-weight:1000;
-}
-
-.ad{
-  flex:1;
-  min-height:170px;
+.world-row{
   display:flex;
   align-items:center;
   justify-content:center;
-  color:#586375;
-  text-align:center;
-  border-style:dashed;
+  gap:18px;
+  flex-wrap:wrap;
 }
 
-
-/* COMMON */
+.world-label{
+  font-size:12px;
+  font-weight:900;
+  color:#aeb9cb;
+  letter-spacing:.1em;
+  margin-top:14px;
+}
 
 .round-button{
-  width:min(30vw,240px);
+  width:min(30vw,235px);
   aspect-ratio:1;
   border:1px solid rgba(255,255,255,.15);
   border-radius:50%;
   cursor:pointer;
   color:#031218;
-  font-size:32px;
+  font-size:30px;
   font-weight:1000;
   touch-action:none;
   background:
@@ -584,20 +467,15 @@ button{
   box-shadow:
     0 0 45px rgba(97,234,255,.2),
     inset 0 0 35px rgba(255,255,255,.15);
-  transition:transform .06s ease,filter .08s ease;
 }
 
-.round-button:active{
-  transform:scale(.94);
-}
-
-.center-game{
+.center{
   text-align:center;
 }
 
 .counter{
   display:block;
-  margin-bottom:15px;
+  margin-bottom:14px;
   font-size:48px;
   font-weight:1000;
 }
@@ -605,185 +483,126 @@ button{
 .message{
   display:block;
   min-height:20px;
-  margin-top:15px;
+  margin-top:14px;
   color:var(--muted);
   font-size:13px;
   font-weight:900;
 }
 
-
-/* GREEN */
-
 .color-box{
-  width:min(42vw,310px);
+  width:min(42vw,300px);
   aspect-ratio:1;
   border:1px solid rgba(255,255,255,.1);
-  border-radius:34px;
+  border-radius:32px;
   background:#141b26;
   cursor:pointer;
   touch-action:none;
-  transition:transform .08s ease,filter .08s ease;
 }
 
-.color-box:active{
-  transform:scale(.96);
-}
-
-.color-box.green{
+.color-box.go{
   background:#77ffb1;
   box-shadow:0 0 55px rgba(119,255,177,.45);
 }
 
-.color-box.red{
+.color-box.stop{
   background:#ff4e70;
   box-shadow:0 0 55px rgba(255,78,112,.35);
 }
 
-
-/* TAP / BOOST */
-
-.tap-energy{
-  width:min(360px,80vw);
-  height:10px;
+.energy{
+  width:min(360px,78vw);
+  height:11px;
   margin:0 auto 18px;
-  background:rgba(255,255,255,.07);
   border-radius:999px;
   overflow:hidden;
+  background:rgba(255,255,255,.07);
 }
 
-.tap-energy-fill{
-  width:0%;
+.energy-fill{
   height:100%;
+  width:0;
   background:linear-gradient(90deg,var(--violet),var(--cyan),var(--green));
-  box-shadow:0 0 15px rgba(97,234,255,.4);
-  transition:width .08s linear;
+  transition:width .08s;
 }
-
-.boost-label{
-  height:24px;
-  margin-bottom:8px;
-  color:var(--yellow);
-  font-size:14px;
-  font-weight:1000;
-  letter-spacing:.1em;
-}
-
-
-/* ALTERNATE */
 
 .alt-grid{
   width:min(700px,100%);
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:16px;
+  gap:14px;
 }
 
 .alt-btn{
-  min-height:230px;
+  min-height:220px;
   border:1px solid rgba(255,255,255,.08);
   border-radius:25px;
   background:linear-gradient(180deg,#141c29,#090d14);
   color:#fff;
-  font-size:30px;
+  font-size:29px;
   font-weight:1000;
   touch-action:none;
-  transition:transform .06s ease,box-shadow .1s ease;
-}
-
-.alt-btn:active{
-  transform:scale(.97);
 }
 
 .alt-btn.active{
-  border-color:rgba(97,234,255,.45);
-  box-shadow:0 0 25px rgba(97,234,255,.15);
+  border-color:rgba(97,234,255,.5);
+  box-shadow:0 0 28px rgba(97,234,255,.16);
 }
 
-
-/* LOGIC */
-
 .choice-wrap{
-  width:100%;
   display:flex;
   justify-content:center;
+  gap:22px;
   align-items:center;
-  gap:24px;
 }
 
 .choice{
-  width:min(27vw,220px);
+  width:min(27vw,210px);
   aspect-ratio:1;
   border:1px solid rgba(255,255,255,.09);
   border-radius:25px;
   background:linear-gradient(180deg,#151d2b,#090d15);
   color:#fff;
-  font-size:clamp(46px,7vw,82px);
+  font-size:clamp(44px,7vw,80px);
   font-weight:1000;
   touch-action:none;
-  transition:transform .08s ease,filter .08s ease;
-}
-
-.choice:active{
-  transform:scale(.95);
-}
-
-.choice.correct-pop{
-  animation:correctNumber .34s ease-out;
-}
-
-@keyframes correctNumber{
-  0%{transform:scale(1)}
-  45%{
-    transform:scale(1.28) translateY(-8px);
-    filter:brightness(1.8);
-  }
-  100%{
-    transform:scale(.6) translateY(-45px);
-    opacity:0;
-  }
 }
 
 .logic-label{
-  margin-bottom:18px;
-  color:#a9b4c7;
+  margin-bottom:17px;
+  color:#b0bac9;
   font-size:17px;
   font-weight:900;
 }
 
-
-/* MEMORY */
-
 .memory-grid{
   display:grid;
-  grid-template-columns:repeat(3,min(17vw,112px));
+  grid-template-columns:repeat(3,min(17vw,110px));
   gap:10px;
 }
 
 .memory-cell{
   aspect-ratio:1;
   border:1px solid rgba(255,255,255,.07);
-  border-radius:16px;
+  border-radius:15px;
   background:#141b27;
   touch-action:none;
-  transition:transform .08s ease,background .08s ease;
 }
 
 .memory-cell.demo,
 .memory-cell.correct{
   background:#75efff;
   box-shadow:0 0 25px rgba(97,234,255,.55);
-  transform:scale(.92);
+  transform:scale(.93);
 }
 
 .memory-cell.wrong{
   background:var(--red);
   box-shadow:0 0 25px rgba(255,78,112,.55);
-  transform:scale(.92);
 }
 
 .position-grid{
   display:grid;
-  grid-template-columns:repeat(4,min(13vw,82px));
+  grid-template-columns:repeat(4,min(13vw,80px));
   gap:9px;
 }
 
@@ -807,9 +626,6 @@ button{
 .position-cell.wrong{
   background:var(--red);
 }
-
-
-/* AIM */
 
 .aim{
   position:absolute;
@@ -863,34 +679,19 @@ button{
 
 .target{
   position:absolute;
-  width:67px;
-  height:67px;
+  width:64px;
+  height:64px;
   border-radius:50%;
   transform:translate(-50%,-50%);
   pointer-events:none;
   background:
     radial-gradient(circle,
-    white 0 10%,
+    #fff 0 10%,
     #62eaff 11% 25%,
     #163b4b 26% 43%,
     #8466ff 44% 62%,
     #17132f 63%);
   box-shadow:0 0 25px rgba(97,234,255,.5);
-}
-
-.target.hit{
-  animation:targetHit .2s ease-out forwards;
-}
-
-@keyframes targetHit{
-  from{
-    transform:translate(-50%,-50%) scale(1);
-    opacity:1;
-  }
-  to{
-    transform:translate(-50%,-50%) scale(1.7);
-    opacity:0;
-  }
 }
 
 .laser{
@@ -899,37 +700,27 @@ button{
   height:4px;
   transform-origin:0 50%;
   pointer-events:none;
-  background:linear-gradient(90deg,rgba(97,234,255,.05),#62eaff,#fff);
+  background:linear-gradient(
+    90deg,
+    rgba(97,234,255,.05),
+    #62eaff,
+    #fff
+  );
   box-shadow:
-    0 0 7px var(--cyan),
-    0 0 16px rgba(97,234,255,.8);
-  animation:laserFade .18s linear forwards;
+    0 0 8px var(--cyan),
+    0 0 18px rgba(97,234,255,.8);
+  animation:laser .18s linear forwards;
 }
 
-.laser.lv2{
-  height:6px;
-  box-shadow:
-    0 0 10px var(--cyan),
-    0 0 24px rgba(97,234,255,.95);
-}
-
-.laser.lv3{
-  height:9px;
-  background:linear-gradient(90deg,rgba(255,228,107,.05),var(--yellow),white);
-  box-shadow:
-    0 0 12px var(--yellow),
-    0 0 28px rgba(255,228,107,.9);
-}
-
-@keyframes laserFade{
+@keyframes laser{
   to{opacity:0}
 }
 
 .impact{
   position:absolute;
   z-index:18;
-  width:72px;
-  height:72px;
+  width:70px;
+  height:70px;
   transform:translate(-50%,-50%);
   border:2px solid var(--cyan);
   border-radius:50%;
@@ -952,47 +743,6 @@ button{
   }
 }
 
-.spark{
-  position:absolute;
-  z-index:19;
-  width:5px;
-  height:5px;
-  border-radius:50%;
-  pointer-events:none;
-  background:#fff;
-  box-shadow:0 0 9px var(--cyan);
-  animation:spark .32s ease-out forwards;
-}
-
-@keyframes spark{
-  from{
-    opacity:1;
-    transform:translate(0,0) scale(1);
-  }
-  to{
-    opacity:0;
-    transform:translate(var(--sx),var(--sy)) scale(.2);
-  }
-}
-
-.weapon-level{
-  position:absolute;
-  top:14px;
-  left:14px;
-  z-index:30;
-  padding:8px 11px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.1);
-  background:rgba(5,8,14,.65);
-  color:#fff;
-  font-size:11px;
-  font-weight:1000;
-  backdrop-filter:blur(7px);
-}
-
-
-/* JOYSTICK */
-
 .mobile-controls{
   display:none;
 }
@@ -1001,12 +751,11 @@ button{
   position:absolute;
   left:18px;
   bottom:18px;
-  width:115px;
-  height:115px;
+  width:112px;
+  height:112px;
   border:1px solid rgba(255,255,255,.12);
   border-radius:50%;
-  background:rgba(255,255,255,.045);
-  backdrop-filter:blur(6px);
+  background:rgba(255,255,255,.05);
   touch-action:none;
 }
 
@@ -1014,31 +763,118 @@ button{
   position:absolute;
   width:48px;
   height:48px;
-  left:33.5px;
-  top:33.5px;
+  left:32px;
+  top:32px;
   border-radius:50%;
-  background:linear-gradient(180deg,#edfaff,#75eaff);
-  box-shadow:0 0 20px rgba(97,234,255,.35);
+  background:linear-gradient(180deg,#eefaff,#75eaff);
 }
 
 .fire{
   position:absolute;
   right:22px;
   bottom:28px;
-  width:88px;
-  height:88px;
+  width:86px;
+  height:86px;
   border:0;
   border-radius:50%;
   background:linear-gradient(180deg,#ff7691,#ff3e63);
   color:#fff;
   font-size:15px;
   font-weight:1000;
-  box-shadow:0 0 26px rgba(255,62,99,.3);
   touch-action:none;
 }
 
+.side{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
 
-/* START */
+.panel{
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:18px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.035),
+      rgba(255,255,255,.012)
+    ),
+    #0a0e16;
+}
+
+.panel-title{
+  color:var(--muted);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.15em;
+  margin-bottom:10px;
+}
+
+.gamiq-big{
+  font-size:52px;
+  font-weight:1000;
+}
+
+.conf-row{
+  display:flex;
+  justify-content:space-between;
+  color:#aeb8c9;
+  font-size:11px;
+  font-weight:900;
+}
+
+.conf-track{
+  height:6px;
+  margin-top:8px;
+  background:rgba(255,255,255,.07);
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.conf-fill{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--violet),var(--cyan));
+  transition:width .45s;
+}
+
+.skill-row{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.045);
+}
+
+.skill-row:last-child{
+  border-bottom:0;
+}
+
+.skill-row span{
+  color:var(--muted);
+  font-size:10px;
+  font-weight:900;
+}
+
+.skill-row b{
+  font-size:17px;
+}
+
+.play-count{
+  font-size:34px;
+  font-weight:1000;
+}
+
+.ad{
+  flex:1;
+  min-height:150px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#586375;
+  border-style:dashed;
+}
 
 .start-screen{
   position:absolute;
@@ -1066,7 +902,7 @@ button{
 
 .start-title{
   margin:15px 0 20px;
-  font-size:clamp(44px,7vw,85px);
+  font-size:clamp(44px,7vw,82px);
   line-height:1.04;
   letter-spacing:-.045em;
 }
@@ -1087,11 +923,7 @@ button{
   color:#031014;
   font-weight:1000;
   font-size:18px;
-  cursor:pointer;
 }
-
-
-/* MOBILE */
 
 @media(max-width:900px){
 
@@ -1117,11 +949,11 @@ button{
   }
 
   .live{
-    gap:13px;
+    gap:12px;
   }
 
   .live-value{
-    font-size:17px;
+    font-size:16px;
   }
 
   .side{
@@ -1140,39 +972,39 @@ button{
   }
 
   .game-title{
-    font-size:28px;
+    font-size:27px;
   }
 
   .board{
-    border-radius:19px;
+    border-radius:18px;
   }
 
   .round-button{
-    width:min(60vw,240px);
+    width:min(60vw,235px);
   }
 
   .choice{
-    width:min(40vw,170px);
+    width:min(40vw,165px);
   }
 
   .choice-wrap{
-    gap:11px;
-  }
-
-  .alt-grid{
     gap:10px;
   }
 
+  .alt-grid{
+    gap:9px;
+  }
+
   .alt-btn{
-    min-height:210px;
+    min-height:200px;
   }
 
   .memory-grid{
-    grid-template-columns:repeat(3,min(27vw,100px));
+    grid-template-columns:repeat(3,min(27vw,98px));
   }
 
   .position-grid{
-    grid-template-columns:repeat(4,min(20vw,72px));
+    grid-template-columns:repeat(4,min(20vw,70px));
   }
 
   .mobile-controls{
@@ -1184,22 +1016,6 @@ button{
   }
 
 }
-
-
-/* REDUCED MOTION */
-
-@media(prefers-reduced-motion:reduce){
-
-  *,
-  *::before,
-  *::after{
-    animation-duration:.01ms !important;
-    animation-iteration-count:1 !important;
-    transition-duration:.01ms !important;
-  }
-
-}
-
 </style>
 </head>
 
@@ -1207,157 +1023,155 @@ button{
 
 <div class="app">
 
-  <main class="main">
+<main class="main">
 
-    <header class="header">
+<header class="header">
 
-      <div class="brand">
-        GAM<span>IQ</span>
+  <div class="brand">
+    GAM<span>IQ</span>
+  </div>
+
+  <div class="live">
+
+    <div class="live-block">
+      <span class="live-label">PLAYED</span>
+      <span class="live-value" id="playedTop">0</span>
+    </div>
+
+    <div class="live-block">
+      <span class="live-label">GAMIQ</span>
+      <span class="live-value" id="gamiqTop">---</span>
+    </div>
+
+    <div class="live-block">
+      <span class="live-label">ACCURACY</span>
+      <span class="live-value" id="confidenceTop">0%</span>
+    </div>
+
+  </div>
+
+</header>
+
+
+<section class="feed" id="feed">
+
+  <div class="card current" id="cardA"></div>
+
+  <div class="card next" id="cardB"></div>
+
+
+  <div class="start-screen" id="startScreen">
+
+    <div class="start-inner">
+
+      <div class="start-kicker">
+        50 RANDOM MINI GAMES
       </div>
 
-      <div class="live">
-
-        <div class="live-block">
-          <span class="live-label">PLAYED</span>
-          <span class="live-value" id="playedTop">0</span>
-        </div>
-
-        <div class="live-block">
-          <span class="live-label">GAMIQ</span>
-          <span class="live-value" id="gamiqTop">---</span>
-        </div>
-
-        <div class="live-block">
-          <span class="live-label">ACCURACY</span>
-          <span class="live-value" id="confidenceTop">0%</span>
-        </div>
-
+      <div class="start-title">
+        何が来ても、<br>
+        上手くやれる？
       </div>
 
-    </header>
-
-
-    <section class="feed" id="feed">
-
-      <div class="card current" id="cardA"></div>
-      <div class="card next" id="cardB"></div>
-
-      <div class="start-screen" id="startScreen">
-
-        <div class="start-inner">
-
-          <div class="start-kicker">
-            TRUE GAMING SKILL
-          </div>
-
-          <div class="start-title">
-            あなたは、本当に<br>
-            ゲームが上手い？
-          </div>
-
-          <div class="start-copy">
-            次に何が来るかは分からない。<br>
-            遊ぶほど、あなたの本当のゲーム地力が見えてくる。
-          </div>
-
-          <button class="start-btn" id="startBtn">
-            START
-          </button>
-
-        </div>
-
+      <div class="start-copy">
+        宇宙、ゾンビ、工場、忍者、ネオン、レース、宝探し。<br>
+        遊ぶほどGAMIQがあなたの“ゲーム地力”に近づいていく。
       </div>
 
-    </section>
-
-  </main>
-
-
-  <aside class="side">
-
-    <div class="panel">
-
-      <div class="panel-title">
-        LIVE GAMIQ
-      </div>
-
-      <div class="gamiq-big" id="gamiqSide">
-        ---
-      </div>
-
-      <div class="confidence">
-
-        <div class="conf-row">
-          <span>測定精度</span>
-          <span id="confidenceSide">0%</span>
-        </div>
-
-        <div class="conf-track">
-          <div class="conf-fill" id="confidenceFill"></div>
-        </div>
-
-      </div>
+      <button class="start-btn" id="startBtn">
+        START
+      </button>
 
     </div>
 
+  </div>
 
-    <div class="panel">
+</section>
 
-      <div class="panel-title">
-        ABILITIES
-      </div>
+</main>
 
-      <div class="skill-row">
-        <span>REFLEX</span>
-        <b id="skillReflex">--</b>
-      </div>
 
-      <div class="skill-row">
-        <span>SPEED</span>
-        <b id="skillSpeed">--</b>
-      </div>
+<aside class="side">
 
-      <div class="skill-row">
-        <span>AIM</span>
-        <b id="skillAim">--</b>
-      </div>
+  <div class="panel">
 
-      <div class="skill-row">
-        <span>LOGIC</span>
-        <b id="skillLogic">--</b>
-      </div>
-
-      <div class="skill-row">
-        <span>MEMORY</span>
-        <b id="skillMemory">--</b>
-      </div>
-
-      <div class="skill-row">
-        <span>ADAPT</span>
-        <b id="skillAdapt">--</b>
-      </div>
-
+    <div class="panel-title">
+      LIVE GAMIQ
     </div>
 
-
-    <div class="panel">
-
-      <div class="panel-title">
-        GAMES PLAYED
-      </div>
-
-      <div class="play-count" id="playedSide">
-        0
-      </div>
-
+    <div class="gamiq-big" id="gamiqSide">
+      ---
     </div>
 
-
-    <div class="panel ad">
-      AD SPACE
+    <div class="conf-row">
+      <span>測定精度</span>
+      <span id="confidenceSide">0%</span>
     </div>
 
-  </aside>
+    <div class="conf-track">
+      <div class="conf-fill" id="confidenceFill"></div>
+    </div>
+
+  </div>
+
+
+  <div class="panel">
+
+    <div class="panel-title">
+      ABILITIES
+    </div>
+
+    <div class="skill-row">
+      <span>REFLEX</span>
+      <b id="skillReflex">--</b>
+    </div>
+
+    <div class="skill-row">
+      <span>SPEED</span>
+      <b id="skillSpeed">--</b>
+    </div>
+
+    <div class="skill-row">
+      <span>AIM</span>
+      <b id="skillAim">--</b>
+    </div>
+
+    <div class="skill-row">
+      <span>LOGIC</span>
+      <b id="skillLogic">--</b>
+    </div>
+
+    <div class="skill-row">
+      <span>MEMORY</span>
+      <b id="skillMemory">--</b>
+    </div>
+
+    <div class="skill-row">
+      <span>ADAPT</span>
+      <b id="skillAdapt">--</b>
+    </div>
+
+  </div>
+
+
+  <div class="panel">
+
+    <div class="panel-title">
+      GAMES PLAYED
+    </div>
+
+    <div class="play-count" id="playedSide">
+      0
+    </div>
+
+  </div>
+
+
+  <div class="panel ad">
+    AD SPACE
+  </div>
+
+</aside>
 
 </div>
 
@@ -1366,322 +1180,972 @@ button{
 
 (() => {
 
-const $ = id => document.getElementById(id);
+const $ =
+  id => document.getElementById(id);
 
-const feed = $("feed");
-const startScreen = $("startScreen");
 
-let currentCard = $("cardA");
-let nextCard = $("cardB");
+const feed =
+  $("feed");
 
-let currentGame = null;
-let nextGame = null;
 
-let played = 0;
-let gamiq = null;
+const startScreen =
+  $("startScreen");
 
-let canSwipe = false;
-let swipeUnlockAt = 0;
 
-let gameActive = false;
-let finishCurrentGame = null;
+let currentCard =
+  $("cardA");
 
-let cleanupFns = [];
-let gameEndTimer = null;
 
-let bag = [];
-let lastGameId = null;
+let nextCard =
+  $("cardB");
+
+
+let currentGame =
+  null;
+
+
+let nextGame =
+  null;
+
+
+let played =
+  0;
+
+
+let gamiq =
+  null;
+
+
+let canSwipe =
+  false;
+
+
+let gameActive =
+  false;
+
+
+let finishCurrentGame =
+  null;
+
+
+let cleanupFns =
+  [];
+
+
+let gameEndTimer =
+  null;
+
+
+let bag =
+  [];
+
+
+let lastGameId =
+  null;
+
+
+let swipeUnlockAt =
+  0;
+
 
 const skillScores = {
-  REFLEX: [],
-  SPEED: [],
-  AIM: [],
-  LOGIC: [],
-  MEMORY: [],
-  ADAPT: []
+
+  REFLEX:[],
+  SPEED:[],
+  AIM:[],
+  LOGIC:[],
+  MEMORY:[],
+  ADAPT:[]
+
 };
 
 
-/* ==================================================
-GAME POOL
-================================================== */
+/* ==========================================
+THEMES
+========================================== */
 
-const games = [
+const theme = {
 
-{
-  id:"reaction",
-  title:"FLASH",
-  rule:"光った瞬間だけ押せ",
-  skill:"REFLEX",
-  duration:8000,
-  start:reactionGame
-},
+  space:{
+    icon:"🚀",
+    a:"#081327",
+    b:"#040711",
+    glow:"rgba(77,166,255,.18)"
+  },
 
-{
-  id:"green",
-  title:"GREEN",
-  rule:"緑だけ押せ。赤は押すな",
-  skill:"REFLEX",
-  duration:8500,
-  start:greenGame
-},
+  zombie:{
+    icon:"🧟",
+    a:"#111a0d",
+    b:"#050807",
+    glow:"rgba(118,255,178,.14)"
+  },
 
-{
-  id:"tap",
-  title:"BOOST",
-  rule:"連打してエネルギーを溜めろ",
-  skill:"SPEED",
-  duration:8000,
-  start:tapGame
-},
+  factory:{
+    icon:"🏭",
+    a:"#1a1309",
+    b:"#080705",
+    glow:"rgba(255,170,76,.15)"
+  },
 
-{
-  id:"alternate",
-  title:"LEFT / RIGHT",
-  rule:"左右交互に高速タップ",
-  skill:"SPEED",
-  duration:8000,
-  start:alternateGame
-},
+  neon:{
+    icon:"🌃",
+    a:"#16091d",
+    b:"#07050d",
+    glow:"rgba(216,83,255,.16)"
+  },
 
-{
-  id:"aim",
-  title:"SHOOT",
-  rule:"照準を合わせて撃て",
-  skill:"AIM",
-  duration:10000,
-  start:aimStaticGame
-},
+  ninja:{
+    icon:"🥷",
+    a:"#111111",
+    b:"#030303",
+    glow:"rgba(255,78,112,.12)"
+  },
 
-{
-  id:"aimmove",
-  title:"TRACK",
-  rule:"動くターゲットを撃て",
-  skill:"AIM",
-  duration:10000,
-  start:aimMovingGame
-},
+  treasure:{
+    icon:"💎",
+    a:"#171108",
+    b:"#070503",
+    glow:"rgba(255,228,107,.14)"
+  },
 
-{
-  id:"highlow",
-  title:"HIGH",
-  rule:"大きい数字を選べ",
-  skill:"LOGIC",
-  duration:8000,
-  start:highLowGame
-},
+  race:{
+    icon:"🏎️",
+    a:"#11151e",
+    b:"#05070b",
+    glow:"rgba(97,234,255,.12)"
+  },
 
-{
-  id:"condition",
-  title:"RULE SWITCH",
-  rule:"表示された条件に従え",
-  skill:"LOGIC",
-  duration:8500,
-  start:conditionGame
-},
+  cyber:{
+    icon:"🤖",
+    a:"#08161a",
+    b:"#040809",
+    glow:"rgba(97,234,255,.15)"
+  },
 
-{
-  id:"sequence",
-  title:"SEQUENCE",
-  rule:"光った順番を再現",
-  skill:"MEMORY",
-  duration:10000,
-  start:sequenceGame
-},
+  magic:{
+    icon:"🔮",
+    a:"#13091d",
+    b:"#06040b",
+    glow:"rgba(132,102,255,.18)"
+  },
 
-{
-  id:"position",
-  title:"POSITION",
-  rule:"光った場所を覚えろ",
-  skill:"MEMORY",
-  duration:9000,
-  start:positionGame
-}
+  ocean:{
+    icon:"🌊",
+    a:"#07151d",
+    b:"#03080c",
+    glow:"rgba(79,186,255,.15)"
+  }
+
+};
+
+
+/* ==========================================
+50 GAME VARIANTS
+========================================== */
+
+const variants = [
+
+  /* REFLEX */
+
+  [
+    "reaction",
+    "SPACE DUEL",
+    "敵艦の砲門が光った瞬間に反撃",
+    "REFLEX",
+    "space",
+    "🚀",
+    8000
+  ],
+
+  [
+    "reaction",
+    "NINJA DRAW",
+    "敵が動いた瞬間に斬れ",
+    "REFLEX",
+    "ninja",
+    "🥷",
+    8000
+  ],
+
+  [
+    "reaction",
+    "ROBOT ALERT",
+    "警告灯が光った瞬間に停止",
+    "REFLEX",
+    "cyber",
+    "🤖",
+    8000
+  ],
+
+  [
+    "reaction",
+    "TREASURE TRAP",
+    "罠が光った瞬間に回避",
+    "REFLEX",
+    "treasure",
+    "💎",
+    8000
+  ],
+
+  [
+    "reaction",
+    "NEON FLASH",
+    "ネオンが点灯した瞬間に押せ",
+    "REFLEX",
+    "neon",
+    "🌃",
+    8000
+  ],
+
+  [
+    "gonogo",
+    "ZOMBIE CHECK",
+    "ゾンビだけ撃て。人間は撃つな",
+    "REFLEX",
+    "zombie",
+    "🧟",
+    8500
+  ],
+
+  [
+    "gonogo",
+    "FACTORY QC",
+    "良品だけ通せ。不良品は止めろ",
+    "REFLEX",
+    "factory",
+    "🏭",
+    8500
+  ],
+
+  [
+    "gonogo",
+    "SPACE SCAN",
+    "味方は通せ。敵艦だけ撃て",
+    "REFLEX",
+    "space",
+    "🛸",
+    8500
+  ],
+
+  [
+    "gonogo",
+    "MAGIC SIGIL",
+    "青い魔法陣だけ発動",
+    "REFLEX",
+    "magic",
+    "🔮",
+    8500
+  ],
+
+  [
+    "gonogo",
+    "OCEAN RESCUE",
+    "魚は通せ。サメだけ止めろ",
+    "REFLEX",
+    "ocean",
+    "🦈",
+    8500
+  ],
+
+
+  /* SPEED */
+
+  [
+    "tap",
+    "ZOMBIE SMASH",
+    "連打でゾンビを倒せ",
+    "SPEED",
+    "zombie",
+    "🧟",
+    8000
+  ],
+
+  [
+    "tap",
+    "FACTORY POWER",
+    "連打で工場ゲージを満タンにしろ",
+    "SPEED",
+    "factory",
+    "🏭",
+    8000
+  ],
+
+  [
+    "tap",
+    "ROCKET BOOST",
+    "連打でロケットを加速",
+    "SPEED",
+    "space",
+    "🚀",
+    8000
+  ],
+
+  [
+    "tap",
+    "NINJA RUSH",
+    "連打で分身を増やせ",
+    "SPEED",
+    "ninja",
+    "🥷",
+    8000
+  ],
+
+  [
+    "tap",
+    "TREASURE BREAK",
+    "連打で宝箱をこじ開けろ",
+    "SPEED",
+    "treasure",
+    "💰",
+    8000
+  ],
+
+  [
+    "alternate",
+    "RACE SHIFT",
+    "左右交互でシフトアップ",
+    "SPEED",
+    "race",
+    "🏎️",
+    8000
+  ],
+
+  [
+    "alternate",
+    "CYBER HACK",
+    "左右の端末を交互に解除",
+    "SPEED",
+    "cyber",
+    "🤖",
+    8000
+  ],
+
+  [
+    "alternate",
+    "MAGIC CAST",
+    "左右交互で魔力をチャージ",
+    "SPEED",
+    "magic",
+    "✨",
+    8000
+  ],
+
+  [
+    "alternate",
+    "OCEAN ROW",
+    "左右交互でボートを漕げ",
+    "SPEED",
+    "ocean",
+    "🚣",
+    8000
+  ],
+
+  [
+    "alternate",
+    "NEON DRUM",
+    "左右交互にビートを刻め",
+    "SPEED",
+    "neon",
+    "🥁",
+    8000
+  ],
+
+
+  /* AIM */
+
+  [
+    "aim",
+    "SPACE BLASTER",
+    "照準を合わせて敵艦を撃て",
+    "AIM",
+    "space",
+    "🛸",
+    10000
+  ],
+
+  [
+    "aim",
+    "ZOMBIE SNIPER",
+    "頭に照準を合わせて撃て",
+    "AIM",
+    "zombie",
+    "🧟",
+    10000
+  ],
+
+  [
+    "aim",
+    "TREASURE SHOT",
+    "飛ぶ宝石を狙え",
+    "AIM",
+    "treasure",
+    "💎",
+    10000
+  ],
+
+  [
+    "aim",
+    "CYBER CORE",
+    "ロボットのコアを撃ち抜け",
+    "AIM",
+    "cyber",
+    "🤖",
+    10000
+  ],
+
+  [
+    "aim",
+    "NEON TARGET",
+    "ネオンターゲットを撃て",
+    "AIM",
+    "neon",
+    "🎯",
+    10000
+  ],
+
+  [
+    "aimmove",
+    "SPACE DOGFIGHT",
+    "動く敵機を追って撃て",
+    "AIM",
+    "space",
+    "✈️",
+    10000
+  ],
+
+  [
+    "aimmove",
+    "ZOMBIE RUNNER",
+    "走るゾンビを撃て",
+    "AIM",
+    "zombie",
+    "🧟",
+    10000
+  ],
+
+  [
+    "aimmove",
+    "RACE DRONE",
+    "飛行ドローンを追撃",
+    "AIM",
+    "race",
+    "🚁",
+    10000
+  ],
+
+  [
+    "aimmove",
+    "MAGIC ORB",
+    "動く魔法球を撃ち落とせ",
+    "AIM",
+    "magic",
+    "🔮",
+    10000
+  ],
+
+  [
+    "aimmove",
+    "OCEAN HUNT",
+    "泳ぐターゲットを追え",
+    "AIM",
+    "ocean",
+    "🐟",
+    10000
+  ],
+
+
+  /* LOGIC */
+
+  [
+    "highlow",
+    "SPACE POWER",
+    "高い出力を選べ",
+    "LOGIC",
+    "space",
+    "⚡",
+    8000
+  ],
+
+  [
+    "highlow",
+    "FACTORY LOAD",
+    "大きい生産数を選べ",
+    "LOGIC",
+    "factory",
+    "📦",
+    8000
+  ],
+
+  [
+    "highlow",
+    "TREASURE VALUE",
+    "価値が高い宝を選べ",
+    "LOGIC",
+    "treasure",
+    "💎",
+    8000
+  ],
+
+  [
+    "highlow",
+    "RACE SPEED",
+    "速い速度を選べ",
+    "LOGIC",
+    "race",
+    "🏁",
+    8000
+  ],
+
+  [
+    "highlow",
+    "MAGIC POWER",
+    "魔力が高い方を選べ",
+    "LOGIC",
+    "magic",
+    "🔮",
+    8000
+  ],
+
+  [
+    "condition",
+    "CYBER RULE",
+    "表示された条件に従え",
+    "LOGIC",
+    "cyber",
+    "🤖",
+    8500
+  ],
+
+  [
+    "condition",
+    "NINJA CODE",
+    "指令どおりの数字を選べ",
+    "LOGIC",
+    "ninja",
+    "📜",
+    8500
+  ],
+
+  [
+    "condition",
+    "FACTORY SORT",
+    "条件に合う部品を選別",
+    "LOGIC",
+    "factory",
+    "⚙️",
+    8500
+  ],
+
+  [
+    "condition",
+    "OCEAN NAV",
+    "航路条件に合う値を選べ",
+    "LOGIC",
+    "ocean",
+    "🧭",
+    8500
+  ],
+
+  [
+    "condition",
+    "NEON SWITCH",
+    "ルールが変わる。即対応しろ",
+    "LOGIC",
+    "neon",
+    "💡",
+    8500
+  ],
+
+
+  /* MEMORY */
+
+  [
+    "sequence",
+    "SPACE CODE",
+    "宇宙船の点灯順を覚えろ",
+    "MEMORY",
+    "space",
+    "🚀",
+    10000
+  ],
+
+  [
+    "sequence",
+    "NINJA SEAL",
+    "印の順番を覚えて再現",
+    "MEMORY",
+    "ninja",
+    "🥷",
+    10000
+  ],
+
+  [
+    "sequence",
+    "FACTORY LINE",
+    "稼働ランプの順番を記憶",
+    "MEMORY",
+    "factory",
+    "🏭",
+    10000
+  ],
+
+  [
+    "sequence",
+    "MAGIC SPELL",
+    "魔法陣の順番を記憶",
+    "MEMORY",
+    "magic",
+    "🔮",
+    10000
+  ],
+
+  [
+    "sequence",
+    "NEON BEAT",
+    "光るネオンの順番を再現",
+    "MEMORY",
+    "neon",
+    "🌃",
+    10000
+  ],
+
+  [
+    "position",
+    "TREASURE MAP",
+    "光った宝の場所を覚えろ",
+    "MEMORY",
+    "treasure",
+    "🗺️",
+    9000
+  ],
+
+  [
+    "position",
+    "ZOMBIE SAFE",
+    "安全地帯の位置を覚えろ",
+    "MEMORY",
+    "zombie",
+    "🧟",
+    9000
+  ],
+
+  [
+    "position",
+    "CYBER GRID",
+    "点灯した端末の位置を記憶",
+    "MEMORY",
+    "cyber",
+    "🤖",
+    9000
+  ],
+
+  [
+    "position",
+    "OCEAN SONAR",
+    "反応した位置を記憶",
+    "MEMORY",
+    "ocean",
+    "📡",
+    9000
+  ],
+
+  [
+    "position",
+    "RACE LINE",
+    "光ったコース位置を覚えろ",
+    "MEMORY",
+    "race",
+    "🏎️",
+    9000
+  ]
 
 ];
 
 
-/* ==================================================
+const games =
+  variants.map(
+    (v,i) => {
+
+      const [
+        type,
+        title,
+        rule,
+        skill,
+        themeKey,
+        icon,
+        duration
+      ] = v;
+
+
+      return {
+
+        id:`g${i+1}`,
+
+        type,
+
+        title,
+
+        rule,
+
+        skill,
+
+        themeKey,
+
+        icon,
+
+        duration,
+
+        subtitle:
+          `${themeKey.toUpperCase()} MODE`
+
+      };
+
+    }
+  );
+
+
+/* ==========================================
 UTIL
-================================================== */
+========================================== */
 
-function clamp(v,min,max){
-  return Math.max(min,Math.min(max,v));
+function clamp(
+  value,
+  min,
+  max
+){
+
+  return Math.max(
+    min,
+    Math.min(
+      max,
+      value
+    )
+  );
+
 }
 
-function avg(values){
 
-  if(!values.length){
-    return null;
-  }
+function avg(array){
 
-  return values.reduce(
-    (a,b)=>a+b,
-    0
-  ) / values.length;
+  return array.length
+    ? array.reduce(
+        (a,b)=>a+b,
+        0
+      ) / array.length
+    : null;
+
 }
+
 
 function shuffle(array){
 
-  const a = [...array];
+  const a =
+    [...array];
 
-  for(let i=a.length-1;i>0;i--){
+
+  for(
+    let i=a.length-1;
+    i>0;
+    i--
+  ){
 
     const j =
       Math.floor(
-        Math.random()*(i+1)
+        Math.random()
+        *(i+1)
       );
 
-    [a[i],a[j]] =
-    [a[j],a[i]];
+
+    [
+      a[i],
+      a[j]
+    ] =
+    [
+      a[j],
+      a[i]
+    ];
 
   }
 
+
   return a;
-}
-
-function shake(){
-
-  feed.classList.remove("shake");
-
-  void feed.offsetWidth;
-
-  feed.classList.add("shake");
 
 }
 
-function missFlash(){
 
-  feed.classList.remove("miss-flash");
-
-  void feed.offsetWidth;
-
-  feed.classList.add("miss-flash");
-
-}
-
-function showFeedback(
+function feedback(
   board,
   text,
   type="good"
 ){
 
   const el =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   el.className =
     `feedback ${type}`;
 
+
   el.textContent =
     text;
 
-  board.appendChild(el);
+
+  board.appendChild(
+    el
+  );
+
 
   setTimeout(
     () => el.remove(),
-    520
+    500
   );
 
 }
 
-function showCombo(
+
+function success(
   board,
-  combo
+  combo=1
 ){
 
-  board
-    .querySelectorAll(".combo")
-    .forEach(el=>el.remove());
+  feed.classList.remove(
+    "shake"
+  );
 
 
-  if(combo < 2){
-    return;
+  void feed.offsetWidth;
+
+
+  feed.classList.add(
+    "shake"
+  );
+
+
+  if(combo >= 2){
+
+    const c =
+      document.createElement(
+        "div"
+      );
+
+
+    c.className =
+      "combo";
+
+
+    c.innerHTML =
+      `COMBO <strong>×${combo}</strong>`;
+
+
+    board.appendChild(c);
+
+
+    setTimeout(
+      () => c.remove(),
+      650
+    );
+
   }
 
 
-  const el =
-    document.createElement("div");
-
-  el.className =
-    "combo";
-
-  el.innerHTML =
-    `COMBO <strong>×${combo}</strong>`;
-
-  board.appendChild(el);
-
-  setTimeout(
-    () => {
-
-      if(el.isConnected){
-        el.remove();
-      }
-
-    },
-    700
+  feedback(
+    board,
+    combo >= 7
+      ? "PERFECT"
+      : combo >= 4
+      ? "GREAT"
+      : "GOOD",
+    combo >= 7
+      ? "perfect"
+      : combo >= 4
+      ? "great"
+      : "good"
   );
 
 }
 
-function successFeedback(
-  board,
-  combo
-){
 
-  shake();
+function fail(board){
 
-  showCombo(
-    board,
-    combo
-  );
-
-
-  if(combo >= 8){
-
-    showFeedback(
-      board,
-      "PERFECT",
-      "perfect"
-    );
-
-  }
-  else if(combo >= 4){
-
-    showFeedback(
-      board,
-      "GREAT",
-      "great"
-    );
-
-  }
-  else{
-
-    showFeedback(
-      board,
-      "GOOD",
-      "good"
-    );
-
-  }
-
-}
-
-function failFeedback(board){
-
-  missFlash();
-
-  showFeedback(
-    board,
-    "MISS",
+  feed.classList.remove(
     "miss"
   );
 
+
+  void feed.offsetWidth;
+
+
+  feed.classList.add(
+    "miss"
+  );
+
+
+  feedback(
+    board,
+    "MISS",
+    "bad"
+  );
+
 }
 
 
-/* ==================================================
-RANDOM BAG
-================================================== */
+function adaptScore(
+  series
+){
+
+  if(!series.length){
+
+    return 50;
+
+  }
+
+
+  if(series.length < 4){
+
+    return clamp(
+      35
+      + avg(series)*.3,
+      25,
+      75
+    );
+
+  }
+
+
+  const n =
+    Math.max(
+      1,
+      Math.floor(
+        series.length*.35
+      )
+    );
+
+
+  return clamp(
+    50
+    +
+    (
+      avg(
+        series.slice(-n)
+      )
+      -
+      avg(
+        series.slice(0,n)
+      )
+    )*.9,
+    0,
+    100
+  );
+
+}
+
+
+/* ==========================================
+GAME BAG
+========================================== */
 
 function getNextGame(){
 
@@ -1691,6 +2155,7 @@ function getNextGame(){
       shuffle(games);
 
   }
+
 
   let game =
     bag.shift();
@@ -1704,44 +2169,67 @@ function getNextGame(){
     const second =
       bag.shift();
 
+
     bag.push(game);
 
-    game = second;
+
+    game =
+      second;
 
   }
+
 
   lastGameId =
     game.id;
 
+
   return game;
+
 }
 
 
-/* ==================================================
+/* ==========================================
 CARD
-================================================== */
+========================================== */
 
 function renderCard(
   card,
   game,
-  previewOnly=false
+  preview=false
 ){
+
+  const th =
+    theme[
+      game.themeKey
+    ];
+
 
   card.innerHTML = `
 
-    <div class="card-content">
+    <div
+      class="card-content"
+      style="
+        --themeA:${th.a};
+        --themeB:${th.b};
+        --themeGlow:${th.glow};
+      "
+    >
 
       <div class="game-head">
 
         <div>
 
           <div class="game-number">
-            GAME ${played + (previewOnly ? 2 : 1)}
+            GAME ${played + (preview ? 2 : 1)} / POOL 50
           </div>
 
           <h2 class="game-title">
             ${game.title}
           </h2>
+
+          <div class="game-sub">
+            ${game.subtitle}
+          </div>
 
         </div>
 
@@ -1760,6 +2248,10 @@ function renderCard(
         <div class="rule">
 
           <div class="rule-inner">
+
+            <div class="rule-icon">
+              ${game.icon}
+            </div>
 
             <div class="rule-label">
               ${game.skill}
@@ -1788,8 +2280,8 @@ function renderCard(
               </span>
             </div>
 
-            <div class="finish-skill">
-              ${game.skill}
+            <div class="finish-theme">
+              ${game.title}
             </div>
 
             <div class="swipe-hint">
@@ -1815,17 +2307,19 @@ function renderCard(
 }
 
 
-/* ==================================================
-FLOW
-================================================== */
+/* ==========================================
+START
+========================================== */
 
 function start(){
 
   startScreen.style.display =
     "none";
 
+
   currentGame =
     getNextGame();
+
 
   nextGame =
     getNextGame();
@@ -1837,47 +2331,100 @@ function start(){
     false
   );
 
+
   renderCard(
     nextCard,
     nextGame,
     true
   );
 
+
   beginCurrentGame();
 
 }
+
+
+/* ==========================================
+GAME FLOW
+========================================== */
+
+function cleanupGame(){
+
+  cleanupFns.forEach(
+    fn => {
+
+      try{
+        fn();
+      }
+      catch(e){}
+
+    }
+  );
+
+
+  cleanupFns = [];
+
+
+  if(gameEndTimer){
+
+    clearTimeout(
+      gameEndTimer
+    );
+
+  }
+
+
+  gameEndTimer =
+    null;
+
+}
+
 
 function beginCurrentGame(){
 
   cleanupGame();
 
-  canSwipe = false;
 
-  gameActive = false;
+  canSwipe =
+    false;
+
+
+  gameActive =
+    false;
 
 
   const rule =
     currentCard
-      .querySelector(".rule");
+      .querySelector(
+        ".rule"
+      );
 
 
   const bar =
     currentCard
-      .querySelector(".rule-bar-fill");
+      .querySelector(
+        ".rule-bar-fill"
+      );
 
 
   rule.style.display =
     "flex";
 
 
-  bar.classList.remove("go");
+  bar.classList.remove(
+    "go"
+  );
+
 
   void bar.offsetWidth;
 
-  bar.classList.add("go");
+
+  bar.classList.add(
+    "go"
+  );
 
 
-  const ruleTimer =
+  const timer =
     setTimeout(
       () => {
 
@@ -1891,11 +2438,16 @@ function beginCurrentGame(){
 
         const play =
           currentCard
-            .querySelector(".play");
+            .querySelector(
+              ".play"
+            );
 
 
         finishCurrentGame =
-          currentGame.start(play);
+          runEngine(
+            currentGame,
+            play
+          );
 
 
         gameEndTimer =
@@ -1910,16 +2462,21 @@ function beginCurrentGame(){
 
 
   cleanupFns.push(
-    () => clearTimeout(ruleTimer)
+    () =>
+      clearTimeout(timer)
   );
 
 }
 
+
 function finishGame(){
 
   if(!gameActive){
+
     return;
+
   }
+
 
   gameActive =
     false;
@@ -1927,11 +2484,11 @@ function finishGame(){
 
   const result =
     finishCurrentGame
-    ? finishCurrentGame()
-    : {
-        score:0,
-        adapt:50
-      };
+      ? finishCurrentGame()
+      : {
+          score:0,
+          adapt:50
+        };
 
 
   const score =
@@ -1956,7 +2513,9 @@ function finishGame(){
 
   skillScores[
     currentGame.skill
-  ].push(score);
+  ].push(
+    score
+  );
 
 
   skillScores.ADAPT.push(
@@ -1972,7 +2531,9 @@ function finishGame(){
 
   const finish =
     currentCard
-      .querySelector(".finish");
+      .querySelector(
+        ".finish"
+      );
 
 
   finish
@@ -1983,17 +2544,21 @@ function finishGame(){
       `+${score}`;
 
 
-  finish.classList.add("show");
+  finish.classList.add(
+    "show"
+  );
 
 
   swipeUnlockAt =
-    performance.now()+500;
+    performance.now()
+    + 500;
 
 
   setTimeout(
     () => {
 
-      canSwipe = true;
+      canSwipe =
+        true;
 
     },
     500
@@ -2002,26 +2567,30 @@ function finishGame(){
 }
 
 
-/* ==================================================
+/* ==========================================
 GAMIQ
-================================================== */
+========================================== */
 
 function updateGamiq(){
 
   const keys = [
+
     "REFLEX",
     "SPEED",
     "AIM",
     "LOGIC",
     "MEMORY"
+
   ];
 
 
-  const available =
+  const values =
     keys
       .map(
         key =>
-          avg(skillScores[key])
+          avg(
+            skillScores[key]
+          )
       )
       .filter(
         value =>
@@ -2030,44 +2599,40 @@ function updateGamiq(){
 
 
   const base =
-    available.length
-    ? avg(available)
-    : 50;
+    values.length
+      ? avg(values)
+      : 50;
 
 
   const adapt =
-    avg(skillScores.ADAPT);
+    avg(
+      skillScores.ADAPT
+    );
 
 
   const combined =
     adapt === null
-    ? base
-    : base*.85
-      + adapt*.15;
+      ? base
+      : base*.85
+        + adapt*.15;
 
 
-  const newGamiq =
+  gamiq =
     Math.round(
       300
       + combined*7
     );
 
 
-  const old =
-    gamiq;
-
-
-  gamiq =
-    newGamiq;
-
-
   const confidence =
     Math.min(
       99,
       Math.round(
-        100 *
+        100
+        *
         (
-          1 -
+          1
+          -
           Math.exp(
             -played/18
           )
@@ -2076,582 +2641,278 @@ function updateGamiq(){
     );
 
 
-  updateHud(
-    confidence,
-    old
-  );
-
-}
-
-function updateHud(
-  confidence,
-  previous
-){
-
   $("playedTop").textContent =
     played;
+
 
   $("playedSide").textContent =
     played;
 
 
   $("gamiqTop").textContent =
-    gamiq ?? "---";
+    gamiq;
+
 
   $("gamiqSide").textContent =
-    gamiq ?? "---";
+    gamiq;
 
 
   $("confidenceTop").textContent =
     confidence+"%";
 
+
   $("confidenceSide").textContent =
     confidence+"%";
+
 
   $("confidenceFill").style.width =
     confidence+"%";
 
 
   const map = {
+
     REFLEX:"skillReflex",
     SPEED:"skillSpeed",
     AIM:"skillAim",
     LOGIC:"skillLogic",
     MEMORY:"skillMemory",
     ADAPT:"skillAdapt"
+
   };
 
 
-  Object.entries(map)
-    .forEach(
-      ([key,id]) => {
+  Object.entries(
+    map
+  ).forEach(
+    ([key,id]) => {
 
-        const value =
-          avg(skillScores[key]);
+      const value =
+        avg(
+          skillScores[key]
+        );
 
 
-        $(id).textContent =
-          value === null
+      $(id).textContent =
+        value === null
           ? "--"
           : Math.round(value);
 
-      }
+    }
+  );
+
+}
+
+
+/* ==========================================
+ENGINE SELECT
+========================================== */
+
+function runEngine(
+  game,
+  play
+){
+
+  if(
+    game.type ===
+    "reaction"
+  ){
+
+    return reactionEngine(
+      game,
+      play
     );
+
+  }
 
 
   if(
-    previous !== null &&
-    previous !== undefined
+    game.type ===
+    "gonogo"
   ){
 
-    const el =
-      $("gamiqTop");
-
-
-    el.classList.remove(
-      "flash-up",
-      "flash-down"
+    return goNoGoEngine(
+      game,
+      play
     );
 
+  }
 
-    void el.offsetWidth;
 
+  if(
+    game.type ===
+    "tap"
+  ){
 
-    if(gamiq > previous){
-
-      el.classList.add(
-        "flash-up"
-      );
-
-    }
-    else if(
-      gamiq < previous
-    ){
-
-      el.classList.add(
-        "flash-down"
-      );
-
-    }
+    return tapEngine(
+      game,
+      play
+    );
 
   }
+
+
+  if(
+    game.type ===
+    "alternate"
+  ){
+
+    return alternateEngine(
+      game,
+      play
+    );
+
+  }
+
+
+  if(
+    game.type ===
+    "aim"
+  ){
+
+    return aimEngine(
+      game,
+      play,
+      false
+    );
+
+  }
+
+
+  if(
+    game.type ===
+    "aimmove"
+  ){
+
+    return aimEngine(
+      game,
+      play,
+      true
+    );
+
+  }
+
+
+  if(
+    game.type ===
+    "highlow"
+  ){
+
+    return highLowEngine(
+      game,
+      play
+    );
+
+  }
+
+
+  if(
+    game.type ===
+    "condition"
+  ){
+
+    return conditionEngine(
+      game,
+      play
+    );
+
+  }
+
+
+  if(
+    game.type ===
+    "sequence"
+  ){
+
+    return sequenceEngine(
+      game,
+      play
+    );
+
+  }
+
+
+  if(
+    game.type ===
+    "position"
+  ){
+
+    return positionEngine(
+      game,
+      play
+    );
+
+  }
+
+
+  return () => ({
+    score:0,
+    adapt:50
+  });
 
 }
 
 
-/* ==================================================
-SWIPE
-================================================== */
+/* ==========================================
+REACTION
+========================================== */
 
-let touchStartY = null;
-let touchLastY = null;
-let dragging = false;
+function reactionEngine(
+  game,
+  play
+){
 
+  let good =
+    0;
 
-feed.addEventListener(
-  "touchstart",
-  event => {
 
-    if(
-      !canSwipe ||
-      performance.now()
-      < swipeUnlockAt
-    ){
-      return;
-    }
+  let falseStart =
+    0;
 
 
-    touchStartY =
-      event.touches[0].clientY;
+  let total =
+    0;
 
 
-    touchLastY =
-      touchStartY;
-
-
-    dragging =
-      true;
-
-
-    currentCard
-      .classList
-      .remove("animating");
-
-
-    nextCard
-      .classList
-      .remove("animating");
-
-  },
-  {
-    passive:false
-  }
-);
-
-
-feed.addEventListener(
-  "touchmove",
-  event => {
-
-    if(!dragging){
-      return;
-    }
-
-
-    event.preventDefault();
-
-
-    const y =
-      event.touches[0].clientY;
-
-
-    touchLastY =
-      y;
-
-
-    let dy =
-      y - touchStartY;
-
-
-    dy =
-      Math.min(
-        0,
-        dy
-      );
-
-
-    const progress =
-      Math.min(
-        1,
-        Math.abs(dy)
-        /
-        feed.clientHeight
-      );
-
-
-    currentCard.style.transform =
-      `translateY(${dy}px) scale(${1-progress*.04})`;
-
-
-    currentCard.style.filter =
-      `brightness(${1-progress*.2})`;
-
-
-    nextCard.style.transform =
-      `translateY(calc(100% + ${dy}px)) scale(${.98+progress*.02})`;
-
-  },
-  {
-    passive:false
-  }
-);
-
-
-feed.addEventListener(
-  "touchend",
-  () => {
-
-    if(!dragging){
-      return;
-    }
-
-
-    dragging =
-      false;
-
-
-    const dy =
-      touchLastY
-      - touchStartY;
-
-
-    if(dy < -75){
-
-      commitSwipe();
-
-    }
-    else{
-
-      cancelSwipe();
-
-    }
-
-  },
-  {
-    passive:false
-  }
-);
-
-function cancelSwipe(){
-
-  currentCard
-    .classList
-    .add("animating");
-
-
-  nextCard
-    .classList
-    .add("animating");
-
-
-  currentCard.style.transform =
-    "translateY(0) scale(1)";
-
-
-  currentCard.style.filter =
-    "brightness(1)";
-
-
-  nextCard.style.transform =
-    "translateY(100%) scale(.98)";
-
-}
-
-function commitSwipe(){
-
-  if(!canSwipe){
-    return;
-  }
-
-
-  canSwipe =
+  let ready =
     false;
 
 
-  currentCard
-    .classList
-    .add("animating");
+  let shown =
+    0;
 
 
-  nextCard
-    .classList
-    .add("animating");
+  let timer =
+    null;
 
 
-  currentCard.style.transform =
-    "translateY(-100%) scale(.95)";
+  let combo =
+    0;
 
 
-  currentCard.style.opacity =
-    ".55";
-
-
-  currentCard.style.filter =
-    "brightness(.7)";
-
-
-  nextCard.style.transform =
-    "translateY(0) scale(1)";
-
-
-  setTimeout(
-    completeSwipe,
-    350
-  );
-
-}
-
-function completeSwipe(){
-
-  cleanupGame();
-
-
-  const old =
-    currentCard;
-
-
-  currentCard =
-    nextCard;
-
-
-  nextCard =
-    old;
-
-
-  currentCard.className =
-    "card current";
-
-
-  currentCard.style.transform =
-    "translateY(0) scale(1)";
-
-
-  currentCard.style.opacity =
-    "1";
-
-
-  currentCard.style.filter =
-    "brightness(1)";
-
-
-  nextCard.className =
-    "card next";
-
-
-  nextCard.style.transform =
-    "translateY(100%) scale(.98)";
-
-
-  nextCard.style.opacity =
-    "1";
-
-
-  currentGame =
-    nextGame;
-
-
-  nextGame =
-    getNextGame();
-
-
-  renderCard(
-    nextCard,
-    nextGame,
-    true
-  );
-
-
-  beginCurrentGame();
-
-}
-
-
-/* ==================================================
-DESKTOP NEXT
-================================================== */
-
-let wheelLock = false;
-
-
-window.addEventListener(
-  "wheel",
-  event => {
-
-    if(
-      !canSwipe ||
-      wheelLock ||
-      event.deltaY < 45
-    ){
-      return;
-    }
-
-
-    wheelLock =
-      true;
-
-
-    commitSwipe();
-
-
-    setTimeout(
-      () => {
-        wheelLock = false;
-      },
-      700
-    );
-
-  },
-  {
-    passive:true
-  }
-);
-
-
-window.addEventListener(
-  "keydown",
-  event => {
-
-    if(!canSwipe){
-      return;
-    }
-
-
-    if(
-      event.key ===
-      "ArrowDown"
-    ){
-
-      commitSwipe();
-
-    }
-
-  }
-);
-
-
-/* ==================================================
-CLEANUP
-================================================== */
-
-function cleanupGame(){
-
-  cleanupFns
-    .forEach(
-      fn => {
-
-        try{
-          fn();
-        }
-        catch(e){}
-
-      }
-    );
-
-
-  cleanupFns = [];
-
-
-  if(gameEndTimer){
-
-    clearTimeout(
-      gameEndTimer
-    );
-
-    gameEndTimer =
-      null;
-
-  }
-
-}
-
-
-/* ==================================================
-ADAPT
-================================================== */
-
-function adaptScore(series){
-
-  if(series.length < 4){
-
-    const overall =
-      avg(series);
-
-
-    return overall === null
-    ? 50
-    : clamp(
-        35+overall*.3,
-        25,
-        75
-      );
-
-  }
-
-
-  const chunk =
-    Math.max(
-      1,
-      Math.floor(
-        series.length*.35
-      )
-    );
-
-
-  const first =
-    avg(
-      series.slice(
-        0,
-        chunk
-      )
-    );
-
-
-  const last =
-    avg(
-      series.slice(
-        -chunk
-      )
-    );
-
-
-  return clamp(
-    50
-    + (
-      last-first
-    )*.9,
-    0,
-    100
-  );
-
-}
-
-
-/* ==================================================
-REACTION
-================================================== */
-
-function reactionGame(play){
-
-  let success = 0;
-  let falseStart = 0;
-  let totalReaction = 0;
-
-  let ready = false;
-  let shownAt = 0;
-
-  let timer = null;
-
-  let combo = 0;
-
-  const rounds = [];
+  const rounds =
+    [];
 
 
   play.innerHTML = `
 
-    <div class="center-game">
+    <div class="center">
+
+      <div class="world-object">
+        ${game.icon}
+      </div>
 
       <button
         class="round-button"
-        id="reactionBtn"
+        id="rbtn"
       >
         WAIT
       </button>
 
       <span
         class="message"
-        id="reactionMsg"
+        id="rmsg"
       >
-        光ったら押せ
+        ${game.rule}
       </span>
 
     </div>
@@ -2660,24 +2921,27 @@ function reactionGame(play){
 
 
   const board =
-    play.closest(".board");
+    play.closest(
+      ".board"
+    );
 
 
   const btn =
     play.querySelector(
-      "#reactionBtn"
+      "#rbtn"
     );
 
 
   const msg =
     play.querySelector(
-      "#reactionMsg"
+      "#rmsg"
     );
 
 
-  function schedule(){
+  function next(){
 
-    ready = false;
+    ready =
+      false;
 
 
     btn.textContent =
@@ -2688,7 +2952,9 @@ function reactionGame(play){
       "brightness(.35)";
 
 
-    clearTimeout(timer);
+    clearTimeout(
+      timer
+    );
 
 
     timer =
@@ -2696,7 +2962,9 @@ function reactionGame(play){
         () => {
 
           if(!gameActive){
+
             return;
+
           }
 
 
@@ -2704,7 +2972,7 @@ function reactionGame(play){
             true;
 
 
-          shownAt =
+          shown =
             performance.now();
 
 
@@ -2713,11 +2981,12 @@ function reactionGame(play){
 
 
           btn.style.filter =
-            "brightness(1.25)";
+            "brightness(1.2)";
 
         },
-        450
-        + Math.random()*850
+        400
+        +
+        Math.random()*850
       );
 
   }
@@ -2726,7 +2995,9 @@ function reactionGame(play){
   function press(){
 
     if(!gameActive){
+
       return;
+
     }
 
 
@@ -2734,16 +3005,23 @@ function reactionGame(play){
 
       falseStart++;
 
-      combo = 0;
 
-      rounds.push(0);
+      combo =
+        0;
 
-      msg.textContent =
-        "TOO EARLY";
 
-      failFeedback(board);
+      rounds.push(
+        0
+      );
 
-      schedule();
+
+      fail(
+        board
+      );
+
+
+      next();
+
 
       return;
 
@@ -2752,19 +3030,21 @@ function reactionGame(play){
 
     const reaction =
       performance.now()
-      - shownAt;
+      - shown;
 
 
-    success++;
+    good++;
 
-    totalReaction +=
+
+    total +=
       reaction;
 
 
     const score =
       clamp(
         100
-        - (
+        -
+        (
           reaction-180
         )/5,
         0,
@@ -2772,32 +3052,35 @@ function reactionGame(play){
       );
 
 
-    rounds.push(score);
+    rounds.push(
+      score
+    );
 
 
-    if(score >= 55){
+    combo =
+      score > 55
+        ? combo+1
+        : 0;
 
-      combo++;
 
-      successFeedback(
+    if(combo){
+
+      success(
         board,
         combo
       );
 
     }
-    else{
-
-      combo = 0;
-
-    }
 
 
     msg.textContent =
-      Math.round(reaction)
+      Math.round(
+        reaction
+      )
       +" ms";
 
 
-    schedule();
+    next();
 
   }
 
@@ -2811,7 +3094,9 @@ function reactionGame(play){
   cleanupFns.push(
     () => {
 
-      clearTimeout(timer);
+      clearTimeout(
+        timer
+      );
 
 
       btn.removeEventListener(
@@ -2823,73 +3108,91 @@ function reactionGame(play){
   );
 
 
-  schedule();
+  next();
 
 
-  return () => {
+  return () => ({
 
-    const reaction =
-      success
-      ? totalReaction/success
-      : 1000;
-
-
-    const score =
+    score:
       clamp(
         100
-        - (
-          reaction-180
+        -
+        (
+          (
+            good
+              ? total/good
+              : 1000
+          )
+          -180
         )/5
-        - falseStart*8,
+        -
+        falseStart*8,
         0,
         100
-      );
+      ),
 
+    adapt:
+      adaptScore(
+        rounds
+      )
 
-    return {
-      score,
-      adapt:
-        adaptScore(rounds)
-    };
-
-  };
+  });
 
 }
 
 
-/* ==================================================
-GREEN
-================================================== */
+/* ==========================================
+GO / NO GO
+========================================== */
 
-function greenGame(play){
+function goNoGoEngine(
+  game,
+  play
+){
 
-  let correct = 0;
-  let wrong = 0;
-  let missed = 0;
+  let correct =
+    0;
 
-  let state = null;
 
-  let timer = null;
+  let wrong =
+    0;
 
-  let combo = 0;
 
-  const rounds = [];
+  let miss =
+    0;
+
+
+  let state =
+    null;
+
+
+  let timer =
+    null;
+
+
+  let combo =
+    0;
+
+
+  const rounds =
+    [];
 
 
   play.innerHTML = `
 
-    <div class="center-game">
+    <div class="center">
+
+      <div class="world-object">
+        ${game.icon}
+      </div>
 
       <button
         class="color-box"
-        id="colorBox"
+        id="box"
       ></button>
 
-      <span
-        class="message"
-        id="colorMsg"
-      >
-        GREENだけ押せ
+      <span class="message">
+        ${game.rule}
       </span>
 
     </div>
@@ -2898,29 +3201,28 @@ function greenGame(play){
 
 
   const board =
-    play.closest(".board");
+    play.closest(
+      ".board"
+    );
 
 
   const box =
     play.querySelector(
-      "#colorBox"
-    );
-
-
-  const msg =
-    play.querySelector(
-      "#colorMsg"
+      "#box"
     );
 
 
   function next(){
 
     if(!gameActive){
+
       return;
+
     }
 
 
-    state = null;
+    state =
+      null;
 
 
     box.className =
@@ -2932,14 +3234,16 @@ function greenGame(play){
         () => {
 
           if(!gameActive){
+
             return;
+
           }
 
 
           state =
             Math.random() < .58
-            ? "green"
-            : "red";
+              ? "go"
+              : "stop";
 
 
           box.classList.add(
@@ -2947,30 +3251,31 @@ function greenGame(play){
           );
 
 
-          const delay =
-            state === "green"
-            ? 620
-            : 480;
-
-
           timer =
             setTimeout(
               () => {
 
                 if(
-                  state === "green"
+                  state === "go"
                 ){
 
-                  missed++;
+                  miss++;
 
-                  combo = 0;
 
-                  rounds.push(0);
+                  combo =
+                    0;
+
+
+                  rounds.push(
+                    0
+                  );
 
                 }
                 else{
 
-                  rounds.push(100);
+                  rounds.push(
+                    100
+                  );
 
                 }
 
@@ -2978,12 +3283,15 @@ function greenGame(play){
                 next();
 
               },
-              delay
+              state === "go"
+                ? 620
+                : 480
             );
 
         },
-        220
-        + Math.random()*350
+        200
+        +
+        Math.random()*320
       );
 
   }
@@ -2992,26 +3300,33 @@ function greenGame(play){
   function press(){
 
     if(!gameActive){
+
       return;
+
     }
 
 
-    clearTimeout(timer);
+    clearTimeout(
+      timer
+    );
 
 
-    if(state === "green"){
+    if(
+      state === "go"
+    ){
 
       correct++;
 
+
       combo++;
 
-      rounds.push(100);
 
-      msg.textContent =
-        "GOOD";
+      rounds.push(
+        100
+      );
 
 
-      successFeedback(
+      success(
         board,
         combo
       );
@@ -3021,15 +3336,19 @@ function greenGame(play){
 
       wrong++;
 
-      combo = 0;
 
-      rounds.push(0);
-
-      msg.textContent =
-        "MISS";
+      combo =
+        0;
 
 
-      failFeedback(board);
+      rounds.push(
+        0
+      );
+
+
+      fail(
+        board
+      );
 
     }
 
@@ -3048,7 +3367,9 @@ function greenGame(play){
   cleanupFns.push(
     () => {
 
-      clearTimeout(timer);
+      clearTimeout(
+        timer
+      );
 
 
       box.removeEventListener(
@@ -3067,24 +3388,29 @@ function greenGame(play){
 
     const total =
       correct
-      + wrong
-      + missed;
+      +
+      wrong
+      +
+      miss;
 
 
     return {
 
       score:
         total
-        ? clamp(
-            correct/total*100
-            - wrong*5,
-            0,
-            100
-          )
-        : 0,
+          ? clamp(
+              correct/total*100
+              -
+              wrong*5,
+              0,
+              100
+            )
+          : 0,
 
       adapt:
-        adaptScore(rounds)
+        adaptScore(
+          rounds
+        )
 
     };
 
@@ -3093,52 +3419,85 @@ function greenGame(play){
 }
 
 
-/* ==================================================
-TAP BOOST
-================================================== */
+/* ==========================================
+TAP
+========================================== */
 
-function tapGame(play){
+function tapEngine(
+  game,
+  play
+){
 
-  let count = 0;
+  let count =
+    0;
 
-  let currentChunk = 0;
 
-  let boostLevel = 0;
+  let chunk =
+    0;
 
-  const chunks = [];
+
+  const chunks =
+    [];
+
+
+  const timer =
+    setInterval(
+      () => {
+
+        chunks.push(
+          clamp(
+            chunk*14,
+            0,
+            100
+          )
+        );
+
+
+        chunk =
+          0;
+
+      },
+      1000
+    );
 
 
   play.innerHTML = `
 
-    <div class="center-game">
+    <div class="center">
 
       <div
-        class="boost-label"
-        id="boostLabel"
-      ></div>
+        class="world-object"
+        id="world"
+      >
+        ${game.icon}
+      </div>
 
-      <div class="tap-energy">
+      <div class="energy">
 
         <div
-          class="tap-energy-fill"
-          id="energyFill"
+          class="energy-fill"
+          id="fill"
         ></div>
 
       </div>
 
       <span
         class="counter"
-        id="tapCount"
+        id="cnt"
       >
         0
       </span>
 
       <button
         class="round-button"
-        id="tapBtn"
+        id="tap"
       >
         TAP
       </button>
+
+      <div class="world-label">
+        ${game.rule}
+      </div>
 
     </div>
 
@@ -3146,117 +3505,85 @@ function tapGame(play){
 
 
   const board =
-    play.closest(".board");
+    play.closest(
+      ".board"
+    );
 
 
   const btn =
     play.querySelector(
-      "#tapBtn"
+      "#tap"
     );
 
 
-  const countEl =
+  const cnt =
     play.querySelector(
-      "#tapCount"
+      "#cnt"
     );
 
 
   const fill =
     play.querySelector(
-      "#energyFill"
+      "#fill"
     );
 
 
-  const boost =
+  const world =
     play.querySelector(
-      "#boostLabel"
-    );
-
-
-  const chunkTimer =
-    setInterval(
-      () => {
-
-        chunks.push(
-          clamp(
-            currentChunk*14,
-            0,
-            100
-          )
-        );
-
-
-        currentChunk = 0;
-
-      },
-      1000
+      "#world"
     );
 
 
   function press(){
 
     if(!gameActive){
+
       return;
+
     }
 
 
     count++;
 
-    currentChunk++;
+
+    chunk++;
 
 
-    countEl.textContent =
+    cnt.textContent =
       count;
 
 
-    const percent =
+    fill.style.width =
       Math.min(
         100,
-        count/75*100
-      );
+        count/70*100
+      )
+      +"%";
 
 
-    fill.style.width =
-      percent+"%";
-
-
-    const oldLevel =
-      boostLevel;
-
-
-    if(count >= 55){
-
-      boostLevel = 3;
-
-      boost.textContent =
-        "MAX BOOST";
-
-    }
-    else if(count >= 35){
-
-      boostLevel = 2;
-
-      boost.textContent =
-        "BOOST ×2";
-
-    }
-    else if(count >= 18){
-
-      boostLevel = 1;
-
-      boost.textContent =
-        "BOOST";
-
-    }
+    world.style.transform =
+      `scale(${
+        1
+        +
+        Math.min(
+          .35,
+          count/200
+        )
+      })`;
 
 
     if(
-      boostLevel > oldLevel
+      [18,35,55]
+        .includes(
+          count
+        )
     ){
 
-      successFeedback(
+      success(
         board,
-        boostLevel*3
+        Math.floor(
+          count/18
+        )+2
       );
 
     }
@@ -3274,7 +3601,7 @@ function tapGame(play){
     () => {
 
       clearInterval(
-        chunkTimer
+        timer
       );
 
 
@@ -3290,13 +3617,13 @@ function tapGame(play){
   return () => {
 
     clearInterval(
-      chunkTimer
+      timer
     );
 
 
     chunks.push(
       clamp(
-        currentChunk*14,
+        chunk*14,
         0,
         100
       )
@@ -3313,7 +3640,9 @@ function tapGame(play){
         ),
 
       adapt:
-        adaptScore(chunks)
+        adaptScore(
+          chunks
+        )
 
     };
 
@@ -3322,40 +3651,64 @@ function tapGame(play){
 }
 
 
-/* ==================================================
+/* ==========================================
 ALTERNATE
-================================================== */
+========================================== */
 
-function alternateGame(play){
+function alternateEngine(
+  game,
+  play
+){
 
-  let correct = 0;
-  let wrong = 0;
+  let correct =
+    0;
+
+
+  let wrong =
+    0;
+
 
   let expected =
     "L";
 
-  let combo = 0;
 
-  const rounds = [];
+  let combo =
+    0;
+
+
+  const rounds =
+    [];
 
 
   play.innerHTML = `
 
-    <div class="alt-grid">
+    <div class="center">
 
-      <button
-        class="alt-btn active"
-        data-side="L"
-      >
-        LEFT
-      </button>
+      <div class="world-object">
+        ${game.icon}
+      </div>
 
-      <button
-        class="alt-btn"
-        data-side="R"
-      >
-        RIGHT
-      </button>
+      <div class="alt-grid">
+
+        <button
+          class="alt-btn active"
+          data-side="L"
+        >
+          LEFT
+        </button>
+
+        <button
+          class="alt-btn"
+          data-side="R"
+        >
+          RIGHT
+        </button>
+
+      </div>
+
+      <div class="world-label">
+        ${game.rule}
+      </div>
 
     </div>
 
@@ -3363,63 +3716,80 @@ function alternateGame(play){
 
 
   const board =
-    play.closest(".board");
+    play.closest(
+      ".board"
+    );
 
 
   const buttons =
-    [...play.querySelectorAll(
-      ".alt-btn"
-    )];
+    [
+      ...play.querySelectorAll(
+        ".alt-btn"
+      )
+    ];
 
 
   function render(){
 
-    buttons
-      .forEach(
-        btn => {
+    buttons.forEach(
+      btn => {
 
-          btn.classList.toggle(
-            "active",
-            btn.dataset.side
-            === expected
-          );
+        btn.classList.toggle(
+          "active",
+          btn.dataset.side
+          === expected
+        );
 
-        }
-      );
+      }
+    );
 
   }
 
 
-  function press(event){
+  function press(
+    event
+  ){
 
     if(!gameActive){
+
       return;
+
     }
 
 
     const side =
-      event.currentTarget
-        .dataset.side;
+      event
+        .currentTarget
+        .dataset
+        .side;
 
 
-    if(side === expected){
+    if(
+      side === expected
+    ){
 
       correct++;
 
+
       combo++;
 
-      rounds.push(100);
+
+      rounds.push(
+        100
+      );
 
 
       expected =
         expected === "L"
-        ? "R"
-        : "L";
+          ? "R"
+          : "L";
 
 
-      if(combo % 5 === 0){
+      if(
+        combo % 5 === 0
+      ){
 
-        successFeedback(
+        success(
           board,
           combo
         );
@@ -3431,11 +3801,19 @@ function alternateGame(play){
 
       wrong++;
 
-      combo = 0;
 
-      rounds.push(0);
+      combo =
+        0;
 
-      failFeedback(board);
+
+      rounds.push(
+        0
+      );
+
+
+      fail(
+        board
+      );
 
     }
 
@@ -3474,81 +3852,131 @@ function alternateGame(play){
     score:
       clamp(
         correct*2
-        - wrong*3,
+        -
+        wrong*3,
         0,
         100
       ),
 
     adapt:
-      adaptScore(rounds)
+      adaptScore(
+        rounds
+      )
 
   });
 
 }
 
 
-/* ==================================================
-AIM ENGINE
-================================================== */
+/* ==========================================
+AIM
+========================================== */
 
 function aimEngine(
+  game,
   play,
   moving
 ){
 
-  let targetX = 0;
-  let targetY = 0;
+  let tx =
+    0;
 
-  let crossX = 0;
-  let crossY = 0;
+
+  let ty =
+    0;
+
+
+  let cx =
+    0;
+
+
+  let cy =
+    0;
+
 
   let targetSize =
-    moving ? 58 : 65;
+    moving
+      ? 56
+      : 64;
 
-  let shots = 0;
-  let hits = 0;
 
-  let reactionTotal = 0;
+  let shots =
+    0;
 
-  let shownAt = 0;
 
-  let moveRAF = null;
-  let joystickRAF = null;
+  let hits =
+    0;
 
-  let vx = 2;
-  let vy = 1.5;
 
-  let joyX = 0;
-  let joyY = 0;
+  let totalReaction =
+    0;
 
-  let combo = 0;
-  let weaponLevel = 1;
 
-  const rounds = [];
+  let shown =
+    0;
+
+
+  let vx =
+    2;
+
+
+  let vy =
+    1.4;
+
+
+  let moveRAF =
+    null;
+
+
+  let joystickRAF =
+    null;
+
+
+  let joyX =
+    0;
+
+
+  let joyY =
+    0;
+
+
+  let combo =
+    0;
+
+
+  const rounds =
+    [];
 
 
   play.innerHTML = `
 
     <div
       class="aim"
-      id="aimBoard"
+      id="aim"
     >
 
       <div
-        class="weapon-level"
-        id="weaponLevel"
+        class="world-object"
+        style="
+          position:absolute;
+          left:16px;
+          top:10px;
+          font-size:42px;
+        "
       >
-        WEAPON LV.1
+        ${game.icon}
       </div>
+
 
       <div
         class="target"
         id="target"
       ></div>
 
+
       <div
         class="crosshair"
-        id="crosshair"
+        id="cross"
       >
         <div class="crosshair-center"></div>
       </div>
@@ -3558,19 +3986,17 @@ function aimEngine(
 
         <div
           class="joystick"
-          id="joystick"
+          id="joy"
         >
-
           <div
             class="joystick-knob"
-            id="joyKnob"
+            id="knob"
           ></div>
-
         </div>
 
         <button
           class="fire"
-          id="fireBtn"
+          id="fire"
         >
           FIRE
         </button>
@@ -3583,13 +4009,15 @@ function aimEngine(
 
 
   const board =
-    play.querySelector(
-      "#aimBoard"
+    play.closest(
+      ".board"
     );
 
 
-  const outerBoard =
-    play.closest(".board");
+  const area =
+    play.querySelector(
+      "#aim"
+    );
 
 
   const target =
@@ -3598,59 +4026,54 @@ function aimEngine(
     );
 
 
-  const crosshair =
+  const cross =
     play.querySelector(
-      "#crosshair"
+      "#cross"
     );
 
 
-  const joystick =
+  const joy =
     play.querySelector(
-      "#joystick"
+      "#joy"
     );
 
 
   const knob =
     play.querySelector(
-      "#joyKnob"
+      "#knob"
     );
 
 
   const fireBtn =
     play.querySelector(
-      "#fireBtn"
+      "#fire"
     );
 
 
-  const levelEl =
-    play.querySelector(
-      "#weaponLevel"
-    );
+  const dimensions =
+    () => {
+
+      const rect =
+        area
+          .getBoundingClientRect();
 
 
-  function size(){
+      return {
+        w:rect.width,
+        h:rect.height
+      };
 
-    const r =
-      board
-        .getBoundingClientRect();
-
-
-    return {
-      w:r.width,
-      h:r.height
     };
-
-  }
 
 
   function renderCross(){
 
-    crosshair.style.left =
-      crossX+"px";
+    cross.style.left =
+      cx+"px";
 
 
-    crosshair.style.top =
-      crossY+"px";
+    cross.style.top =
+      cy+"px";
 
   }
 
@@ -3658,144 +4081,76 @@ function aimEngine(
   function spawn(){
 
     if(!gameActive){
+
       return;
+
     }
 
 
-    const s =
-      size();
+    const size =
+      dimensions();
 
 
-    targetX =
+    tx =
+      45
+      +
+      Math.random()
+      *
+      Math.max(
+        20,
+        size.w-90
+      );
+
+
+    ty =
       50
-      + Math.random()
-      * Math.max(
-          20,
-          s.w-100
-        );
-
-
-    targetY =
-      50
-      + Math.random()
-      * Math.max(
-          20,
-          s.h-130
-        );
+      +
+      Math.random()
+      *
+      Math.max(
+        20,
+        size.h-130
+      );
 
 
     target.style.left =
-      targetX+"px";
+      tx+"px";
 
 
     target.style.top =
-      targetY+"px";
+      ty+"px";
 
 
-    target.style.width =
-      targetSize+"px";
-
-
-    target.style.height =
-      targetSize+"px";
-
-
-    target.style.opacity =
-      "1";
-
-
-    target.classList.remove(
-      "hit"
-    );
-
-
-    shownAt =
+    shown =
       performance.now();
 
 
     vx =
       (
-        Math.random()<.5
-        ? -1
-        : 1
+        Math.random() < .5
+          ? -1
+          : 1
       )
       *
       (
-        1.6
-        + Math.random()*1.4
+        1.5
+        +
+        Math.random()*1.3
       );
 
 
     vy =
       (
-        Math.random()<.5
-        ? -1
-        : 1
+        Math.random() < .5
+          ? -1
+          : 1
       )
       *
       (
         1
-        + Math.random()*1.1
+        +
+        Math.random()
       );
-
-  }
-
-
-  function createSparks(
-    x,
-    y
-  ){
-
-    for(let i=0;i<7;i++){
-
-      const spark =
-        document
-          .createElement(
-            "div"
-          );
-
-
-      spark.className =
-        "spark";
-
-
-      spark.style.left =
-        x+"px";
-
-
-      spark.style.top =
-        y+"px";
-
-
-      spark.style.setProperty(
-        "--sx",
-        (
-          Math.random()*70
-          -35
-        )+"px"
-      );
-
-
-      spark.style.setProperty(
-        "--sy",
-        (
-          Math.random()*70
-          -35
-        )+"px"
-      );
-
-
-      board.appendChild(
-        spark
-      );
-
-
-      setTimeout(
-        () => spark.remove(),
-        350
-      );
-
-    }
 
   }
 
@@ -3806,31 +4161,30 @@ function aimEngine(
     hit
   ){
 
-    const s =
-      size();
+    const size =
+      dimensions();
 
 
-    const sx =
-      s.w/2;
+    const startX =
+      size.w/2;
 
 
-    const sy =
-      s.h-8;
+    const startY =
+      size.h-8;
 
 
     const dx =
-      x-sx;
+      x-startX;
 
 
     const dy =
-      y-sy;
+      y-startY;
 
 
     const length =
-      Math.sqrt(
-        dx*dx
-        +
-        dy*dy
+      Math.hypot(
+        dx,
+        dy
       );
 
 
@@ -3843,40 +4197,21 @@ function aimEngine(
 
 
     const beam =
-      document
-        .createElement(
-          "div"
-        );
+      document.createElement(
+        "div"
+      );
 
 
     beam.className =
       "laser";
 
 
-    if(weaponLevel === 2){
-
-      beam.classList.add(
-        "lv2"
-      );
-
-    }
-
-
-    if(weaponLevel >= 3){
-
-      beam.classList.add(
-        "lv3"
-      );
-
-    }
-
-
     beam.style.left =
-      sx+"px";
+      startX+"px";
 
 
     beam.style.top =
-      sy+"px";
+      startY+"px";
 
 
     beam.style.width =
@@ -3887,22 +4222,21 @@ function aimEngine(
       `rotate(${angle}deg)`;
 
 
-    board.appendChild(
+    area.appendChild(
       beam
     );
 
 
     const impact =
-      document
-        .createElement(
-          "div"
-        );
+      document.createElement(
+        "div"
+      );
 
 
     impact.className =
       hit
-      ? "impact"
-      : "impact miss";
+        ? "impact"
+        : "impact miss";
 
 
     impact.style.left =
@@ -3913,19 +4247,9 @@ function aimEngine(
       y+"px";
 
 
-    board.appendChild(
+    area.appendChild(
       impact
     );
-
-
-    if(hit){
-
-      createSparks(
-        x,
-        y
-      );
-
-    }
 
 
     setTimeout(
@@ -3945,28 +4269,26 @@ function aimEngine(
   function fire(){
 
     if(!gameActive){
+
       return;
+
     }
 
 
     shots++;
 
 
-    const distance =
-      Math.hypot(
-        crossX-targetX,
-        crossY-targetY
-      );
-
-
     const hit =
-      distance
+      Math.hypot(
+        cx-tx,
+        cy-ty
+      )
       <= targetSize/2;
 
 
     laser(
-      crossX,
-      crossY,
+      cx,
+      cy,
       hit
     );
 
@@ -3975,55 +4297,24 @@ function aimEngine(
 
       hits++;
 
+
       combo++;
-
-
-      if(combo >= 6){
-
-        weaponLevel = 3;
-
-      }
-      else if(combo >= 3){
-
-        weaponLevel = 2;
-
-      }
-      else{
-
-        weaponLevel = 1;
-
-      }
-
-
-      levelEl.textContent =
-        "WEAPON LV."
-        + weaponLevel;
-
-
-      successFeedback(
-        outerBoard,
-        combo
-      );
-
-
-      target.classList.add(
-        "hit"
-      );
 
 
       const reaction =
         performance.now()
-        - shownAt;
+        - shown;
 
 
-      reactionTotal +=
+      totalReaction +=
         reaction;
 
 
       rounds.push(
         clamp(
           100
-          - (
+          -
+          (
             reaction-350
           )/22,
           0,
@@ -4032,28 +4323,28 @@ function aimEngine(
       );
 
 
-      setTimeout(
-        spawn,
-        110
+      success(
+        board,
+        combo
       );
+
+
+      spawn();
 
     }
     else{
 
-      combo = 0;
-
-      weaponLevel = 1;
-
-
-      levelEl.textContent =
-        "WEAPON LV.1";
+      combo =
+        0;
 
 
-      rounds.push(0);
+      rounds.push(
+        0
+      );
 
 
-      failFeedback(
-        outerBoard
+      fail(
+        board
       );
 
     }
@@ -4061,27 +4352,32 @@ function aimEngine(
   }
 
 
-  function mouseMove(event){
+  function mouseMove(
+    event
+  ){
 
     if(
-      window.innerWidth
-      <= 900
+      innerWidth <= 900
     ){
+
       return;
+
     }
 
 
-    const r =
-      board
+    const rect =
+      area
         .getBoundingClientRect();
 
 
-    crossX =
-      event.clientX-r.left;
+    cx =
+      event.clientX
+      - rect.left;
 
 
-    crossY =
-      event.clientY-r.top;
+    cy =
+      event.clientY
+      - rect.top;
 
 
     renderCross();
@@ -4089,30 +4385,37 @@ function aimEngine(
   }
 
 
-  function desktopFire(event){
+  function desktopFire(
+    event
+  ){
 
     if(
-      window.innerWidth
-      <= 900
+      innerWidth <= 900
     ){
+
       return;
+
     }
 
 
     event.preventDefault();
+
 
     fire();
 
   }
 
 
-  function joystickMove(event){
+  function joystickMove(
+    event
+  ){
 
     if(
-      window.innerWidth
-      > 900
+      innerWidth > 900
     ){
+
       return;
+
     }
 
 
@@ -4121,49 +4424,58 @@ function aimEngine(
 
     const touch =
       event.touches
-      ? event.touches[0]
-      : event;
+        ? event.touches[0]
+        : event;
 
 
-    const r =
-      joystick
+    const rect =
+      joy
         .getBoundingClientRect();
 
 
-    const cx =
-      r.left+r.width/2;
+    const originX =
+      rect.left
+      +
+      rect.width/2;
 
 
-    const cy =
-      r.top+r.height/2;
+    const originY =
+      rect.top
+      +
+      rect.height/2;
 
 
     let dx =
-      touch.clientX-cx;
+      touch.clientX
+      - originX;
 
 
     let dy =
-      touch.clientY-cy;
+      touch.clientY
+      - originY;
 
 
-    const max = 32;
+    const max =
+      32;
 
 
-    const length =
+    const distance =
       Math.hypot(
         dx,
         dy
       );
 
 
-    if(length > max){
+    if(
+      distance > max
+    ){
 
       dx =
-        dx/length*max;
+        dx/distance*max;
 
 
       dy =
-        dy/length*max;
+        dy/distance*max;
 
     }
 
@@ -4184,8 +4496,12 @@ function aimEngine(
 
   function joystickEnd(){
 
-    joyX = 0;
-    joyY = 0;
+    joyX =
+      0;
+
+
+    joyY =
+      0;
 
 
     knob.style.transform =
@@ -4198,23 +4514,27 @@ function aimEngine(
 
     if(gameActive){
 
-      const s =
-        size();
+      const size =
+        dimensions();
 
 
-      crossX =
+      cx =
         clamp(
-          crossX+joyX*5.5,
+          cx
+          +
+          joyX*5.5,
           0,
-          s.w
+          size.w
         );
 
 
-      crossY =
+      cy =
         clamp(
-          crossY+joyY*5.5,
+          cy
+          +
+          joyY*5.5,
           0,
-          s.h
+          size.h
         );
 
 
@@ -4238,61 +4558,66 @@ function aimEngine(
       moving
     ){
 
-      const s =
-        size();
+      const size =
+        dimensions();
 
 
-      targetX += vx;
-
-      targetY += vy;
-
-
-      const r =
+      const radius =
         targetSize/2;
 
 
+      tx +=
+        vx;
+
+
+      ty +=
+        vy;
+
+
       if(
-        targetX < r ||
-        targetX > s.w-r
+        tx < radius ||
+        tx > size.w-radius
       ){
 
-        vx *= -1;
+        vx *=
+          -1;
 
       }
 
 
       if(
-        targetY < r ||
-        targetY > s.h-r-90
+        ty < radius ||
+        ty > size.h-radius-90
       ){
 
-        vy *= -1;
+        vy *=
+          -1;
 
       }
 
 
-      targetX =
+      tx =
         clamp(
-          targetX,
-          r,
-          s.w-r
+          tx,
+          radius,
+          size.w-radius
         );
 
 
-      targetY =
+      ty =
         clamp(
-          targetY,
-          r,
-          s.h-r-90
+          ty,
+          radius,
+          size.h-radius-90
         );
 
 
       target.style.left =
-        targetX+"px";
+        tx+"px";
 
 
       target.style.top =
-        targetY+"px";
+        ty+"px";
 
     }
 
@@ -4305,36 +4630,37 @@ function aimEngine(
   }
 
 
-  const s =
-    size();
+  const size =
+    dimensions();
 
 
-  crossX =
-    s.w/2;
+  cx =
+    size.w/2;
 
 
-  crossY =
-    s.h/2;
+  cy =
+    size.h/2;
 
 
   renderCross();
 
+
   spawn();
 
 
-  board.addEventListener(
+  area.addEventListener(
     "mousemove",
     mouseMove
   );
 
 
-  board.addEventListener(
+  area.addEventListener(
     "pointerdown",
     desktopFire
   );
 
 
-  joystick.addEventListener(
+  joy.addEventListener(
     "touchstart",
     joystickMove,
     {
@@ -4343,7 +4669,7 @@ function aimEngine(
   );
 
 
-  joystick.addEventListener(
+  joy.addEventListener(
     "touchmove",
     joystickMove,
     {
@@ -4352,7 +4678,7 @@ function aimEngine(
   );
 
 
-  joystick.addEventListener(
+  joy.addEventListener(
     "touchend",
     joystickEnd
   );
@@ -4372,49 +4698,32 @@ function aimEngine(
 
   joystickLoop();
 
+
   moveTarget();
 
 
   cleanupFns.push(
     () => {
 
-      board.removeEventListener(
+      area.removeEventListener(
         "mousemove",
         mouseMove
       );
 
 
-      board.removeEventListener(
+      area.removeEventListener(
         "pointerdown",
         desktopFire
       );
 
 
-      joystick.removeEventListener(
-        "touchstart",
-        joystickMove
-      );
-
-
-      joystick.removeEventListener(
-        "touchmove",
-        joystickMove
-      );
-
-
-      joystick.removeEventListener(
-        "touchend",
-        joystickEnd
+      cancelAnimationFrame(
+        moveRAF
       );
 
 
       cancelAnimationFrame(
         joystickRAF
-      );
-
-
-      cancelAnimationFrame(
-        moveRAF
       );
 
     }
@@ -4423,24 +4732,16 @@ function aimEngine(
 
   return () => {
 
-    if(!shots){
-
-      return {
-        score:0,
-        adapt:50
-      };
-
-    }
-
-
     const accuracy =
-      hits/shots;
+      shots
+        ? hits/shots
+        : 0;
 
 
     const reaction =
       hits
-      ? reactionTotal/hits
-      : 2000;
+        ? totalReaction/hits
+        : 2000;
 
 
     return {
@@ -4452,7 +4753,8 @@ function aimEngine(
           Math.max(
             0,
             30
-            - (
+            -
+            (
               reaction-400
             )/45
           ),
@@ -4461,7 +4763,9 @@ function aimEngine(
         ),
 
       adapt:
-        adaptScore(rounds)
+        adaptScore(
+          rounds
+        )
 
     };
 
@@ -4469,43 +4773,38 @@ function aimEngine(
 
 }
 
-function aimStaticGame(play){
 
-  return aimEngine(
-    play,
-    false
-  );
-
-}
-
-function aimMovingGame(play){
-
-  return aimEngine(
-    play,
-    true
-  );
-
-}
-
-
-/* ==================================================
+/* ==========================================
 HIGH LOW
-================================================== */
+========================================== */
 
-function highLowGame(play){
+function highLowEngine(
+  game,
+  play
+){
 
-  let correct = 0;
-  let attempts = 0;
+  let correct =
+    0;
 
-  let combo = 0;
 
-  const rounds = [];
+  let attempts =
+    0;
+
+
+  let combo =
+    0;
+
+
+  const rounds =
+    [];
 
 
   function next(){
 
     if(!gameActive){
+
       return;
+
     }
 
 
@@ -4521,7 +4820,9 @@ function highLowGame(play){
       )+10;
 
 
-    while(a === b){
+    while(
+      a === b
+    ){
 
       b =
         Math.floor(
@@ -4532,249 +4833,22 @@ function highLowGame(play){
 
 
     const answer =
-      Math.max(a,b);
-
-
-    play.innerHTML = `
-
-      <div class="choice-wrap">
-
-        <button
-          class="choice"
-          data-value="${a}"
-        >
-          ${a}
-        </button>
-
-        <button
-          class="choice"
-          data-value="${b}"
-        >
-          ${b}
-        </button>
-
-      </div>
-
-    `;
-
-
-    const board =
-      play.closest(".board");
-
-
-    play
-      .querySelectorAll(
-        ".choice"
-      )
-      .forEach(
-        btn => {
-
-          btn.addEventListener(
-            "pointerdown",
-            () => {
-
-              if(!gameActive){
-                return;
-              }
-
-
-              attempts++;
-
-
-              const good =
-                Number(
-                  btn.dataset.value
-                )
-                === answer;
-
-
-              if(good){
-
-                correct++;
-
-                combo++;
-
-                rounds.push(100);
-
-
-                btn.classList.add(
-                  "correct-pop"
-                );
-
-
-                successFeedback(
-                  board,
-                  combo
-                );
-
-
-                setTimeout(
-                  next,
-                  180
-                );
-
-              }
-              else{
-
-                combo = 0;
-
-                rounds.push(0);
-
-
-                failFeedback(
-                  board
-                );
-
-
-                setTimeout(
-                  next,
-                  120
-                );
-
-              }
-
-            },
-            {
-              once:true
-            }
-          );
-
-        }
+      Math.max(
+        a,
+        b
       );
 
-  }
-
-
-  next();
-
-
-  return () => ({
-
-    score:
-      attempts
-      ? clamp(
-          correct/attempts*70
-          + attempts*2.2,
-          0,
-          100
-        )
-      : 0,
-
-    adapt:
-      adaptScore(rounds)
-
-  });
-
-}
-
-
-/* ==================================================
-CONDITION
-================================================== */
-
-function conditionGame(play){
-
-  let correct = 0;
-  let attempts = 0;
-
-  let combo = 0;
-
-  const rounds = [];
-
-
-  const rules = [
-
-    {
-      label:"大きい方",
-      answer:(a,b)=>Math.max(a,b)
-    },
-
-    {
-      label:"小さい方",
-      answer:(a,b)=>Math.min(a,b)
-    },
-
-    {
-      label:"偶数",
-      answer:(a,b)=>
-        a%2===0 ? a : b
-    }
-
-  ];
-
-
-  function next(){
-
-    if(!gameActive){
-      return;
-    }
-
-
-    const rule =
-      rules[
-        Math.floor(
-          Math.random()
-          * rules.length
-        )
-      ];
-
-
-    let a;
-    let b;
-
-
-    if(rule.label === "偶数"){
-
-      a =
-        Math.floor(
-          Math.random()*40
-        )*2+2;
-
-
-      b =
-        Math.floor(
-          Math.random()*40
-        )*2+1;
-
-
-      if(Math.random() < .5){
-
-        [a,b] = [b,a];
-
-      }
-
-    }
-    else{
-
-      a =
-        Math.floor(
-          Math.random()*90
-        )+10;
-
-
-      b =
-        Math.floor(
-          Math.random()*90
-        )+10;
-
-
-      while(a === b){
-        b++;
-      }
-
-    }
-
-
-    const answer =
-      rule.answer(a,b);
-
 
     play.innerHTML = `
 
-      <div class="center-game">
+      <div class="center">
+
+        <div class="world-object">
+          ${game.icon}
+        </div>
 
         <div class="logic-label">
-          ${rule.label}
+          ${game.rule}
         </div>
 
         <div class="choice-wrap">
@@ -4801,7 +4875,9 @@ function conditionGame(play){
 
 
     const board =
-      play.closest(".board");
+      play.closest(
+        ".board"
+      );
 
 
     play
@@ -4816,7 +4892,9 @@ function conditionGame(play){
             () => {
 
               if(!gameActive){
+
                 return;
+
               }
 
 
@@ -4834,15 +4912,16 @@ function conditionGame(play){
 
                 correct++;
 
+
                 combo++;
 
-                rounds.push(100);
 
-                btn.classList.add(
-                  "correct-pop"
+                rounds.push(
+                  100
                 );
 
-                successFeedback(
+
+                success(
                   board,
                   combo
                 );
@@ -4850,11 +4929,16 @@ function conditionGame(play){
               }
               else{
 
-                combo = 0;
+                combo =
+                  0;
 
-                rounds.push(0);
 
-                failFeedback(
+                rounds.push(
+                  0
+                );
+
+
+                fail(
                   board
                 );
 
@@ -4863,7 +4947,7 @@ function conditionGame(play){
 
               setTimeout(
                 next,
-                good ? 180 : 120
+                120
               );
 
             },
@@ -4885,53 +4969,372 @@ function conditionGame(play){
 
     score:
       attempts
-      ? clamp(
-          correct/attempts*70
-          + attempts*2,
-          0,
-          100
-        )
-      : 0,
+        ? clamp(
+            correct/attempts*70
+            +
+            attempts*2.2,
+            0,
+            100
+          )
+        : 0,
 
     adapt:
-      adaptScore(rounds)
+      adaptScore(
+        rounds
+      )
 
   });
 
 }
 
 
-/* ==================================================
+/* ==========================================
+CONDITION
+========================================== */
+
+function conditionEngine(
+  game,
+  play
+){
+
+  let correct =
+    0;
+
+
+  let attempts =
+    0;
+
+
+  let combo =
+    0;
+
+
+  const rounds =
+    [];
+
+
+  const rules = [
+
+    [
+      "大きい方",
+      (a,b) =>
+        Math.max(
+          a,
+          b
+        )
+    ],
+
+    [
+      "小さい方",
+      (a,b) =>
+        Math.min(
+          a,
+          b
+        )
+    ],
+
+    [
+      "偶数",
+      (a,b) =>
+        a%2 === 0
+          ? a
+          : b
+    ]
+
+  ];
+
+
+  function next(){
+
+    if(!gameActive){
+
+      return;
+
+    }
+
+
+    const [
+      label,
+      ruleFunction
+    ] =
+      rules[
+        Math.floor(
+          Math.random()
+          * rules.length
+        )
+      ];
+
+
+    let a;
+
+    let b;
+
+
+    if(
+      label === "偶数"
+    ){
+
+      a =
+        Math.floor(
+          Math.random()*40
+        )*2+2;
+
+
+      b =
+        Math.floor(
+          Math.random()*40
+        )*2+1;
+
+
+      if(
+        Math.random() < .5
+      ){
+
+        [
+          a,
+          b
+        ] =
+        [
+          b,
+          a
+        ];
+
+      }
+
+    }
+    else{
+
+      a =
+        Math.floor(
+          Math.random()*90
+        )+10;
+
+
+      b =
+        Math.floor(
+          Math.random()*90
+        )+10;
+
+
+      while(
+        a === b
+      ){
+
+        b++;
+
+      }
+
+    }
+
+
+    const answer =
+      ruleFunction(
+        a,
+        b
+      );
+
+
+    play.innerHTML = `
+
+      <div class="center">
+
+        <div class="world-object">
+          ${game.icon}
+        </div>
+
+        <div class="logic-label">
+          ${label}
+        </div>
+
+        <div class="choice-wrap">
+
+          <button
+            class="choice"
+            data-value="${a}"
+          >
+            ${a}
+          </button>
+
+          <button
+            class="choice"
+            data-value="${b}"
+          >
+            ${b}
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    const board =
+      play.closest(
+        ".board"
+      );
+
+
+    play
+      .querySelectorAll(
+        ".choice"
+      )
+      .forEach(
+        btn => {
+
+          btn.addEventListener(
+            "pointerdown",
+            () => {
+
+              attempts++;
+
+
+              const good =
+                Number(
+                  btn.dataset.value
+                )
+                === answer;
+
+
+              if(good){
+
+                correct++;
+
+
+                combo++;
+
+
+                rounds.push(
+                  100
+                );
+
+
+                success(
+                  board,
+                  combo
+                );
+
+              }
+              else{
+
+                combo =
+                  0;
+
+
+                rounds.push(
+                  0
+                );
+
+
+                fail(
+                  board
+                );
+
+              }
+
+
+              setTimeout(
+                next,
+                120
+              );
+
+            },
+            {
+              once:true
+            }
+          );
+
+        }
+      );
+
+  }
+
+
+  next();
+
+
+  return () => ({
+
+    score:
+      attempts
+        ? clamp(
+            correct/attempts*70
+            +
+            attempts*2,
+            0,
+            100
+          )
+        : 0,
+
+    adapt:
+      adaptScore(
+        rounds
+      )
+
+  });
+
+}
+
+
+/* ==========================================
 SEQUENCE
-================================================== */
+========================================== */
 
-function sequenceGame(play){
+function sequenceEngine(
+  game,
+  play
+){
 
-  let rounds = 0;
-  let success = 0;
+  let rounds =
+    0;
 
-  let sequence = [];
 
-  let inputIndex = 0;
+  let successes =
+    0;
 
-  let accepting = false;
 
-  let timers = [];
+  let sequence =
+    [];
 
-  let combo = 0;
 
-  const roundScores = [];
+  let index =
+    0;
+
+
+  let accepting =
+    false;
+
+
+  let timers =
+    [];
+
+
+  let combo =
+    0;
+
+
+  const scores =
+    [];
 
 
   play.innerHTML = `
 
-    <div class="center-game">
+    <div class="center">
+
+      <div
+        class="world-object"
+        style="font-size:56px"
+      >
+        ${game.icon}
+      </div>
 
       <div class="memory-grid">
 
         ${Array.from(
-          {length:9},
-          (_,i)=>`
+          {
+            length:9
+          },
+          (_,i) => `
             <button
               class="memory-cell"
               data-index="${i}"
@@ -4943,7 +5346,7 @@ function sequenceGame(play){
 
       <span
         class="message"
-        id="seqMsg"
+        id="memoryMessage"
       >
         覚えろ
       </span>
@@ -4954,18 +5357,22 @@ function sequenceGame(play){
 
 
   const board =
-    play.closest(".board");
+    play.closest(
+      ".board"
+    );
 
 
   const cells =
-    [...play.querySelectorAll(
-      ".memory-cell"
-    )];
+    [
+      ...play.querySelectorAll(
+        ".memory-cell"
+      )
+    ];
 
 
-  const msg =
+  const message =
     play.querySelector(
-      "#seqMsg"
+      "#memoryMessage"
     );
 
 
@@ -4975,28 +5382,9 @@ function sequenceGame(play){
       clearTimeout
     );
 
-    timers = [];
 
-  }
-
-
-  function flash(
-    cell,
-    className
-  ){
-
-    cell.classList.add(
-      className
-    );
-
-
-    setTimeout(
-      () =>
-        cell.classList.remove(
-          className
-        ),
-      130
-    );
+    timers =
+      [];
 
   }
 
@@ -5005,24 +5393,31 @@ function sequenceGame(play){
 
     clearTimers();
 
-    accepting = false;
 
-    inputIndex = 0;
+    accepting =
+      false;
 
 
-    const len =
+    index =
+      0;
+
+
+    const length =
       Math.min(
         5,
         3
-        + Math.floor(
-            rounds/2
-          )
+        +
+        Math.floor(
+          rounds/2
+        )
       );
 
 
     sequence =
       Array.from(
-        {length:len},
+        {
+          length
+        },
         () =>
           Math.floor(
             Math.random()*9
@@ -5030,22 +5425,27 @@ function sequenceGame(play){
       );
 
 
-    msg.textContent =
+    message.textContent =
       "覚えろ";
 
 
-    let delay = 180;
+    let delay =
+      160;
 
 
     sequence.forEach(
-      index => {
+      cellIndex => {
 
         timers.push(
           setTimeout(
             () =>
-              cells[index]
-                .classList
-                .add("demo"),
+              cells[
+                cellIndex
+              ]
+              .classList
+              .add(
+                "demo"
+              ),
             delay
           )
         );
@@ -5054,15 +5454,20 @@ function sequenceGame(play){
         timers.push(
           setTimeout(
             () =>
-              cells[index]
-                .classList
-                .remove("demo"),
-            delay+190
+              cells[
+                cellIndex
+              ]
+              .classList
+              .remove(
+                "demo"
+              ),
+            delay+180
           )
         );
 
 
-        delay += 290;
+        delay +=
+          270;
 
       }
     );
@@ -5072,13 +5477,15 @@ function sequenceGame(play){
       setTimeout(
         () => {
 
-          accepting = true;
+          accepting =
+            true;
 
-          msg.textContent =
+
+          message.textContent =
             "再現";
 
         },
-        delay+50
+        delay+40
       )
     );
 
@@ -5089,62 +5496,74 @@ function sequenceGame(play){
     cells.map(
       cell => {
 
-        const fn =
+        const handler =
           () => {
 
             if(
               !gameActive ||
               !accepting
             ){
+
               return;
+
             }
 
 
-            const index =
+            const good =
               Number(
                 cell.dataset.index
-              );
-
-
-            const good =
-              index
+              )
               ===
-              sequence[inputIndex];
+              sequence[index];
 
 
-            flash(
-              cell,
+            cell.classList.add(
               good
-              ? "correct"
-              : "wrong"
+                ? "correct"
+                : "wrong"
+            );
+
+
+            setTimeout(
+              () =>
+                cell.classList.remove(
+                  "correct",
+                  "wrong"
+                ),
+              130
             );
 
 
             if(good){
 
-              inputIndex++;
+              index++;
 
 
               if(
-                inputIndex
-                === sequence.length
+                index
+                ===
+                sequence.length
               ){
 
-                success++;
+                successes++;
+
 
                 rounds++;
 
+
                 combo++;
 
-                roundScores.push(100);
 
-                accepting = false;
-
-                msg.textContent =
-                  "CLEAR";
+                scores.push(
+                  100
+                );
 
 
-                successFeedback(
+                accepting =
+                  false;
+
+
+                success(
                   board,
                   combo
                 );
@@ -5153,7 +5572,7 @@ function sequenceGame(play){
                 timers.push(
                   setTimeout(
                     round,
-                    300
+                    280
                   )
                 );
 
@@ -5164,17 +5583,21 @@ function sequenceGame(play){
 
               rounds++;
 
-              combo = 0;
 
-              roundScores.push(0);
-
-              accepting = false;
-
-              msg.textContent =
-                "MISS";
+              combo =
+                0;
 
 
-              failFeedback(
+              scores.push(
+                0
+              );
+
+
+              accepting =
+                false;
+
+
+              fail(
                 board
               );
 
@@ -5182,7 +5605,7 @@ function sequenceGame(play){
               timers.push(
                 setTimeout(
                   round,
-                  350
+                  330
                 )
               );
 
@@ -5193,14 +5616,14 @@ function sequenceGame(play){
 
         cell.addEventListener(
           "pointerdown",
-          fn
+          handler
         );
 
 
-        return {
+        return [
           cell,
-          fn
-        };
+          handler
+        ];
 
       }
     );
@@ -5213,12 +5636,11 @@ function sequenceGame(play){
 
 
       handlers.forEach(
-        item =>
-          item.cell
-            .removeEventListener(
-              "pointerdown",
-              item.fn
-            )
+        ([cell,handler]) =>
+          cell.removeEventListener(
+            "pointerdown",
+            handler
+          )
       );
 
     }
@@ -5232,17 +5654,18 @@ function sequenceGame(play){
 
     score:
       rounds
-      ? clamp(
-          success/rounds*85
-          + success*5,
-          0,
-          100
-        )
-      : 0,
+        ? clamp(
+            successes/rounds*85
+            +
+            successes*5,
+            0,
+            100
+          )
+        : 0,
 
     adapt:
       adaptScore(
-        roundScores
+        scores
       )
 
   });
@@ -5250,39 +5673,65 @@ function sequenceGame(play){
 }
 
 
-/* ==================================================
+/* ==========================================
 POSITION
-================================================== */
+========================================== */
 
-function positionGame(play){
+function positionEngine(
+  game,
+  play
+){
 
-  let rounds = 0;
-  let success = 0;
+  let rounds =
+    0;
+
+
+  let successes =
+    0;
+
 
   let targets =
     new Set();
 
+
   let selected =
     new Set();
 
-  let accepting = false;
 
-  let timer = null;
+  let accepting =
+    false;
 
-  let combo = 0;
 
-  const roundScores = [];
+  let timer =
+    null;
+
+
+  let combo =
+    0;
+
+
+  const scores =
+    [];
 
 
   play.innerHTML = `
 
-    <div class="center-game">
+    <div class="center">
+
+      <div
+        class="world-object"
+        style="font-size:56px"
+      >
+        ${game.icon}
+      </div>
 
       <div class="position-grid">
 
         ${Array.from(
-          {length:16},
-          (_,i)=>`
+          {
+            length:16
+          },
+          (_,i) => `
             <button
               class="position-cell"
               data-index="${i}"
@@ -5294,7 +5743,7 @@ function positionGame(play){
 
       <span
         class="message"
-        id="posMsg"
+        id="positionMessage"
       >
         覚えろ
       </span>
@@ -5305,18 +5754,22 @@ function positionGame(play){
 
 
   const board =
-    play.closest(".board");
+    play.closest(
+      ".board"
+    );
 
 
   const cells =
-    [...play.querySelectorAll(
-      ".position-cell"
-    )];
+    [
+      ...play.querySelectorAll(
+        ".position-cell"
+      )
+    ];
 
 
-  const msg =
+  const message =
     play.querySelector(
-      "#posMsg"
+      "#positionMessage"
     );
 
 
@@ -5330,13 +5783,17 @@ function positionGame(play){
       new Set();
 
 
-    accepting = false;
+    accepting =
+      false;
 
 
     cells.forEach(
-      cell =>
+      cell => {
+
         cell.className =
-          "position-cell"
+          "position-cell";
+
+      }
     );
 
 
@@ -5354,14 +5811,21 @@ function positionGame(play){
 
 
     targets.forEach(
-      index =>
-        cells[index]
-          .classList
-          .add("preview")
+      index => {
+
+        cells[
+          index
+        ]
+        .classList
+        .add(
+          "preview"
+        );
+
+      }
     );
 
 
-    msg.textContent =
+    message.textContent =
       "覚えろ";
 
 
@@ -5371,18 +5835,21 @@ function positionGame(play){
 
           cells.forEach(
             cell =>
-              cell.classList
-                .remove("preview")
+              cell.classList.remove(
+                "preview"
+              )
           );
 
 
-          accepting = true;
+          accepting =
+            true;
 
-          msg.textContent =
+
+          message.textContent =
             "再現";
 
         },
-        650
+        620
       );
 
   }
@@ -5392,14 +5859,16 @@ function positionGame(play){
     cells.map(
       cell => {
 
-        const fn =
+        const handler =
           () => {
 
             if(
               !gameActive ||
               !accepting
             ){
+
               return;
+
             }
 
 
@@ -5410,29 +5879,37 @@ function positionGame(play){
 
 
             if(
-              selected.has(index)
+              selected.has(
+                index
+              )
             ){
+
               return;
+
             }
 
 
-            selected.add(index);
+            selected.add(
+              index
+            );
 
 
             const good =
-              targets.has(index);
+              targets.has(
+                index
+              );
 
 
             cell.classList.add(
               good
-              ? "correct"
-              : "wrong"
+                ? "correct"
+                : "wrong"
             );
 
 
             if(!good){
 
-              failFeedback(
+              fail(
                 board
               );
 
@@ -5440,47 +5917,50 @@ function positionGame(play){
 
 
             if(
-              selected.size === 4
+              selected.size
+              === 4
             ){
 
               rounds++;
 
 
-              let correctCount = 0;
+              let count =
+                0;
 
 
               selected.forEach(
                 value => {
 
                   if(
-                    targets.has(value)
+                    targets.has(
+                      value
+                    )
                   ){
-                    correctCount++;
+
+                    count++;
+
                   }
 
                 }
               );
 
 
-              const roundScore =
-                correctCount/4*100;
-
-
-              roundScores.push(
-                roundScore
+              scores.push(
+                count/4*100
               );
 
 
               if(
-                correctCount === 4
+                count === 4
               ){
 
-                success++;
+                successes++;
+
 
                 combo++;
 
 
-                successFeedback(
+                success(
                   board,
                   combo
                 );
@@ -5488,24 +5968,26 @@ function positionGame(play){
               }
               else{
 
-                combo = 0;
+                combo =
+                  0;
 
               }
 
 
-              accepting = false;
+              accepting =
+                false;
 
 
-              msg.textContent =
-                correctCount === 4
-                ? "CLEAR"
-                : `${correctCount}/4`;
+              message.textContent =
+                count === 4
+                  ? "CLEAR"
+                  : `${count}/4`;
 
 
               timer =
                 setTimeout(
                   round,
-                  350
+                  330
                 );
 
             }
@@ -5515,14 +5997,14 @@ function positionGame(play){
 
         cell.addEventListener(
           "pointerdown",
-          fn
+          handler
         );
 
 
-        return {
+        return [
           cell,
-          fn
-        };
+          handler
+        ];
 
       }
     );
@@ -5531,16 +6013,17 @@ function positionGame(play){
   cleanupFns.push(
     () => {
 
-      clearTimeout(timer);
+      clearTimeout(
+        timer
+      );
 
 
       handlers.forEach(
-        item =>
-          item.cell
-            .removeEventListener(
-              "pointerdown",
-              item.fn
-            )
+        ([cell,handler]) =>
+          cell.removeEventListener(
+            "pointerdown",
+            handler
+          )
       );
 
     }
@@ -5554,17 +6037,18 @@ function positionGame(play){
 
     score:
       rounds
-      ? clamp(
-          success/rounds*90
-          + success*4,
-          0,
-          100
-        )
-      : 0,
+        ? clamp(
+            successes/rounds*90
+            +
+            successes*4,
+            0,
+            100
+          )
+        : 0,
 
     adapt:
       adaptScore(
-        roundScores
+        scores
       )
 
   });
@@ -5572,9 +6056,322 @@ function positionGame(play){
 }
 
 
-/* ==================================================
-START
-================================================== */
+/* ==========================================
+SWIPE
+========================================== */
+
+let startY =
+  null;
+
+
+let lastY =
+  null;
+
+
+let dragging =
+  false;
+
+
+feed.addEventListener(
+  "touchstart",
+  event => {
+
+    if(
+      !canSwipe ||
+      performance.now()
+      <
+      swipeUnlockAt
+    ){
+
+      return;
+
+    }
+
+
+    startY =
+      event.touches[0].clientY;
+
+
+    lastY =
+      startY;
+
+
+    dragging =
+      true;
+
+
+    currentCard.classList.remove(
+      "animating"
+    );
+
+
+    nextCard.classList.remove(
+      "animating"
+    );
+
+  },
+  {
+    passive:false
+  }
+);
+
+
+feed.addEventListener(
+  "touchmove",
+  event => {
+
+    if(!dragging){
+
+      return;
+
+    }
+
+
+    event.preventDefault();
+
+
+    lastY =
+      event.touches[0].clientY;
+
+
+    let delta =
+      Math.min(
+        0,
+        lastY-startY
+      );
+
+
+    currentCard.style.transform =
+      `translateY(${delta}px)`;
+
+
+    nextCard.style.transform =
+      `translateY(calc(100% + ${delta}px))`;
+
+  },
+  {
+    passive:false
+  }
+);
+
+
+feed.addEventListener(
+  "touchend",
+  () => {
+
+    if(!dragging){
+
+      return;
+
+    }
+
+
+    dragging =
+      false;
+
+
+    if(
+      lastY-startY < -75
+    ){
+
+      commitSwipe();
+
+    }
+    else{
+
+      cancelSwipe();
+
+    }
+
+  },
+  {
+    passive:false
+  }
+);
+
+
+function cancelSwipe(){
+
+  currentCard.classList.add(
+    "animating"
+  );
+
+
+  nextCard.classList.add(
+    "animating"
+  );
+
+
+  currentCard.style.transform =
+    "translateY(0)";
+
+
+  nextCard.style.transform =
+    "translateY(100%)";
+
+}
+
+
+function commitSwipe(){
+
+  if(!canSwipe){
+
+    return;
+
+  }
+
+
+  canSwipe =
+    false;
+
+
+  currentCard.classList.add(
+    "animating"
+  );
+
+
+  nextCard.classList.add(
+    "animating"
+  );
+
+
+  currentCard.style.transform =
+    "translateY(-100%)";
+
+
+  nextCard.style.transform =
+    "translateY(0)";
+
+
+  setTimeout(
+    completeSwipe,
+    350
+  );
+
+}
+
+
+function completeSwipe(){
+
+  cleanupGame();
+
+
+  const oldCard =
+    currentCard;
+
+
+  currentCard =
+    nextCard;
+
+
+  nextCard =
+    oldCard;
+
+
+  currentCard.className =
+    "card current";
+
+
+  currentCard.style.transform =
+    "translateY(0)";
+
+
+  nextCard.className =
+    "card next";
+
+
+  nextCard.style.transform =
+    "translateY(100%)";
+
+
+  currentGame =
+    nextGame;
+
+
+  nextGame =
+    getNextGame();
+
+
+  renderCard(
+    nextCard,
+    nextGame,
+    true
+  );
+
+
+  beginCurrentGame();
+
+}
+
+
+/* ==========================================
+DESKTOP NEXT
+========================================== */
+
+let wheelLock =
+  false;
+
+
+window.addEventListener(
+  "wheel",
+  event => {
+
+    if(
+      !canSwipe ||
+      wheelLock ||
+      event.deltaY < 45
+    ){
+
+      return;
+
+    }
+
+
+    wheelLock =
+      true;
+
+
+    commitSwipe();
+
+
+    setTimeout(
+      () => {
+
+        wheelLock =
+          false;
+
+      },
+      700
+    );
+
+  },
+  {
+    passive:true
+  }
+);
+
+
+window.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      canSwipe &&
+      event.key ===
+      "ArrowDown"
+    ){
+
+      commitSwipe();
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+START BUTTON
+========================================== */
 
 $("startBtn")
   .addEventListener(
@@ -5582,7 +6379,9 @@ $("startBtn")
     start
   );
 
+
 })();
+
 </script>
 
 </body>
