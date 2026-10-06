@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-G4N0D0J3YC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', 'G-G4N0D0J3YC');
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>GAMIQ - TRUE GAMING SKILL</title>
@@ -377,21 +389,10 @@ button{
   text-shadow:0 6px 22px rgba(0,0,0,.5);
 }
 
-.feedback.good{
-  color:var(--cyan);
-}
-
-.feedback.great{
-  color:var(--green);
-}
-
-.feedback.perfect{
-  color:var(--yellow);
-}
-
-.feedback.bad{
-  color:var(--red);
-}
+.feedback.good{color:var(--cyan)}
+.feedback.great{color:var(--green)}
+.feedback.perfect{color:var(--yellow)}
+.feedback.bad{color:var(--red)}
 
 @keyframes pop{
   0%{
@@ -868,11 +869,6 @@ button{
   border-style:dashed;
 }
 
-
-/* =========================================
-NEW TITLE SCREEN
-========================================= */
-
 .start-screen{
   position:absolute;
   inset:0;
@@ -898,8 +894,6 @@ NEW TITLE SCREEN
   letter-spacing:.08em;
   line-height:1;
   color:#f8fbff;
-  text-shadow:
-    0 0 40px rgba(97,234,255,.06);
 }
 
 .start-main-copy{
@@ -935,34 +929,14 @@ NEW TITLE SCREEN
   min-height:62px;
   border:0;
   border-radius:18px;
-  background:
-    linear-gradient(
-      180deg,
-      #c7faff,
-      #63e4f6
-    );
+  background:linear-gradient(180deg,#c7faff,#63e4f6);
   color:#031014;
   font-size:18px;
   font-weight:1000;
   letter-spacing:.08em;
   cursor:pointer;
-  box-shadow:
-    0 0 35px rgba(97,234,255,.16);
-  transition:
-    transform .15s ease,
-    box-shadow .15s ease;
+  box-shadow:0 0 35px rgba(97,234,255,.16);
 }
-
-.start-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:
-    0 0 45px rgba(97,234,255,.28);
-}
-
-.start-btn:active{
-  transform:scale(.97);
-}
-
 
 @media(max-width:900px){
 
@@ -1054,36 +1028,6 @@ NEW TITLE SCREEN
     cursor:default;
   }
 
-  .start-inner{
-    width:94%;
-    padding:30px 18px;
-  }
-
-  .start-brand{
-    font-size:clamp(66px,20vw,105px);
-  }
-
-  .start-main-copy{
-    margin-top:26px;
-    font-size:clamp(24px,7vw,34px);
-  }
-
-  .start-catch{
-    font-size:clamp(17px,5vw,24px);
-  }
-
-  .start-sub{
-    margin-top:24px;
-    font-size:9px;
-    letter-spacing:.25em;
-  }
-
-  .start-btn{
-    width:min(78vw,300px);
-    min-height:58px;
-    margin-top:30px;
-  }
-
 }
 </style>
 </head>
@@ -1121,13 +1065,11 @@ NEW TITLE SCREEN
 
 </header>
 
-
 <section class="feed" id="feed">
 
   <div class="card current" id="cardA"></div>
 
   <div class="card next" id="cardB"></div>
-
 
   <div class="start-screen" id="startScreen">
 
@@ -1164,18 +1106,11 @@ NEW TITLE SCREEN
 
 </main>
 
-
 <aside class="side">
 
   <div class="panel">
-
-    <div class="panel-title">
-      LIVE GAMIQ
-    </div>
-
-    <div class="gamiq-big" id="gamiqSide">
-      ---
-    </div>
+    <div class="panel-title">LIVE GAMIQ</div>
+    <div class="gamiq-big" id="gamiqSide">---</div>
 
     <div class="conf-row">
       <span>測定精度</span>
@@ -1185,15 +1120,11 @@ NEW TITLE SCREEN
     <div class="conf-track">
       <div class="conf-fill" id="confidenceFill"></div>
     </div>
-
   </div>
-
 
   <div class="panel">
 
-    <div class="panel-title">
-      ABILITIES
-    </div>
+    <div class="panel-title">ABILITIES</div>
 
     <div class="skill-row">
       <span>REFLEX</span>
@@ -1227,19 +1158,10 @@ NEW TITLE SCREEN
 
   </div>
 
-
   <div class="panel">
-
-    <div class="panel-title">
-      GAMES PLAYED
-    </div>
-
-    <div class="play-count" id="playedSide">
-      0
-    </div>
-
+    <div class="panel-title">GAMES PLAYED</div>
+    <div class="play-count" id="playedSide">0</div>
   </div>
-
 
   <div class="panel ad">
     AD SPACE
@@ -1249,94 +1171,47 @@ NEW TITLE SCREEN
 
 </div>
 
-
 <script>
 
 (() => {
 
-const $ =
-  id => document.getElementById(id);
+const $ = id => document.getElementById(id);
 
+const feed = $("feed");
+const startScreen = $("startScreen");
 
-const feed =
-  $("feed");
+let currentCard = $("cardA");
+let nextCard = $("cardB");
 
+let currentGame = null;
+let nextGame = null;
 
-const startScreen =
-  $("startScreen");
+let played = 0;
+let gamiq = null;
 
+let canSwipe = false;
+let gameActive = false;
+let finishCurrentGame = null;
 
-let currentCard =
-  $("cardA");
+let cleanupFns = [];
+let gameEndTimer = null;
 
+let bag = [];
+let lastGameId = null;
 
-let nextCard =
-  $("cardB");
-
-
-let currentGame =
-  null;
-
-
-let nextGame =
-  null;
-
-
-let played =
-  0;
-
-
-let gamiq =
-  null;
-
-
-let canSwipe =
-  false;
-
-
-let gameActive =
-  false;
-
-
-let finishCurrentGame =
-  null;
-
-
-let cleanupFns =
-  [];
-
-
-let gameEndTimer =
-  null;
-
-
-let bag =
-  [];
-
-
-let lastGameId =
-  null;
-
-
-let swipeUnlockAt =
-  0;
-
+let swipeUnlockAt = 0;
 
 const skillScores = {
-
   REFLEX:[],
   SPEED:[],
   AIM:[],
   LOGIC:[],
   MEMORY:[],
   ADAPT:[]
-
 };
 
 
-/* ==========================================
-THEMES
-========================================== */
+/* THEMES */
 
 const theme = {
 
@@ -1403,9 +1278,7 @@ const theme = {
 };
 
 
-/* ==========================================
-50 GAMES
-========================================== */
+/* 50 GAMES */
 
 const variants = [
 
@@ -1486,9 +1359,7 @@ const games =
         duration
       ] = v;
 
-
       return {
-
         id:`g${i+1}`,
         type,
         title,
@@ -1497,145 +1368,87 @@ const games =
         themeKey,
         icon,
         duration,
-        subtitle:
-          `${themeKey.toUpperCase()} MODE`
-
+        subtitle:`${themeKey.toUpperCase()} MODE`
       };
 
     }
   );
 
 
-/* ==========================================
-UTIL
-========================================== */
+/* UTIL */
 
 function clamp(value,min,max){
-
-  return Math.max(
-    min,
-    Math.min(
-      max,
-      value
-    )
-  );
-
+  return Math.max(min,Math.min(max,value));
 }
-
 
 function avg(array){
-
   return array.length
-    ? array.reduce(
-        (a,b)=>a+b,
-        0
-      ) / array.length
+    ? array.reduce((a,b)=>a+b,0)/array.length
     : null;
-
 }
-
 
 function shuffle(array){
 
-  const a =
-    [...array];
+  const a=[...array];
 
+  for(let i=a.length-1;i>0;i--){
 
-  for(
-    let i=a.length-1;
-    i>0;
-    i--
-  ){
-
-    const j =
+    const j=
       Math.floor(
-        Math.random()
-        *(i+1)
+        Math.random()*(i+1)
       );
 
-
-    [
-      a[i],
-      a[j]
-    ] =
-    [
-      a[j],
-      a[i]
-    ];
+    [a[i],a[j]]=
+    [a[j],a[i]];
 
   }
 
-
   return a;
-
 }
-
 
 function feedback(board,text,type="good"){
 
-  const el =
-    document.createElement(
-      "div"
-    );
+  const el=
+    document.createElement("div");
 
-
-  el.className =
+  el.className=
     `feedback ${type}`;
 
-
-  el.textContent =
+  el.textContent=
     text;
 
-
-  board.appendChild(
-    el
-  );
-
+  board.appendChild(el);
 
   setTimeout(
-    () => el.remove(),
+    ()=>el.remove(),
     500
   );
 
 }
 
-
 function success(board,combo=1){
 
-  feed.classList.remove(
-    "shake"
-  );
-
+  feed.classList.remove("shake");
 
   void feed.offsetWidth;
 
-
-  feed.classList.add(
-    "shake"
-  );
+  feed.classList.add("shake");
 
 
-  if(combo >= 2){
+  if(combo>=2){
 
-    const c =
-      document.createElement(
-        "div"
-      );
+    const c=
+      document.createElement("div");
 
+    c.className="combo";
 
-    c.className =
-      "combo";
-
-
-    c.innerHTML =
+    c.innerHTML=
       `COMBO <strong>×${combo}</strong>`;
-
 
     board.appendChild(c);
 
-
     setTimeout(
-      () => c.remove(),
+      ()=>c.remove(),
       650
     );
 
@@ -1644,35 +1457,27 @@ function success(board,combo=1){
 
   feedback(
     board,
-    combo >= 7
+    combo>=7
       ? "PERFECT"
-      : combo >= 4
+      : combo>=4
       ? "GREAT"
       : "GOOD",
-    combo >= 7
+    combo>=7
       ? "perfect"
-      : combo >= 4
+      : combo>=4
       ? "great"
       : "good"
   );
 
 }
 
-
 function fail(board){
 
-  feed.classList.remove(
-    "miss"
-  );
-
+  feed.classList.remove("miss");
 
   void feed.offsetWidth;
 
-
-  feed.classList.add(
-    "miss"
-  );
-
+  feed.classList.add("miss");
 
   feedback(
     board,
@@ -1682,29 +1487,23 @@ function fail(board){
 
 }
 
-
 function adaptScore(series){
 
   if(!series.length){
-
     return 50;
-
   }
 
-
-  if(series.length < 4){
+  if(series.length<4){
 
     return clamp(
-      35
-      + avg(series)*.3,
+      35+avg(series)*.3,
       25,
       75
     );
 
   }
 
-
-  const n =
+  const n=
     Math.max(
       1,
       Math.floor(
@@ -1712,18 +1511,12 @@ function adaptScore(series){
       )
     );
 
-
   return clamp(
-    50
-    +
+    50+
     (
-      avg(
-        series.slice(-n)
-      )
+      avg(series.slice(-n))
       -
-      avg(
-        series.slice(0,n)
-      )
+      avg(series.slice(0,n))
     )*.9,
     0,
     100
@@ -1732,64 +1525,46 @@ function adaptScore(series){
 }
 
 
-/* ==========================================
-GAME BAG
-========================================== */
+/* GAME BAG */
 
 function getNextGame(){
 
   if(!bag.length){
-
-    bag =
-      shuffle(games);
-
+    bag=shuffle(games);
   }
 
-
-  let game =
+  let game=
     bag.shift();
 
-
   if(
-    game.id === lastGameId &&
+    game.id===lastGameId &&
     bag.length
   ){
 
-    const second =
+    const second=
       bag.shift();
-
 
     bag.push(game);
 
-
-    game =
-      second;
+    game=second;
 
   }
 
-
-  lastGameId =
+  lastGameId=
     game.id;
 
-
   return game;
-
 }
 
 
-/* ==========================================
-CARD
-========================================== */
+/* CARD */
 
 function renderCard(card,game,preview=false){
 
-  const th =
-    theme[
-      game.themeKey
-    ];
+  const th=
+    theme[game.themeKey];
 
-
-  card.innerHTML = `
+  card.innerHTML=`
 
     <div
       class="card-content"
@@ -1805,7 +1580,7 @@ function renderCard(card,game,preview=false){
         <div>
 
           <div class="game-number">
-            GAME ${played + (preview ? 2 : 1)}
+            GAME ${played+(preview?2:1)}
           </div>
 
           <h2 class="game-title">
@@ -1824,11 +1599,9 @@ function renderCard(card,game,preview=false){
 
       </div>
 
-
       <div class="board">
 
         <div class="play"></div>
-
 
         <div class="rule">
 
@@ -1853,7 +1626,6 @@ function renderCard(card,game,preview=false){
           </div>
 
         </div>
-
 
         <div class="finish">
 
@@ -1892,23 +1664,18 @@ function renderCard(card,game,preview=false){
 }
 
 
-/* ==========================================
-START
-========================================== */
+/* START */
 
 function start(){
 
-  startScreen.style.display =
+  startScreen.style.display=
     "none";
 
-
-  currentGame =
+  currentGame=
     getNextGame();
 
-
-  nextGame =
+  nextGame=
     getNextGame();
-
 
   renderCard(
     currentCard,
@@ -1916,27 +1683,23 @@ function start(){
     false
   );
 
-
   renderCard(
     nextCard,
     nextGame,
     true
   );
 
-
   beginCurrentGame();
 
 }
 
 
-/* ==========================================
-GAME FLOW
-========================================== */
+/* FLOW */
 
 function cleanupGame(){
 
   cleanupFns.forEach(
-    fn => {
+    fn=>{
 
       try{
         fn();
@@ -1946,96 +1709,59 @@ function cleanupGame(){
     }
   );
 
-
-  cleanupFns = [];
-
+  cleanupFns=[];
 
   if(gameEndTimer){
-
-    clearTimeout(
-      gameEndTimer
-    );
-
+    clearTimeout(gameEndTimer);
   }
 
-
-  gameEndTimer =
-    null;
+  gameEndTimer=null;
 
 }
-
 
 function beginCurrentGame(){
 
   cleanupGame();
 
+  canSwipe=false;
+  gameActive=false;
 
-  canSwipe =
-    false;
+  const rule=
+    currentCard.querySelector(".rule");
 
+  const bar=
+    currentCard.querySelector(".rule-bar-fill");
 
-  gameActive =
-    false;
-
-
-  const rule =
-    currentCard
-      .querySelector(
-        ".rule"
-      );
-
-
-  const bar =
-    currentCard
-      .querySelector(
-        ".rule-bar-fill"
-      );
-
-
-  rule.style.display =
+  rule.style.display=
     "flex";
 
-
-  bar.classList.remove(
-    "go"
-  );
-
+  bar.classList.remove("go");
 
   void bar.offsetWidth;
 
-
-  bar.classList.add(
-    "go"
-  );
+  bar.classList.add("go");
 
 
-  const timer =
+  const timer=
     setTimeout(
-      () => {
+      ()=>{
 
-        rule.style.display =
+        rule.style.display=
           "none";
 
-
-        gameActive =
+        gameActive=
           true;
 
+        const play=
+          currentCard.querySelector(".play");
 
-        const play =
-          currentCard
-            .querySelector(
-              ".play"
-            );
-
-
-        finishCurrentGame =
+        finishCurrentGame=
           runEngine(
             currentGame,
             play
           );
 
-
-        gameEndTimer =
+        gameEndTimer=
           setTimeout(
             finishGame,
             currentGame.duration
@@ -2045,29 +1771,21 @@ function beginCurrentGame(){
       900
     );
 
-
   cleanupFns.push(
-    () =>
-      clearTimeout(timer)
+    ()=>clearTimeout(timer)
   );
 
 }
 
-
 function finishGame(){
 
   if(!gameActive){
-
     return;
-
   }
 
+  gameActive=false;
 
-  gameActive =
-    false;
-
-
-  const result =
+  const result=
     finishCurrentGame
       ? finishCurrentGame()
       : {
@@ -2075,76 +1793,70 @@ function finishGame(){
           adapt:50
         };
 
-
-  const score =
+  const score=
     clamp(
       Math.round(
-        result.score || 0
+        result.score||0
       ),
       0,
       100
     );
 
-
-  const adapt =
+  const adapt=
     clamp(
       Math.round(
-        result.adapt ?? 50
+        result.adapt??50
       ),
       0,
       100
     );
-
 
   skillScores[
     currentGame.skill
-  ].push(
-    score
-  );
+  ].push(score);
 
-
-  skillScores.ADAPT.push(
-    adapt
-  );
-
+  skillScores.ADAPT.push(adapt);
 
   played++;
 
-
   updateGamiq();
 
+  /* GA4 custom event */
+  if(typeof gtag==="function"){
 
-  const finish =
-    currentCard
-      .querySelector(
-        ".finish"
-      );
+    gtag(
+      "event",
+      "game_complete",
+      {
+        game_title:currentGame.title,
+        game_skill:currentGame.skill,
+        game_theme:currentGame.themeKey,
+        game_score:score,
+        games_played:played,
+        gamiq_score:gamiq
+      }
+    );
 
+  }
+
+  const finish=
+    currentCard.querySelector(".finish");
 
   finish
     .querySelector(
       ".finish-score-value"
     )
-    .textContent =
+    .textContent=
       `+${score}`;
 
+  finish.classList.add("show");
 
-  finish.classList.add(
-    "show"
-  );
-
-
-  swipeUnlockAt =
-    performance.now()
-    + 500;
-
+  swipeUnlockAt=
+    performance.now()+500;
 
   setTimeout(
-    () => {
-
-      canSwipe =
-        true;
-
+    ()=>{
+      canSwipe=true;
     },
     500
   );
@@ -2152,72 +1864,60 @@ function finishGame(){
 }
 
 
-/* ==========================================
-GAMIQ
-========================================== */
+/* GAMIQ */
 
 function updateGamiq(){
 
-  const keys = [
-
+  const keys=[
     "REFLEX",
     "SPEED",
     "AIM",
     "LOGIC",
     "MEMORY"
-
   ];
 
-
-  const values =
+  const values=
     keys
       .map(
-        key =>
+        key=>
           avg(
             skillScores[key]
           )
       )
       .filter(
-        value =>
-          value !== null
+        value=>
+          value!==null
       );
 
-
-  const base =
+  const base=
     values.length
       ? avg(values)
       : 50;
 
-
-  const adapt =
+  const adapt=
     avg(
       skillScores.ADAPT
     );
 
-
-  const combined =
-    adapt === null
+  const combined=
+    adapt===null
       ? base
       : base*.85
         + adapt*.15;
 
-
-  gamiq =
+  gamiq=
     Math.round(
-      300
-      + combined*7
+      300+
+      combined*7
     );
 
-
-  const confidence =
+  const confidence=
     Math.min(
       99,
       Math.round(
-        100
-        *
+        100*
         (
-          1
-          -
+          1-
           Math.exp(
             -played/18
           )
@@ -2225,117 +1925,101 @@ function updateGamiq(){
       )
     );
 
-
-  $("playedTop").textContent =
+  $("playedTop").textContent=
     played;
 
-
-  $("playedSide").textContent =
+  $("playedSide").textContent=
     played;
 
-
-  $("gamiqTop").textContent =
+  $("gamiqTop").textContent=
     gamiq;
 
-
-  $("gamiqSide").textContent =
+  $("gamiqSide").textContent=
     gamiq;
 
-
-  $("confidenceTop").textContent =
+  $("confidenceTop").textContent=
     confidence+"%";
 
-
-  $("confidenceSide").textContent =
+  $("confidenceSide").textContent=
     confidence+"%";
 
-
-  $("confidenceFill").style.width =
+  $("confidenceFill").style.width=
     confidence+"%";
 
-
-  const map = {
-
+  const map={
     REFLEX:"skillReflex",
     SPEED:"skillSpeed",
     AIM:"skillAim",
     LOGIC:"skillLogic",
     MEMORY:"skillMemory",
     ADAPT:"skillAdapt"
-
   };
 
+  Object.entries(map)
+    .forEach(
+      ([key,id])=>{
 
-  Object.entries(
-    map
-  ).forEach(
-    ([key,id]) => {
+        const value=
+          avg(
+            skillScores[key]
+          );
 
-      const value =
-        avg(
-          skillScores[key]
-        );
+        $(id).textContent=
+          value===null
+            ? "--"
+            : Math.round(value);
 
-
-      $(id).textContent =
-        value === null
-          ? "--"
-          : Math.round(value);
-
-    }
-  );
+      }
+    );
 
 }
 
 
-/* ==========================================
-ENGINE SELECT
-========================================== */
+/* ENGINE SELECT */
 
 function runEngine(game,play){
 
-  if(game.type === "reaction"){
+  if(game.type==="reaction"){
     return reactionEngine(game,play);
   }
 
-  if(game.type === "gonogo"){
+  if(game.type==="gonogo"){
     return goNoGoEngine(game,play);
   }
 
-  if(game.type === "tap"){
+  if(game.type==="tap"){
     return tapEngine(game,play);
   }
 
-  if(game.type === "alternate"){
+  if(game.type==="alternate"){
     return alternateEngine(game,play);
   }
 
-  if(game.type === "aim"){
+  if(game.type==="aim"){
     return aimEngine(game,play,false);
   }
 
-  if(game.type === "aimmove"){
+  if(game.type==="aimmove"){
     return aimEngine(game,play,true);
   }
 
-  if(game.type === "highlow"){
+  if(game.type==="highlow"){
     return highLowEngine(game,play);
   }
 
-  if(game.type === "condition"){
+  if(game.type==="condition"){
     return conditionEngine(game,play);
   }
 
-  if(game.type === "sequence"){
+  if(game.type==="sequence"){
     return sequenceEngine(game,play);
   }
 
-  if(game.type === "position"){
+  if(game.type==="position"){
     return positionEngine(game,play);
   }
 
-
-  return () => ({
+  return ()=>({
     score:0,
     adapt:50
   });
@@ -2343,24 +2027,21 @@ function runEngine(game,play){
 }
 
 
-/* ==========================================
-REACTION
-========================================== */
+/* REACTION */
 
 function reactionEngine(game,play){
 
-  let good = 0;
-  let falseStart = 0;
-  let total = 0;
-  let ready = false;
-  let shown = 0;
-  let timer = null;
-  let combo = 0;
+  let good=0;
+  let falseStart=0;
+  let total=0;
+  let ready=false;
+  let shown=0;
+  let timer=null;
+  let combo=0;
 
-  const rounds = [];
+  const rounds=[];
 
-
-  play.innerHTML = `
+  play.innerHTML=`
 
     <div class="center">
 
@@ -2386,56 +2067,50 @@ function reactionEngine(game,play){
 
   `;
 
-
-  const board =
+  const board=
     play.closest(".board");
 
-  const btn =
+  const btn=
     play.querySelector("#rbtn");
 
-  const msg =
+  const msg=
     play.querySelector("#rmsg");
-
 
   function next(){
 
-    ready = false;
+    ready=false;
 
-    btn.textContent =
-      "WAIT";
+    btn.textContent="WAIT";
 
-    btn.style.filter =
+    btn.style.filter=
       "brightness(.35)";
 
     clearTimeout(timer);
 
-
-    timer =
+    timer=
       setTimeout(
-        () => {
+        ()=>{
 
           if(!gameActive){
             return;
           }
 
-          ready =
-            true;
+          ready=true;
 
-          shown =
+          shown=
             performance.now();
 
-          btn.textContent =
-            "GO";
+          btn.textContent="GO";
 
-          btn.style.filter =
+          btn.style.filter=
             "brightness(1.2)";
 
         },
-        400 + Math.random()*850
+        400+
+        Math.random()*850
       );
 
   }
-
 
   function press(){
 
@@ -2443,11 +2118,10 @@ function reactionEngine(game,play){
       return;
     }
 
-
     if(!ready){
 
       falseStart++;
-      combo = 0;
+      combo=0;
 
       rounds.push(0);
 
@@ -2459,56 +2133,46 @@ function reactionEngine(game,play){
 
     }
 
-
-    const reaction =
-      performance.now() - shown;
-
+    const reaction=
+      performance.now()-shown;
 
     good++;
 
-    total +=
-      reaction;
+    total+=reaction;
 
-
-    const score =
+    const score=
       clamp(
-        100 - (reaction-180)/5,
+        100-
+        (reaction-180)/5,
         0,
         100
       );
 
-
     rounds.push(score);
 
-
-    combo =
-      score > 55
+    combo=
+      score>55
         ? combo+1
         : 0;
-
 
     if(combo){
       success(board,combo);
     }
 
-
-    msg.textContent =
+    msg.textContent=
       Math.round(reaction)+" ms";
-
 
     next();
 
   }
-
 
   btn.addEventListener(
     "pointerdown",
     press
   );
 
-
   cleanupFns.push(
-    () => {
+    ()=>{
 
       clearTimeout(timer);
 
@@ -2520,16 +2184,13 @@ function reactionEngine(game,play){
     }
   );
 
-
   next();
 
-
-  return () => ({
+  return ()=>({
 
     score:
       clamp(
-        100
-        -
+        100-
         (
           (
             good
@@ -2552,23 +2213,20 @@ function reactionEngine(game,play){
 }
 
 
-/* ==========================================
-GO NO GO
-========================================== */
+/* GO / NO GO */
 
 function goNoGoEngine(game,play){
 
-  let correct = 0;
-  let wrong = 0;
-  let miss = 0;
-  let state = null;
-  let timer = null;
-  let combo = 0;
+  let correct=0;
+  let wrong=0;
+  let miss=0;
+  let state=null;
+  let timer=null;
+  let combo=0;
 
-  const rounds = [];
+  const rounds=[];
 
-
-  play.innerHTML = `
+  play.innerHTML=`
 
     <div class="center">
 
@@ -2589,13 +2247,11 @@ function goNoGoEngine(game,play){
 
   `;
 
-
-  const board =
+  const board=
     play.closest(".board");
 
-  const box =
+  const box=
     play.querySelector("#box");
-
 
   function next(){
 
@@ -2603,39 +2259,35 @@ function goNoGoEngine(game,play){
       return;
     }
 
+    state=null;
 
-    state = null;
-
-    box.className =
+    box.className=
       "color-box";
 
-
-    timer =
+    timer=
       setTimeout(
-        () => {
+        ()=>{
 
           if(!gameActive){
             return;
           }
 
-
-          state =
-            Math.random() < .58
+          state=
+            Math.random()<.58
               ? "go"
               : "stop";
 
-
           box.classList.add(state);
 
-
-          timer =
+          timer=
             setTimeout(
-              () => {
+              ()=>{
 
-                if(state === "go"){
+                if(state==="go"){
 
                   miss++;
-                  combo = 0;
+                  combo=0;
+
                   rounds.push(0);
 
                 }else{
@@ -2647,17 +2299,17 @@ function goNoGoEngine(game,play){
                 next();
 
               },
-              state === "go"
+              state==="go"
                 ? 620
                 : 480
             );
 
         },
-        200 + Math.random()*320
+        200+
+        Math.random()*320
       );
 
   }
-
 
   function press(){
 
@@ -2665,14 +2317,13 @@ function goNoGoEngine(game,play){
       return;
     }
 
-
     clearTimeout(timer);
 
-
-    if(state === "go"){
+    if(state==="go"){
 
       correct++;
       combo++;
+
       rounds.push(100);
 
       success(board,combo);
@@ -2680,27 +2331,25 @@ function goNoGoEngine(game,play){
     }else{
 
       wrong++;
-      combo = 0;
+      combo=0;
+
       rounds.push(0);
 
       fail(board);
 
     }
 
-
     next();
 
   }
-
 
   box.addEventListener(
     "pointerdown",
     press
   );
 
-
   cleanupFns.push(
-    () => {
+    ()=>{
 
       clearTimeout(timer);
 
@@ -2712,17 +2361,16 @@ function goNoGoEngine(game,play){
     }
   );
 
-
   next();
 
+  return ()=>{
 
-  return () => {
+    const total=
+      correct+
+      wrong+
+      miss;
 
-    const total =
-      correct + wrong + miss;
-
-
-    return {
+    return{
 
       score:
         total
@@ -2745,21 +2393,18 @@ function goNoGoEngine(game,play){
 }
 
 
-/* ==========================================
-TAP
-========================================== */
+/* TAP */
 
 function tapEngine(game,play){
 
-  let count = 0;
-  let chunk = 0;
+  let count=0;
+  let chunk=0;
 
-  const chunks = [];
+  const chunks=[];
 
-
-  const timer =
+  const timer=
     setInterval(
-      () => {
+      ()=>{
 
         chunks.push(
           clamp(
@@ -2769,14 +2414,13 @@ function tapEngine(game,play){
           )
         );
 
-        chunk = 0;
+        chunk=0;
 
       },
       1000
     );
 
-
-  play.innerHTML = `
+  play.innerHTML=`
 
     <div class="center">
 
@@ -2788,10 +2432,12 @@ function tapEngine(game,play){
       </div>
 
       <div class="energy">
+
         <div
           class="energy-fill"
           id="fill"
         ></div>
+
       </div>
 
       <span
@@ -2816,22 +2462,20 @@ function tapEngine(game,play){
 
   `;
 
-
-  const board =
+  const board=
     play.closest(".board");
 
-  const btn =
+  const btn=
     play.querySelector("#tap");
 
-  const cnt =
+  const cnt=
     play.querySelector("#cnt");
 
-  const fill =
+  const fill=
     play.querySelector("#fill");
 
-  const world =
+  const world=
     play.querySelector("#world");
-
 
   function press(){
 
@@ -2839,31 +2483,26 @@ function tapEngine(game,play){
       return;
     }
 
-
     count++;
     chunk++;
 
-
-    cnt.textContent =
+    cnt.textContent=
       count;
 
-
-    fill.style.width =
+    fill.style.width=
       Math.min(
         100,
         count/70*100
       )+"%";
 
-
-    world.style.transform =
+    world.style.transform=
       `scale(${
-        1 +
+        1+
         Math.min(
           .35,
           count/200
         )
       })`;
-
 
     if(
       [18,35,55]
@@ -2872,22 +2511,22 @@ function tapEngine(game,play){
 
       success(
         board,
-        Math.floor(count/18)+2
+        Math.floor(
+          count/18
+        )+2
       );
 
     }
 
   }
 
-
   btn.addEventListener(
     "pointerdown",
     press
   );
 
-
   cleanupFns.push(
-    () => {
+    ()=>{
 
       clearInterval(timer);
 
@@ -2899,11 +2538,9 @@ function tapEngine(game,play){
     }
   );
 
-
-  return () => {
+  return ()=>{
 
     clearInterval(timer);
-
 
     chunks.push(
       clamp(
@@ -2913,8 +2550,7 @@ function tapEngine(game,play){
       )
     );
 
-
-    return {
+    return{
 
       score:
         clamp(
@@ -2933,21 +2569,18 @@ function tapEngine(game,play){
 }
 
 
-/* ==========================================
-ALTERNATE
-========================================== */
+/* ALTERNATE */
 
 function alternateEngine(game,play){
 
-  let correct = 0;
-  let wrong = 0;
-  let expected = "L";
-  let combo = 0;
+  let correct=0;
+  let wrong=0;
+  let expected="L";
+  let combo=0;
 
-  const rounds = [];
+  const rounds=[];
 
-
-  play.innerHTML = `
+  play.innerHTML=`
 
     <div class="center">
 
@@ -2981,25 +2614,23 @@ function alternateEngine(game,play){
 
   `;
 
-
-  const board =
+  const board=
     play.closest(".board");
 
-
-  const buttons =
-    [
-      ...play.querySelectorAll(".alt-btn")
-    ];
-
+  const buttons=[
+    ...play.querySelectorAll(
+      ".alt-btn"
+    )
+  ];
 
   function render(){
 
     buttons.forEach(
-      btn => {
+      btn=>{
 
         btn.classList.toggle(
           "active",
-          btn.dataset.side === expected
+          btn.dataset.side===expected
         );
 
       }
@@ -3007,64 +2638,65 @@ function alternateEngine(game,play){
 
   }
 
-
   function press(event){
 
     if(!gameActive){
       return;
     }
 
+    const side=
+      event.currentTarget
+        .dataset.side;
 
-    const side =
-      event.currentTarget.dataset.side;
-
-
-    if(side === expected){
+    if(side===expected){
 
       correct++;
       combo++;
+
       rounds.push(100);
 
-      expected =
-        expected === "L"
+      expected=
+        expected==="L"
           ? "R"
           : "L";
 
+      if(combo%5===0){
 
-      if(combo % 5 === 0){
-        success(board,combo);
+        success(
+          board,
+          combo
+        );
+
       }
 
     }else{
 
       wrong++;
-      combo = 0;
+      combo=0;
+
       rounds.push(0);
 
       fail(board);
 
     }
 
-
     render();
 
   }
 
-
   buttons.forEach(
-    btn =>
+    btn=>
       btn.addEventListener(
         "pointerdown",
         press
       )
   );
 
-
   cleanupFns.push(
-    () => {
+    ()=>{
 
       buttons.forEach(
-        btn =>
+        btn=>
           btn.removeEventListener(
             "pointerdown",
             press
@@ -3074,12 +2706,13 @@ function alternateEngine(game,play){
     }
   );
 
-
-  return () => ({
+  return ()=>({
 
     score:
       clamp(
-        correct*2 - wrong*3,
+        correct*2
+        -
+        wrong*3,
         0,
         100
       ),
@@ -3092,42 +2725,41 @@ function alternateEngine(game,play){
 }
 
 
-/* ==========================================
-AIM
-========================================== */
+/* AIM */
 
 function aimEngine(game,play,moving){
 
-  let tx = 0;
-  let ty = 0;
+  let tx=0;
+  let ty=0;
 
-  let cx = 0;
-  let cy = 0;
+  let cx=0;
+  let cy=0;
 
-  let targetSize =
-    moving ? 56 : 64;
+  let targetSize=
+    moving
+      ? 56
+      : 64;
 
-  let shots = 0;
-  let hits = 0;
+  let shots=0;
+  let hits=0;
 
-  let totalReaction = 0;
-  let shown = 0;
+  let totalReaction=0;
+  let shown=0;
 
-  let vx = 2;
-  let vy = 1.4;
+  let vx=2;
+  let vy=1.4;
 
-  let moveRAF = null;
-  let joystickRAF = null;
+  let moveRAF=null;
+  let joystickRAF=null;
 
-  let joyX = 0;
-  let joyY = 0;
+  let joyX=0;
+  let joyY=0;
 
-  let combo = 0;
+  let combo=0;
 
-  const rounds = [];
+  const rounds=[];
 
-
-  play.innerHTML = `
+  play.innerHTML=`
 
     <div
       class="aim"
@@ -3164,10 +2796,12 @@ function aimEngine(game,play,moving){
           class="joystick"
           id="joy"
         >
+
           <div
             class="joystick-knob"
             id="knob"
           ></div>
+
         </div>
 
         <button
@@ -3183,53 +2817,49 @@ function aimEngine(game,play,moving){
 
   `;
 
-
-  const board =
+  const board=
     play.closest(".board");
 
-  const area =
+  const area=
     play.querySelector("#aim");
 
-  const target =
+  const target=
     play.querySelector("#target");
 
-  const cross =
+  const cross=
     play.querySelector("#cross");
 
-  const joy =
+  const joy=
     play.querySelector("#joy");
 
-  const knob =
+  const knob=
     play.querySelector("#knob");
 
-  const fireBtn =
+  const fireBtn=
     play.querySelector("#fire");
 
+  const dimensions=
+    ()=>{
 
-  const dimensions =
-    () => {
-
-      const rect =
+      const rect=
         area.getBoundingClientRect();
 
-      return {
+      return{
         w:rect.width,
         h:rect.height
       };
 
     };
 
-
   function renderCross(){
 
-    cross.style.left =
+    cross.style.left=
       cx+"px";
 
-    cross.style.top =
+    cross.style.top=
       cy+"px";
 
   }
-
 
   function spawn(){
 
@@ -3237,152 +2867,131 @@ function aimEngine(game,play,moving){
       return;
     }
 
-
-    const size =
+    const size=
       dimensions();
 
-
-    tx =
-      45
-      +
-      Math.random()
-      *
+    tx=
+      45+
+      Math.random()*
       Math.max(
         20,
         size.w-90
       );
 
-
-    ty =
-      50
-      +
-      Math.random()
-      *
+    ty=
+      50+
+      Math.random()*
       Math.max(
         20,
         size.h-130
       );
 
-
-    target.style.left =
+    target.style.left=
       tx+"px";
 
-
-    target.style.top =
+    target.style.top=
       ty+"px";
 
-
-    shown =
+    shown=
       performance.now();
 
-
-    vx =
+    vx=
       (
-        Math.random() < .5
+        Math.random()<.5
           ? -1
           : 1
       )
       *
       (
-        1.5 +
+        1.5+
         Math.random()*1.3
       );
 
-
-    vy =
+    vy=
       (
-        Math.random() < .5
+        Math.random()<.5
           ? -1
           : 1
       )
       *
       (
-        1 +
+        1+
         Math.random()
       );
 
   }
 
-
   function laser(x,y,hit){
 
-    const size =
+    const size=
       dimensions();
 
-
-    const startX =
+    const startX=
       size.w/2;
 
-    const startY =
+    const startY=
       size.h-8;
 
-
-    const dx =
+    const dx=
       x-startX;
 
-    const dy =
+    const dy=
       y-startY;
 
+    const length=
+      Math.hypot(
+        dx,
+        dy
+      );
 
-    const length =
-      Math.hypot(dx,dy);
+    const angle=
+      Math.atan2(
+        dy,
+        dx
+      )*180/Math.PI;
 
-
-    const angle =
-      Math.atan2(dy,dx)
-      *180/Math.PI;
-
-
-    const beam =
+    const beam=
       document.createElement(
         "div"
       );
 
-
-    beam.className =
+    beam.className=
       "laser";
 
-
-    beam.style.left =
+    beam.style.left=
       startX+"px";
 
-    beam.style.top =
+    beam.style.top=
       startY+"px";
 
-    beam.style.width =
+    beam.style.width=
       length+"px";
 
-    beam.style.transform =
+    beam.style.transform=
       `rotate(${angle}deg)`;
-
 
     area.appendChild(beam);
 
-
-    const impact =
+    const impact=
       document.createElement(
         "div"
       );
 
-
-    impact.className =
+    impact.className=
       hit
         ? "impact"
         : "impact miss";
 
-
-    impact.style.left =
+    impact.style.left=
       x+"px";
 
-    impact.style.top =
+    impact.style.top=
       y+"px";
-
 
     area.appendChild(impact);
 
-
     setTimeout(
-      () => {
+      ()=>{
 
         beam.remove();
         impact.remove();
@@ -3393,24 +3002,20 @@ function aimEngine(game,play,moving){
 
   }
 
-
   function fire(){
 
     if(!gameActive){
       return;
     }
 
-
     shots++;
 
-
-    const hit =
+    const hit=
       Math.hypot(
         cx-tx,
         cy-ty
       )
-      <= targetSize/2;
-
+      <=targetSize/2;
 
     laser(
       cx,
@@ -3418,42 +3023,36 @@ function aimEngine(game,play,moving){
       hit
     );
 
-
     if(hit){
 
       hits++;
       combo++;
 
+      const reaction=
+        performance.now()-shown;
 
-      const reaction =
-        performance.now() - shown;
-
-
-      totalReaction +=
+      totalReaction+=
         reaction;
-
 
       rounds.push(
         clamp(
-          100 -
+          100-
           (reaction-350)/22,
           0,
           100
         )
       );
 
-
       success(
         board,
         combo
       );
 
-
       spawn();
 
     }else{
 
-      combo = 0;
+      combo=0;
 
       rounds.push(0);
 
@@ -3463,36 +3062,30 @@ function aimEngine(game,play,moving){
 
   }
 
-
   function mouseMove(event){
 
-    if(innerWidth <= 900){
+    if(innerWidth<=900){
       return;
     }
 
-
-    const rect =
+    const rect=
       area.getBoundingClientRect();
 
+    cx=
+      event.clientX-rect.left;
 
-    cx =
-      event.clientX - rect.left;
-
-    cy =
-      event.clientY - rect.top;
-
+    cy=
+      event.clientY-rect.top;
 
     renderCross();
 
   }
 
-
   function desktopFire(event){
 
-    if(innerWidth <= 900){
+    if(innerWidth<=900){
       return;
     }
-
 
     event.preventDefault();
 
@@ -3500,120 +3093,107 @@ function aimEngine(game,play,moving){
 
   }
 
-
   function joystickMove(event){
 
-    if(innerWidth > 900){
+    if(innerWidth>900){
       return;
     }
 
-
     event.preventDefault();
 
-
-    const touch =
+    const touch=
       event.touches
         ? event.touches[0]
         : event;
 
-
-    const rect =
+    const rect=
       joy.getBoundingClientRect();
 
+    const originX=
+      rect.left+
+      rect.width/2;
 
-    const originX =
-      rect.left + rect.width/2;
+    const originY=
+      rect.top+
+      rect.height/2;
 
-    const originY =
-      rect.top + rect.height/2;
+    let dx=
+      touch.clientX-originX;
 
+    let dy=
+      touch.clientY-originY;
 
-    let dx =
-      touch.clientX - originX;
-
-    let dy =
-      touch.clientY - originY;
-
-
-    const max =
+    const max=
       32;
 
+    const distance=
+      Math.hypot(
+        dx,
+        dy
+      );
 
-    const distance =
-      Math.hypot(dx,dy);
+    if(distance>max){
 
-
-    if(distance > max){
-
-      dx =
+      dx=
         dx/distance*max;
 
-      dy =
+      dy=
         dy/distance*max;
 
     }
 
-
-    joyX =
+    joyX=
       dx/max;
 
-    joyY =
+    joyY=
       dy/max;
 
-
-    knob.style.transform =
+    knob.style.transform=
       `translate(${dx}px,${dy}px)`;
 
   }
 
-
   function joystickEnd(){
 
-    joyX = 0;
-    joyY = 0;
+    joyX=0;
+    joyY=0;
 
-    knob.style.transform =
+    knob.style.transform=
       "translate(0,0)";
 
   }
-
 
   function joystickLoop(){
 
     if(gameActive){
 
-      const size =
+      const size=
         dimensions();
 
-
-      cx =
+      cx=
         clamp(
-          cx + joyX*5.5,
+          cx+joyX*5.5,
           0,
           size.w
         );
 
-
-      cy =
+      cy=
         clamp(
-          cy + joyY*5.5,
+          cy+joyY*5.5,
           0,
           size.h
         );
-
 
       renderCross();
 
     }
 
-
-    joystickRAF =
+    joystickRAF=
       requestAnimationFrame(
         joystickLoop
       );
 
   }
-
 
   function moveTarget(){
 
@@ -3622,94 +3202,80 @@ function aimEngine(game,play,moving){
       moving
     ){
 
-      const size =
+      const size=
         dimensions();
 
-
-      const radius =
+      const radius=
         targetSize/2;
 
-
-      tx += vx;
-      ty += vy;
-
+      tx+=vx;
+      ty+=vy;
 
       if(
-        tx < radius ||
-        tx > size.w-radius
+        tx<radius ||
+        tx>size.w-radius
       ){
-        vx *= -1;
+        vx*=-1;
       }
-
 
       if(
-        ty < radius ||
-        ty > size.h-radius-90
+        ty<radius ||
+        ty>size.h-radius-90
       ){
-        vy *= -1;
+        vy*=-1;
       }
 
-
-      tx =
+      tx=
         clamp(
           tx,
           radius,
           size.w-radius
         );
 
-
-      ty =
+      ty=
         clamp(
           ty,
           radius,
           size.h-radius-90
         );
 
-
-      target.style.left =
+      target.style.left=
         tx+"px";
 
-      target.style.top =
+      target.style.top=
         ty+"px";
 
     }
 
-
-    moveRAF =
+    moveRAF=
       requestAnimationFrame(
         moveTarget
       );
 
   }
 
-
-  const size =
+  const size=
     dimensions();
 
-
-  cx =
+  cx=
     size.w/2;
 
-  cy =
+  cy=
     size.h/2;
-
 
   renderCross();
 
   spawn();
-
 
   area.addEventListener(
     "mousemove",
     mouseMove
   );
 
-
   area.addEventListener(
     "pointerdown",
     desktopFire
   );
-
 
   joy.addEventListener(
     "touchstart",
@@ -3719,7 +3285,6 @@ function aimEngine(game,play,moving){
     }
   );
 
-
   joy.addEventListener(
     "touchmove",
     joystickMove,
@@ -3728,16 +3293,14 @@ function aimEngine(game,play,moving){
     }
   );
 
-
   joy.addEventListener(
     "touchend",
     joystickEnd
   );
 
-
   fireBtn.addEventListener(
     "pointerdown",
-    event => {
+    event=>{
 
       event.stopPropagation();
 
@@ -3746,14 +3309,12 @@ function aimEngine(game,play,moving){
     }
   );
 
-
   joystickLoop();
 
   moveTarget();
 
-
   cleanupFns.push(
-    () => {
+    ()=>{
 
       area.removeEventListener(
         "mousemove",
@@ -3776,22 +3337,19 @@ function aimEngine(game,play,moving){
     }
   );
 
+  return ()=>{
 
-  return () => {
-
-    const accuracy =
+    const accuracy=
       shots
         ? hits/shots
         : 0;
 
-
-    const reaction =
+    const reaction=
       hits
         ? totalReaction/hits
         : 2000;
 
-
-    return {
+    return{
 
       score:
         clamp(
@@ -3799,7 +3357,7 @@ function aimEngine(game,play,moving){
           +
           Math.max(
             0,
-            30 -
+            30-
             (reaction-400)/45
           ),
           0,
@@ -3816,18 +3374,15 @@ function aimEngine(game,play,moving){
 }
 
 
-/* ==========================================
-HIGH LOW
-========================================== */
+/* HIGH LOW */
 
 function highLowEngine(game,play){
 
-  let correct = 0;
-  let attempts = 0;
-  let combo = 0;
+  let correct=0;
+  let attempts=0;
+  let combo=0;
 
-  const rounds = [];
-
+  const rounds=[];
 
   function next(){
 
@@ -3835,34 +3390,29 @@ function highLowEngine(game,play){
       return;
     }
 
-
-    let a =
+    let a=
       Math.floor(
         Math.random()*90
       )+10;
 
-
-    let b =
+    let b=
       Math.floor(
         Math.random()*90
       )+10;
 
+    while(a===b){
 
-    while(a === b){
-
-      b =
+      b=
         Math.floor(
           Math.random()*90
         )+10;
 
     }
 
-
-    const answer =
+    const answer=
       Math.max(a,b);
 
-
-    play.innerHTML = `
+    play.innerHTML=`
 
       <div class="center">
 
@@ -3896,52 +3446,51 @@ function highLowEngine(game,play){
 
     `;
 
-
-    const board =
+    const board=
       play.closest(".board");
-
 
     play
       .querySelectorAll(".choice")
       .forEach(
-        btn => {
+        btn=>{
 
           btn.addEventListener(
             "pointerdown",
-            () => {
+            ()=>{
 
               if(!gameActive){
                 return;
               }
 
-
               attempts++;
 
-
-              const good =
+              const good=
                 Number(
                   btn.dataset.value
                 )
-                === answer;
-
+                ===answer;
 
               if(good){
 
                 correct++;
                 combo++;
+
                 rounds.push(100);
 
-                success(board,combo);
+                success(
+                  board,
+                  combo
+                );
 
               }else{
 
-                combo = 0;
+                combo=0;
+
                 rounds.push(0);
 
                 fail(board);
 
               }
-
 
               setTimeout(
                 next,
@@ -3959,11 +3508,9 @@ function highLowEngine(game,play){
 
   }
 
-
   next();
 
-
-  return () => ({
+  return ()=>({
 
     score:
       attempts
@@ -3984,20 +3531,17 @@ function highLowEngine(game,play){
 }
 
 
-/* ==========================================
-CONDITION
-========================================== */
+/* CONDITION */
 
 function conditionEngine(game,play){
 
-  let correct = 0;
-  let attempts = 0;
-  let combo = 0;
+  let correct=0;
+  let attempts=0;
+  let combo=0;
 
-  const rounds = [];
+  const rounds=[];
 
-
-  const rules = [
+  const rules=[
 
     [
       "大きい方",
@@ -4012,13 +3556,12 @@ function conditionEngine(game,play){
     [
       "偶数",
       (a,b)=>
-        a%2 === 0
+        a%2===0
           ? a
           : b
     ]
 
   ];
-
 
   function next(){
 
@@ -4026,68 +3569,58 @@ function conditionEngine(game,play){
       return;
     }
 
-
-    const [
+    const[
       label,
       ruleFunction
-    ] =
+    ]=
       rules[
         Math.floor(
-          Math.random()*rules.length
+          Math.random()*
+          rules.length
         )
       ];
-
 
     let a;
     let b;
 
+    if(label==="偶数"){
 
-    if(label === "偶数"){
-
-      a =
+      a=
         Math.floor(
           Math.random()*40
         )*2+2;
 
-
-      b =
+      b=
         Math.floor(
           Math.random()*40
         )*2+1;
 
-
-      if(Math.random() < .5){
-
-        [a,b] = [b,a];
-
+      if(Math.random()<.5){
+        [a,b]=[b,a];
       }
 
     }else{
 
-      a =
+      a=
         Math.floor(
           Math.random()*90
         )+10;
 
-
-      b =
+      b=
         Math.floor(
           Math.random()*90
         )+10;
 
-
-      while(a === b){
+      while(a===b){
         b++;
       }
 
     }
 
-
-    const answer =
+    const answer=
       ruleFunction(a,b);
 
-
-    play.innerHTML = `
+    play.innerHTML=`
 
       <div class="center">
 
@@ -4121,47 +3654,47 @@ function conditionEngine(game,play){
 
     `;
 
-
-    const board =
+    const board=
       play.closest(".board");
-
 
     play
       .querySelectorAll(".choice")
       .forEach(
-        btn => {
+        btn=>{
 
           btn.addEventListener(
             "pointerdown",
-            () => {
+            ()=>{
 
               attempts++;
 
-
-              const good =
+              const good=
                 Number(
                   btn.dataset.value
                 )
-                === answer;
-
+                ===answer;
 
               if(good){
 
                 correct++;
                 combo++;
+
                 rounds.push(100);
 
-                success(board,combo);
+                success(
+                  board,
+                  combo
+                );
 
               }else{
 
-                combo = 0;
+                combo=0;
+
                 rounds.push(0);
 
                 fail(board);
 
               }
-
 
               setTimeout(
                 next,
@@ -4179,11 +3712,9 @@ function conditionEngine(game,play){
 
   }
 
-
   next();
 
-
-  return () => ({
+  return ()=>({
 
     score:
       attempts
@@ -4204,24 +3735,25 @@ function conditionEngine(game,play){
 }
 
 
-/* ==========================================
-SEQUENCE
-========================================== */
+/* SEQUENCE */
 
 function sequenceEngine(game,play){
 
-  let rounds = 0;
-  let successes = 0;
-  let sequence = [];
-  let index = 0;
-  let accepting = false;
-  let timers = [];
-  let combo = 0;
+  let rounds=0;
+  let successes=0;
 
-  const scores = [];
+  let sequence=[];
+  let index=0;
 
+  let accepting=false;
 
-  play.innerHTML = `
+  let timers=[];
+
+  let combo=0;
+
+  const scores=[];
+
+  play.innerHTML=`
 
     <div class="center">
 
@@ -4257,24 +3789,19 @@ function sequenceEngine(game,play){
 
   `;
 
-
-  const board =
+  const board=
     play.closest(".board");
 
+  const cells=[
+    ...play.querySelectorAll(
+      ".memory-cell"
+    )
+  ];
 
-  const cells =
-    [
-      ...play.querySelectorAll(
-        ".memory-cell"
-      )
-    ];
-
-
-  const message =
+  const message=
     play.querySelector(
       "#memoryMessage"
     );
-
 
   function clearTimers(){
 
@@ -4282,86 +3809,79 @@ function sequenceEngine(game,play){
       clearTimeout
     );
 
-    timers = [];
+    timers=[];
 
   }
-
 
   function round(){
 
     clearTimers();
 
-    accepting = false;
-    index = 0;
+    accepting=false;
+    index=0;
 
-
-    const length =
+    const length=
       Math.min(
         5,
-        3 +
+        3+
         Math.floor(
           rounds/2
         )
       );
 
-
-    sequence =
+    sequence=
       Array.from(
         {length},
-        () =>
+        ()=>
           Math.floor(
             Math.random()*9
           )
       );
 
-
-    message.textContent =
+    message.textContent=
       "覚えろ";
 
-
-    let delay =
-      160;
-
+    let delay=160;
 
     sequence.forEach(
-      cellIndex => {
+      cellIndex=>{
 
         timers.push(
           setTimeout(
-            () =>
-              cells[cellIndex]
-                .classList
-                .add("demo"),
+            ()=>
+              cells[
+                cellIndex
+              ]
+              .classList
+              .add("demo"),
             delay
           )
         );
 
-
         timers.push(
           setTimeout(
-            () =>
-              cells[cellIndex]
-                .classList
-                .remove("demo"),
+            ()=>
+              cells[
+                cellIndex
+              ]
+              .classList
+              .remove("demo"),
             delay+180
           )
         );
 
-
-        delay +=
-          270;
+        delay+=270;
 
       }
     );
 
-
     timers.push(
       setTimeout(
-        () => {
+        ()=>{
 
-          accepting = true;
+          accepting=true;
 
-          message.textContent =
+          message.textContent=
             "再現";
 
         },
@@ -4371,13 +3891,12 @@ function sequenceEngine(game,play){
 
   }
 
-
-  const handlers =
+  const handlers=
     cells.map(
-      cell => {
+      cell=>{
 
-        const handler =
-          () => {
+        const handler=
+          ()=>{
 
             if(
               !gameActive ||
@@ -4386,14 +3905,12 @@ function sequenceEngine(game,play){
               return;
             }
 
-
-            const good =
+            const good=
               Number(
                 cell.dataset.index
               )
               ===
               sequence[index];
-
 
             cell.classList.add(
               good
@@ -4401,9 +3918,8 @@ function sequenceEngine(game,play){
                 : "wrong"
             );
 
-
             setTimeout(
-              () =>
+              ()=>
                 cell.classList.remove(
                   "correct",
                   "wrong"
@@ -4411,15 +3927,12 @@ function sequenceEngine(game,play){
               130
             );
 
-
             if(good){
 
               index++;
 
-
               if(
-                index
-                ===
+                index===
                 sequence.length
               ){
 
@@ -4429,10 +3942,12 @@ function sequenceEngine(game,play){
 
                 scores.push(100);
 
-                accepting = false;
+                accepting=false;
 
-                success(board,combo);
-
+                success(
+                  board,
+                  combo
+                );
 
                 timers.push(
                   setTimeout(
@@ -4446,14 +3961,13 @@ function sequenceEngine(game,play){
             }else{
 
               rounds++;
-              combo = 0;
+              combo=0;
 
               scores.push(0);
 
-              accepting = false;
+              accepting=false;
 
               fail(board);
-
 
               timers.push(
                 setTimeout(
@@ -4466,14 +3980,12 @@ function sequenceEngine(game,play){
 
           };
 
-
         cell.addEventListener(
           "pointerdown",
           handler
         );
 
-
-        return [
+        return[
           cell,
           handler
         ];
@@ -4481,15 +3993,13 @@ function sequenceEngine(game,play){
       }
     );
 
-
   cleanupFns.push(
-    () => {
+    ()=>{
 
       clearTimers();
 
-
       handlers.forEach(
-        ([cell,handler]) =>
+        ([cell,handler])=>
           cell.removeEventListener(
             "pointerdown",
             handler
@@ -4499,11 +4009,9 @@ function sequenceEngine(game,play){
     }
   );
 
-
   round();
 
-
-  return () => ({
+  return ()=>({
 
     score:
       rounds
@@ -4524,29 +4032,28 @@ function sequenceEngine(game,play){
 }
 
 
-/* ==========================================
-POSITION
-========================================== */
+/* POSITION */
 
 function positionEngine(game,play){
 
-  let rounds = 0;
-  let successes = 0;
+  let rounds=0;
+  let successes=0;
 
-  let targets =
+  let targets=
     new Set();
 
-  let selected =
+  let selected=
     new Set();
 
-  let accepting = false;
-  let timer = null;
-  let combo = 0;
+  let accepting=false;
 
-  const scores = [];
+  let timer=null;
 
+  let combo=0;
 
-  play.innerHTML = `
+  const scores=[];
+
+  play.innerHTML=`
 
     <div class="center">
 
@@ -4582,50 +4089,42 @@ function positionEngine(game,play){
 
   `;
 
-
-  const board =
+  const board=
     play.closest(".board");
 
+  const cells=[
+    ...play.querySelectorAll(
+      ".position-cell"
+    )
+  ];
 
-  const cells =
-    [
-      ...play.querySelectorAll(
-        ".position-cell"
-      )
-    ];
-
-
-  const message =
+  const message=
     play.querySelector(
       "#positionMessage"
     );
 
-
   function round(){
 
-    selected =
+    selected=
       new Set();
 
-
-    targets =
+    targets=
       new Set();
 
-
-    accepting =
-      false;
-
+    accepting=false;
 
     cells.forEach(
-      cell => {
+      cell=>{
 
-        cell.className =
+        cell.className=
           "position-cell";
 
       }
     );
 
-
-    while(targets.size < 4){
+    while(
+      targets.size<4
+    ){
 
       targets.add(
         Math.floor(
@@ -4635,9 +4134,8 @@ function positionEngine(game,play){
 
     }
 
-
     targets.forEach(
-      index => {
+      index=>{
 
         cells[index]
           .classList
@@ -4646,26 +4144,23 @@ function positionEngine(game,play){
       }
     );
 
-
-    message.textContent =
+    message.textContent=
       "覚えろ";
 
-
-    timer =
+    timer=
       setTimeout(
-        () => {
+        ()=>{
 
           cells.forEach(
-            cell =>
+            cell=>
               cell.classList.remove(
                 "preview"
               )
           );
 
+          accepting=true;
 
-          accepting = true;
-
-          message.textContent =
+          message.textContent=
             "再現";
 
         },
@@ -4674,13 +4169,12 @@ function positionEngine(game,play){
 
   }
 
-
-  const handlers =
+  const handlers=
     cells.map(
-      cell => {
+      cell=>{
 
-        const handler =
-          () => {
+        const handler=
+          ()=>{
 
             if(
               !gameActive ||
@@ -4689,24 +4183,21 @@ function positionEngine(game,play){
               return;
             }
 
-
-            const index =
+            const index=
               Number(
                 cell.dataset.index
               );
 
-
-            if(selected.has(index)){
+            if(
+              selected.has(index)
+            ){
               return;
             }
 
-
             selected.add(index);
 
-
-            const good =
+            const good=
               targets.has(index);
-
 
             cell.classList.add(
               good
@@ -4714,60 +4205,58 @@ function positionEngine(game,play){
                 : "wrong"
             );
 
-
             if(!good){
               fail(board);
             }
 
-
-            if(selected.size === 4){
+            if(
+              selected.size===4
+            ){
 
               rounds++;
 
-
-              let count = 0;
-
+              let count=0;
 
               selected.forEach(
-                value => {
+                value=>{
 
-                  if(targets.has(value)){
+                  if(
+                    targets.has(value)
+                  ){
                     count++;
                   }
 
                 }
               );
 
-
               scores.push(
                 count/4*100
               );
 
-
-              if(count === 4){
+              if(count===4){
 
                 successes++;
                 combo++;
 
-                success(board,combo);
+                success(
+                  board,
+                  combo
+                );
 
               }else{
 
-                combo = 0;
+                combo=0;
 
               }
 
+              accepting=false;
 
-              accepting = false;
-
-
-              message.textContent =
-                count === 4
+              message.textContent=
+                count===4
                   ? "CLEAR"
                   : `${count}/4`;
 
-
-              timer =
+              timer=
                 setTimeout(
                   round,
                   330
@@ -4777,14 +4266,12 @@ function positionEngine(game,play){
 
           };
 
-
         cell.addEventListener(
           "pointerdown",
           handler
         );
 
-
-        return [
+        return[
           cell,
           handler
         ];
@@ -4792,15 +4279,13 @@ function positionEngine(game,play){
       }
     );
 
-
   cleanupFns.push(
-    () => {
+    ()=>{
 
       clearTimeout(timer);
 
-
       handlers.forEach(
-        ([cell,handler]) =>
+        ([cell,handler])=>
           cell.removeEventListener(
             "pointerdown",
             handler
@@ -4810,11 +4295,9 @@ function positionEngine(game,play){
     }
   );
 
-
   round();
 
-
-  return () => ({
+  return ()=>({
 
     score:
       rounds
@@ -4835,45 +4318,35 @@ function positionEngine(game,play){
 }
 
 
-/* ==========================================
-SWIPE
-========================================== */
+/* SWIPE */
 
-let startY = null;
-let lastY = null;
-let dragging = false;
-
+let startY=null;
+let lastY=null;
+let dragging=false;
 
 feed.addEventListener(
   "touchstart",
-  event => {
+  event=>{
 
     if(
       !canSwipe ||
-      performance.now()
-      <
+      performance.now()<
       swipeUnlockAt
     ){
       return;
     }
 
-
-    startY =
+    startY=
       event.touches[0].clientY;
 
-
-    lastY =
+    lastY=
       startY;
 
-
-    dragging =
-      true;
-
+    dragging=true;
 
     currentCard.classList.remove(
       "animating"
     );
-
 
     nextCard.classList.remove(
       "animating"
@@ -4885,35 +4358,29 @@ feed.addEventListener(
   }
 );
 
-
 feed.addEventListener(
   "touchmove",
-  event => {
+  event=>{
 
     if(!dragging){
       return;
     }
 
-
     event.preventDefault();
 
-
-    lastY =
+    lastY=
       event.touches[0].clientY;
 
-
-    let delta =
+    let delta=
       Math.min(
         0,
         lastY-startY
       );
 
-
-    currentCard.style.transform =
+    currentCard.style.transform=
       `translateY(${delta}px)`;
 
-
-    nextCard.style.transform =
+    nextCard.style.transform=
       `translateY(calc(100% + ${delta}px))`;
 
   },
@@ -4922,21 +4389,19 @@ feed.addEventListener(
   }
 );
 
-
 feed.addEventListener(
   "touchend",
-  () => {
+  ()=>{
 
     if(!dragging){
       return;
     }
 
+    dragging=false;
 
-    dragging =
-      false;
-
-
-    if(lastY-startY < -75){
+    if(
+      lastY-startY<-75
+    ){
 
       commitSwipe();
 
@@ -4952,28 +4417,23 @@ feed.addEventListener(
   }
 );
 
-
 function cancelSwipe(){
 
   currentCard.classList.add(
     "animating"
   );
 
-
   nextCard.classList.add(
     "animating"
   );
 
-
-  currentCard.style.transform =
+  currentCard.style.transform=
     "translateY(0)";
 
-
-  nextCard.style.transform =
+  nextCard.style.transform=
     "translateY(100%)";
 
 }
-
 
 function commitSwipe(){
 
@@ -4981,28 +4441,21 @@ function commitSwipe(){
     return;
   }
 
-
-  canSwipe =
-    false;
-
+  canSwipe=false;
 
   currentCard.classList.add(
     "animating"
   );
 
-
   nextCard.classList.add(
     "animating"
   );
 
-
-  currentCard.style.transform =
+  currentCard.style.transform=
     "translateY(-100%)";
 
-
-  nextCard.style.transform =
+  nextCard.style.transform=
     "translateY(0)";
-
 
   setTimeout(
     completeSwipe,
@@ -5011,47 +4464,36 @@ function commitSwipe(){
 
 }
 
-
 function completeSwipe(){
 
   cleanupGame();
 
-
-  const oldCard =
+  const oldCard=
     currentCard;
 
-
-  currentCard =
+  currentCard=
     nextCard;
 
-
-  nextCard =
+  nextCard=
     oldCard;
 
-
-  currentCard.className =
+  currentCard.className=
     "card current";
 
-
-  currentCard.style.transform =
+  currentCard.style.transform=
     "translateY(0)";
 
-
-  nextCard.className =
+  nextCard.className=
     "card next";
 
-
-  nextCard.style.transform =
+  nextCard.style.transform=
     "translateY(100%)";
 
-
-  currentGame =
+  currentGame=
     nextGame;
 
-
-  nextGame =
+  nextGame=
     getNextGame();
-
 
   renderCard(
     nextCard,
@@ -5059,43 +4501,34 @@ function completeSwipe(){
     true
   );
 
-
   beginCurrentGame();
 
 }
 
 
-/* ==========================================
-DESKTOP NEXT
-========================================== */
+/* DESKTOP NEXT */
 
-let wheelLock = false;
-
+let wheelLock=false;
 
 window.addEventListener(
   "wheel",
-  event => {
+  event=>{
 
     if(
       !canSwipe ||
       wheelLock ||
-      event.deltaY < 45
+      event.deltaY<45
     ){
       return;
     }
 
-
-    wheelLock = true;
-
+    wheelLock=true;
 
     commitSwipe();
 
-
     setTimeout(
-      () => {
-
-        wheelLock = false;
-
+      ()=>{
+        wheelLock=false;
       },
       700
     );
@@ -5106,14 +4539,13 @@ window.addEventListener(
   }
 );
 
-
 window.addEventListener(
   "keydown",
-  event => {
+  event=>{
 
     if(
       canSwipe &&
-      event.key === "ArrowDown"
+      event.key==="ArrowDown"
     ){
 
       commitSwipe();
@@ -5124,14 +4556,28 @@ window.addEventListener(
 );
 
 
-/* ==========================================
-START BUTTON
-========================================== */
+/* START EVENT */
 
 $("startBtn")
   .addEventListener(
     "click",
-    start
+    ()=>{
+
+      if(typeof gtag==="function"){
+
+        gtag(
+          "event",
+          "game_start",
+          {
+            source:"start_screen"
+          }
+        );
+
+      }
+
+      start();
+
+    }
   );
 
 
