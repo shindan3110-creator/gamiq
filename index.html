@@ -4,20 +4,35 @@
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-G4N0D0J3YC"></script>
+
 <script>
   window.dataLayer = window.dataLayer || [];
+
   function gtag(){
     dataLayer.push(arguments);
   }
+
   gtag('js', new Date());
+
   gtag('config', 'G-G4N0D0J3YC');
 </script>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>GAMIQ - TRUE GAMING SKILL</title>
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+>
+
+<title>GAMIQ | あなたのGAME IQを測る</title>
+
+<meta
+  name="description"
+  content="GAMIQは、次々に出題されるランダムミニゲームを通じて、反射・スピード・AIM・判断・記憶・適応力などのゲーム地力を測るWebゲームです。"
+>
 
 <style>
+
 :root{
   --bg:#05070c;
   --panel:#0a0e16;
@@ -45,6 +60,7 @@ body{
   overscroll-behavior:none;
   background:#05070c;
   color:var(--text);
+
   font-family:
     Inter,
     -apple-system,
@@ -63,30 +79,54 @@ button{
   font:inherit;
 }
 
+
+/* ==========================================
+APP
+========================================== */
+
 .app{
   width:100%;
   height:100%;
+
   display:grid;
   grid-template-columns:minmax(0,1fr) 300px;
+
   gap:16px;
   padding:16px;
+
   background:
-    radial-gradient(circle at 10% 0%,rgba(132,102,255,.16),transparent 30%),
-    radial-gradient(circle at 90% 10%,rgba(97,234,255,.10),transparent 25%),
+    radial-gradient(
+      circle at 10% 0%,
+      rgba(132,102,255,.16),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(97,234,255,.10),
+      transparent 25%
+    ),
     #05070c;
 }
 
 .main{
   min-width:0;
   height:100%;
+
   display:flex;
   flex-direction:column;
+
   gap:12px;
 }
+
+
+/* ==========================================
+HEADER
+========================================== */
 
 .header{
   height:54px;
   flex:0 0 54px;
+
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -114,29 +154,44 @@ button{
 
 .live-label{
   display:block;
+
   color:var(--muted);
+
   font-size:9px;
   font-weight:900;
+
   letter-spacing:.16em;
 }
 
 .live-value{
   display:block;
+
   font-size:20px;
   font-weight:1000;
 }
 
+
+/* ==========================================
+FEED
+========================================== */
+
 .feed{
   position:relative;
+
   flex:1;
   min-height:0;
+
   overflow:hidden;
+
   border:1px solid var(--line);
   border-radius:30px;
+
   background:#080c13;
+
   box-shadow:
     0 28px 70px rgba(0,0,0,.46),
     inset 0 1px 0 rgba(255,255,255,.04);
+
   touch-action:none;
 }
 
@@ -145,30 +200,64 @@ button{
 }
 
 @keyframes shake{
-  25%{transform:translate(-2px,1px)}
-  50%{transform:translate(2px,-1px)}
-  75%{transform:translate(-1px,-1px)}
+
+  25%{
+    transform:translate(-2px,1px);
+  }
+
+  50%{
+    transform:translate(2px,-1px);
+  }
+
+  75%{
+    transform:translate(-1px,-1px);
+  }
+
 }
 
 .feed.miss::after{
   content:"";
+
   position:absolute;
   inset:0;
+
   z-index:200;
+
   pointer-events:none;
+
   background:rgba(255,78,112,.18);
+
   animation:fade .2s ease-out forwards;
 }
 
 @keyframes fade{
-  to{opacity:0}
+
+  to{
+    opacity:0;
+  }
+
 }
+
+
+/* ==========================================
+CARD
+========================================== */
 
 .card{
   position:absolute;
   inset:0;
-  background:linear-gradient(180deg,#0b1019,#070a10);
-  will-change:transform,opacity,filter;
+
+  background:
+    linear-gradient(
+      180deg,
+      #0b1019,
+      #070a10
+    );
+
+  will-change:
+    transform,
+    opacity,
+    filter;
 }
 
 .card.current{
@@ -189,20 +278,35 @@ button{
 .card-content{
   width:100%;
   height:100%;
+
   padding:28px;
+
   display:flex;
   flex-direction:column;
+
   position:relative;
 }
 
 .card-content::before{
   content:"";
+
   position:absolute;
   inset:0;
+
   pointer-events:none;
+
   background:
-    radial-gradient(circle at 70% 25%,var(--themeGlow,rgba(97,234,255,.10)),transparent 32%),
-    linear-gradient(135deg,var(--themeA,#0b1019),var(--themeB,#070a10));
+    radial-gradient(
+      circle at 70% 25%,
+      var(--themeGlow,rgba(97,234,255,.10)),
+      transparent 32%
+    ),
+    linear-gradient(
+      135deg,
+      var(--themeA,#0b1019),
+      var(--themeB,#070a10)
+    );
+
   opacity:.95;
 }
 
@@ -211,134 +315,236 @@ button{
   z-index:1;
 }
 
+
+/* ==========================================
+GAME HEADER
+========================================== */
+
 .game-head{
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
+
   margin-bottom:12px;
 }
 
 .game-number{
   color:var(--muted);
+
   font-size:10px;
   font-weight:900;
+
   letter-spacing:.16em;
 }
 
 .game-title{
   margin:4px 0 0;
-  font-size:clamp(28px,4vw,48px);
+
+  font-size:
+    clamp(
+      28px,
+      4vw,
+      48px
+    );
+
   letter-spacing:-.04em;
 }
 
 .game-sub{
   margin-top:4px;
+
   color:#aab4c4;
+
   font-size:12px;
   font-weight:800;
 }
 
 .skill-badge{
   padding:8px 11px;
-  border:1px solid rgba(255,255,255,.10);
+
+  border:
+    1px solid
+    rgba(255,255,255,.10);
+
   border-radius:999px;
+
   color:#d2dae7;
+
   font-size:10px;
   font-weight:900;
+
   letter-spacing:.12em;
-  background:rgba(0,0,0,.18);
+
+  background:
+    rgba(0,0,0,.18);
 }
+
+
+/* ==========================================
+BOARD
+========================================== */
 
 .board{
   position:relative;
+
   flex:1;
   min-height:0;
+
   overflow:hidden;
-  border:1px solid rgba(255,255,255,.08);
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
   border-radius:24px;
-  background:rgba(4,7,12,.75);
-  backdrop-filter:blur(2px);
+
+  background:
+    rgba(4,7,12,.75);
+
+  backdrop-filter:
+    blur(2px);
 }
 
 .play{
   position:absolute;
   inset:0;
+
   display:flex;
   justify-content:center;
   align-items:center;
+
   overflow:hidden;
+
   padding:22px;
 }
+
+
+/* ==========================================
+RULE
+========================================== */
 
 .rule{
   position:absolute;
   inset:0;
+
   z-index:50;
+
   display:flex;
   align-items:center;
   justify-content:center;
+
   padding:30px;
-  background:rgba(5,8,14,.75);
-  backdrop-filter:blur(14px);
+
+  background:
+    rgba(5,8,14,.75);
+
+  backdrop-filter:
+    blur(14px);
 }
 
 .rule-inner{
   text-align:center;
-  width:min(720px,100%);
+
+  width:
+    min(
+      720px,
+      100%
+    );
 }
 
 .rule-label{
   color:var(--cyan);
+
   font-size:10px;
   font-weight:1000;
+
   letter-spacing:.22em;
 }
 
 .rule-text{
   margin-top:12px;
-  font-size:clamp(26px,4vw,48px);
+
+  font-size:
+    clamp(
+      26px,
+      4vw,
+      48px
+    );
+
   font-weight:1000;
+
   line-height:1.3;
 }
 
 .rule-icon{
   font-size:60px;
+
   margin-bottom:16px;
 }
 
 .rule-bar{
   width:100px;
   height:3px;
-  margin:22px auto 0;
+
+  margin:
+    22px auto 0;
+
   border-radius:999px;
+
   overflow:hidden;
-  background:rgba(255,255,255,.08);
+
+  background:
+    rgba(255,255,255,.08);
 }
 
 .rule-bar-fill{
   width:0;
   height:100%;
-  background:linear-gradient(90deg,var(--violet),var(--cyan));
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--violet),
+      var(--cyan)
+    );
 }
 
 .rule-bar-fill.go{
-  animation:rule .9s linear forwards;
+  animation:
+    rule .9s linear forwards;
 }
 
 @keyframes rule{
-  to{width:100%}
+
+  to{
+    width:100%;
+  }
+
 }
+
+
+/* ==========================================
+FINISH
+========================================== */
 
 .finish{
   position:absolute;
   inset:0;
+
   z-index:60;
+
   display:none;
+
   align-items:center;
   justify-content:center;
+
   text-align:center;
-  background:rgba(5,8,14,.74);
-  backdrop-filter:blur(9px);
+
+  background:
+    rgba(5,8,14,.74);
+
+  backdrop-filter:
+    blur(9px);
 }
 
 .finish.show{
@@ -346,78 +552,155 @@ button{
 }
 
 .finish-score{
-  font-size:clamp(64px,10vw,116px);
+  font-size:
+    clamp(
+      64px,
+      10vw,
+      116px
+    );
+
   font-weight:1000;
+
   line-height:1;
 }
 
 .finish-theme{
   font-size:13px;
+
   color:#b1bbca;
+
   font-weight:900;
+
   margin-top:9px;
 }
 
 .swipe-hint{
   margin-top:24px;
+
   color:#a9b5c8;
+
   font-size:12px;
   font-weight:900;
+
   letter-spacing:.12em;
 }
 
 .swipe-arrow{
   display:block;
+
   font-size:32px;
-  animation:arrow .9s ease-in-out infinite;
+
+  animation:
+    arrow .9s ease-in-out infinite;
 }
 
 @keyframes arrow{
-  50%{transform:translateY(-7px)}
+
+  50%{
+    transform:
+      translateY(-7px);
+  }
+
 }
+
+
+/* ==========================================
+FEEDBACK
+========================================== */
 
 .feedback{
   position:absolute;
+
   z-index:120;
+
   left:50%;
   top:30%;
-  transform:translate(-50%,-50%);
+
+  transform:
+    translate(-50%,-50%);
+
   pointer-events:none;
-  font-size:clamp(28px,6vw,62px);
+
+  font-size:
+    clamp(
+      28px,
+      6vw,
+      62px
+    );
+
   font-weight:1000;
-  animation:pop .48s ease-out forwards;
-  text-shadow:0 6px 22px rgba(0,0,0,.5);
+
+  animation:
+    pop .48s ease-out forwards;
+
+  text-shadow:
+    0 6px 22px
+    rgba(0,0,0,.5);
 }
 
-.feedback.good{color:var(--cyan)}
-.feedback.great{color:var(--green)}
-.feedback.perfect{color:var(--yellow)}
-.feedback.bad{color:var(--red)}
+.feedback.good{
+  color:var(--cyan);
+}
+
+.feedback.great{
+  color:var(--green);
+}
+
+.feedback.perfect{
+  color:var(--yellow);
+}
+
+.feedback.bad{
+  color:var(--red);
+}
 
 @keyframes pop{
+
   0%{
     opacity:0;
-    transform:translate(-50%,-30%) scale(.6);
+
+    transform:
+      translate(-50%,-30%)
+      scale(.6);
   }
+
   35%{
     opacity:1;
-    transform:translate(-50%,-50%) scale(1.16);
+
+    transform:
+      translate(-50%,-50%)
+      scale(1.16);
   }
+
   100%{
     opacity:0;
-    transform:translate(-50%,-85%) scale(.9);
+
+    transform:
+      translate(-50%,-85%)
+      scale(.9);
   }
+
 }
 
 .combo{
   position:absolute;
+
   z-index:115;
+
   top:16px;
   right:16px;
+
   padding:8px 12px;
+
   border-radius:999px;
-  background:rgba(8,13,21,.82);
-  border:1px solid rgba(255,255,255,.1);
+
+  background:
+    rgba(8,13,21,.82);
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
   font-size:14px;
   font-weight:1000;
 }
@@ -426,40 +709,83 @@ button{
   color:var(--yellow);
 }
 
+
+/* ==========================================
+WORLD ELEMENTS
+========================================== */
+
 .world-object{
-  font-size:clamp(70px,12vw,150px);
-  filter:drop-shadow(0 15px 30px rgba(0,0,0,.35));
+  font-size:
+    clamp(
+      70px,
+      12vw,
+      150px
+    );
+
+  filter:
+    drop-shadow(
+      0 15px 30px
+      rgba(0,0,0,.35)
+    );
+
   user-select:none;
 }
 
 .world-label{
   font-size:12px;
   font-weight:900;
+
   color:#aeb9cb;
+
   letter-spacing:.1em;
+
   margin-top:14px;
 }
 
+
+/* ==========================================
+COMMON BUTTON
+========================================== */
+
 .round-button{
-  width:min(30vw,235px);
+  width:
+    min(
+      30vw,
+      235px
+    );
+
   aspect-ratio:1;
-  border:1px solid rgba(255,255,255,.15);
+
+  border:
+    1px solid
+    rgba(255,255,255,.15);
+
   border-radius:50%;
+
   cursor:pointer;
+
   color:#031218;
+
   font-size:30px;
   font-weight:1000;
+
   touch-action:none;
+
   background:
-    radial-gradient(circle at 35% 28%,
-    #fff 0 7%,
-    #a8f7ff 8%,
-    #49d9ee 32%,
-    #154958 70%,
-    #081319 100%);
+    radial-gradient(
+      circle at 35% 28%,
+      #fff 0 7%,
+      #a8f7ff 8%,
+      #49d9ee 32%,
+      #154958 70%,
+      #081319 100%
+    );
+
   box-shadow:
-    0 0 45px rgba(97,234,255,.2),
-    inset 0 0 35px rgba(255,255,255,.15);
+    0 0 45px
+    rgba(97,234,255,.2),
+    inset 0 0 35px
+    rgba(255,255,255,.15);
 }
 
 .center{
@@ -468,148 +794,305 @@ button{
 
 .counter{
   display:block;
+
   margin-bottom:14px;
+
   font-size:48px;
   font-weight:1000;
 }
 
 .message{
   display:block;
+
   min-height:20px;
+
   margin-top:14px;
+
   color:var(--muted);
+
   font-size:13px;
   font-weight:900;
 }
 
+
+/* ==========================================
+GO NO GO
+========================================== */
+
 .color-box{
-  width:min(42vw,300px);
+  width:
+    min(
+      42vw,
+      300px
+    );
+
   aspect-ratio:1;
-  border:1px solid rgba(255,255,255,.1);
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
   border-radius:32px;
+
   background:#141b26;
+
   cursor:pointer;
+
   touch-action:none;
 }
 
 .color-box.go{
   background:#77ffb1;
-  box-shadow:0 0 55px rgba(119,255,177,.45);
+
+  box-shadow:
+    0 0 55px
+    rgba(119,255,177,.45);
 }
 
 .color-box.stop{
   background:#ff4e70;
-  box-shadow:0 0 55px rgba(255,78,112,.35);
+
+  box-shadow:
+    0 0 55px
+    rgba(255,78,112,.35);
 }
 
+
+/* ==========================================
+ENERGY
+========================================== */
+
 .energy{
-  width:min(360px,78vw);
+  width:
+    min(
+      360px,
+      78vw
+    );
+
   height:11px;
-  margin:0 auto 18px;
+
+  margin:
+    0 auto 18px;
+
   border-radius:999px;
+
   overflow:hidden;
-  background:rgba(255,255,255,.07);
+
+  background:
+    rgba(255,255,255,.07);
 }
 
 .energy-fill{
   height:100%;
   width:0;
-  background:linear-gradient(90deg,var(--violet),var(--cyan),var(--green));
-  transition:width .08s;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--violet),
+      var(--cyan),
+      var(--green)
+    );
+
+  transition:
+    width .08s;
 }
 
+
+/* ==========================================
+ALTERNATE
+========================================== */
+
 .alt-grid{
-  width:min(700px,100%);
+  width:
+    min(
+      700px,
+      100%
+    );
+
   display:grid;
-  grid-template-columns:1fr 1fr;
+
+  grid-template-columns:
+    1fr 1fr;
+
   gap:14px;
 }
 
 .alt-btn{
   min-height:220px;
-  border:1px solid rgba(255,255,255,.08);
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
   border-radius:25px;
-  background:linear-gradient(180deg,#141c29,#090d14);
+
+  background:
+    linear-gradient(
+      180deg,
+      #141c29,
+      #090d14
+    );
+
   color:#fff;
+
   font-size:29px;
   font-weight:1000;
+
   touch-action:none;
 }
 
 .alt-btn.active{
-  border-color:rgba(97,234,255,.5);
-  box-shadow:0 0 28px rgba(97,234,255,.16);
+  border-color:
+    rgba(97,234,255,.5);
+
+  box-shadow:
+    0 0 28px
+    rgba(97,234,255,.16);
 }
+
+
+/* ==========================================
+LOGIC
+========================================== */
 
 .choice-wrap{
   display:flex;
+
   justify-content:center;
-  gap:22px;
   align-items:center;
+
+  gap:22px;
 }
 
 .choice{
-  width:min(27vw,210px);
+  width:
+    min(
+      27vw,
+      210px
+    );
+
   aspect-ratio:1;
-  border:1px solid rgba(255,255,255,.09);
+
+  border:
+    1px solid
+    rgba(255,255,255,.09);
+
   border-radius:25px;
-  background:linear-gradient(180deg,#151d2b,#090d15);
+
+  background:
+    linear-gradient(
+      180deg,
+      #151d2b,
+      #090d15
+    );
+
   color:#fff;
-  font-size:clamp(44px,7vw,80px);
+
+  font-size:
+    clamp(
+      44px,
+      7vw,
+      80px
+    );
+
   font-weight:1000;
+
   touch-action:none;
 }
 
 .logic-label{
   margin-bottom:17px;
+
   color:#b0bac9;
+
   font-size:17px;
   font-weight:900;
 }
 
+
+/* ==========================================
+MEMORY
+========================================== */
+
 .memory-grid{
   display:grid;
-  grid-template-columns:repeat(3,min(17vw,110px));
+
+  grid-template-columns:
+    repeat(
+      3,
+      min(17vw,110px)
+    );
+
   gap:10px;
 }
 
 .memory-cell{
   aspect-ratio:1;
-  border:1px solid rgba(255,255,255,.07);
+
+  border:
+    1px solid
+    rgba(255,255,255,.07);
+
   border-radius:15px;
+
   background:#141b27;
+
   touch-action:none;
 }
 
 .memory-cell.demo,
 .memory-cell.correct{
   background:#75efff;
-  box-shadow:0 0 25px rgba(97,234,255,.55);
-  transform:scale(.93);
+
+  box-shadow:
+    0 0 25px
+    rgba(97,234,255,.55);
+
+  transform:
+    scale(.93);
 }
 
 .memory-cell.wrong{
   background:var(--red);
-  box-shadow:0 0 25px rgba(255,78,112,.55);
+
+  box-shadow:
+    0 0 25px
+    rgba(255,78,112,.55);
 }
 
 .position-grid{
   display:grid;
-  grid-template-columns:repeat(4,min(13vw,80px));
+
+  grid-template-columns:
+    repeat(
+      4,
+      min(13vw,80px)
+    );
+
   gap:9px;
 }
 
 .position-cell{
   aspect-ratio:1;
-  border:1px solid rgba(255,255,255,.07);
+
+  border:
+    1px solid
+    rgba(255,255,255,.07);
+
   border-radius:13px;
+
   background:#131a25;
+
   touch-action:none;
 }
 
 .position-cell.preview{
   background:var(--cyan);
-  box-shadow:0 0 22px rgba(97,234,255,.45);
+
+  box-shadow:
+    0 0 22px
+    rgba(97,234,255,.45);
 }
 
 .position-cell.correct{
@@ -620,34 +1103,53 @@ button{
   background:var(--red);
 }
 
+
+/* ==========================================
+AIM
+========================================== */
+
 .aim{
   position:absolute;
   inset:0;
+
   overflow:hidden;
+
   cursor:none;
+
   touch-action:none;
 }
 
 .crosshair{
   position:absolute;
+
   z-index:20;
+
   width:44px;
   height:44px;
-  transform:translate(-50%,-50%);
+
+  transform:
+    translate(-50%,-50%);
+
   pointer-events:none;
 }
 
 .crosshair:before,
 .crosshair:after{
   content:"";
+
   position:absolute;
+
   background:#fff;
-  box-shadow:0 0 7px var(--cyan);
+
+  box-shadow:
+    0 0 7px
+    var(--cyan);
 }
 
 .crosshair:before{
   width:44px;
   height:2px;
+
   left:0;
   top:21px;
 }
@@ -655,86 +1157,148 @@ button{
 .crosshair:after{
   width:2px;
   height:44px;
+
   left:21px;
   top:0;
 }
 
 .crosshair-center{
   position:absolute;
+
   width:13px;
   height:13px;
+
   left:15.5px;
   top:15.5px;
-  border:2px solid var(--cyan);
+
+  border:
+    2px solid
+    var(--cyan);
+
   border-radius:50%;
-  box-shadow:0 0 9px var(--cyan);
+
+  box-shadow:
+    0 0 9px
+    var(--cyan);
 }
 
 .target{
   position:absolute;
+
   width:64px;
   height:64px;
+
   border-radius:50%;
-  transform:translate(-50%,-50%);
+
+  transform:
+    translate(-50%,-50%);
+
   pointer-events:none;
+
   background:
-    radial-gradient(circle,
-    #fff 0 10%,
-    #62eaff 11% 25%,
-    #163b4b 26% 43%,
-    #8466ff 44% 62%,
-    #17132f 63%);
-  box-shadow:0 0 25px rgba(97,234,255,.5);
+    radial-gradient(
+      circle,
+      #fff 0 10%,
+      #62eaff 11% 25%,
+      #163b4b 26% 43%,
+      #8466ff 44% 62%,
+      #17132f 63%
+    );
+
+  box-shadow:
+    0 0 25px
+    rgba(97,234,255,.5);
 }
 
 .laser{
   position:absolute;
+
   z-index:15;
+
   height:4px;
-  transform-origin:0 50%;
+
+  transform-origin:
+    0 50%;
+
   pointer-events:none;
-  background:linear-gradient(
-    90deg,
-    rgba(97,234,255,.05),
-    #62eaff,
-    #fff
-  );
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(97,234,255,.05),
+      #62eaff,
+      #fff
+    );
+
   box-shadow:
     0 0 8px var(--cyan),
-    0 0 18px rgba(97,234,255,.8);
-  animation:laser .18s linear forwards;
+    0 0 18px
+    rgba(97,234,255,.8);
+
+  animation:
+    laser .18s linear forwards;
 }
 
 @keyframes laser{
-  to{opacity:0}
+
+  to{
+    opacity:0;
+  }
+
 }
 
 .impact{
   position:absolute;
+
   z-index:18;
+
   width:70px;
   height:70px;
-  transform:translate(-50%,-50%);
-  border:2px solid var(--cyan);
+
+  transform:
+    translate(-50%,-50%);
+
+  border:
+    2px solid
+    var(--cyan);
+
   border-radius:50%;
+
   pointer-events:none;
-  animation:impact .25s ease-out forwards;
+
+  animation:
+    impact .25s ease-out forwards;
 }
 
 .impact.miss{
-  border-color:var(--red);
+  border-color:
+    var(--red);
 }
 
 @keyframes impact{
+
   from{
     opacity:1;
-    transform:translate(-50%,-50%) scale(.3);
+
+    transform:
+      translate(-50%,-50%)
+      scale(.3);
   }
+
   to{
     opacity:0;
-    transform:translate(-50%,-50%) scale(1.6);
+
+    transform:
+      translate(-50%,-50%)
+      scale(1.6);
   }
+
 }
+
+
+/* ==========================================
+MOBILE AIM
+========================================== */
 
 .mobile-controls{
   display:none;
@@ -742,52 +1306,94 @@ button{
 
 .joystick{
   position:absolute;
+
   left:18px;
   bottom:18px;
+
   width:112px;
   height:112px;
-  border:1px solid rgba(255,255,255,.12);
+
+  border:
+    1px solid
+    rgba(255,255,255,.12);
+
   border-radius:50%;
-  background:rgba(255,255,255,.05);
+
+  background:
+    rgba(255,255,255,.05);
+
   touch-action:none;
 }
 
 .joystick-knob{
   position:absolute;
+
   width:48px;
   height:48px;
+
   left:32px;
   top:32px;
+
   border-radius:50%;
-  background:linear-gradient(180deg,#eefaff,#75eaff);
+
+  background:
+    linear-gradient(
+      180deg,
+      #eefaff,
+      #75eaff
+    );
 }
 
 .fire{
   position:absolute;
+
   right:22px;
   bottom:28px;
+
   width:86px;
   height:86px;
+
   border:0;
   border-radius:50%;
-  background:linear-gradient(180deg,#ff7691,#ff3e63);
+
+  background:
+    linear-gradient(
+      180deg,
+      #ff7691,
+      #ff3e63
+    );
+
   color:#fff;
+
   font-size:15px;
   font-weight:1000;
+
   touch-action:none;
 }
 
+
+/* ==========================================
+SIDE
+========================================== */
+
 .side{
   height:100%;
+
   display:flex;
   flex-direction:column;
+
   gap:12px;
 }
 
 .panel{
-  border:1px solid var(--line);
+  border:
+    1px solid
+    var(--line);
+
   border-radius:22px;
+
   padding:18px;
+
   background:
     linear-gradient(
       180deg,
@@ -799,9 +1405,12 @@ button{
 
 .panel-title{
   color:var(--muted);
+
   font-size:10px;
   font-weight:900;
+
   letter-spacing:.15em;
+
   margin-bottom:10px;
 }
 
@@ -813,31 +1422,50 @@ button{
 .conf-row{
   display:flex;
   justify-content:space-between;
+
   color:#aeb8c9;
+
   font-size:11px;
   font-weight:900;
 }
 
 .conf-track{
   height:6px;
+
   margin-top:8px;
-  background:rgba(255,255,255,.07);
+
+  background:
+    rgba(255,255,255,.07);
+
   border-radius:999px;
+
   overflow:hidden;
 }
 
 .conf-fill{
   height:100%;
   width:0;
-  background:linear-gradient(90deg,var(--violet),var(--cyan));
-  transition:width .45s;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--violet),
+      var(--cyan)
+    );
+
+  transition:
+    width .45s;
 }
 
 .skill-row{
   display:flex;
   justify-content:space-between;
+
   padding:10px 0;
-  border-bottom:1px solid rgba(255,255,255,.045);
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.045);
 }
 
 .skill-row:last-child{
@@ -846,6 +1474,7 @@ button{
 
 .skill-row span{
   color:var(--muted);
+
   font-size:10px;
   font-weight:900;
 }
@@ -861,46 +1490,90 @@ button{
 
 .ad{
   flex:1;
+
   min-height:150px;
+
   display:flex;
   align-items:center;
   justify-content:center;
+
   color:#586375;
+
   border-style:dashed;
 }
+
+
+/* ==========================================
+START
+========================================== */
 
 .start-screen{
   position:absolute;
   inset:0;
+
   z-index:100;
+
   display:flex;
   align-items:center;
   justify-content:center;
+
   background:
-    radial-gradient(circle at 50% 20%,rgba(97,234,255,.08),transparent 35%),
-    radial-gradient(circle at 50% 85%,rgba(132,102,255,.08),transparent 30%),
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(97,234,255,.08),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 50% 85%,
+      rgba(132,102,255,.08),
+      transparent 30%
+    ),
     #070a11;
 }
 
 .start-inner{
-  width:min(900px,92%);
+  width:
+    min(
+      900px,
+      92%
+    );
+
   text-align:center;
+
   padding:40px 24px;
 }
 
 .start-brand{
-  font-size:clamp(72px,11vw,150px);
+  font-size:
+    clamp(
+      72px,
+      11vw,
+      150px
+    );
+
   font-weight:1000;
+
   letter-spacing:.08em;
+
   line-height:1;
+
   color:#f8fbff;
 }
 
 .start-main-copy{
   margin-top:30px;
-  font-size:clamp(26px,4vw,48px);
+
+  font-size:
+    clamp(
+      26px,
+      4vw,
+      48px
+    );
+
   font-weight:900;
+
   letter-spacing:-.03em;
+
   color:#f4f7fb;
 }
 
@@ -910,51 +1583,116 @@ button{
 
 .start-catch{
   margin-top:14px;
-  font-size:clamp(18px,2.6vw,30px);
+
+  font-size:
+    clamp(
+      18px,
+      2.6vw,
+      30px
+    );
+
   font-weight:800;
+
   color:#aeb9ca;
 }
 
 .start-sub{
   margin-top:28px;
+
   font-size:11px;
   font-weight:1000;
+
   letter-spacing:.32em;
+
   color:#667286;
 }
 
 .start-btn{
   margin-top:34px;
+
   min-width:220px;
   min-height:62px;
+
   border:0;
   border-radius:18px;
-  background:linear-gradient(180deg,#c7faff,#63e4f6);
+
+  background:
+    linear-gradient(
+      180deg,
+      #c7faff,
+      #63e4f6
+    );
+
   color:#031014;
+
   font-size:18px;
   font-weight:1000;
+
   letter-spacing:.08em;
+
   cursor:pointer;
-  box-shadow:0 0 35px rgba(97,234,255,.16);
+
+  box-shadow:
+    0 0 35px
+    rgba(97,234,255,.16);
 }
+
+
+/* ==========================================
+SITE LINKS
+========================================== */
+
+.site-links{
+  position:fixed;
+
+  left:20px;
+  bottom:10px;
+
+  z-index:300;
+
+  display:flex;
+
+  gap:16px;
+
+  font-size:10px;
+}
+
+.site-links a{
+  color:#657083;
+
+  text-decoration:none;
+}
+
+.site-links a:hover{
+  color:#61eaff;
+}
+
+
+/* ==========================================
+MOBILE
+========================================== */
 
 @media(max-width:900px){
 
   .app{
     display:block;
+
     padding:0;
   }
 
   .main{
     width:100%;
     height:100%;
+
     gap:0;
   }
 
   .header{
     height:58px;
     flex:0 0 58px;
-    padding:0 14px;
+
+    padding:
+      0 14px;
   }
 
   .brand{
@@ -975,8 +1713,10 @@ button{
 
   .feed{
     flex:1;
+
     border:0;
     border-radius:0;
+
     box-shadow:none;
   }
 
@@ -993,11 +1733,19 @@ button{
   }
 
   .round-button{
-    width:min(60vw,235px);
+    width:
+      min(
+        60vw,
+        235px
+      );
   }
 
   .choice{
-    width:min(40vw,165px);
+    width:
+      min(
+        40vw,
+        165px
+      );
   }
 
   .choice-wrap{
@@ -1013,11 +1761,19 @@ button{
   }
 
   .memory-grid{
-    grid-template-columns:repeat(3,min(27vw,98px));
+    grid-template-columns:
+      repeat(
+        3,
+        min(27vw,98px)
+      );
   }
 
   .position-grid{
-    grid-template-columns:repeat(4,min(20vw,70px));
+    grid-template-columns:
+      repeat(
+        4,
+        min(20vw,70px)
+      );
   }
 
   .mobile-controls{
@@ -1028,7 +1784,24 @@ button{
     cursor:default;
   }
 
+  .site-links{
+    left:50%;
+    bottom:5px;
+
+    width:100%;
+
+    justify-content:center;
+
+    transform:
+      translateX(-50%);
+
+    gap:12px;
+
+    font-size:9px;
+  }
+
 }
+
 </style>
 </head>
 
@@ -1036,7 +1809,9 @@ button{
 
 <div class="app">
 
+
 <main class="main">
+
 
 <header class="header">
 
@@ -1047,31 +1822,77 @@ button{
   <div class="live">
 
     <div class="live-block">
-      <span class="live-label">PLAYED</span>
-      <span class="live-value" id="playedTop">0</span>
+
+      <span class="live-label">
+        PLAYED
+      </span>
+
+      <span
+        class="live-value"
+        id="playedTop"
+      >
+        0
+      </span>
+
     </div>
 
-    <div class="live-block">
-      <span class="live-label">GAMIQ</span>
-      <span class="live-value" id="gamiqTop">---</span>
-    </div>
 
     <div class="live-block">
-      <span class="live-label">ACCURACY</span>
-      <span class="live-value" id="confidenceTop">0%</span>
+
+      <span class="live-label">
+        GAMIQ
+      </span>
+
+      <span
+        class="live-value"
+        id="gamiqTop"
+      >
+        ---
+      </span>
+
+    </div>
+
+
+    <div class="live-block">
+
+      <span class="live-label">
+        ACCURACY
+      </span>
+
+      <span
+        class="live-value"
+        id="confidenceTop"
+      >
+        0%
+      </span>
+
     </div>
 
   </div>
 
 </header>
 
-<section class="feed" id="feed">
 
-  <div class="card current" id="cardA"></div>
+<section
+  class="feed"
+  id="feed"
+>
 
-  <div class="card next" id="cardB"></div>
+  <div
+    class="card current"
+    id="cardA"
+  ></div>
 
-  <div class="start-screen" id="startScreen">
+  <div
+    class="card next"
+    id="cardB"
+  ></div>
+
+
+  <div
+    class="start-screen"
+    id="startScreen"
+  >
 
     <div class="start-inner">
 
@@ -1080,7 +1901,15 @@ button{
       </div>
 
       <div class="start-main-copy">
-        あなたの <span>GAME IQ</span> を測る。
+
+        あなたの
+
+        <span>
+          GAME IQ
+        </span>
+
+        を測る。
+
       </div>
 
       <div class="start-catch">
@@ -1104,351 +1933,1092 @@ button{
 
 </section>
 
+
 </main>
+
 
 <aside class="side">
 
-  <div class="panel">
-    <div class="panel-title">LIVE GAMIQ</div>
-    <div class="gamiq-big" id="gamiqSide">---</div>
 
-    <div class="conf-row">
-      <span>測定精度</span>
-      <span id="confidenceSide">0%</span>
-    </div>
+<div class="panel">
 
-    <div class="conf-track">
-      <div class="conf-fill" id="confidenceFill"></div>
-    </div>
+  <div class="panel-title">
+    LIVE GAMIQ
   </div>
 
-  <div class="panel">
+  <div
+    class="gamiq-big"
+    id="gamiqSide"
+  >
+    ---
+  </div>
 
-    <div class="panel-title">ABILITIES</div>
+  <div class="conf-row">
 
-    <div class="skill-row">
-      <span>REFLEX</span>
-      <b id="skillReflex">--</b>
-    </div>
+    <span>
+      測定精度
+    </span>
 
-    <div class="skill-row">
-      <span>SPEED</span>
-      <b id="skillSpeed">--</b>
-    </div>
-
-    <div class="skill-row">
-      <span>AIM</span>
-      <b id="skillAim">--</b>
-    </div>
-
-    <div class="skill-row">
-      <span>LOGIC</span>
-      <b id="skillLogic">--</b>
-    </div>
-
-    <div class="skill-row">
-      <span>MEMORY</span>
-      <b id="skillMemory">--</b>
-    </div>
-
-    <div class="skill-row">
-      <span>ADAPT</span>
-      <b id="skillAdapt">--</b>
-    </div>
+    <span
+      id="confidenceSide"
+    >
+      0%
+    </span>
 
   </div>
 
-  <div class="panel">
-    <div class="panel-title">GAMES PLAYED</div>
-    <div class="play-count" id="playedSide">0</div>
+  <div class="conf-track">
+
+    <div
+      class="conf-fill"
+      id="confidenceFill"
+    ></div>
+
   </div>
 
-  <div class="panel ad">
-    AD SPACE
+</div>
+
+
+<div class="panel">
+
+  <div class="panel-title">
+    ABILITIES
   </div>
+
+  <div class="skill-row">
+    <span>REFLEX</span>
+    <b id="skillReflex">--</b>
+  </div>
+
+  <div class="skill-row">
+    <span>SPEED</span>
+    <b id="skillSpeed">--</b>
+  </div>
+
+  <div class="skill-row">
+    <span>AIM</span>
+    <b id="skillAim">--</b>
+  </div>
+
+  <div class="skill-row">
+    <span>LOGIC</span>
+    <b id="skillLogic">--</b>
+  </div>
+
+  <div class="skill-row">
+    <span>MEMORY</span>
+    <b id="skillMemory">--</b>
+  </div>
+
+  <div class="skill-row">
+    <span>ADAPT</span>
+    <b id="skillAdapt">--</b>
+  </div>
+
+</div>
+
+
+<div class="panel">
+
+  <div class="panel-title">
+    GAMES PLAYED
+  </div>
+
+  <div
+    class="play-count"
+    id="playedSide"
+  >
+    0
+  </div>
+
+</div>
+
+
+<div class="panel ad">
+  AD SPACE
+</div>
+
 
 </aside>
 
+
 </div>
+
+
+<div class="site-links">
+
+  <a href="/about.html">
+    GAMIQについて
+  </a>
+
+  <a href="/privacy.html">
+    プライバシーポリシー
+  </a>
+
+  <a href="/contact.html">
+    お問い合わせ
+  </a>
+
+</div>
+
 
 <script>
 
 (() => {
 
-const $ = id => document.getElementById(id);
 
-const feed = $("feed");
-const startScreen = $("startScreen");
+const $ =
+  id =>
+    document.getElementById(id);
 
-let currentCard = $("cardA");
-let nextCard = $("cardB");
 
-let currentGame = null;
-let nextGame = null;
+const feed =
+  $("feed");
 
-let played = 0;
-let gamiq = null;
 
-let canSwipe = false;
-let gameActive = false;
-let finishCurrentGame = null;
+const startScreen =
+  $("startScreen");
 
-let cleanupFns = [];
-let gameEndTimer = null;
 
-let bag = [];
-let lastGameId = null;
+let currentCard =
+  $("cardA");
 
-let swipeUnlockAt = 0;
+
+let nextCard =
+  $("cardB");
+
+
+let currentGame =
+  null;
+
+
+let nextGame =
+  null;
+
+
+let played =
+  0;
+
+
+let gamiq =
+  null;
+
+
+let canSwipe =
+  false;
+
+
+let gameActive =
+  false;
+
+
+let finishCurrentGame =
+  null;
+
+
+let cleanupFns =
+  [];
+
+
+let gameEndTimer =
+  null;
+
+
+let bag =
+  [];
+
+
+let lastGameId =
+  null;
+
+
+let swipeUnlockAt =
+  0;
+
 
 const skillScores = {
+
   REFLEX:[],
+
   SPEED:[],
+
   AIM:[],
+
   LOGIC:[],
+
   MEMORY:[],
+
   ADAPT:[]
+
 };
 
 
-/* THEMES */
+/* ==========================================
+THEMES
+========================================== */
+
 
 const theme = {
 
   space:{
+
     a:"#081327",
+
     b:"#040711",
-    glow:"rgba(77,166,255,.18)"
+
+    glow:
+      "rgba(77,166,255,.18)"
+
   },
+
 
   zombie:{
+
     a:"#111a0d",
+
     b:"#050807",
-    glow:"rgba(118,255,178,.14)"
+
+    glow:
+      "rgba(118,255,178,.14)"
+
   },
+
 
   factory:{
+
     a:"#1a1309",
+
     b:"#080705",
-    glow:"rgba(255,170,76,.15)"
+
+    glow:
+      "rgba(255,170,76,.15)"
+
   },
+
 
   neon:{
+
     a:"#16091d",
+
     b:"#07050d",
-    glow:"rgba(216,83,255,.16)"
+
+    glow:
+      "rgba(216,83,255,.16)"
+
   },
+
 
   ninja:{
+
     a:"#111111",
+
     b:"#030303",
-    glow:"rgba(255,78,112,.12)"
+
+    glow:
+      "rgba(255,78,112,.12)"
+
   },
+
 
   treasure:{
+
     a:"#171108",
+
     b:"#070503",
-    glow:"rgba(255,228,107,.14)"
+
+    glow:
+      "rgba(255,228,107,.14)"
+
   },
+
 
   race:{
+
     a:"#11151e",
+
     b:"#05070b",
-    glow:"rgba(97,234,255,.12)"
+
+    glow:
+      "rgba(97,234,255,.12)"
+
   },
+
 
   cyber:{
+
     a:"#08161a",
+
     b:"#040809",
-    glow:"rgba(97,234,255,.15)"
+
+    glow:
+      "rgba(97,234,255,.15)"
+
   },
+
 
   magic:{
+
     a:"#13091d",
+
     b:"#06040b",
-    glow:"rgba(132,102,255,.18)"
+
+    glow:
+      "rgba(132,102,255,.18)"
+
   },
 
+
   ocean:{
+
     a:"#07151d",
+
     b:"#03080c",
-    glow:"rgba(79,186,255,.15)"
+
+    glow:
+      "rgba(79,186,255,.15)"
+
   }
 
 };
 
 
-/* 50 GAMES */
+/* ==========================================
+50 GAME POOL
+========================================== */
+
 
 const variants = [
 
-["reaction","SPACE DUEL","敵艦の砲門が光った瞬間に反撃","REFLEX","space","🚀",8000],
-["reaction","NINJA DRAW","敵が動いた瞬間に斬れ","REFLEX","ninja","🥷",8000],
-["reaction","ROBOT ALERT","警告灯が光った瞬間に停止","REFLEX","cyber","🤖",8000],
-["reaction","TREASURE TRAP","罠が光った瞬間に回避","REFLEX","treasure","💎",8000],
-["reaction","NEON FLASH","ネオンが点灯した瞬間に押せ","REFLEX","neon","🌃",8000],
 
-["gonogo","ZOMBIE CHECK","ゾンビだけ撃て。人間は撃つな","REFLEX","zombie","🧟",8500],
-["gonogo","FACTORY QC","良品だけ通せ。不良品は止めろ","REFLEX","factory","🏭",8500],
-["gonogo","SPACE SCAN","味方は通せ。敵艦だけ撃て","REFLEX","space","🛸",8500],
-["gonogo","MAGIC SIGIL","青い魔法陣だけ発動","REFLEX","magic","🔮",8500],
-["gonogo","OCEAN RESCUE","魚は通せ。サメだけ止めろ","REFLEX","ocean","🦈",8500],
+/* REFLEX */
 
-["tap","ZOMBIE SMASH","連打でゾンビを倒せ","SPEED","zombie","🧟",8000],
-["tap","FACTORY POWER","連打で工場ゲージを満タンにしろ","SPEED","factory","🏭",8000],
-["tap","ROCKET BOOST","連打でロケットを加速","SPEED","space","🚀",8000],
-["tap","NINJA RUSH","連打で分身を増やせ","SPEED","ninja","🥷",8000],
-["tap","TREASURE BREAK","連打で宝箱をこじ開けろ","SPEED","treasure","💰",8000],
+[
+  "reaction",
+  "SPACE DUEL",
+  "敵艦の砲門が光った瞬間に反撃",
+  "REFLEX",
+  "space",
+  "🚀",
+  8000
+],
 
-["alternate","RACE SHIFT","左右交互でシフトアップ","SPEED","race","🏎️",8000],
-["alternate","CYBER HACK","左右の端末を交互に解除","SPEED","cyber","🤖",8000],
-["alternate","MAGIC CAST","左右交互で魔力をチャージ","SPEED","magic","✨",8000],
-["alternate","OCEAN ROW","左右交互でボートを漕げ","SPEED","ocean","🚣",8000],
-["alternate","NEON DRUM","左右交互にビートを刻め","SPEED","neon","🥁",8000],
+[
+  "reaction",
+  "NINJA DRAW",
+  "敵が動いた瞬間に斬れ",
+  "REFLEX",
+  "ninja",
+  "🥷",
+  8000
+],
 
-["aim","SPACE BLASTER","照準を合わせて敵艦を撃て","AIM","space","🛸",10000],
-["aim","ZOMBIE SNIPER","頭に照準を合わせて撃て","AIM","zombie","🧟",10000],
-["aim","TREASURE SHOT","飛ぶ宝石を狙え","AIM","treasure","💎",10000],
-["aim","CYBER CORE","ロボットのコアを撃ち抜け","AIM","cyber","🤖",10000],
-["aim","NEON TARGET","ネオンターゲットを撃て","AIM","neon","🎯",10000],
+[
+  "reaction",
+  "ROBOT ALERT",
+  "警告灯が光った瞬間に停止",
+  "REFLEX",
+  "cyber",
+  "🤖",
+  8000
+],
 
-["aimmove","SPACE DOGFIGHT","動く敵機を追って撃て","AIM","space","✈️",10000],
-["aimmove","ZOMBIE RUNNER","走るゾンビを撃て","AIM","zombie","🧟",10000],
-["aimmove","RACE DRONE","飛行ドローンを追撃","AIM","race","🚁",10000],
-["aimmove","MAGIC ORB","動く魔法球を撃ち落とせ","AIM","magic","🔮",10000],
-["aimmove","OCEAN HUNT","泳ぐターゲットを追え","AIM","ocean","🐟",10000],
+[
+  "reaction",
+  "TREASURE TRAP",
+  "罠が光った瞬間に回避",
+  "REFLEX",
+  "treasure",
+  "💎",
+  8000
+],
 
-["highlow","SPACE POWER","高い出力を選べ","LOGIC","space","⚡",8000],
-["highlow","FACTORY LOAD","大きい生産数を選べ","LOGIC","factory","📦",8000],
-["highlow","TREASURE VALUE","価値が高い宝を選べ","LOGIC","treasure","💎",8000],
-["highlow","RACE SPEED","速い速度を選べ","LOGIC","race","🏁",8000],
-["highlow","MAGIC POWER","魔力が高い方を選べ","LOGIC","magic","🔮",8000],
+[
+  "reaction",
+  "NEON FLASH",
+  "ネオンが点灯した瞬間に押せ",
+  "REFLEX",
+  "neon",
+  "🌃",
+  8000
+],
 
-["condition","CYBER RULE","表示された条件に従え","LOGIC","cyber","🤖",8500],
-["condition","NINJA CODE","指令どおりの数字を選べ","LOGIC","ninja","📜",8500],
-["condition","FACTORY SORT","条件に合う部品を選別","LOGIC","factory","⚙️",8500],
-["condition","OCEAN NAV","航路条件に合う値を選べ","LOGIC","ocean","🧭",8500],
-["condition","NEON SWITCH","ルールが変わる。即対応しろ","LOGIC","neon","💡",8500],
+[
+  "gonogo",
+  "ZOMBIE CHECK",
+  "ゾンビだけ撃て。人間は撃つな",
+  "REFLEX",
+  "zombie",
+  "🧟",
+  8500
+],
 
-["sequence","SPACE CODE","宇宙船の点灯順を覚えろ","MEMORY","space","🚀",10000],
-["sequence","NINJA SEAL","印の順番を覚えて再現","MEMORY","ninja","🥷",10000],
-["sequence","FACTORY LINE","稼働ランプの順番を記憶","MEMORY","factory","🏭",10000],
-["sequence","MAGIC SPELL","魔法陣の順番を記憶","MEMORY","magic","🔮",10000],
-["sequence","NEON BEAT","光るネオンの順番を再現","MEMORY","neon","🌃",10000],
+[
+  "gonogo",
+  "FACTORY QC",
+  "良品だけ通せ。不良品は止めろ",
+  "REFLEX",
+  "factory",
+  "🏭",
+  8500
+],
 
-["position","TREASURE MAP","光った宝の場所を覚えろ","MEMORY","treasure","🗺️",9000],
-["position","ZOMBIE SAFE","安全地帯の位置を覚えろ","MEMORY","zombie","🧟",9000],
-["position","CYBER GRID","点灯した端末の位置を記憶","MEMORY","cyber","🤖",9000],
-["position","OCEAN SONAR","反応した位置を記憶","MEMORY","ocean","📡",9000],
-["position","RACE LINE","光ったコース位置を覚えろ","MEMORY","race","🏎️",9000]
+[
+  "gonogo",
+  "SPACE SCAN",
+  "味方は通せ。敵艦だけ撃て",
+  "REFLEX",
+  "space",
+  "🛸",
+  8500
+],
+
+[
+  "gonogo",
+  "MAGIC SIGIL",
+  "青い魔法陣だけ発動",
+  "REFLEX",
+  "magic",
+  "🔮",
+  8500
+],
+
+[
+  "gonogo",
+  "OCEAN RESCUE",
+  "魚は通せ。サメだけ止めろ",
+  "REFLEX",
+  "ocean",
+  "🦈",
+  8500
+],
+
+
+/* SPEED */
+
+[
+  "tap",
+  "ZOMBIE SMASH",
+  "連打でゾンビを倒せ",
+  "SPEED",
+  "zombie",
+  "🧟",
+  8000
+],
+
+[
+  "tap",
+  "FACTORY POWER",
+  "連打で工場ゲージを満タンにしろ",
+  "SPEED",
+  "factory",
+  "🏭",
+  8000
+],
+
+[
+  "tap",
+  "ROCKET BOOST",
+  "連打でロケットを加速",
+  "SPEED",
+  "space",
+  "🚀",
+  8000
+],
+
+[
+  "tap",
+  "NINJA RUSH",
+  "連打で分身を増やせ",
+  "SPEED",
+  "ninja",
+  "🥷",
+  8000
+],
+
+[
+  "tap",
+  "TREASURE BREAK",
+  "連打で宝箱をこじ開けろ",
+  "SPEED",
+  "treasure",
+  "💰",
+  8000
+],
+
+[
+  "alternate",
+  "RACE SHIFT",
+  "左右交互でシフトアップ",
+  "SPEED",
+  "race",
+  "🏎️",
+  8000
+],
+
+[
+  "alternate",
+  "CYBER HACK",
+  "左右の端末を交互に解除",
+  "SPEED",
+  "cyber",
+  "🤖",
+  8000
+],
+
+[
+  "alternate",
+  "MAGIC CAST",
+  "左右交互で魔力をチャージ",
+  "SPEED",
+  "magic",
+  "✨",
+  8000
+],
+
+[
+  "alternate",
+  "OCEAN ROW",
+  "左右交互でボートを漕げ",
+  "SPEED",
+  "ocean",
+  "🚣",
+  8000
+],
+
+[
+  "alternate",
+  "NEON DRUM",
+  "左右交互にビートを刻め",
+  "SPEED",
+  "neon",
+  "🥁",
+  8000
+],
+
+
+/* AIM */
+
+[
+  "aim",
+  "SPACE BLASTER",
+  "照準を合わせて敵艦を撃て",
+  "AIM",
+  "space",
+  "🛸",
+  10000
+],
+
+[
+  "aim",
+  "ZOMBIE SNIPER",
+  "頭に照準を合わせて撃て",
+  "AIM",
+  "zombie",
+  "🧟",
+  10000
+],
+
+[
+  "aim",
+  "TREASURE SHOT",
+  "飛ぶ宝石を狙え",
+  "AIM",
+  "treasure",
+  "💎",
+  10000
+],
+
+[
+  "aim",
+  "CYBER CORE",
+  "ロボットのコアを撃ち抜け",
+  "AIM",
+  "cyber",
+  "🤖",
+  10000
+],
+
+[
+  "aim",
+  "NEON TARGET",
+  "ネオンターゲットを撃て",
+  "AIM",
+  "neon",
+  "🎯",
+  10000
+],
+
+[
+  "aimmove",
+  "SPACE DOGFIGHT",
+  "動く敵機を追って撃て",
+  "AIM",
+  "space",
+  "✈️",
+  10000
+],
+
+[
+  "aimmove",
+  "ZOMBIE RUNNER",
+  "走るゾンビを撃て",
+  "AIM",
+  "zombie",
+  "🧟",
+  10000
+],
+
+[
+  "aimmove",
+  "RACE DRONE",
+  "飛行ドローンを追撃",
+  "AIM",
+  "race",
+  "🚁",
+  10000
+],
+
+[
+  "aimmove",
+  "MAGIC ORB",
+  "動く魔法球を撃ち落とせ",
+  "AIM",
+  "magic",
+  "🔮",
+  10000
+],
+
+[
+  "aimmove",
+  "OCEAN HUNT",
+  "泳ぐターゲットを追え",
+  "AIM",
+  "ocean",
+  "🐟",
+  10000
+],
+
+
+/* LOGIC */
+
+[
+  "highlow",
+  "SPACE POWER",
+  "高い出力を選べ",
+  "LOGIC",
+  "space",
+  "⚡",
+  8000
+],
+
+[
+  "highlow",
+  "FACTORY LOAD",
+  "大きい生産数を選べ",
+  "LOGIC",
+  "factory",
+  "📦",
+  8000
+],
+
+[
+  "highlow",
+  "TREASURE VALUE",
+  "価値が高い宝を選べ",
+  "LOGIC",
+  "treasure",
+  "💎",
+  8000
+],
+
+[
+  "highlow",
+  "RACE SPEED",
+  "速い速度を選べ",
+  "LOGIC",
+  "race",
+  "🏁",
+  8000
+],
+
+[
+  "highlow",
+  "MAGIC POWER",
+  "魔力が高い方を選べ",
+  "LOGIC",
+  "magic",
+  "🔮",
+  8000
+],
+
+[
+  "condition",
+  "CYBER RULE",
+  "表示された条件に従え",
+  "LOGIC",
+  "cyber",
+  "🤖",
+  8500
+],
+
+[
+  "condition",
+  "NINJA CODE",
+  "指令どおりの数字を選べ",
+  "LOGIC",
+  "ninja",
+  "📜",
+  8500
+],
+
+[
+  "condition",
+  "FACTORY SORT",
+  "条件に合う部品を選別",
+  "LOGIC",
+  "factory",
+  "⚙️",
+  8500
+],
+
+[
+  "condition",
+  "OCEAN NAV",
+  "航路条件に合う値を選べ",
+  "LOGIC",
+  "ocean",
+  "🧭",
+  8500
+],
+
+[
+  "condition",
+  "NEON SWITCH",
+  "ルールが変わる。即対応しろ",
+  "LOGIC",
+  "neon",
+  "💡",
+  8500
+],
+
+
+/* MEMORY */
+
+[
+  "sequence",
+  "SPACE CODE",
+  "宇宙船の点灯順を覚えろ",
+  "MEMORY",
+  "space",
+  "🚀",
+  10000
+],
+
+[
+  "sequence",
+  "NINJA SEAL",
+  "印の順番を覚えて再現",
+  "MEMORY",
+  "ninja",
+  "🥷",
+  10000
+],
+
+[
+  "sequence",
+  "FACTORY LINE",
+  "稼働ランプの順番を記憶",
+  "MEMORY",
+  "factory",
+  "🏭",
+  10000
+],
+
+[
+  "sequence",
+  "MAGIC SPELL",
+  "魔法陣の順番を記憶",
+  "MEMORY",
+  "magic",
+  "🔮",
+  10000
+],
+
+[
+  "sequence",
+  "NEON BEAT",
+  "光るネオンの順番を再現",
+  "MEMORY",
+  "neon",
+  "🌃",
+  10000
+],
+
+[
+  "position",
+  "TREASURE MAP",
+  "光った宝の場所を覚えろ",
+  "MEMORY",
+  "treasure",
+  "🗺️",
+  9000
+],
+
+[
+  "position",
+  "ZOMBIE SAFE",
+  "安全地帯の位置を覚えろ",
+  "MEMORY",
+  "zombie",
+  "🧟",
+  9000
+],
+
+[
+  "position",
+  "CYBER GRID",
+  "点灯した端末の位置を記憶",
+  "MEMORY",
+  "cyber",
+  "🤖",
+  9000
+],
+
+[
+  "position",
+  "OCEAN SONAR",
+  "反応した位置を記憶",
+  "MEMORY",
+  "ocean",
+  "📡",
+  9000
+],
+
+[
+  "position",
+  "RACE LINE",
+  "光ったコース位置を覚えろ",
+  "MEMORY",
+  "race",
+  "🏎️",
+  9000
+]
 
 ];
 
 
 const games =
   variants.map(
-    (v,i) => {
+    (variant,index) => {
+
 
       const [
+
         type,
+
         title,
+
         rule,
+
         skill,
+
         themeKey,
+
         icon,
+
         duration
-      ] = v;
+
+      ] =
+        variant;
+
 
       return {
-        id:`g${i+1}`,
+
+        id:
+          `g${index+1}`,
+
         type,
+
         title,
+
         rule,
+
         skill,
+
         themeKey,
+
         icon,
+
         duration,
-        subtitle:`${themeKey.toUpperCase()} MODE`
+
+        subtitle:
+          `${themeKey.toUpperCase()} MODE`
+
       };
 
     }
   );
 
 
-/* UTIL */
+/* ==========================================
+UTIL
+========================================== */
 
-function clamp(value,min,max){
-  return Math.max(min,Math.min(max,value));
+
+function clamp(
+  value,
+  min,
+  max
+){
+
+  return Math.max(
+    min,
+    Math.min(
+      max,
+      value
+    )
+  );
+
 }
+
 
 function avg(array){
+
   return array.length
-    ? array.reduce((a,b)=>a+b,0)/array.length
-    : null;
+    ?
+      array.reduce(
+        (a,b) =>
+          a+b,
+        0
+      )
+      /
+      array.length
+
+    :
+      null;
+
 }
+
 
 function shuffle(array){
 
-  const a=[...array];
+  const result =
+    [...array];
 
-  for(let i=a.length-1;i>0;i--){
 
-    const j=
+  for(
+    let i =
+      result.length-1;
+
+    i>0;
+
+    i--
+  ){
+
+    const j =
       Math.floor(
-        Math.random()*(i+1)
+        Math.random()
+        *
+        (i+1)
       );
 
-    [a[i],a[j]]=
-    [a[j],a[i]];
+
+    [
+      result[i],
+      result[j]
+    ]
+    =
+    [
+      result[j],
+      result[i]
+    ];
 
   }
 
-  return a;
+
+  return result;
+
 }
 
-function feedback(board,text,type="good"){
 
-  const el=
-    document.createElement("div");
+function feedback(
+  board,
+  text,
+  type="good"
+){
 
-  el.className=
+  const element =
+    document.createElement(
+      "div"
+    );
+
+
+  element.className =
     `feedback ${type}`;
 
-  el.textContent=
+
+  element.textContent =
     text;
 
-  board.appendChild(el);
+
+  board.appendChild(
+    element
+  );
+
 
   setTimeout(
-    ()=>el.remove(),
+    () =>
+      element.remove(),
     500
   );
 
 }
 
-function success(board,combo=1){
 
-  feed.classList.remove("shake");
+function success(
+  board,
+  combo=1
+){
+
+  feed.classList.remove(
+    "shake"
+  );
+
 
   void feed.offsetWidth;
 
-  feed.classList.add("shake");
+
+  feed.classList.add(
+    "shake"
+  );
 
 
-  if(combo>=2){
+  if(
+    combo >= 2
+  ){
 
-    const c=
-      document.createElement("div");
+    const element =
+      document.createElement(
+        "div"
+      );
 
-    c.className="combo";
 
-    c.innerHTML=
+    element.className =
+      "combo";
+
+
+    element.innerHTML =
       `COMBO <strong>×${combo}</strong>`;
 
-    board.appendChild(c);
+
+    board.appendChild(
+      element
+    );
+
 
     setTimeout(
-      ()=>c.remove(),
+      () =>
+        element.remove(),
       650
     );
 
@@ -1456,28 +3026,54 @@ function success(board,combo=1){
 
 
   feedback(
+
     board,
-    combo>=7
-      ? "PERFECT"
-      : combo>=4
-      ? "GREAT"
-      : "GOOD",
-    combo>=7
-      ? "perfect"
-      : combo>=4
-      ? "great"
-      : "good"
+
+    combo >= 7
+      ?
+        "PERFECT"
+
+      :
+      combo >= 4
+        ?
+          "GREAT"
+
+        :
+          "GOOD",
+
+    combo >= 7
+      ?
+        "perfect"
+
+      :
+      combo >= 4
+        ?
+          "great"
+
+        :
+          "good"
+
   );
 
 }
 
-function fail(board){
 
-  feed.classList.remove("miss");
+function fail(
+  board
+){
+
+  feed.classList.remove(
+    "miss"
+  );
+
 
   void feed.offsetWidth;
 
-  feed.classList.add("miss");
+
+  feed.classList.add(
+    "miss"
+  );
+
 
   feedback(
     board,
@@ -1487,84 +3083,145 @@ function fail(board){
 
 }
 
-function adaptScore(series){
 
-  if(!series.length){
+function adaptScore(
+  series
+){
+
+  if(
+    !series.length
+  ){
+
     return 50;
+
   }
 
-  if(series.length<4){
+
+  if(
+    series.length < 4
+  ){
 
     return clamp(
-      35+avg(series)*.3,
+
+      35
+      +
+      avg(series)*.3,
+
       25,
+
       75
+
     );
 
   }
 
-  const n=
+
+  const n =
     Math.max(
+
       1,
+
       Math.floor(
         series.length*.35
       )
+
     );
 
+
   return clamp(
-    50+
+
+    50
+    +
     (
-      avg(series.slice(-n))
+      avg(
+        series.slice(-n)
+      )
       -
-      avg(series.slice(0,n))
+      avg(
+        series.slice(0,n)
+      )
     )*.9,
+
     0,
+
     100
+
   );
 
 }
 
 
-/* GAME BAG */
+/* ==========================================
+GAME BAG
+========================================== */
+
 
 function getNextGame(){
 
-  if(!bag.length){
-    bag=shuffle(games);
+  if(
+    !bag.length
+  ){
+
+    bag =
+      shuffle(
+        games
+      );
+
   }
 
-  let game=
+
+  let game =
     bag.shift();
 
+
   if(
-    game.id===lastGameId &&
+    game.id === lastGameId
+    &&
     bag.length
   ){
 
-    const second=
+    const second =
       bag.shift();
 
-    bag.push(game);
 
-    game=second;
+    bag.push(
+      game
+    );
+
+
+    game =
+      second;
 
   }
 
-  lastGameId=
+
+  lastGameId =
     game.id;
 
+
   return game;
+
 }
 
 
-/* CARD */
+/* ==========================================
+CARD
+========================================== */
 
-function renderCard(card,game,preview=false){
 
-  const th=
-    theme[game.themeKey];
+function renderCard(
+  card,
+  game,
+  preview=false
+){
 
-  card.innerHTML=`
+  const th =
+    theme[
+      game.themeKey
+    ];
+
+
+  card.innerHTML = `
 
     <div
       class="card-content"
@@ -1580,7 +3237,7 @@ function renderCard(card,game,preview=false){
         <div>
 
           <div class="game-number">
-            GAME ${played+(preview?2:1)}
+            GAME ${played + (preview ? 2 : 1)}
           </div>
 
           <h2 class="game-title">
@@ -1599,9 +3256,11 @@ function renderCard(card,game,preview=false){
 
       </div>
 
+
       <div class="board">
 
         <div class="play"></div>
+
 
         <div class="rule">
 
@@ -1627,14 +3286,17 @@ function renderCard(card,game,preview=false){
 
         </div>
 
+
         <div class="finish">
 
           <div>
 
             <div class="finish-score">
+
               <span class="finish-score-value">
                 +0
               </span>
+
             </div>
 
             <div class="finish-theme">
@@ -1664,384 +3326,741 @@ function renderCard(card,game,preview=false){
 }
 
 
-/* START */
+/* ==========================================
+START
+========================================== */
+
 
 function start(){
 
-  startScreen.style.display=
+  startScreen.style.display =
     "none";
 
-  currentGame=
+
+  currentGame =
     getNextGame();
 
-  nextGame=
+
+  nextGame =
     getNextGame();
+
 
   renderCard(
+
     currentCard,
+
     currentGame,
+
     false
+
   );
 
+
   renderCard(
+
     nextCard,
+
     nextGame,
+
     true
+
   );
+
 
   beginCurrentGame();
 
 }
 
 
-/* FLOW */
+/* ==========================================
+CLEANUP
+========================================== */
+
 
 function cleanupGame(){
 
   cleanupFns.forEach(
-    fn=>{
+
+    fn => {
 
       try{
+
         fn();
+
       }
-      catch(e){}
+      catch(error){
+
+      }
 
     }
+
   );
 
-  cleanupFns=[];
 
-  if(gameEndTimer){
-    clearTimeout(gameEndTimer);
+  cleanupFns =
+    [];
+
+
+  if(
+    gameEndTimer
+  ){
+
+    clearTimeout(
+      gameEndTimer
+    );
+
   }
 
-  gameEndTimer=null;
+
+  gameEndTimer =
+    null;
 
 }
+
+
+/* ==========================================
+GAME FLOW
+========================================== */
+
 
 function beginCurrentGame(){
 
   cleanupGame();
 
-  canSwipe=false;
-  gameActive=false;
 
-  const rule=
-    currentCard.querySelector(".rule");
+  canSwipe =
+    false;
 
-  const bar=
-    currentCard.querySelector(".rule-bar-fill");
 
-  rule.style.display=
+  gameActive =
+    false;
+
+
+  const rule =
+    currentCard
+      .querySelector(
+        ".rule"
+      );
+
+
+  const bar =
+    currentCard
+      .querySelector(
+        ".rule-bar-fill"
+      );
+
+
+  rule.style.display =
     "flex";
 
-  bar.classList.remove("go");
+
+  bar.classList.remove(
+    "go"
+  );
+
 
   void bar.offsetWidth;
 
-  bar.classList.add("go");
+
+  bar.classList.add(
+    "go"
+  );
 
 
-  const timer=
+  const timer =
     setTimeout(
-      ()=>{
 
-        rule.style.display=
+      () => {
+
+
+        rule.style.display =
           "none";
 
-        gameActive=
+
+        gameActive =
           true;
 
-        const play=
-          currentCard.querySelector(".play");
 
-        finishCurrentGame=
+        const play =
+          currentCard
+            .querySelector(
+              ".play"
+            );
+
+
+        finishCurrentGame =
           runEngine(
             currentGame,
             play
           );
 
-        gameEndTimer=
+
+        gameEndTimer =
           setTimeout(
             finishGame,
             currentGame.duration
           );
 
+
       },
+
       900
+
     );
 
+
   cleanupFns.push(
-    ()=>clearTimeout(timer)
+
+    () =>
+      clearTimeout(
+        timer
+      )
+
   );
 
 }
 
+
 function finishGame(){
 
-  if(!gameActive){
+  if(
+    !gameActive
+  ){
+
     return;
+
   }
 
-  gameActive=false;
 
-  const result=
+  gameActive =
+    false;
+
+
+  const result =
     finishCurrentGame
-      ? finishCurrentGame()
-      : {
+      ?
+        finishCurrentGame()
+
+      :
+        {
           score:0,
           adapt:50
         };
 
-  const score=
+
+  const score =
     clamp(
+
       Math.round(
-        result.score||0
+        result.score || 0
       ),
+
       0,
+
       100
+
     );
 
-  const adapt=
+
+  const adapt =
     clamp(
+
       Math.round(
-        result.adapt??50
+        result.adapt ?? 50
       ),
+
       0,
+
       100
+
     );
+
 
   skillScores[
     currentGame.skill
-  ].push(score);
+  ].push(
+    score
+  );
 
-  skillScores.ADAPT.push(adapt);
+
+  skillScores.ADAPT.push(
+    adapt
+  );
+
 
   played++;
 
+
   updateGamiq();
 
-  /* GA4 custom event */
-  if(typeof gtag==="function"){
+
+  if(
+    typeof gtag
+    ===
+    "function"
+  ){
 
     gtag(
+
       "event",
+
       "game_complete",
+
       {
-        game_title:currentGame.title,
-        game_skill:currentGame.skill,
-        game_theme:currentGame.themeKey,
-        game_score:score,
-        games_played:played,
-        gamiq_score:gamiq
+
+        game_title:
+          currentGame.title,
+
+        game_skill:
+          currentGame.skill,
+
+        game_theme:
+          currentGame.themeKey,
+
+        game_score:
+          score,
+
+        games_played:
+          played,
+
+        gamiq_score:
+          gamiq
+
       }
+
     );
 
   }
 
-  const finish=
-    currentCard.querySelector(".finish");
+
+  const finish =
+    currentCard
+      .querySelector(
+        ".finish"
+      );
+
 
   finish
     .querySelector(
       ".finish-score-value"
     )
-    .textContent=
+    .textContent =
       `+${score}`;
 
-  finish.classList.add("show");
 
-  swipeUnlockAt=
-    performance.now()+500;
+  finish.classList.add(
+    "show"
+  );
+
+
+  swipeUnlockAt =
+    performance.now()
+    +
+    500;
+
 
   setTimeout(
-    ()=>{
-      canSwipe=true;
+
+    () => {
+
+      canSwipe =
+        true;
+
     },
+
     500
+
   );
 
 }
 
 
-/* GAMIQ */
+/* ==========================================
+GAMIQ
+========================================== */
+
 
 function updateGamiq(){
 
-  const keys=[
+  const keys = [
+
     "REFLEX",
+
     "SPEED",
+
     "AIM",
+
     "LOGIC",
+
     "MEMORY"
+
   ];
 
-  const values=
+
+  const values =
     keys
       .map(
-        key=>
+
+        key =>
           avg(
             skillScores[key]
           )
+
       )
       .filter(
-        value=>
-          value!==null
+
+        value =>
+          value !== null
+
       );
 
-  const base=
-    values.length
-      ? avg(values)
-      : 50;
 
-  const adapt=
+  const base =
+    values.length
+      ?
+        avg(
+          values
+        )
+
+      :
+        50;
+
+
+  const adapt =
     avg(
       skillScores.ADAPT
     );
 
-  const combined=
-    adapt===null
-      ? base
-      : base*.85
-        + adapt*.15;
 
-  gamiq=
+  const combined =
+    adapt === null
+      ?
+        base
+
+      :
+        base*.85
+        +
+        adapt*.15;
+
+
+  gamiq =
     Math.round(
-      300+
+      300
+      +
       combined*7
     );
 
-  const confidence=
+
+  const confidence =
     Math.min(
+
       99,
+
       Math.round(
-        100*
+
+        100
+        *
         (
-          1-
+          1
+          -
           Math.exp(
             -played/18
           )
         )
+
       )
+
     );
 
-  $("playedTop").textContent=
-    played;
 
-  $("playedSide").textContent=
-    played;
+  $("playedTop")
+    .textContent =
+      played;
 
-  $("gamiqTop").textContent=
-    gamiq;
 
-  $("gamiqSide").textContent=
-    gamiq;
+  $("playedSide")
+    .textContent =
+      played;
 
-  $("confidenceTop").textContent=
-    confidence+"%";
 
-  $("confidenceSide").textContent=
-    confidence+"%";
+  $("gamiqTop")
+    .textContent =
+      gamiq;
 
-  $("confidenceFill").style.width=
-    confidence+"%";
 
-  const map={
-    REFLEX:"skillReflex",
-    SPEED:"skillSpeed",
-    AIM:"skillAim",
-    LOGIC:"skillLogic",
-    MEMORY:"skillMemory",
-    ADAPT:"skillAdapt"
+  $("gamiqSide")
+    .textContent =
+      gamiq;
+
+
+  $("confidenceTop")
+    .textContent =
+      confidence+"%";
+
+
+  $("confidenceSide")
+    .textContent =
+      confidence+"%";
+
+
+  $("confidenceFill")
+    .style
+    .width =
+      confidence+"%";
+
+
+  const map = {
+
+    REFLEX:
+      "skillReflex",
+
+    SPEED:
+      "skillSpeed",
+
+    AIM:
+      "skillAim",
+
+    LOGIC:
+      "skillLogic",
+
+    MEMORY:
+      "skillMemory",
+
+    ADAPT:
+      "skillAdapt"
+
   };
 
-  Object.entries(map)
-    .forEach(
-      ([key,id])=>{
 
-        const value=
-          avg(
-            skillScores[key]
-          );
+  Object.entries(
+    map
+  )
+  .forEach(
 
-        $(id).textContent=
-          value===null
-            ? "--"
-            : Math.round(value);
+    ([key,id]) => {
 
-      }
-    );
+
+      const value =
+        avg(
+          skillScores[key]
+        );
+
+
+      $(id)
+        .textContent =
+          value === null
+            ?
+              "--"
+
+            :
+              Math.round(
+                value
+              );
+
+
+    }
+
+  );
 
 }
 
 
-/* ENGINE SELECT */
+/* ==========================================
+ENGINE SELECT
+========================================== */
 
-function runEngine(game,play){
 
-  if(game.type==="reaction"){
-    return reactionEngine(game,play);
+function runEngine(
+  game,
+  play
+){
+
+  if(
+    game.type ===
+    "reaction"
+  ){
+
+    return reactionEngine(
+      game,
+      play
+    );
+
   }
 
-  if(game.type==="gonogo"){
-    return goNoGoEngine(game,play);
+
+  if(
+    game.type ===
+    "gonogo"
+  ){
+
+    return goNoGoEngine(
+      game,
+      play
+    );
+
   }
 
-  if(game.type==="tap"){
-    return tapEngine(game,play);
+
+  if(
+    game.type ===
+    "tap"
+  ){
+
+    return tapEngine(
+      game,
+      play
+    );
+
   }
 
-  if(game.type==="alternate"){
-    return alternateEngine(game,play);
+
+  if(
+    game.type ===
+    "alternate"
+  ){
+
+    return alternateEngine(
+      game,
+      play
+    );
+
   }
 
-  if(game.type==="aim"){
-    return aimEngine(game,play,false);
+
+  if(
+    game.type ===
+    "aim"
+  ){
+
+    return aimEngine(
+      game,
+      play,
+      false
+    );
+
   }
 
-  if(game.type==="aimmove"){
-    return aimEngine(game,play,true);
+
+  if(
+    game.type ===
+    "aimmove"
+  ){
+
+    return aimEngine(
+      game,
+      play,
+      true
+    );
+
   }
 
-  if(game.type==="highlow"){
-    return highLowEngine(game,play);
+
+  if(
+    game.type ===
+    "highlow"
+  ){
+
+    return highLowEngine(
+      game,
+      play
+    );
+
   }
 
-  if(game.type==="condition"){
-    return conditionEngine(game,play);
+
+  if(
+    game.type ===
+    "condition"
+  ){
+
+    return conditionEngine(
+      game,
+      play
+    );
+
   }
 
-  if(game.type==="sequence"){
-    return sequenceEngine(game,play);
+
+  if(
+    game.type ===
+    "sequence"
+  ){
+
+    return sequenceEngine(
+      game,
+      play
+    );
+
   }
 
-  if(game.type==="position"){
-    return positionEngine(game,play);
+
+  if(
+    game.type ===
+    "position"
+  ){
+
+    return positionEngine(
+      game,
+      play
+    );
+
   }
 
-  return ()=>({
+
+  return () => ({
+
     score:0,
+
     adapt:50
+
   });
 
 }
 
 
-/* REACTION */
+/* ==========================================
+REACTION ENGINE
+========================================== */
 
-function reactionEngine(game,play){
 
-  let good=0;
-  let falseStart=0;
-  let total=0;
-  let ready=false;
-  let shown=0;
-  let timer=null;
-  let combo=0;
+function reactionEngine(
+  game,
+  play
+){
 
-  const rounds=[];
+  let good =
+    0;
 
-  play.innerHTML=`
+
+  let falseStart =
+    0;
+
+
+  let total =
+    0;
+
+
+  let ready =
+    false;
+
+
+  let shown =
+    0;
+
+
+  let timer =
+    null;
+
+
+  let combo =
+    0;
+
+
+  const rounds =
+    [];
+
+
+  play.innerHTML = `
 
     <div class="center">
 
@@ -2051,14 +4070,14 @@ function reactionEngine(game,play){
 
       <button
         class="round-button"
-        id="rbtn"
+        id="reactionButton"
       >
         WAIT
       </button>
 
       <span
         class="message"
-        id="rmsg"
+        id="reactionMessage"
       >
         ${game.rule}
       </span>
@@ -2067,166 +4086,300 @@ function reactionEngine(game,play){
 
   `;
 
-  const board=
-    play.closest(".board");
 
-  const btn=
-    play.querySelector("#rbtn");
+  const board =
+    play.closest(
+      ".board"
+    );
 
-  const msg=
-    play.querySelector("#rmsg");
+
+  const button =
+    play.querySelector(
+      "#reactionButton"
+    );
+
+
+  const message =
+    play.querySelector(
+      "#reactionMessage"
+    );
+
 
   function next(){
 
-    ready=false;
+    ready =
+      false;
 
-    btn.textContent="WAIT";
 
-    btn.style.filter=
+    button.textContent =
+      "WAIT";
+
+
+    button.style.filter =
       "brightness(.35)";
 
-    clearTimeout(timer);
 
-    timer=
+    clearTimeout(
+      timer
+    );
+
+
+    timer =
       setTimeout(
-        ()=>{
 
-          if(!gameActive){
+        () => {
+
+
+          if(
+            !gameActive
+          ){
+
             return;
+
           }
 
-          ready=true;
 
-          shown=
+          ready =
+            true;
+
+
+          shown =
             performance.now();
 
-          btn.textContent="GO";
 
-          btn.style.filter=
+          button.textContent =
+            "GO";
+
+
+          button.style.filter =
             "brightness(1.2)";
 
+
         },
-        400+
+
+        400
+        +
         Math.random()*850
+
       );
 
   }
 
+
   function press(){
 
-    if(!gameActive){
+    if(
+      !gameActive
+    ){
+
       return;
+
     }
 
-    if(!ready){
+
+    if(
+      !ready
+    ){
 
       falseStart++;
-      combo=0;
 
-      rounds.push(0);
 
-      fail(board);
+      combo =
+        0;
+
+
+      rounds.push(
+        0
+      );
+
+
+      fail(
+        board
+      );
+
 
       next();
 
+
       return;
 
     }
 
-    const reaction=
-      performance.now()-shown;
+
+    const reaction =
+      performance.now()
+      -
+      shown;
+
 
     good++;
 
-    total+=reaction;
 
-    const score=
+    total +=
+      reaction;
+
+
+    const score =
       clamp(
-        100-
-        (reaction-180)/5,
-        0,
+
         100
+        -
+        (reaction-180)/5,
+
+        0,
+
+        100
+
       );
 
-    rounds.push(score);
 
-    combo=
-      score>55
-        ? combo+1
-        : 0;
+    rounds.push(
+      score
+    );
 
-    if(combo){
-      success(board,combo);
+
+    combo =
+      score > 55
+        ?
+          combo+1
+
+        :
+          0;
+
+
+    if(
+      combo
+    ){
+
+      success(
+        board,
+        combo
+      );
+
     }
 
-    msg.textContent=
-      Math.round(reaction)+" ms";
+
+    message.textContent =
+      Math.round(
+        reaction
+      )
+      +
+      " ms";
+
 
     next();
 
   }
 
-  btn.addEventListener(
+
+  button.addEventListener(
     "pointerdown",
     press
   );
 
+
   cleanupFns.push(
-    ()=>{
 
-      clearTimeout(timer);
+    () => {
 
-      btn.removeEventListener(
+      clearTimeout(
+        timer
+      );
+
+
+      button.removeEventListener(
         "pointerdown",
         press
       );
 
     }
+
   );
+
 
   next();
 
-  return ()=>({
+
+  return () => ({
+
 
     score:
       clamp(
-        100-
+
+        100
+        -
         (
           (
             good
-              ? total/good
-              : 1000
+              ?
+                total/good
+
+              :
+                1000
           )
-          -180
+          -
+          180
         )/5
         -
         falseStart*8,
+
         0,
+
         100
+
       ),
 
+
     adapt:
-      adaptScore(rounds)
+      adaptScore(
+        rounds
+      )
+
 
   });
 
 }
 
 
-/* GO / NO GO */
+/* ==========================================
+GO NO GO ENGINE
+========================================== */
 
-function goNoGoEngine(game,play){
 
-  let correct=0;
-  let wrong=0;
-  let miss=0;
-  let state=null;
-  let timer=null;
-  let combo=0;
+function goNoGoEngine(
+  game,
+  play
+){
 
-  const rounds=[];
+  let correct =
+    0;
 
-  play.innerHTML=`
+
+  let wrong =
+    0;
+
+
+  let miss =
+    0;
+
+
+  let state =
+    null;
+
+
+  let timer =
+    null;
+
+
+  let combo =
+    0;
+
+
+  const rounds =
+    [];
+
+
+  play.innerHTML = `
 
     <div class="center">
 
@@ -2236,7 +4389,7 @@ function goNoGoEngine(game,play){
 
       <button
         class="color-box"
-        id="box"
+        id="goNoGoBox"
       ></button>
 
       <span class="message">
@@ -2247,111 +4400,201 @@ function goNoGoEngine(game,play){
 
   `;
 
-  const board=
-    play.closest(".board");
 
-  const box=
-    play.querySelector("#box");
+  const board =
+    play.closest(
+      ".board"
+    );
+
+
+  const box =
+    play.querySelector(
+      "#goNoGoBox"
+    );
+
 
   function next(){
 
-    if(!gameActive){
+    if(
+      !gameActive
+    ){
+
       return;
+
     }
 
-    state=null;
 
-    box.className=
+    state =
+      null;
+
+
+    box.className =
       "color-box";
 
-    timer=
-      setTimeout(
-        ()=>{
 
-          if(!gameActive){
+    timer =
+      setTimeout(
+
+        () => {
+
+
+          if(
+            !gameActive
+          ){
+
             return;
+
           }
 
-          state=
-            Math.random()<.58
-              ? "go"
-              : "stop";
 
-          box.classList.add(state);
+          state =
+            Math.random() < .58
+              ?
+                "go"
 
-          timer=
+              :
+                "stop";
+
+
+          box.classList.add(
+            state
+          );
+
+
+          timer =
             setTimeout(
-              ()=>{
 
-                if(state==="go"){
+              () => {
+
+
+                if(
+                  state === "go"
+                ){
 
                   miss++;
-                  combo=0;
 
-                  rounds.push(0);
 
-                }else{
+                  combo =
+                    0;
 
-                  rounds.push(100);
+
+                  rounds.push(
+                    0
+                  );
+
+                }
+                else{
+
+                  rounds.push(
+                    100
+                  );
 
                 }
 
+
                 next();
 
+
               },
-              state==="go"
-                ? 620
-                : 480
+
+              state === "go"
+                ?
+                  620
+
+                :
+                  480
+
             );
 
+
         },
-        200+
+
+        200
+        +
         Math.random()*320
+
       );
 
   }
 
+
   function press(){
 
-    if(!gameActive){
+    if(
+      !gameActive
+    ){
+
       return;
+
     }
 
-    clearTimeout(timer);
 
-    if(state==="go"){
+    clearTimeout(
+      timer
+    );
+
+
+    if(
+      state === "go"
+    ){
 
       correct++;
+
+
       combo++;
 
-      rounds.push(100);
 
-      success(board,combo);
+      rounds.push(
+        100
+      );
 
-    }else{
 
-      wrong++;
-      combo=0;
-
-      rounds.push(0);
-
-      fail(board);
+      success(
+        board,
+        combo
+      );
 
     }
+    else{
+
+      wrong++;
+
+
+      combo =
+        0;
+
+
+      rounds.push(
+        0
+      );
+
+
+      fail(
+        board
+      );
+
+    }
+
 
     next();
 
   }
+
 
   box.addEventListener(
     "pointerdown",
     press
   );
 
-  cleanupFns.push(
-    ()=>{
 
-      clearTimeout(timer);
+  cleanupFns.push(
+
+    () => {
+
+      clearTimeout(
+        timer
+      );
+
 
       box.removeEventListener(
         "pointerdown",
@@ -2359,32 +4602,51 @@ function goNoGoEngine(game,play){
       );
 
     }
+
   );
+
 
   next();
 
-  return ()=>{
 
-    const total=
-      correct+
-      wrong+
+  return () => {
+
+
+    const total =
+      correct
+      +
+      wrong
+      +
       miss;
 
-    return{
+
+    return {
+
 
       score:
         total
-          ? clamp(
+          ?
+            clamp(
+
               correct/total*100
               -
               wrong*5,
+
               0,
+
               100
+
             )
-          : 0,
+
+          :
+            0,
+
 
       adapt:
-        adaptScore(rounds)
+        adaptScore(
+          rounds
+        )
+
 
     };
 
@@ -2393,40 +4655,63 @@ function goNoGoEngine(game,play){
 }
 
 
-/* TAP */
+/* ==========================================
+TAP ENGINE
+========================================== */
 
-function tapEngine(game,play){
 
-  let count=0;
-  let chunk=0;
+function tapEngine(
+  game,
+  play
+){
 
-  const chunks=[];
+  let count =
+    0;
 
-  const timer=
+
+  let chunk =
+    0;
+
+
+  const chunks =
+    [];
+
+
+  const timer =
     setInterval(
-      ()=>{
+
+      () => {
+
 
         chunks.push(
+
           clamp(
             chunk*14,
             0,
             100
           )
+
         );
 
-        chunk=0;
+
+        chunk =
+          0;
+
 
       },
+
       1000
+
     );
 
-  play.innerHTML=`
+
+  play.innerHTML = `
 
     <div class="center">
 
       <div
         class="world-object"
-        id="world"
+        id="tapWorld"
       >
         ${game.icon}
       </div>
@@ -2435,21 +4720,21 @@ function tapEngine(game,play){
 
         <div
           class="energy-fill"
-          id="fill"
+          id="energyFill"
         ></div>
 
       </div>
 
       <span
         class="counter"
-        id="cnt"
+        id="tapCounter"
       >
         0
       </span>
 
       <button
         class="round-button"
-        id="tap"
+        id="tapButton"
       >
         TAP
       </button>
@@ -2462,95 +4747,148 @@ function tapEngine(game,play){
 
   `;
 
-  const board=
-    play.closest(".board");
 
-  const btn=
-    play.querySelector("#tap");
+  const board =
+    play.closest(
+      ".board"
+    );
 
-  const cnt=
-    play.querySelector("#cnt");
 
-  const fill=
-    play.querySelector("#fill");
+  const button =
+    play.querySelector(
+      "#tapButton"
+    );
 
-  const world=
-    play.querySelector("#world");
+
+  const counter =
+    play.querySelector(
+      "#tapCounter"
+    );
+
+
+  const fill =
+    play.querySelector(
+      "#energyFill"
+    );
+
+
+  const world =
+    play.querySelector(
+      "#tapWorld"
+    );
+
 
   function press(){
 
-    if(!gameActive){
+    if(
+      !gameActive
+    ){
+
       return;
+
     }
 
+
     count++;
+
+
     chunk++;
 
-    cnt.textContent=
+
+    counter.textContent =
       count;
 
-    fill.style.width=
+
+    fill.style.width =
       Math.min(
         100,
         count/70*100
-      )+"%";
+      )
+      +
+      "%";
 
-    world.style.transform=
+
+    world.style.transform =
       `scale(${
-        1+
+        1
+        +
         Math.min(
           .35,
           count/200
         )
       })`;
 
+
     if(
       [18,35,55]
-        .includes(count)
+        .includes(
+          count
+        )
     ){
 
       success(
+
         board,
+
         Math.floor(
           count/18
-        )+2
+        )
+        +
+        2
+
       );
 
     }
 
   }
 
-  btn.addEventListener(
+
+  button.addEventListener(
     "pointerdown",
     press
   );
 
+
   cleanupFns.push(
-    ()=>{
 
-      clearInterval(timer);
+    () => {
 
-      btn.removeEventListener(
+      clearInterval(
+        timer
+      );
+
+
+      button.removeEventListener(
         "pointerdown",
         press
       );
 
     }
+
   );
 
-  return ()=>{
 
-    clearInterval(timer);
+  return () => {
+
+
+    clearInterval(
+      timer
+    );
+
 
     chunks.push(
+
       clamp(
         chunk*14,
         0,
         100
       )
+
     );
 
-    return{
+
+    return {
+
 
       score:
         clamp(
@@ -2559,8 +4897,12 @@ function tapEngine(game,play){
           100
         ),
 
+
       adapt:
-        adaptScore(chunks)
+        adaptScore(
+          chunks
+        )
+
 
     };
 
@@ -2569,18 +4911,37 @@ function tapEngine(game,play){
 }
 
 
-/* ALTERNATE */
+/* ==========================================
+ALTERNATE ENGINE
+========================================== */
 
-function alternateEngine(game,play){
 
-  let correct=0;
-  let wrong=0;
-  let expected="L";
-  let combo=0;
+function alternateEngine(
+  game,
+  play
+){
 
-  const rounds=[];
+  let correct =
+    0;
 
-  play.innerHTML=`
+
+  let wrong =
+    0;
+
+
+  let expected =
+    "L";
+
+
+  let combo =
+    0;
+
+
+  const rounds =
+    [];
+
+
+  play.innerHTML = `
 
     <div class="center">
 
@@ -2614,53 +4975,97 @@ function alternateEngine(game,play){
 
   `;
 
-  const board=
-    play.closest(".board");
 
-  const buttons=[
-    ...play.querySelectorAll(
-      ".alt-btn"
-    )
-  ];
+  const board =
+    play.closest(
+      ".board"
+    );
+
+
+  const buttons =
+    [
+      ...play.querySelectorAll(
+        ".alt-btn"
+      )
+    ];
+
 
   function render(){
 
     buttons.forEach(
-      btn=>{
 
-        btn.classList.toggle(
-          "active",
-          btn.dataset.side===expected
-        );
+      button => {
+
+
+        button
+          .classList
+          .toggle(
+
+            "active",
+
+            button.dataset.side
+            ===
+            expected
+
+          );
+
 
       }
+
     );
 
   }
 
-  function press(event){
 
-    if(!gameActive){
+  function press(
+    event
+  ){
+
+    if(
+      !gameActive
+    ){
+
       return;
+
     }
 
-    const side=
-      event.currentTarget
-        .dataset.side;
 
-    if(side===expected){
+    const side =
+      event
+        .currentTarget
+        .dataset
+        .side;
+
+
+    if(
+      side === expected
+    ){
 
       correct++;
+
+
       combo++;
 
-      rounds.push(100);
 
-      expected=
-        expected==="L"
-          ? "R"
-          : "L";
+      rounds.push(
+        100
+      );
 
-      if(combo%5===0){
+
+      expected =
+        expected === "L"
+          ?
+            "R"
+
+          :
+            "L";
+
+
+      if(
+        combo % 5
+        ===
+        0
+      ){
 
         success(
           board,
@@ -2669,101 +5074,180 @@ function alternateEngine(game,play){
 
       }
 
-    }else{
+    }
+    else{
 
       wrong++;
-      combo=0;
 
-      rounds.push(0);
 
-      fail(board);
+      combo =
+        0;
+
+
+      rounds.push(
+        0
+      );
+
+
+      fail(
+        board
+      );
 
     }
+
 
     render();
 
   }
 
+
   buttons.forEach(
-    btn=>
-      btn.addEventListener(
+
+    button =>
+      button.addEventListener(
         "pointerdown",
         press
       )
+
   );
 
+
   cleanupFns.push(
-    ()=>{
+
+    () => {
 
       buttons.forEach(
-        btn=>
-          btn.removeEventListener(
+
+        button =>
+          button.removeEventListener(
             "pointerdown",
             press
           )
+
       );
 
     }
+
   );
 
-  return ()=>({
+
+  return () => ({
+
 
     score:
       clamp(
+
         correct*2
         -
         wrong*3,
+
         0,
+
         100
+
       ),
 
+
     adapt:
-      adaptScore(rounds)
+      adaptScore(
+        rounds
+      )
+
 
   });
 
 }
 
 
-/* AIM */
+/* ==========================================
+AIM ENGINE
+========================================== */
 
-function aimEngine(game,play,moving){
 
-  let tx=0;
-  let ty=0;
+function aimEngine(
+  game,
+  play,
+  moving
+){
 
-  let cx=0;
-  let cy=0;
+  let targetX =
+    0;
 
-  let targetSize=
+
+  let targetY =
+    0;
+
+
+  let crossX =
+    0;
+
+
+  let crossY =
+    0;
+
+
+  const targetSize =
     moving
-      ? 56
-      : 64;
+      ?
+        56
 
-  let shots=0;
-  let hits=0;
+      :
+        64;
 
-  let totalReaction=0;
-  let shown=0;
 
-  let vx=2;
-  let vy=1.4;
+  let shots =
+    0;
 
-  let moveRAF=null;
-  let joystickRAF=null;
 
-  let joyX=0;
-  let joyY=0;
+  let hits =
+    0;
 
-  let combo=0;
 
-  const rounds=[];
+  let totalReaction =
+    0;
 
-  play.innerHTML=`
+
+  let shown =
+    0;
+
+
+  let velocityX =
+    2;
+
+
+  let velocityY =
+    1.4;
+
+
+  let moveRAF =
+    null;
+
+
+  let joystickRAF =
+    null;
+
+
+  let joyX =
+    0;
+
+
+  let joyY =
+    0;
+
+
+  let combo =
+    0;
+
+
+  const rounds =
+    [];
+
+
+  play.innerHTML = `
 
     <div
       class="aim"
-      id="aim"
+      id="aimArea"
     >
 
       <div
@@ -2780,33 +5264,36 @@ function aimEngine(game,play,moving){
 
       <div
         class="target"
-        id="target"
+        id="aimTarget"
       ></div>
 
       <div
         class="crosshair"
-        id="cross"
+        id="crosshair"
       >
+
         <div class="crosshair-center"></div>
+
       </div>
+
 
       <div class="mobile-controls">
 
         <div
           class="joystick"
-          id="joy"
+          id="joystick"
         >
 
           <div
             class="joystick-knob"
-            id="knob"
+            id="joystickKnob"
           ></div>
 
         </div>
 
         <button
           class="fire"
-          id="fire"
+          id="fireButton"
         >
           FIRE
         </button>
@@ -2817,555 +5304,861 @@ function aimEngine(game,play,moving){
 
   `;
 
-  const board=
-    play.closest(".board");
 
-  const area=
-    play.querySelector("#aim");
+  const board =
+    play.closest(
+      ".board"
+    );
 
-  const target=
-    play.querySelector("#target");
 
-  const cross=
-    play.querySelector("#cross");
+  const area =
+    play.querySelector(
+      "#aimArea"
+    );
 
-  const joy=
-    play.querySelector("#joy");
 
-  const knob=
-    play.querySelector("#knob");
+  const target =
+    play.querySelector(
+      "#aimTarget"
+    );
 
-  const fireBtn=
-    play.querySelector("#fire");
 
-  const dimensions=
-    ()=>{
+  const crosshair =
+    play.querySelector(
+      "#crosshair"
+    );
 
-      const rect=
+
+  const joystick =
+    play.querySelector(
+      "#joystick"
+    );
+
+
+  const knob =
+    play.querySelector(
+      "#joystickKnob"
+    );
+
+
+  const fireButton =
+    play.querySelector(
+      "#fireButton"
+    );
+
+
+  const dimensions =
+    () => {
+
+      const rect =
         area.getBoundingClientRect();
 
-      return{
-        w:rect.width,
-        h:rect.height
+
+      return {
+
+        width:
+          rect.width,
+
+        height:
+          rect.height
+
       };
 
     };
 
-  function renderCross(){
 
-    cross.style.left=
-      cx+"px";
+  function renderCrosshair(){
 
-    cross.style.top=
-      cy+"px";
+    crosshair.style.left =
+      crossX+"px";
+
+
+    crosshair.style.top =
+      crossY+"px";
 
   }
 
+
   function spawn(){
 
-    if(!gameActive){
+    if(
+      !gameActive
+    ){
+
       return;
+
     }
 
-    const size=
+
+    const size =
       dimensions();
 
-    tx=
-      45+
-      Math.random()*
+
+    targetX =
+      45
+      +
+      Math.random()
+      *
       Math.max(
         20,
-        size.w-90
+        size.width-90
       );
 
-    ty=
-      50+
-      Math.random()*
+
+    targetY =
+      50
+      +
+      Math.random()
+      *
       Math.max(
         20,
-        size.h-130
+        size.height-130
       );
 
-    target.style.left=
-      tx+"px";
 
-    target.style.top=
-      ty+"px";
+    target.style.left =
+      targetX+"px";
 
-    shown=
+
+    target.style.top =
+      targetY+"px";
+
+
+    shown =
       performance.now();
 
-    vx=
+
+    velocityX =
       (
         Math.random()<.5
-          ? -1
-          : 1
+          ?
+            -1
+
+          :
+            1
       )
       *
       (
-        1.5+
+        1.5
+        +
         Math.random()*1.3
       );
 
-    vy=
+
+    velocityY =
       (
         Math.random()<.5
-          ? -1
-          : 1
+          ?
+            -1
+
+          :
+            1
       )
       *
       (
-        1+
+        1
+        +
         Math.random()
       );
 
   }
 
-  function laser(x,y,hit){
 
-    const size=
+  function drawLaser(
+    x,
+    y,
+    hit
+  ){
+
+    const size =
       dimensions();
 
-    const startX=
-      size.w/2;
 
-    const startY=
-      size.h-8;
+    const startX =
+      size.width/2;
 
-    const dx=
+
+    const startY =
+      size.height-8;
+
+
+    const deltaX =
       x-startX;
 
-    const dy=
+
+    const deltaY =
       y-startY;
 
-    const length=
+
+    const length =
       Math.hypot(
-        dx,
-        dy
+        deltaX,
+        deltaY
       );
 
-    const angle=
-      Math.atan2(
-        dy,
-        dx
-      )*180/Math.PI;
 
-    const beam=
+    const angle =
+      Math.atan2(
+        deltaY,
+        deltaX
+      )
+      *
+      180
+      /
+      Math.PI;
+
+
+    const beam =
       document.createElement(
         "div"
       );
 
-    beam.className=
+
+    beam.className =
       "laser";
 
-    beam.style.left=
+
+    beam.style.left =
       startX+"px";
 
-    beam.style.top=
+
+    beam.style.top =
       startY+"px";
 
-    beam.style.width=
+
+    beam.style.width =
       length+"px";
 
-    beam.style.transform=
+
+    beam.style.transform =
       `rotate(${angle}deg)`;
 
-    area.appendChild(beam);
 
-    const impact=
+    area.appendChild(
+      beam
+    );
+
+
+    const impact =
       document.createElement(
         "div"
       );
 
-    impact.className=
-      hit
-        ? "impact"
-        : "impact miss";
 
-    impact.style.left=
+    impact.className =
+      hit
+        ?
+          "impact"
+
+        :
+          "impact miss";
+
+
+    impact.style.left =
       x+"px";
 
-    impact.style.top=
+
+    impact.style.top =
       y+"px";
 
-    area.appendChild(impact);
+
+    area.appendChild(
+      impact
+    );
+
 
     setTimeout(
-      ()=>{
+
+      () => {
 
         beam.remove();
+
         impact.remove();
 
       },
+
       280
+
     );
 
   }
 
+
   function fire(){
 
-    if(!gameActive){
+    if(
+      !gameActive
+    ){
+
       return;
+
     }
+
 
     shots++;
 
-    const hit=
-      Math.hypot(
-        cx-tx,
-        cy-ty
-      )
-      <=targetSize/2;
 
-    laser(
-      cx,
-      cy,
+    const hit =
+      Math.hypot(
+        crossX-targetX,
+        crossY-targetY
+      )
+      <=
+      targetSize/2;
+
+
+    drawLaser(
+      crossX,
+      crossY,
       hit
     );
 
-    if(hit){
+
+    if(
+      hit
+    ){
 
       hits++;
+
+
       combo++;
 
-      const reaction=
-        performance.now()-shown;
 
-      totalReaction+=
+      const reaction =
+        performance.now()
+        -
+        shown;
+
+
+      totalReaction +=
         reaction;
 
+
       rounds.push(
+
         clamp(
-          100-
-          (reaction-350)/22,
-          0,
+
           100
+          -
+          (reaction-350)/22,
+
+          0,
+
+          100
+
         )
+
       );
+
 
       success(
         board,
         combo
       );
 
+
       spawn();
 
-    }else{
+    }
+    else{
 
-      combo=0;
+      combo =
+        0;
 
-      rounds.push(0);
 
-      fail(board);
+      rounds.push(
+        0
+      );
+
+
+      fail(
+        board
+      );
 
     }
 
   }
 
-  function mouseMove(event){
 
-    if(innerWidth<=900){
+  function mouseMove(
+    event
+  ){
+
+    if(
+      innerWidth <= 900
+    ){
+
       return;
+
     }
 
-    const rect=
+
+    const rect =
       area.getBoundingClientRect();
 
-    cx=
-      event.clientX-rect.left;
 
-    cy=
-      event.clientY-rect.top;
+    crossX =
+      event.clientX
+      -
+      rect.left;
 
-    renderCross();
+
+    crossY =
+      event.clientY
+      -
+      rect.top;
+
+
+    renderCrosshair();
 
   }
 
-  function desktopFire(event){
 
-    if(innerWidth<=900){
+  function desktopFire(
+    event
+  ){
+
+    if(
+      innerWidth <= 900
+    ){
+
       return;
+
     }
 
+
     event.preventDefault();
+
 
     fire();
 
   }
 
-  function joystickMove(event){
 
-    if(innerWidth>900){
+  function joystickMove(
+    event
+  ){
+
+    if(
+      innerWidth > 900
+    ){
+
       return;
+
     }
+
 
     event.preventDefault();
 
-    const touch=
+
+    const touch =
       event.touches
-        ? event.touches[0]
-        : event;
+        ?
+          event.touches[0]
 
-    const rect=
-      joy.getBoundingClientRect();
+        :
+          event;
 
-    const originX=
-      rect.left+
+
+    const rect =
+      joystick
+        .getBoundingClientRect();
+
+
+    const originX =
+      rect.left
+      +
       rect.width/2;
 
-    const originY=
-      rect.top+
+
+    const originY =
+      rect.top
+      +
       rect.height/2;
 
-    let dx=
-      touch.clientX-originX;
 
-    let dy=
-      touch.clientY-originY;
+    let deltaX =
+      touch.clientX
+      -
+      originX;
 
-    const max=
+
+    let deltaY =
+      touch.clientY
+      -
+      originY;
+
+
+    const max =
       32;
 
-    const distance=
+
+    const distance =
       Math.hypot(
-        dx,
-        dy
+        deltaX,
+        deltaY
       );
 
-    if(distance>max){
 
-      dx=
-        dx/distance*max;
+    if(
+      distance > max
+    ){
 
-      dy=
-        dy/distance*max;
+      deltaX =
+        deltaX
+        /
+        distance
+        *
+        max;
+
+
+      deltaY =
+        deltaY
+        /
+        distance
+        *
+        max;
 
     }
 
-    joyX=
-      dx/max;
 
-    joyY=
-      dy/max;
+    joyX =
+      deltaX/max;
 
-    knob.style.transform=
-      `translate(${dx}px,${dy}px)`;
+
+    joyY =
+      deltaY/max;
+
+
+    knob.style.transform =
+      `translate(${deltaX}px,${deltaY}px)`;
 
   }
 
+
   function joystickEnd(){
 
-    joyX=0;
-    joyY=0;
+    joyX =
+      0;
 
-    knob.style.transform=
+
+    joyY =
+      0;
+
+
+    knob.style.transform =
       "translate(0,0)";
 
   }
 
+
   function joystickLoop(){
 
-    if(gameActive){
+    if(
+      gameActive
+    ){
 
-      const size=
+      const size =
         dimensions();
 
-      cx=
+
+      crossX =
         clamp(
-          cx+joyX*5.5,
+
+          crossX
+          +
+          joyX*5.5,
+
           0,
-          size.w
+
+          size.width
+
         );
 
-      cy=
+
+      crossY =
         clamp(
-          cy+joyY*5.5,
+
+          crossY
+          +
+          joyY*5.5,
+
           0,
-          size.h
+
+          size.height
+
         );
 
-      renderCross();
+
+      renderCrosshair();
 
     }
 
-    joystickRAF=
+
+    joystickRAF =
       requestAnimationFrame(
         joystickLoop
       );
 
   }
 
+
   function moveTarget(){
 
     if(
-      gameActive &&
+      gameActive
+      &&
       moving
     ){
 
-      const size=
+      const size =
         dimensions();
 
-      const radius=
+
+      const radius =
         targetSize/2;
 
-      tx+=vx;
-      ty+=vy;
+
+      targetX +=
+        velocityX;
+
+
+      targetY +=
+        velocityY;
+
 
       if(
-        tx<radius ||
-        tx>size.w-radius
+        targetX < radius
+        ||
+        targetX > size.width-radius
       ){
-        vx*=-1;
+
+        velocityX *=
+          -1;
+
       }
+
 
       if(
-        ty<radius ||
-        ty>size.h-radius-90
+        targetY < radius
+        ||
+        targetY > size.height-radius-90
       ){
-        vy*=-1;
+
+        velocityY *=
+          -1;
+
       }
 
-      tx=
+
+      targetX =
         clamp(
-          tx,
+
+          targetX,
+
           radius,
-          size.w-radius
+
+          size.width-radius
+
         );
 
-      ty=
+
+      targetY =
         clamp(
-          ty,
+
+          targetY,
+
           radius,
-          size.h-radius-90
+
+          size.height-radius-90
+
         );
 
-      target.style.left=
-        tx+"px";
 
-      target.style.top=
-        ty+"px";
+      target.style.left =
+        targetX+"px";
+
+
+      target.style.top =
+        targetY+"px";
 
     }
 
-    moveRAF=
+
+    moveRAF =
       requestAnimationFrame(
         moveTarget
       );
 
   }
 
-  const size=
+
+  const size =
     dimensions();
 
-  cx=
-    size.w/2;
 
-  cy=
-    size.h/2;
+  crossX =
+    size.width/2;
 
-  renderCross();
+
+  crossY =
+    size.height/2;
+
+
+  renderCrosshair();
+
 
   spawn();
+
 
   area.addEventListener(
     "mousemove",
     mouseMove
   );
 
+
   area.addEventListener(
     "pointerdown",
     desktopFire
   );
 
-  joy.addEventListener(
+
+  joystick.addEventListener(
+
     "touchstart",
+
     joystickMove,
+
     {
       passive:false
     }
+
   );
 
-  joy.addEventListener(
+
+  joystick.addEventListener(
+
     "touchmove",
+
     joystickMove,
+
     {
       passive:false
     }
+
   );
 
-  joy.addEventListener(
+
+  joystick.addEventListener(
     "touchend",
     joystickEnd
   );
 
-  fireBtn.addEventListener(
+
+  fireButton.addEventListener(
+
     "pointerdown",
-    event=>{
+
+    event => {
 
       event.stopPropagation();
 
       fire();
 
     }
+
   );
+
 
   joystickLoop();
 
+
   moveTarget();
 
+
   cleanupFns.push(
-    ()=>{
+
+    () => {
+
 
       area.removeEventListener(
         "mousemove",
         mouseMove
       );
 
+
       area.removeEventListener(
         "pointerdown",
         desktopFire
       );
 
+
       cancelAnimationFrame(
         moveRAF
       );
+
 
       cancelAnimationFrame(
         joystickRAF
       );
 
+
     }
+
   );
 
-  return ()=>{
 
-    const accuracy=
+  return () => {
+
+
+    const accuracy =
       shots
-        ? hits/shots
-        : 0;
+        ?
+          hits/shots
 
-    const reaction=
+        :
+          0;
+
+
+    const reaction =
       hits
-        ? totalReaction/hits
-        : 2000;
+        ?
+          totalReaction/hits
 
-    return{
+        :
+          2000;
+
+
+    return {
+
 
       score:
         clamp(
+
           accuracy*70
           +
           Math.max(
+
             0,
-            30-
+
+            30
+            -
             (reaction-400)/45
+
           ),
+
           0,
+
           100
+
         ),
 
+
       adapt:
-        adaptScore(rounds)
+        adaptScore(
+          rounds
+        )
+
 
     };
 
@@ -3374,45 +6167,81 @@ function aimEngine(game,play,moving){
 }
 
 
-/* HIGH LOW */
+/* ==========================================
+HIGH LOW ENGINE
+========================================== */
 
-function highLowEngine(game,play){
 
-  let correct=0;
-  let attempts=0;
-  let combo=0;
+function highLowEngine(
+  game,
+  play
+){
 
-  const rounds=[];
+  let correct =
+    0;
+
+
+  let attempts =
+    0;
+
+
+  let combo =
+    0;
+
+
+  const rounds =
+    [];
+
 
   function next(){
 
-    if(!gameActive){
+    if(
+      !gameActive
+    ){
+
       return;
+
     }
 
-    let a=
+
+    let a =
       Math.floor(
         Math.random()*90
-      )+10;
+      )
+      +
+      10;
 
-    let b=
+
+    let b =
       Math.floor(
         Math.random()*90
-      )+10;
+      )
+      +
+      10;
 
-    while(a===b){
 
-      b=
+    while(
+      a === b
+    ){
+
+      b =
         Math.floor(
           Math.random()*90
-        )+10;
+        )
+        +
+        10;
 
     }
 
-    const answer=
-      Math.max(a,b);
 
-    play.innerHTML=`
+    const answer =
+      Math.max(
+        a,
+        b
+      );
+
+
+    play.innerHTML = `
 
       <div class="center">
 
@@ -3446,181 +6275,326 @@ function highLowEngine(game,play){
 
     `;
 
-    const board=
-      play.closest(".board");
+
+    const board =
+      play.closest(
+        ".board"
+      );
+
 
     play
-      .querySelectorAll(".choice")
+      .querySelectorAll(
+        ".choice"
+      )
       .forEach(
-        btn=>{
 
-          btn.addEventListener(
+        button => {
+
+
+          button.addEventListener(
+
             "pointerdown",
-            ()=>{
 
-              if(!gameActive){
+            () => {
+
+
+              if(
+                !gameActive
+              ){
+
                 return;
+
               }
+
 
               attempts++;
 
-              const good=
-                Number(
-                  btn.dataset.value
-                )
-                ===answer;
 
-              if(good){
+              const good =
+                Number(
+                  button.dataset.value
+                )
+                ===
+                answer;
+
+
+              if(
+                good
+              ){
 
                 correct++;
+
+
                 combo++;
 
-                rounds.push(100);
+
+                rounds.push(
+                  100
+                );
+
 
                 success(
                   board,
                   combo
                 );
 
-              }else{
+              }
+              else{
 
-                combo=0;
+                combo =
+                  0;
 
-                rounds.push(0);
 
-                fail(board);
+                rounds.push(
+                  0
+                );
+
+
+                fail(
+                  board
+                );
 
               }
+
 
               setTimeout(
                 next,
                 120
               );
 
+
             },
+
             {
               once:true
             }
+
           );
 
+
         }
+
       );
 
   }
 
+
   next();
 
-  return ()=>({
+
+  return () => ({
+
 
     score:
       attempts
-        ? clamp(
+        ?
+          clamp(
+
             correct/attempts*70
             +
             attempts*2.2,
+
             0,
+
             100
+
           )
-        : 0,
+
+        :
+          0,
+
 
     adapt:
-      adaptScore(rounds)
+      adaptScore(
+        rounds
+      )
+
 
   });
 
 }
 
 
-/* CONDITION */
+/* ==========================================
+CONDITION ENGINE
+========================================== */
 
-function conditionEngine(game,play){
 
-  let correct=0;
-  let attempts=0;
-  let combo=0;
+function conditionEngine(
+  game,
+  play
+){
 
-  const rounds=[];
+  let correct =
+    0;
 
-  const rules=[
+
+  let attempts =
+    0;
+
+
+  let combo =
+    0;
+
+
+  const rounds =
+    [];
+
+
+  const rules = [
 
     [
+
       "大きい方",
-      (a,b)=>Math.max(a,b)
+
+      (a,b) =>
+        Math.max(
+          a,
+          b
+        )
+
     ],
 
     [
+
       "小さい方",
-      (a,b)=>Math.min(a,b)
+
+      (a,b) =>
+        Math.min(
+          a,
+          b
+        )
+
     ],
 
     [
+
       "偶数",
-      (a,b)=>
-        a%2===0
-          ? a
-          : b
+
+      (a,b) =>
+        a%2 === 0
+          ?
+            a
+
+          :
+            b
+
     ]
 
   ];
 
+
   function next(){
 
-    if(!gameActive){
+    if(
+      !gameActive
+    ){
+
       return;
+
     }
 
-    const[
+
+    const [
+
       label,
+
       ruleFunction
-    ]=
+
+    ] =
       rules[
         Math.floor(
-          Math.random()*
+          Math.random()
+          *
           rules.length
         )
       ];
 
+
     let a;
+
+
     let b;
 
-    if(label==="偶数"){
 
-      a=
+    if(
+      label === "偶数"
+    ){
+
+      a =
         Math.floor(
           Math.random()*40
-        )*2+2;
+        )
+        *
+        2
+        +
+        2;
 
-      b=
+
+      b =
         Math.floor(
           Math.random()*40
-        )*2+1;
+        )
+        *
+        2
+        +
+        1;
 
-      if(Math.random()<.5){
-        [a,b]=[b,a];
+
+      if(
+        Math.random() < .5
+      ){
+
+        [
+          a,
+          b
+        ]
+        =
+        [
+          b,
+          a
+        ];
+
       }
 
-    }else{
+    }
+    else{
 
-      a=
+      a =
         Math.floor(
           Math.random()*90
-        )+10;
+        )
+        +
+        10;
 
-      b=
+
+      b =
         Math.floor(
           Math.random()*90
-        )+10;
+        )
+        +
+        10;
 
-      while(a===b){
+
+      while(
+        a === b
+      ){
+
         b++;
+
       }
 
     }
 
-    const answer=
-      ruleFunction(a,b);
 
-    play.innerHTML=`
+    const answer =
+      ruleFunction(
+        a,
+        b
+      );
+
+
+    play.innerHTML = `
 
       <div class="center">
 
@@ -3654,106 +6628,180 @@ function conditionEngine(game,play){
 
     `;
 
-    const board=
-      play.closest(".board");
+
+    const board =
+      play.closest(
+        ".board"
+      );
+
 
     play
-      .querySelectorAll(".choice")
+      .querySelectorAll(
+        ".choice"
+      )
       .forEach(
-        btn=>{
 
-          btn.addEventListener(
+        button => {
+
+
+          button.addEventListener(
+
             "pointerdown",
-            ()=>{
+
+            () => {
+
 
               attempts++;
 
-              const good=
-                Number(
-                  btn.dataset.value
-                )
-                ===answer;
 
-              if(good){
+              const good =
+                Number(
+                  button.dataset.value
+                )
+                ===
+                answer;
+
+
+              if(
+                good
+              ){
 
                 correct++;
+
+
                 combo++;
 
-                rounds.push(100);
+
+                rounds.push(
+                  100
+                );
+
 
                 success(
                   board,
                   combo
                 );
 
-              }else{
+              }
+              else{
 
-                combo=0;
+                combo =
+                  0;
 
-                rounds.push(0);
 
-                fail(board);
+                rounds.push(
+                  0
+                );
+
+
+                fail(
+                  board
+                );
 
               }
+
 
               setTimeout(
                 next,
                 120
               );
 
+
             },
+
             {
               once:true
             }
+
           );
 
+
         }
+
       );
 
   }
 
+
   next();
 
-  return ()=>({
+
+  return () => ({
+
 
     score:
       attempts
-        ? clamp(
+        ?
+          clamp(
+
             correct/attempts*70
             +
             attempts*2,
+
             0,
+
             100
+
           )
-        : 0,
+
+        :
+          0,
+
 
     adapt:
-      adaptScore(rounds)
+      adaptScore(
+        rounds
+      )
+
 
   });
 
 }
 
 
-/* SEQUENCE */
+/* ==========================================
+SEQUENCE ENGINE
+========================================== */
 
-function sequenceEngine(game,play){
 
-  let rounds=0;
-  let successes=0;
+function sequenceEngine(
+  game,
+  play
+){
 
-  let sequence=[];
-  let index=0;
+  let rounds =
+    0;
 
-  let accepting=false;
 
-  let timers=[];
+  let successes =
+    0;
 
-  let combo=0;
 
-  const scores=[];
+  let sequence =
+    [];
 
-  play.innerHTML=`
+
+  let index =
+    0;
+
+
+  let accepting =
+    false;
+
+
+  let timers =
+    [];
+
+
+  let combo =
+    0;
+
+
+  const scores =
+    [];
+
+
+  play.innerHTML = `
 
     <div class="center">
 
@@ -3767,13 +6815,20 @@ function sequenceEngine(game,play){
       <div class="memory-grid">
 
         ${Array.from(
-          {length:9},
-          (_,i)=>`
+
+          {
+            length:9
+          },
+
+          (_,i) => `
+
             <button
               class="memory-cell"
               data-index="${i}"
             ></button>
+
           `
+
         ).join("")}
 
       </div>
@@ -3789,19 +6844,26 @@ function sequenceEngine(game,play){
 
   `;
 
-  const board=
-    play.closest(".board");
 
-  const cells=[
-    ...play.querySelectorAll(
-      ".memory-cell"
-    )
-  ];
+  const board =
+    play.closest(
+      ".board"
+    );
 
-  const message=
+
+  const cells =
+    [
+      ...play.querySelectorAll(
+        ".memory-cell"
+      )
+    ];
+
+
+  const message =
     play.querySelector(
       "#memoryMessage"
     );
+
 
   function clearTimers(){
 
@@ -3809,251 +6871,409 @@ function sequenceEngine(game,play){
       clearTimeout
     );
 
-    timers=[];
+
+    timers =
+      [];
 
   }
+
 
   function round(){
 
     clearTimers();
 
-    accepting=false;
-    index=0;
 
-    const length=
+    accepting =
+      false;
+
+
+    index =
+      0;
+
+
+    const length =
       Math.min(
+
         5,
-        3+
+
+        3
+        +
         Math.floor(
           rounds/2
         )
+
       );
 
-    sequence=
+
+    sequence =
       Array.from(
-        {length},
-        ()=>
+
+        {
+          length
+        },
+
+        () =>
           Math.floor(
             Math.random()*9
           )
+
       );
 
-    message.textContent=
+
+    message.textContent =
       "覚えろ";
 
-    let delay=160;
+
+    let delay =
+      160;
+
 
     sequence.forEach(
-      cellIndex=>{
+
+      cellIndex => {
+
 
         timers.push(
+
           setTimeout(
-            ()=>
+
+            () =>
               cells[
                 cellIndex
               ]
               .classList
-              .add("demo"),
+              .add(
+                "demo"
+              ),
+
             delay
+
           )
+
         );
 
+
         timers.push(
+
           setTimeout(
-            ()=>
+
+            () =>
               cells[
                 cellIndex
               ]
               .classList
-              .remove("demo"),
+              .remove(
+                "demo"
+              ),
+
             delay+180
+
           )
+
         );
 
-        delay+=270;
+
+        delay +=
+          270;
+
 
       }
+
     );
 
+
     timers.push(
+
       setTimeout(
-        ()=>{
 
-          accepting=true;
+        () => {
 
-          message.textContent=
+
+          accepting =
+            true;
+
+
+          message.textContent =
             "再現";
 
+
         },
+
         delay+40
+
       )
+
     );
 
   }
 
-  const handlers=
-    cells.map(
-      cell=>{
 
-        const handler=
-          ()=>{
+  const handlers =
+    cells.map(
+
+      cell => {
+
+
+        const handler =
+          () => {
+
 
             if(
-              !gameActive ||
+              !gameActive
+              ||
               !accepting
             ){
+
               return;
+
             }
 
-            const good=
+
+            const good =
               Number(
                 cell.dataset.index
               )
               ===
               sequence[index];
 
+
             cell.classList.add(
+
               good
-                ? "correct"
-                : "wrong"
+                ?
+                  "correct"
+
+                :
+                  "wrong"
+
             );
+
 
             setTimeout(
-              ()=>
-                cell.classList.remove(
-                  "correct",
-                  "wrong"
-                ),
+
+              () =>
+                cell
+                  .classList
+                  .remove(
+                    "correct",
+                    "wrong"
+                  ),
+
               130
+
             );
 
-            if(good){
+
+            if(
+              good
+            ){
 
               index++;
 
+
               if(
-                index===
+                index
+                ===
                 sequence.length
               ){
 
                 successes++;
+
+
                 rounds++;
+
+
                 combo++;
 
-                scores.push(100);
 
-                accepting=false;
+                scores.push(
+                  100
+                );
+
+
+                accepting =
+                  false;
+
 
                 success(
                   board,
                   combo
                 );
 
+
                 timers.push(
+
                   setTimeout(
                     round,
                     280
                   )
+
                 );
 
               }
 
-            }else{
+            }
+            else{
 
               rounds++;
-              combo=0;
 
-              scores.push(0);
 
-              accepting=false;
+              combo =
+                0;
 
-              fail(board);
+
+              scores.push(
+                0
+              );
+
+
+              accepting =
+                false;
+
+
+              fail(
+                board
+              );
+
 
               timers.push(
+
                 setTimeout(
                   round,
                   330
                 )
+
               );
 
             }
 
+
           };
+
 
         cell.addEventListener(
           "pointerdown",
           handler
         );
 
-        return[
+
+        return [
+
           cell,
+
           handler
+
         ];
 
+
       }
+
     );
 
+
   cleanupFns.push(
-    ()=>{
+
+    () => {
+
 
       clearTimers();
 
+
       handlers.forEach(
-        ([cell,handler])=>
+
+        ([cell,handler]) =>
           cell.removeEventListener(
             "pointerdown",
             handler
           )
+
       );
 
+
     }
+
   );
+
 
   round();
 
-  return ()=>({
+
+  return () => ({
+
 
     score:
       rounds
-        ? clamp(
+        ?
+          clamp(
+
             successes/rounds*85
             +
             successes*5,
+
             0,
+
             100
+
           )
-        : 0,
+
+        :
+          0,
+
 
     adapt:
-      adaptScore(scores)
+      adaptScore(
+        scores
+      )
+
 
   });
 
 }
 
 
-/* POSITION */
+/* ==========================================
+POSITION ENGINE
+========================================== */
 
-function positionEngine(game,play){
 
-  let rounds=0;
-  let successes=0;
+function positionEngine(
+  game,
+  play
+){
 
-  let targets=
+  let rounds =
+    0;
+
+
+  let successes =
+    0;
+
+
+  let targets =
     new Set();
 
-  let selected=
+
+  let selected =
     new Set();
 
-  let accepting=false;
 
-  let timer=null;
+  let accepting =
+    false;
 
-  let combo=0;
 
-  const scores=[];
+  let timer =
+    null;
 
-  play.innerHTML=`
+
+  let combo =
+    0;
+
+
+  const scores =
+    [];
+
+
+  play.innerHTML = `
 
     <div class="center">
 
@@ -4067,13 +7287,20 @@ function positionEngine(game,play){
       <div class="position-grid">
 
         ${Array.from(
-          {length:16},
-          (_,i)=>`
+
+          {
+            length:16
+          },
+
+          (_,i) => `
+
             <button
               class="position-cell"
               data-index="${i}"
             ></button>
+
           `
+
         ).join("")}
 
       </div>
@@ -4089,174 +7316,271 @@ function positionEngine(game,play){
 
   `;
 
-  const board=
-    play.closest(".board");
 
-  const cells=[
-    ...play.querySelectorAll(
-      ".position-cell"
-    )
-  ];
+  const board =
+    play.closest(
+      ".board"
+    );
 
-  const message=
+
+  const cells =
+    [
+      ...play.querySelectorAll(
+        ".position-cell"
+      )
+    ];
+
+
+  const message =
     play.querySelector(
       "#positionMessage"
     );
 
+
   function round(){
 
-    selected=
+    selected =
       new Set();
 
-    targets=
+
+    targets =
       new Set();
 
-    accepting=false;
+
+    accepting =
+      false;
+
 
     cells.forEach(
-      cell=>{
 
-        cell.className=
+      cell => {
+
+        cell.className =
           "position-cell";
 
       }
+
     );
 
+
     while(
-      targets.size<4
+      targets.size < 4
     ){
 
       targets.add(
+
         Math.floor(
           Math.random()*16
         )
+
       );
 
     }
 
-    targets.forEach(
-      index=>{
 
-        cells[index]
-          .classList
-          .add("preview");
+    targets.forEach(
+
+      index => {
+
+        cells[
+          index
+        ]
+        .classList
+        .add(
+          "preview"
+        );
 
       }
+
     );
 
-    message.textContent=
+
+    message.textContent =
       "覚えろ";
 
-    timer=
+
+    timer =
       setTimeout(
-        ()=>{
+
+        () => {
+
 
           cells.forEach(
-            cell=>
-              cell.classList.remove(
-                "preview"
-              )
+
+            cell =>
+              cell
+                .classList
+                .remove(
+                  "preview"
+                )
+
           );
 
-          accepting=true;
 
-          message.textContent=
+          accepting =
+            true;
+
+
+          message.textContent =
             "再現";
 
+
         },
+
         620
+
       );
 
   }
 
-  const handlers=
-    cells.map(
-      cell=>{
 
-        const handler=
-          ()=>{
+  const handlers =
+    cells.map(
+
+      cell => {
+
+
+        const handler =
+          () => {
+
 
             if(
-              !gameActive ||
+              !gameActive
+              ||
               !accepting
             ){
+
               return;
+
             }
 
-            const index=
+
+            const index =
               Number(
                 cell.dataset.index
               );
 
+
             if(
-              selected.has(index)
+              selected.has(
+                index
+              )
             ){
+
               return;
+
             }
 
-            selected.add(index);
 
-            const good=
-              targets.has(index);
-
-            cell.classList.add(
-              good
-                ? "correct"
-                : "wrong"
+            selected.add(
+              index
             );
 
-            if(!good){
-              fail(board);
-            }
+
+            const good =
+              targets.has(
+                index
+              );
+
+
+            cell.classList.add(
+
+              good
+                ?
+                  "correct"
+
+                :
+                  "wrong"
+
+            );
+
 
             if(
-              selected.size===4
+              !good
+            ){
+
+              fail(
+                board
+              );
+
+            }
+
+
+            if(
+              selected.size
+              ===
+              4
             ){
 
               rounds++;
 
-              let count=0;
+
+              let count =
+                0;
+
 
               selected.forEach(
-                value=>{
+
+                value => {
 
                   if(
-                    targets.has(value)
+                    targets.has(
+                      value
+                    )
                   ){
+
                     count++;
+
                   }
 
                 }
+
               );
+
 
               scores.push(
                 count/4*100
               );
 
-              if(count===4){
+
+              if(
+                count === 4
+              ){
 
                 successes++;
+
+
                 combo++;
+
 
                 success(
                   board,
                   combo
                 );
 
-              }else{
+              }
+              else{
 
-                combo=0;
+                combo =
+                  0;
 
               }
 
-              accepting=false;
 
-              message.textContent=
-                count===4
-                  ? "CLEAR"
-                  : `${count}/4`;
+              accepting =
+                false;
 
-              timer=
+
+              message.textContent =
+                count === 4
+                  ?
+                    "CLEAR"
+
+                  :
+                    `${count}/4`;
+
+
+              timer =
                 setTimeout(
                   round,
                   330
@@ -4264,198 +7588,337 @@ function positionEngine(game,play){
 
             }
 
+
           };
+
 
         cell.addEventListener(
           "pointerdown",
           handler
         );
 
-        return[
+
+        return [
+
           cell,
+
           handler
+
         ];
 
+
       }
+
     );
 
-  cleanupFns.push(
-    ()=>{
 
-      clearTimeout(timer);
+  cleanupFns.push(
+
+    () => {
+
+
+      clearTimeout(
+        timer
+      );
+
 
       handlers.forEach(
-        ([cell,handler])=>
+
+        ([cell,handler]) =>
           cell.removeEventListener(
             "pointerdown",
             handler
           )
+
       );
 
+
     }
+
   );
+
 
   round();
 
-  return ()=>({
+
+  return () => ({
+
 
     score:
       rounds
-        ? clamp(
+        ?
+          clamp(
+
             successes/rounds*90
             +
             successes*4,
+
             0,
+
             100
+
           )
-        : 0,
+
+        :
+          0,
+
 
     adapt:
-      adaptScore(scores)
+      adaptScore(
+        scores
+      )
+
 
   });
 
 }
 
 
-/* SWIPE */
+/* ==========================================
+SWIPE
+========================================== */
 
-let startY=null;
-let lastY=null;
-let dragging=false;
+
+let startY =
+  null;
+
+
+let lastY =
+  null;
+
+
+let dragging =
+  false;
+
 
 feed.addEventListener(
+
   "touchstart",
-  event=>{
+
+  event => {
+
 
     if(
-      !canSwipe ||
-      performance.now()<
+      !canSwipe
+      ||
+      performance.now()
+      <
       swipeUnlockAt
     ){
+
       return;
+
     }
 
-    startY=
-      event.touches[0].clientY;
 
-    lastY=
+    startY =
+      event
+        .touches[0]
+        .clientY;
+
+
+    lastY =
       startY;
 
-    dragging=true;
 
-    currentCard.classList.remove(
-      "animating"
-    );
+    dragging =
+      true;
 
-    nextCard.classList.remove(
-      "animating"
-    );
+
+    currentCard
+      .classList
+      .remove(
+        "animating"
+      );
+
+
+    nextCard
+      .classList
+      .remove(
+        "animating"
+      );
+
 
   },
+
   {
     passive:false
   }
+
 );
 
-feed.addEventListener(
-  "touchmove",
-  event=>{
 
-    if(!dragging){
+feed.addEventListener(
+
+  "touchmove",
+
+  event => {
+
+
+    if(
+      !dragging
+    ){
+
       return;
+
     }
+
 
     event.preventDefault();
 
-    lastY=
-      event.touches[0].clientY;
 
-    let delta=
+    lastY =
+      event
+        .touches[0]
+        .clientY;
+
+
+    const delta =
       Math.min(
+
         0,
+
         lastY-startY
+
       );
 
-    currentCard.style.transform=
-      `translateY(${delta}px)`;
 
-    nextCard.style.transform=
-      `translateY(calc(100% + ${delta}px))`;
+    currentCard
+      .style
+      .transform =
+        `translateY(${delta}px)`;
+
+
+    nextCard
+      .style
+      .transform =
+        `translateY(calc(100% + ${delta}px))`;
+
 
   },
+
   {
     passive:false
   }
+
 );
 
+
 feed.addEventListener(
+
   "touchend",
-  ()=>{
 
-    if(!dragging){
-      return;
-    }
+  () => {
 
-    dragging=false;
 
     if(
-      lastY-startY<-75
+      !dragging
+    ){
+
+      return;
+
+    }
+
+
+    dragging =
+      false;
+
+
+    if(
+      lastY-startY
+      <
+      -75
     ){
 
       commitSwipe();
 
-    }else{
+    }
+    else{
 
       cancelSwipe();
 
     }
 
+
   },
+
   {
     passive:false
   }
+
 );
+
 
 function cancelSwipe(){
 
-  currentCard.classList.add(
-    "animating"
-  );
+  currentCard
+    .classList
+    .add(
+      "animating"
+    );
 
-  nextCard.classList.add(
-    "animating"
-  );
 
-  currentCard.style.transform=
-    "translateY(0)";
+  nextCard
+    .classList
+    .add(
+      "animating"
+    );
 
-  nextCard.style.transform=
-    "translateY(100%)";
+
+  currentCard
+    .style
+    .transform =
+      "translateY(0)";
+
+
+  nextCard
+    .style
+    .transform =
+      "translateY(100%)";
 
 }
 
+
 function commitSwipe(){
 
-  if(!canSwipe){
+  if(
+    !canSwipe
+  ){
+
     return;
+
   }
 
-  canSwipe=false;
 
-  currentCard.classList.add(
-    "animating"
-  );
+  canSwipe =
+    false;
 
-  nextCard.classList.add(
-    "animating"
-  );
 
-  currentCard.style.transform=
-    "translateY(-100%)";
+  currentCard
+    .classList
+    .add(
+      "animating"
+    );
 
-  nextCard.style.transform=
-    "translateY(0)";
+
+  nextCard
+    .classList
+    .add(
+      "animating"
+    );
+
+
+  currentCard
+    .style
+    .transform =
+      "translateY(-100%)";
+
+
+  nextCard
+    .style
+    .transform =
+      "translateY(0)";
+
 
   setTimeout(
     completeSwipe,
@@ -4464,126 +7927,198 @@ function commitSwipe(){
 
 }
 
+
 function completeSwipe(){
 
   cleanupGame();
 
-  const oldCard=
+
+  const oldCard =
     currentCard;
 
-  currentCard=
+
+  currentCard =
     nextCard;
 
-  nextCard=
+
+  nextCard =
     oldCard;
 
-  currentCard.className=
+
+  currentCard.className =
     "card current";
 
-  currentCard.style.transform=
-    "translateY(0)";
 
-  nextCard.className=
+  currentCard
+    .style
+    .transform =
+      "translateY(0)";
+
+
+  nextCard.className =
     "card next";
 
-  nextCard.style.transform=
-    "translateY(100%)";
 
-  currentGame=
+  nextCard
+    .style
+    .transform =
+      "translateY(100%)";
+
+
+  currentGame =
     nextGame;
 
-  nextGame=
+
+  nextGame =
     getNextGame();
 
+
   renderCard(
+
     nextCard,
+
     nextGame,
+
     true
+
   );
+
 
   beginCurrentGame();
 
 }
 
 
-/* DESKTOP NEXT */
+/* ==========================================
+DESKTOP NEXT
+========================================== */
 
-let wheelLock=false;
+
+let wheelLock =
+  false;
+
 
 window.addEventListener(
+
   "wheel",
-  event=>{
+
+  event => {
+
 
     if(
-      !canSwipe ||
-      wheelLock ||
-      event.deltaY<45
+      !canSwipe
+      ||
+      wheelLock
+      ||
+      event.deltaY < 45
     ){
+
       return;
+
     }
 
-    wheelLock=true;
+
+    wheelLock =
+      true;
+
 
     commitSwipe();
 
+
     setTimeout(
-      ()=>{
-        wheelLock=false;
+
+      () => {
+
+        wheelLock =
+          false;
+
       },
+
       700
+
     );
 
+
   },
+
   {
     passive:true
   }
+
 );
 
+
 window.addEventListener(
+
   "keydown",
-  event=>{
+
+  event => {
+
 
     if(
-      canSwipe &&
-      event.key==="ArrowDown"
+      canSwipe
+      &&
+      event.key ===
+      "ArrowDown"
     ){
 
       commitSwipe();
 
     }
 
+
   }
+
 );
 
 
-/* START EVENT */
+/* ==========================================
+START EVENT
+========================================== */
+
 
 $("startBtn")
   .addEventListener(
-    "click",
-    ()=>{
 
-      if(typeof gtag==="function"){
+    "click",
+
+    () => {
+
+
+      if(
+        typeof gtag
+        ===
+        "function"
+      ){
 
         gtag(
+
           "event",
+
           "game_start",
+
           {
-            source:"start_screen"
+            source:
+              "start_screen"
           }
+
         );
 
       }
 
+
       start();
 
+
     }
+
   );
 
 
 })();
 
 </script>
+
 
 </body>
 </html>
