@@ -1610,3 +1610,19 @@ ACTION MOBILE
   }
 
 }
+
+
+/* ==========================================
+THREE.JS CANVAS
+========================================== */
+
+.gamiq-three-canvas{
+  display:block;
+
+  width:100%;
+  height:100%;
+
+  touch-action:none;
+
+  outline:none;
+}
