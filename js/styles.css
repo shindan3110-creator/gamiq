@@ -2096,3 +2096,124 @@ RACE 3D
   }
 
 }
+
+/* ==========================================
+FACTORY 3D
+========================================== */
+
+.factory-3d-wrap{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:12px;
+}
+
+.factory-3d-hud{
+  display:flex;
+  gap:10px;
+}
+
+.factory-3d-hud > div{
+  flex:1;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:10px 14px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:13px;
+
+  background:
+    rgba(255,255,255,.025);
+}
+
+.factory-3d-hud span{
+  color:#818ca1;
+
+  font-size:9px;
+  font-weight:900;
+
+  letter-spacing:.12em;
+}
+
+.factory-3d-hud strong{
+  font-size:18px;
+  font-weight:1000;
+}
+
+.factory-3d-world{
+  position:relative;
+
+  flex:1;
+  min-height:350px;
+
+  overflow:hidden;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:22px;
+
+  background:#070707;
+
+  touch-action:none;
+}
+
+.factory-3d-action{
+  min-height:58px;
+
+  border:0;
+  border-radius:16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffd083,
+      #ff9f3f
+    );
+
+  color:#1b0c00;
+
+  font-size:16px;
+  font-weight:1000;
+
+  letter-spacing:.12em;
+
+  cursor:pointer;
+
+  touch-action:none;
+}
+
+.factory-3d-action:active{
+  transform:scale(.985);
+}
+
+.factory-3d-fallback{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:100%;
+  height:100%;
+
+  color:#ff718b;
+
+  font-weight:900;
+}
+
+@media(max-width:600px){
+
+  .factory-3d-world{
+    min-height:320px;
+  }
+
+}
