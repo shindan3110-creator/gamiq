@@ -4,6 +4,10 @@ import {
   runZombie3D
 } from "./zombie-3d.js";
 
+import {
+  runSpace3D
+} from "./space-3d.js";
+
 export function createThreeGames() {
   return [
     {
