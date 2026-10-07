@@ -266,3 +266,669 @@ GAMIQ RESULTS
   }
 
 }
+
+
+/* ==========================================
+PUZZLE GAMES
+========================================== */
+
+.puzzle-wrap{
+  width:min(760px,100%);
+  margin:0 auto;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:16px;
+
+  align-items:center;
+}
+
+.puzzle-top{
+  width:min(560px,100%);
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:12px 16px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:14px;
+
+  background:
+    rgba(255,255,255,.025);
+}
+
+.puzzle-top span{
+  color:#818ca1;
+
+  font-size:10px;
+  font-weight:900;
+
+  letter-spacing:.14em;
+}
+
+.puzzle-top strong{
+  font-size:20px;
+  font-weight:1000;
+
+  color:#f8fbff;
+}
+
+.puzzle-message{
+  color:#9ba7ba;
+
+  font-size:12px;
+  font-weight:800;
+}
+
+
+/* ==========================================
+BLOCK ESCAPE
+========================================== */
+
+.block-board{
+  --grid-size:6;
+
+  position:relative;
+
+  width:
+    min(
+      72vw,
+      470px
+    );
+
+  aspect-ratio:1;
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      var(--grid-size),
+      1fr
+    );
+
+  grid-template-rows:
+    repeat(
+      var(--grid-size),
+      1fr
+    );
+
+  gap:7px;
+
+  padding:14px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.10);
+
+  border-radius:24px;
+
+  overflow:visible;
+
+  background:
+    linear-gradient(
+      145deg,
+      #171d27,
+      #090d13
+    );
+
+  box-shadow:
+    inset 0 0 40px
+    rgba(0,0,0,.35);
+}
+
+.block-board::after{
+  content:"EXIT";
+
+  position:absolute;
+
+  right:-42px;
+  top:41%;
+
+  width:42px;
+  height:18%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:#61eaff;
+
+  font-size:9px;
+  font-weight:1000;
+
+  letter-spacing:.12em;
+
+  border:
+    1px solid
+    rgba(97,234,255,.35);
+
+  border-left:0;
+
+  border-radius:
+    0 10px 10px 0;
+
+  background:
+    rgba(97,234,255,.06);
+}
+
+.puzzle-block{
+  min-width:0;
+  min-height:0;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:12px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #374050,
+      #1c2430
+    );
+
+  box-shadow:
+    0 6px 14px
+    rgba(0,0,0,.22),
+    inset 0 1px 0
+    rgba(255,255,255,.08);
+
+  cursor:grab;
+
+  touch-action:none;
+
+  color:#fff;
+
+  font-size:10px;
+  font-weight:1000;
+
+  letter-spacing:.08em;
+
+  transition:
+    transform .12s ease,
+    filter .12s ease,
+    box-shadow .12s ease;
+}
+
+.puzzle-block:active{
+  cursor:grabbing;
+
+  transform:
+    scale(.96);
+
+  filter:
+    brightness(1.12);
+}
+
+.puzzle-block.target{
+  background:
+    linear-gradient(
+      180deg,
+      #ff7790,
+      #d83355
+    );
+
+  box-shadow:
+    0 0 24px
+    rgba(255,78,112,.26),
+    inset 0 1px 0
+    rgba(255,255,255,.18);
+
+  border-color:
+    rgba(255,255,255,.16);
+}
+
+
+/* ==========================================
+PIPE CONNECT
+========================================== */
+
+.pipe-grid{
+  width:
+    min(
+      70vw,
+      430px
+    );
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:10px;
+
+  padding:14px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:22px;
+
+  background:
+    #0c1119;
+}
+
+.pipe-tile{
+  aspect-ratio:1;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #1b2431,
+      #0d131c
+    );
+
+  color:#61eaff;
+
+  font-size:
+    clamp(
+      30px,
+      7vw,
+      56px
+    );
+
+  font-weight:1000;
+
+  cursor:pointer;
+
+  transition:
+    transform .18s ease,
+    filter .12s ease;
+}
+
+.pipe-tile:active{
+  filter:
+    brightness(1.25);
+}
+
+
+/* ==========================================
+LASER MIRROR
+========================================== */
+
+.laser-puzzle{
+  position:relative;
+
+  width:
+    min(
+      76vw,
+      520px
+    );
+
+  aspect-ratio:
+    16 / 9;
+
+  overflow:hidden;
+
+  border:
+    1px solid
+    rgba(255,255,255,.09);
+
+  border-radius:22px;
+
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(97,234,255,.05),
+      transparent 35%
+    ),
+    #080d14;
+}
+
+.laser-source{
+  position:absolute;
+
+  left:8%;
+  top:50%;
+
+  transform:
+    translateY(-50%);
+
+  font-size:42px;
+}
+
+.laser-target{
+  position:absolute;
+
+  right:8%;
+  top:18%;
+
+  font-size:44px;
+
+  color:#76ffb2;
+
+  text-shadow:
+    0 0 20px
+    rgba(118,255,178,.5);
+}
+
+.laser-mirror{
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  width:76px;
+  height:76px;
+
+  transform:
+    translate(-50%,-50%);
+
+  border:
+    1px solid
+    rgba(255,255,255,.12);
+
+  border-radius:16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #202b39,
+      #101721
+    );
+
+  color:#f8fbff;
+
+  font-size:48px;
+  font-weight:1000;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 12px 30px
+    rgba(0,0,0,.32);
+}
+
+.laser-beam{
+  position:absolute;
+
+  left:14%;
+  top:50%;
+
+  width:36%;
+  height:3px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #61eaff,
+      #fff
+    );
+
+  box-shadow:
+    0 0 12px
+    rgba(97,234,255,.8);
+
+  transform-origin:
+    left center;
+}
+
+.laser-beam.success::after{
+  content:"";
+
+  position:absolute;
+
+  left:100%;
+  top:0;
+
+  width:120%;
+  height:3px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fff,
+      #76ffb2
+    );
+
+  transform:
+    rotate(-33deg);
+
+  transform-origin:
+    left center;
+
+  box-shadow:
+    0 0 14px
+    rgba(118,255,178,.9);
+}
+
+
+/* ==========================================
+REFLEX GAME VISUALS
+========================================== */
+
+.reflex-stage{
+  width:min(720px,100%);
+
+  display:flex;
+  justify-content:center;
+}
+
+.reflex-scene{
+  width:
+    min(
+      80vw,
+      560px
+    );
+
+  aspect-ratio:
+    16 / 9;
+
+  display:flex;
+  flex-direction:column;
+
+  align-items:center;
+  justify-content:center;
+
+  gap:20px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:26px;
+
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(97,234,255,.06),
+      transparent 40%
+    ),
+    #080c13;
+
+  user-select:none;
+
+  cursor:crosshair;
+
+  transition:
+    background .14s ease,
+    transform .14s ease,
+    box-shadow .14s ease;
+}
+
+.reflex-enemy{
+  font-size:
+    clamp(
+      70px,
+      14vw,
+      130px
+    );
+
+  filter:
+    drop-shadow(
+      0 18px 22px
+      rgba(0,0,0,.35)
+    );
+
+  transition:
+    transform .14s ease,
+    filter .14s ease;
+}
+
+.reflex-status{
+  min-width:120px;
+
+  padding:9px 14px;
+
+  border-radius:999px;
+
+  background:
+    rgba(255,255,255,.05);
+
+  color:#9ba7ba;
+
+  font-size:12px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+}
+
+.reflex-scene.reflex-ready{
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(118,255,178,.16),
+      transparent 42%
+    ),
+    #07110d;
+
+  box-shadow:
+    inset 0 0 60px
+    rgba(118,255,178,.08);
+}
+
+.reflex-scene.reflex-ready
+.reflex-status{
+  color:#76ffb2;
+}
+
+.reflex-scene.reflex-hit{
+  transform:
+    scale(.985);
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(97,234,255,.22),
+      transparent 40%
+    ),
+    #071016;
+}
+
+.reflex-scene.reflex-hit
+.reflex-enemy{
+  transform:
+    scale(.82)
+    rotate(-7deg);
+
+  filter:
+    brightness(1.5);
+}
+
+.reflex-scene.reflex-fail{
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(255,78,112,.22),
+      transparent 42%
+    ),
+    #14070a;
+
+  animation:
+    gamiq-puzzle-shake
+    .18s linear;
+}
+
+@keyframes gamiq-puzzle-shake{
+
+  25%{
+    transform:
+      translateX(-5px);
+  }
+
+  50%{
+    transform:
+      translateX(5px);
+  }
+
+  75%{
+    transform:
+      translateX(-3px);
+  }
+
+}
+
+
+/* ==========================================
+PUZZLE MOBILE
+========================================== */
+
+@media(max-width:600px){
+
+  .puzzle-wrap{
+    gap:12px;
+  }
+
+  .block-board{
+    width:
+      min(
+        78vw,
+        360px
+      );
+
+    gap:5px;
+
+    padding:10px;
+
+    border-radius:18px;
+  }
+
+  .block-board::after{
+    right:-30px;
+
+    width:30px;
+
+    font-size:7px;
+  }
+
+  .puzzle-block{
+    border-radius:9px;
+  }
+
+  .pipe-grid{
+    width:
+      min(
+        78vw,
+        350px
+      );
+  }
+
+  .laser-puzzle{
+    width:
+      min(
+        82vw,
+        400px
+      );
+  }
+
+  .reflex-scene{
+    width:100%;
+
+    border-radius:20px;
+  }
+
+}
