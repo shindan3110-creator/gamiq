@@ -1,5 +1,9 @@
 // GAMIQ（ゲーミック） v2 - 3D / Action Games
 
+import {
+  runZombie3D
+} from "./zombie-3d.js";
+
 export function createThreeGames() {
   return [
     {
@@ -56,10 +60,10 @@ export function runThreeGame({
 
   switch (game.type) {
     case "zombie_assault":
-      return runZombieAssault({
-        container,
-        onComplete
-      });
+  return runZombie3D({
+    container,
+    onComplete
+  });
 
     case "space_blaster":
       return runSpaceBlaster({
