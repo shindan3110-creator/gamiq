@@ -3140,3 +3140,261 @@ MOBILE
   }
 
 }
+
+
+/* ==========================================
+MEMORY GAMES
+========================================== */
+
+.memory-wrap{
+  width:min(620px,100%);
+  margin:0 auto;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:14px;
+}
+
+.memory-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:11px 14px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:13px;
+
+  background:
+    rgba(255,255,255,.025);
+}
+
+.memory-top span{
+  color:#818ca1;
+
+  font-size:9px;
+  font-weight:900;
+
+  letter-spacing:.14em;
+}
+
+.memory-top strong{
+  font-size:19px;
+  font-weight:1000;
+}
+
+.memory-grid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap:10px;
+
+  width:100%;
+
+  aspect-ratio:1/1;
+
+  max-height:470px;
+
+  padding:12px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:22px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #0c1119,
+      #06080d
+    );
+}
+
+.memory-cell{
+  position:relative;
+
+  min-width:0;
+  min-height:0;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #161d29,
+      #0b1018
+    );
+
+  color:#ffffff;
+
+  font-size:
+    clamp(
+      20px,
+      5vw,
+      34px
+    );
+
+  font-weight:1000;
+
+  cursor:pointer;
+
+  touch-action:none;
+
+  transition:
+    transform .12s ease,
+    background .12s ease,
+    border-color .12s ease,
+    box-shadow .12s ease;
+}
+
+.memory-cell:active{
+  transform:scale(.96);
+}
+
+.memory-cell.memory-flash{
+  background:
+    linear-gradient(
+      180deg,
+      #d9fbff,
+      #61eaff
+    );
+
+  border-color:#8df3ff;
+
+  box-shadow:
+    0 0 28px
+    rgba(97,234,255,.5);
+
+  transform:scale(1.05);
+}
+
+.memory-cell.memory-target{
+  background:
+    linear-gradient(
+      180deg,
+      #c8b9ff,
+      #8f72ff
+    );
+
+  border-color:#b7a6ff;
+
+  box-shadow:
+    0 0 26px
+    rgba(143,114,255,.42);
+}
+
+.memory-cell.memory-number-visible{
+  background:
+    linear-gradient(
+      180deg,
+      #fff3c2,
+      #ffc95c
+    );
+
+  border-color:#ffd879;
+
+  color:#161006;
+
+  box-shadow:
+    0 0 24px
+    rgba(255,201,92,.30);
+}
+
+.memory-cell.memory-correct{
+  background:
+    linear-gradient(
+      180deg,
+      #a8ffc4,
+      #4ee582
+    );
+
+  border-color:#78f0a0;
+
+  color:#05210f;
+
+  box-shadow:
+    0 0 25px
+    rgba(78,229,130,.32);
+}
+
+.memory-cell.memory-wrong{
+  background:
+    linear-gradient(
+      180deg,
+      #ff9aae,
+      #ff496c
+    );
+
+  border-color:#ff6c88;
+
+  box-shadow:
+    0 0 25px
+    rgba(255,73,108,.35);
+
+  animation:
+    memory-wrong-shake
+    .22s ease;
+}
+
+.memory-message{
+  min-height:30px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:#8691a3;
+
+  font-size:11px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+}
+
+@keyframes memory-wrong-shake{
+
+  0%,
+  100%{
+    transform:translateX(0);
+  }
+
+  25%{
+    transform:translateX(-5px);
+  }
+
+  75%{
+    transform:translateX(5px);
+  }
+
+}
+
+@media(max-width:600px){
+
+  .memory-wrap{
+    gap:10px;
+  }
+
+  .memory-grid{
+    gap:7px;
+
+    padding:8px;
+
+    border-radius:18px;
+  }
+
+  .memory-cell{
+    border-radius:12px;
+  }
+
+}
