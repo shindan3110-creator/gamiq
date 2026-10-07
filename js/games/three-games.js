@@ -8,6 +8,10 @@ import {
   runSpace3D
 } from "./space-3d.js";
 
+import {
+  runRace3D
+} from "./race-3d.js";
+
 export function createThreeGames() {
   return [
     {
@@ -76,10 +80,10 @@ export function runThreeGame({
   });
 
     case "lane_dodge":
-      return runLaneDodge({
-        container,
-        onComplete
-      });
+  return runRace3D({
+    container,
+    onComplete
+  });
 
     case "factory_rush":
       return runFactoryRush({
@@ -93,250 +97,6 @@ export function runThreeGame({
 }
 
 
-
-
-/* ==========================================
-LANE DODGE
-========================================== */
-
-function runLaneDodge({
-  container,
-  onComplete
-}) {
-  let active = true;
-
-  let lane = 1;
-  let avoided = 0;
-
-  let obstacleLane =
-    randomLane();
-
-  const startedAt =
-    performance.now();
-
-  container.innerHTML = `
-    <div class="three-stage race-stage">
-
-      <div class="three-hud">
-        <span>
-          DODGED
-        </span>
-
-        <strong
-          data-race-score
-        >
-          0
-        </strong>
-      </div>
-
-      <div class="race-road">
-
-        <div
-          class="race-player"
-          data-race-player
-        >
-          🏎️
-        </div>
-
-        <div
-          class="race-obstacle"
-          data-race-obstacle
-        >
-          🚧
-        </div>
-
-      </div>
-
-      <div class="race-controls">
-
-        <button
-          type="button"
-          data-race-left
-        >
-          ←
-        </button>
-
-        <button
-          type="button"
-          data-race-right
-        >
-          →
-        </button>
-
-      </div>
-
-    </div>
-  `;
-
-  const player =
-    container.querySelector(
-      "[data-race-player]"
-    );
-
-  const obstacle =
-    container.querySelector(
-      "[data-race-obstacle]"
-    );
-
-  const scoreDisplay =
-    container.querySelector(
-      "[data-race-score]"
-    );
-
-  const left =
-    container.querySelector(
-      "[data-race-left]"
-    );
-
-  const right =
-    container.querySelector(
-      "[data-race-right]"
-    );
-
-
-  function updatePlayer() {
-    player.dataset.lane =
-      String(lane);
-
-    player.style.left =
-      `${16 + lane * 34}%`;
-  }
-
-
-  function updateObstacle() {
-    obstacle.style.left =
-      `${16 + obstacleLane * 34}%`;
-
-    obstacle.classList.remove(
-      "race-drop"
-    );
-
-    void obstacle.offsetWidth;
-
-    obstacle.classList.add(
-      "race-drop"
-    );
-  }
-
-
-  function changeLane(
-    direction
-  ) {
-    if (!active) {
-      return;
-    }
-
-    lane =
-      clamp(
-        lane + direction,
-        0,
-        2
-      );
-
-    updatePlayer();
-  }
-
-
-  function resolveObstacle() {
-    if (!active) {
-      return;
-    }
-
-    if (lane === obstacleLane) {
-      finish(false);
-      return;
-    }
-
-    avoided++;
-
-    scoreDisplay.textContent =
-      avoided;
-
-    if (avoided >= 7) {
-      finish(true);
-      return;
-    }
-
-    obstacleLane =
-      randomLane();
-
-    updateObstacle();
-  }
-
-
-  let timer =
-    setInterval(
-      resolveObstacle,
-      850
-    );
-
-
-  function finish(success) {
-    if (!active) {
-      return;
-    }
-
-    active = false;
-
-    clearInterval(timer);
-
-    const elapsed =
-      performance.now() -
-      startedAt;
-
-    const score =
-      success
-        ? clamp(
-            70 +
-            avoided * 4,
-            0,
-            100
-          )
-        : clamp(
-            avoided * 12,
-            0,
-            70
-          );
-
-    onComplete?.({
-      score:
-        Math.round(score),
-
-      adapt:
-        success
-          ? 75
-          : 40,
-
-      meta: {
-        avoided,
-        elapsed:
-          Math.round(elapsed)
-      }
-    });
-  }
-
-
-  left.addEventListener(
-    "pointerdown",
-    () => changeLane(-1)
-  );
-
-  right.addEventListener(
-    "pointerdown",
-    () => changeLane(1)
-  );
-
-
-  updatePlayer();
-  updateObstacle();
-
-
-  return () => {
-    active = false;
-
-    clearInterval(timer);
-  };
-}
 
 
 /* ==========================================
