@@ -31,6 +31,11 @@ import {
 } from "./games/puzzle.js";
 
 import {
+  createMemoryGames,
+  runMemoryGame
+} from "./games/memory.js";
+
+import {
   createThreeGames,
   runThreeGame
 } from "./games/three-games.js";
@@ -79,6 +84,7 @@ GAME POOL
 const gamePool = [
   ...createReflexGames(),
   ...createPuzzleGames(),
+  ...createMemoryGames(),
   ...createThreeGames()
 ];
 
@@ -813,6 +819,14 @@ function runSelectedGame({
     ]);
 
 
+  const memoryTypes =
+    new Set([
+      "memory_sequence",
+      "memory_positions",
+      "memory_numbers"
+    ]);
+
+
   const threeTypes =
     new Set([
       "zombie_assault",
@@ -841,6 +855,19 @@ function runSelectedGame({
     )
   ) {
     return runPuzzleGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (
+    memoryTypes.has(
+      game.type
+    )
+  ) {
+    return runMemoryGame({
       game,
       container,
       onComplete
