@@ -1740,3 +1740,218 @@ ZOMBIE 3D
 
   font-weight:900;
 }
+
+
+/* ==========================================
+SPACE 3D
+========================================== */
+
+.space-3d-wrap{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:12px;
+}
+
+.space-3d-hud{
+  display:flex;
+  gap:10px;
+}
+
+.space-3d-hud > div{
+  flex:1;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:10px 14px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:13px;
+
+  background:
+    rgba(255,255,255,.025);
+}
+
+.space-3d-hud span{
+  color:#818ca1;
+
+  font-size:9px;
+  font-weight:900;
+
+  letter-spacing:.12em;
+}
+
+.space-3d-hud strong{
+  font-size:18px;
+  font-weight:1000;
+}
+
+.space-3d-world{
+  position:relative;
+
+  flex:1;
+  min-height:340px;
+
+  overflow:hidden;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:22px;
+
+  background:#02050c;
+
+  cursor:none;
+
+  touch-action:none;
+}
+
+.space-3d-crosshair{
+  position:absolute;
+
+  z-index:20;
+
+  left:50%;
+  top:50%;
+
+  width:46px;
+  height:46px;
+
+  transform:
+    translate(-50%,-50%);
+
+  border:
+    2px solid
+    rgba(255,255,255,.86);
+
+  border-radius:50%;
+
+  pointer-events:none;
+
+  box-shadow:
+    0 0 15px
+    rgba(97,234,255,.38);
+}
+
+.space-3d-crosshair::before,
+.space-3d-crosshair::after{
+  content:"";
+
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  background:#61eaff;
+
+  transform:
+    translate(-50%,-50%);
+
+  box-shadow:
+    0 0 8px
+    #61eaff;
+}
+
+.space-3d-crosshair::before{
+  width:58px;
+  height:2px;
+}
+
+.space-3d-crosshair::after{
+  width:2px;
+  height:58px;
+}
+
+.space-3d-crosshair span{
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  width:8px;
+  height:8px;
+
+  transform:
+    translate(-50%,-50%);
+
+  border:
+    2px solid
+    #61eaff;
+
+  border-radius:50%;
+}
+
+.space-3d-fire{
+  min-height:58px;
+
+  border:0;
+  border-radius:16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #75f2ff,
+      #27bfd5
+    );
+
+  color:#021014;
+
+  font-size:16px;
+  font-weight:1000;
+
+  letter-spacing:.12em;
+
+  cursor:pointer;
+
+  touch-action:none;
+}
+
+.space-3d-fire:active{
+  transform:
+    scale(.985);
+}
+
+.space-3d-fallback{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:100%;
+  height:100%;
+
+  color:#ff718b;
+
+  font-weight:900;
+}
+
+@media(max-width:600px){
+
+  .space-3d-world{
+    min-height:320px;
+
+    cursor:default;
+  }
+
+  .space-3d-crosshair{
+    width:40px;
+    height:40px;
+  }
+
+  .space-3d-crosshair::before{
+    width:50px;
+  }
+
+  .space-3d-crosshair::after{
+    height:50px;
+  }
+
+}
