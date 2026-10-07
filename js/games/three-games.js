@@ -1,0 +1,1054 @@
+// GAMIQ（ゲーミック） v2 - 3D / Action Games
+
+export function createThreeGames() {
+  return [
+    {
+      id: "three_zombie_assault",
+      type: "zombie_assault",
+      title: "ZOMBIE ASSAULT",
+      rule: "迫ってくるゾンビを倒せ",
+      skill: "SPEED",
+      theme: "zombie",
+      duration: 10000
+    },
+
+    {
+      id: "three_space_blaster",
+      type: "space_blaster",
+      title: "SPACE BLASTER",
+      rule: "敵艦を狙って撃ち落とせ",
+      skill: "AIM",
+      theme: "space",
+      duration: 10000
+    },
+
+    {
+      id: "three_lane_dodge",
+      type: "lane_dodge",
+      title: "HIGHWAY DODGE",
+      rule: "障害物を避け続けろ",
+      skill: "REFLEX",
+      theme: "race",
+      duration: 10000
+    },
+
+    {
+      id: "three_factory_rush",
+      type: "factory_rush",
+      title: "FACTORY RUSH",
+      rule: "ラインを止めずに処理しろ",
+      skill: "SPEED",
+      theme: "factory",
+      duration: 10000
+    }
+  ];
+}
+
+
+export function runThreeGame({
+  game,
+  container,
+  onComplete
+}) {
+  if (!game || !container) {
+    return () => {};
+  }
+
+  switch (game.type) {
+    case "zombie_assault":
+      return runZombieAssault({
+        container,
+        onComplete
+      });
+
+    case "space_blaster":
+      return runSpaceBlaster({
+        container,
+        onComplete
+      });
+
+    case "lane_dodge":
+      return runLaneDodge({
+        container,
+        onComplete
+      });
+
+    case "factory_rush":
+      return runFactoryRush({
+        container,
+        onComplete
+      });
+
+    default:
+      return () => {};
+  }
+}
+
+
+/* ==========================================
+ZOMBIE ASSAULT
+========================================== */
+
+function runZombieAssault({
+  container,
+  onComplete
+}) {
+  let active = true;
+
+  let hp = 100;
+  let hits = 0;
+
+  let distance = 100;
+
+  const startedAt =
+    performance.now();
+
+  container.innerHTML = `
+    <div class="three-stage zombie-stage">
+
+      <div class="three-hud">
+
+        <span>
+          ZOMBIE HP
+        </span>
+
+        <strong
+          data-zombie-hp
+        >
+          100
+        </strong>
+
+      </div>
+
+      <div class="three-world">
+
+        <div
+          class="zombie-enemy"
+          data-zombie
+        >
+          🧟
+        </div>
+
+        <button
+          type="button"
+          class="three-action-button"
+          data-zombie-attack
+        >
+          ATTACK
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  const zombie =
+    container.querySelector(
+      "[data-zombie]"
+    );
+
+  const attackButton =
+    container.querySelector(
+      "[data-zombie-attack]"
+    );
+
+  const hpDisplay =
+    container.querySelector(
+      "[data-zombie-hp]"
+    );
+
+
+  function attack() {
+    if (!active) {
+      return;
+    }
+
+    hits++;
+
+    const damage =
+      7 +
+      Math.random() * 7;
+
+    hp -= damage;
+
+    hpDisplay.textContent =
+      Math.max(
+        0,
+        Math.round(hp)
+      );
+
+    zombie.classList.remove(
+      "three-hit"
+    );
+
+    void zombie.offsetWidth;
+
+    zombie.classList.add(
+      "three-hit"
+    );
+
+    if (hp <= 0) {
+      finish(true);
+    }
+  }
+
+
+  let approachTimer =
+    setInterval(
+      () => {
+        if (!active) {
+          return;
+        }
+
+        distance -= 4;
+
+        const scale =
+          1 +
+          (100 - distance) /
+          140;
+
+        zombie.style.transform =
+          `scale(${scale})`;
+
+        if (distance <= 0) {
+          finish(false);
+        }
+      },
+      220
+    );
+
+
+  function finish(success) {
+    if (!active) {
+      return;
+    }
+
+    active = false;
+
+    clearInterval(
+      approachTimer
+    );
+
+    const elapsed =
+      performance.now() -
+      startedAt;
+
+    const speedScore =
+      success
+        ? clamp(
+            100 -
+            elapsed / 110,
+            20,
+            100
+          )
+        : 10;
+
+    const accuracyBonus =
+      clamp(
+        100 -
+        Math.max(
+          0,
+          hits - 12
+        ) * 4,
+        0,
+        100
+      );
+
+    const score =
+      success
+        ? (
+            speedScore * 0.75 +
+            accuracyBonus * 0.25
+          )
+        : 10;
+
+    onComplete?.({
+      score:
+        Math.round(score),
+
+      adapt:
+        success
+          ? 75
+          : 35,
+
+      meta: {
+        success,
+        hits,
+        elapsed:
+          Math.round(elapsed)
+      }
+    });
+  }
+
+
+  attackButton.addEventListener(
+    "pointerdown",
+    attack
+  );
+
+
+  return () => {
+    active = false;
+
+    clearInterval(
+      approachTimer
+    );
+
+    attackButton.removeEventListener(
+      "pointerdown",
+      attack
+    );
+  };
+}
+
+
+/* ==========================================
+SPACE BLASTER
+========================================== */
+
+function runSpaceBlaster({
+  container,
+  onComplete
+}) {
+  let active = true;
+
+  let shots = 0;
+  let hits = 0;
+
+  let targetX = 50;
+  let targetY = 40;
+
+  const startedAt =
+    performance.now();
+
+  container.innerHTML = `
+    <div class="three-stage space-stage">
+
+      <div class="three-hud">
+
+        <span>
+          HITS
+        </span>
+
+        <strong
+          data-space-hits
+        >
+          0
+        </strong>
+
+      </div>
+
+      <div
+        class="space-world"
+        data-space-world
+      >
+
+        <div
+          class="space-target"
+          data-space-target
+        >
+          🛸
+        </div>
+
+        <div
+          class="space-crosshair"
+          data-space-crosshair
+        >
+          +
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  const world =
+    container.querySelector(
+      "[data-space-world]"
+    );
+
+  const target =
+    container.querySelector(
+      "[data-space-target]"
+    );
+
+  const crosshair =
+    container.querySelector(
+      "[data-space-crosshair]"
+    );
+
+  const hitDisplay =
+    container.querySelector(
+      "[data-space-hits]"
+    );
+
+
+  function moveTarget() {
+    targetX =
+      15 +
+      Math.random() * 70;
+
+    targetY =
+      18 +
+      Math.random() * 60;
+
+    target.style.left =
+      `${targetX}%`;
+
+    target.style.top =
+      `${targetY}%`;
+  }
+
+
+  function moveCrosshair(
+    event
+  ) {
+    const rect =
+      world.getBoundingClientRect();
+
+    const x =
+      clamp(
+        (
+          (
+            event.clientX -
+            rect.left
+          ) /
+          rect.width
+        ) * 100,
+        0,
+        100
+      );
+
+    const y =
+      clamp(
+        (
+          (
+            event.clientY -
+            rect.top
+          ) /
+          rect.height
+        ) * 100,
+        0,
+        100
+      );
+
+    crosshair.style.left =
+      `${x}%`;
+
+    crosshair.style.top =
+      `${y}%`;
+  }
+
+
+  function shoot(event) {
+    if (!active) {
+      return;
+    }
+
+    shots++;
+
+    const worldRect =
+      world.getBoundingClientRect();
+
+    const targetRect =
+      target.getBoundingClientRect();
+
+    const x =
+      event.clientX;
+
+    const y =
+      event.clientY;
+
+    const hit =
+      x >= targetRect.left &&
+      x <= targetRect.right &&
+      y >= targetRect.top &&
+      y <= targetRect.bottom;
+
+    if (hit) {
+      hits++;
+
+      hitDisplay.textContent =
+        hits;
+
+      target.classList.remove(
+        "three-hit"
+      );
+
+      void target.offsetWidth;
+
+      target.classList.add(
+        "three-hit"
+      );
+
+      moveTarget();
+
+      if (hits >= 6) {
+        finish();
+      }
+    }
+
+    worldRect;
+  }
+
+
+  function finish() {
+    if (!active) {
+      return;
+    }
+
+    active = false;
+
+    const elapsed =
+      performance.now() -
+      startedAt;
+
+    const accuracy =
+      shots > 0
+        ? hits / shots
+        : 0;
+
+    const accuracyScore =
+      accuracy * 100;
+
+    const speedScore =
+      clamp(
+        100 -
+        elapsed / 130,
+        0,
+        100
+      );
+
+    const score =
+      accuracyScore * 0.65 +
+      speedScore * 0.35;
+
+    onComplete?.({
+      score:
+        Math.round(score),
+
+      adapt:
+        Math.round(
+          clamp(
+            50 +
+            accuracyScore * 0.4,
+            0,
+            100
+          )
+        ),
+
+      meta: {
+        shots,
+        hits,
+        elapsed:
+          Math.round(elapsed)
+      }
+    });
+  }
+
+
+  world.addEventListener(
+    "pointermove",
+    moveCrosshair
+  );
+
+  world.addEventListener(
+    "pointerdown",
+    shoot
+  );
+
+
+  moveTarget();
+
+
+  return () => {
+    active = false;
+
+    world.removeEventListener(
+      "pointermove",
+      moveCrosshair
+    );
+
+    world.removeEventListener(
+      "pointerdown",
+      shoot
+    );
+  };
+}
+
+
+/* ==========================================
+LANE DODGE
+========================================== */
+
+function runLaneDodge({
+  container,
+  onComplete
+}) {
+  let active = true;
+
+  let lane = 1;
+  let avoided = 0;
+
+  let obstacleLane =
+    randomLane();
+
+  const startedAt =
+    performance.now();
+
+  container.innerHTML = `
+    <div class="three-stage race-stage">
+
+      <div class="three-hud">
+        <span>
+          DODGED
+        </span>
+
+        <strong
+          data-race-score
+        >
+          0
+        </strong>
+      </div>
+
+      <div class="race-road">
+
+        <div
+          class="race-player"
+          data-race-player
+        >
+          🏎️
+        </div>
+
+        <div
+          class="race-obstacle"
+          data-race-obstacle
+        >
+          🚧
+        </div>
+
+      </div>
+
+      <div class="race-controls">
+
+        <button
+          type="button"
+          data-race-left
+        >
+          ←
+        </button>
+
+        <button
+          type="button"
+          data-race-right
+        >
+          →
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  const player =
+    container.querySelector(
+      "[data-race-player]"
+    );
+
+  const obstacle =
+    container.querySelector(
+      "[data-race-obstacle]"
+    );
+
+  const scoreDisplay =
+    container.querySelector(
+      "[data-race-score]"
+    );
+
+  const left =
+    container.querySelector(
+      "[data-race-left]"
+    );
+
+  const right =
+    container.querySelector(
+      "[data-race-right]"
+    );
+
+
+  function updatePlayer() {
+    player.dataset.lane =
+      String(lane);
+
+    player.style.left =
+      `${16 + lane * 34}%`;
+  }
+
+
+  function updateObstacle() {
+    obstacle.style.left =
+      `${16 + obstacleLane * 34}%`;
+
+    obstacle.classList.remove(
+      "race-drop"
+    );
+
+    void obstacle.offsetWidth;
+
+    obstacle.classList.add(
+      "race-drop"
+    );
+  }
+
+
+  function changeLane(
+    direction
+  ) {
+    if (!active) {
+      return;
+    }
+
+    lane =
+      clamp(
+        lane + direction,
+        0,
+        2
+      );
+
+    updatePlayer();
+  }
+
+
+  function resolveObstacle() {
+    if (!active) {
+      return;
+    }
+
+    if (lane === obstacleLane) {
+      finish(false);
+      return;
+    }
+
+    avoided++;
+
+    scoreDisplay.textContent =
+      avoided;
+
+    if (avoided >= 7) {
+      finish(true);
+      return;
+    }
+
+    obstacleLane =
+      randomLane();
+
+    updateObstacle();
+  }
+
+
+  let timer =
+    setInterval(
+      resolveObstacle,
+      850
+    );
+
+
+  function finish(success) {
+    if (!active) {
+      return;
+    }
+
+    active = false;
+
+    clearInterval(timer);
+
+    const elapsed =
+      performance.now() -
+      startedAt;
+
+    const score =
+      success
+        ? clamp(
+            70 +
+            avoided * 4,
+            0,
+            100
+          )
+        : clamp(
+            avoided * 12,
+            0,
+            70
+          );
+
+    onComplete?.({
+      score:
+        Math.round(score),
+
+      adapt:
+        success
+          ? 75
+          : 40,
+
+      meta: {
+        avoided,
+        elapsed:
+          Math.round(elapsed)
+      }
+    });
+  }
+
+
+  left.addEventListener(
+    "pointerdown",
+    () => changeLane(-1)
+  );
+
+  right.addEventListener(
+    "pointerdown",
+    () => changeLane(1)
+  );
+
+
+  updatePlayer();
+  updateObstacle();
+
+
+  return () => {
+    active = false;
+
+    clearInterval(timer);
+  };
+}
+
+
+/* ==========================================
+FACTORY RUSH
+========================================== */
+
+function runFactoryRush({
+  container,
+  onComplete
+}) {
+  let active = true;
+
+  let progress = 0;
+  let mistakes = 0;
+
+  const startedAt =
+    performance.now();
+
+  container.innerHTML = `
+    <div class="three-stage factory-stage">
+
+      <div class="three-hud">
+
+        <span>
+          OUTPUT
+        </span>
+
+        <strong
+          data-factory-progress
+        >
+          0%
+        </strong>
+
+      </div>
+
+      <div class="factory-machine">
+
+        <div class="factory-belt">
+
+          <div
+            class="factory-box"
+            data-factory-box
+          >
+            📦
+          </div>
+
+        </div>
+
+        <button
+          type="button"
+          class="three-action-button"
+          data-factory-action
+        >
+          PROCESS
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  const box =
+    container.querySelector(
+      "[data-factory-box]"
+    );
+
+  const action =
+    container.querySelector(
+      "[data-factory-action]"
+    );
+
+  const display =
+    container.querySelector(
+      "[data-factory-progress]"
+    );
+
+
+  let sweetSpot = false;
+
+
+  function cycle() {
+    if (!active) {
+      return;
+    }
+
+    sweetSpot =
+      Math.random() > 0.45;
+
+    box.classList.toggle(
+      "factory-ready",
+      sweetSpot
+    );
+
+    box.textContent =
+      sweetSpot
+        ? "✅"
+        : "📦";
+  }
+
+
+  function process() {
+    if (!active) {
+      return;
+    }
+
+    if (sweetSpot) {
+      progress +=
+        14 +
+        Math.random() * 8;
+    } else {
+      mistakes++;
+      progress -= 4;
+    }
+
+    progress =
+      clamp(
+        progress,
+        0,
+        100
+      );
+
+    display.textContent =
+      `${Math.round(progress)}%`;
+
+    if (progress >= 100) {
+      finish();
+    }
+
+    cycle();
+  }
+
+
+  let timer =
+    setInterval(
+      cycle,
+      700
+    );
+
+
+  function finish() {
+    if (!active) {
+      return;
+    }
+
+    active = false;
+
+    clearInterval(timer);
+
+    const elapsed =
+      performance.now() -
+      startedAt;
+
+    const score =
+      clamp(
+        100 -
+        mistakes * 10 -
+        Math.max(
+          0,
+          elapsed - 5000
+        ) / 180,
+        0,
+        100
+      );
+
+    onComplete?.({
+      score:
+        Math.round(score),
+
+      adapt:
+        Math.round(
+          clamp(
+            80 -
+            mistakes * 8,
+            20,
+            100
+          )
+        ),
+
+      meta: {
+        mistakes,
+        elapsed:
+          Math.round(elapsed)
+      }
+    });
+  }
+
+
+  action.addEventListener(
+    "pointerdown",
+    process
+  );
+
+
+  cycle();
+
+
+  return () => {
+    active = false;
+
+    clearInterval(timer);
+
+    action.removeEventListener(
+      "pointerdown",
+      process
+    );
+  };
+}
+
+
+/* ==========================================
+UTIL
+========================================== */
+
+function randomLane() {
+  return Math.floor(
+    Math.random() * 3
+  );
+}
+
+
+function clamp(
+  value,
+  min,
+  max
+) {
+  return Math.max(
+    min,
+    Math.min(
+      max,
+      value
+    )
+  );
+}
