@@ -12,6 +12,10 @@ import {
   runRace3D
 } from "./race-3d.js";
 
+import {
+  runFactory3D
+} from "./factory-3d.js";
+
 export function createThreeGames() {
   return [
     {
@@ -86,10 +90,10 @@ export function runThreeGame({
   });
 
     case "factory_rush":
-      return runFactoryRush({
-        container,
-        onComplete
-      });
+  return runFactory3D({
+    container,
+    onComplete
+  });
 
     default:
       return () => {};
@@ -98,212 +102,6 @@ export function runThreeGame({
 
 
 
-
-/* ==========================================
-FACTORY RUSH
-========================================== */
-
-function runFactoryRush({
-  container,
-  onComplete
-}) {
-  let active = true;
-
-  let progress = 0;
-  let mistakes = 0;
-
-  const startedAt =
-    performance.now();
-
-  container.innerHTML = `
-    <div class="three-stage factory-stage">
-
-      <div class="three-hud">
-
-        <span>
-          OUTPUT
-        </span>
-
-        <strong
-          data-factory-progress
-        >
-          0%
-        </strong>
-
-      </div>
-
-      <div class="factory-machine">
-
-        <div class="factory-belt">
-
-          <div
-            class="factory-box"
-            data-factory-box
-          >
-            📦
-          </div>
-
-        </div>
-
-        <button
-          type="button"
-          class="three-action-button"
-          data-factory-action
-        >
-          PROCESS
-        </button>
-
-      </div>
-
-    </div>
-  `;
-
-  const box =
-    container.querySelector(
-      "[data-factory-box]"
-    );
-
-  const action =
-    container.querySelector(
-      "[data-factory-action]"
-    );
-
-  const display =
-    container.querySelector(
-      "[data-factory-progress]"
-    );
-
-
-  let sweetSpot = false;
-
-
-  function cycle() {
-    if (!active) {
-      return;
-    }
-
-    sweetSpot =
-      Math.random() > 0.45;
-
-    box.classList.toggle(
-      "factory-ready",
-      sweetSpot
-    );
-
-    box.textContent =
-      sweetSpot
-        ? "✅"
-        : "📦";
-  }
-
-
-  function process() {
-    if (!active) {
-      return;
-    }
-
-    if (sweetSpot) {
-      progress +=
-        14 +
-        Math.random() * 8;
-    } else {
-      mistakes++;
-      progress -= 4;
-    }
-
-    progress =
-      clamp(
-        progress,
-        0,
-        100
-      );
-
-    display.textContent =
-      `${Math.round(progress)}%`;
-
-    if (progress >= 100) {
-      finish();
-    }
-
-    cycle();
-  }
-
-
-  let timer =
-    setInterval(
-      cycle,
-      700
-    );
-
-
-  function finish() {
-    if (!active) {
-      return;
-    }
-
-    active = false;
-
-    clearInterval(timer);
-
-    const elapsed =
-      performance.now() -
-      startedAt;
-
-    const score =
-      clamp(
-        100 -
-        mistakes * 10 -
-        Math.max(
-          0,
-          elapsed - 5000
-        ) / 180,
-        0,
-        100
-      );
-
-    onComplete?.({
-      score:
-        Math.round(score),
-
-      adapt:
-        Math.round(
-          clamp(
-            80 -
-            mistakes * 8,
-            20,
-            100
-          )
-        ),
-
-      meta: {
-        mistakes,
-        elapsed:
-          Math.round(elapsed)
-      }
-    });
-  }
-
-
-  action.addEventListener(
-    "pointerdown",
-    process
-  );
-
-
-  cycle();
-
-
-  return () => {
-    active = false;
-
-    clearInterval(timer);
-
-    action.removeEventListener(
-      "pointerdown",
-      process
-    );
-  };
-}
 
 
 /* ==========================================
