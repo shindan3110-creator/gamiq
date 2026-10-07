@@ -70,10 +70,10 @@ export function runThreeGame({
   });
 
     case "space_blaster":
-      return runSpaceBlaster({
-        container,
-        onComplete
-      });
+  return runSpace3D({
+    container,
+    onComplete
+  });
 
     case "lane_dodge":
       return runLaneDodge({
