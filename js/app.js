@@ -61,6 +61,9 @@ let feedController =
 let activeCleanup =
   null;
 
+let activeForceFinishTimer =
+  null;
+
 let activeRunToken =
   0;
 
@@ -612,8 +615,7 @@ async function enterGame(
 
 
   /*
-   * 短時間だけルール表示。
-   * ゲーム開始前の読み込み時間も兼ねる。
+   * RULE表示
    */
 
   await wait(900);
@@ -637,48 +639,16 @@ async function enterGame(
   );
 
 
-  let completed = false;
+  let completed =
+    false;
 
 
-/*
- * どのゲームも必ず一定時間で終了させる
- * ゲーム側の不具合で無限に続くのを防止
- */
+  /*
+   * GAME COMPLETE
+   */
 
-const maxGameDuration =
-  Math.max(
-    6000,
-    Number(game.duration) || 10000
-  );
-
-
-const forceFinishTimer =
-  setTimeout(
-    () => {
-
-      if (
-        completed ||
-        runToken !== activeRunToken
-      ) {
-        return;
-      }
-
-
-      onComplete({
-        score: 50,
-        adapt: 50,
-        meta: {
-          forcedFinish: true
-        }
-      });
-
-    },
-    maxGameDuration
-  );
-
-
-const onComplete =
-  result => {
+  const onComplete =
+    result => {
 
       if (
         completed ||
@@ -689,7 +659,25 @@ const onComplete =
       }
 
 
-      completed = true;
+      completed =
+        true;
+
+
+      /*
+       * 強制終了タイマー解除
+       */
+
+      if (
+        activeForceFinishTimer !==
+        null
+      ) {
+        clearTimeout(
+          activeForceFinishTimer
+        );
+
+        activeForceFinishTimer =
+          null;
+      }
 
 
       const score =
@@ -744,6 +732,61 @@ const onComplete =
     };
 
 
+  /*
+   * SAFETY TIMER
+   *
+   * どのゲームも一定時間を超えたら
+   * 必ず終了する。
+   *
+   * これによって
+   * 「ゲームが終わらず次へ行けない」
+   * 状態を防止する。
+   */
+
+  const maxGameDuration =
+    Math.max(
+      6000,
+      Number(
+        game.duration
+      ) || 10000
+    );
+
+
+  activeForceFinishTimer =
+    setTimeout(
+      () => {
+
+        if (
+          completed ||
+          runToken !==
+            activeRunToken
+        ) {
+          return;
+        }
+
+
+        onComplete({
+          score:
+            50,
+
+          adapt:
+            50,
+
+          meta: {
+            forcedFinish:
+              true
+          }
+        });
+
+      },
+      maxGameDuration
+    );
+
+
+  /*
+   * GAME START
+   */
+
   try {
     const runnerResult =
       runSelectedGame({
@@ -761,8 +804,8 @@ const onComplete =
 
 
     /*
-     * 非同期3Dゲームの初期化中に
-     * 別ゲームへ移動していた場合。
+     * 3Dゲームなどの初期化中に
+     * 別ゲームへ移動した場合
      */
 
     if (
@@ -802,6 +845,23 @@ const onComplete =
         error?.message ||
         String(error)
     });
+
+
+    /*
+     * エラー時も次へ進める
+     */
+
+    if (
+      activeForceFinishTimer !==
+      null
+    ) {
+      clearTimeout(
+        activeForceFinishTimer
+      );
+
+      activeForceFinishTimer =
+        null;
+    }
 
 
     currentFinished =
@@ -1023,6 +1083,28 @@ CLEANUP
 ========================================== */
 
 function cleanupCurrentGame() {
+
+  /*
+   * Safety timer
+   */
+
+  if (
+    activeForceFinishTimer !==
+    null
+  ) {
+    clearTimeout(
+      activeForceFinishTimer
+    );
+
+    activeForceFinishTimer =
+      null;
+  }
+
+
+  /*
+   * Game cleanup
+   */
+
   if (
     typeof activeCleanup ===
     "function"
