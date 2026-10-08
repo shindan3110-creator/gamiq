@@ -902,10 +902,12 @@ function runSelectedGame({
   onComplete
 }) {
   const reflexTypes =
-    new Set([
-      "reflex_quick_draw",
-      "reflex_go_no_go"
-    ]);
+  new Set([
+    "ninja_counter",
+    "quick_draw",
+    "lane_panic",
+    "friend_foe"
+  ]);
 
 
   const puzzleTypes =
