@@ -132,11 +132,9 @@ export class GamiqThreeScene {
       "gamiq-three-canvas";
 
 
-    this.container.innerHTML = "";
-
     this.container.appendChild(
-      this.renderer.domElement
-    );
+  this.renderer.domElement
+);
 
 
     this.clock =
