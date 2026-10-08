@@ -3398,3 +3398,779 @@ MEMORY GAMES
   }
 
 }
+
+
+
+/* ==========================================
+ADVANCED REFLEX GAMES
+========================================== */
+
+.reflex-game{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:12px;
+}
+
+.reflex-game-hud{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:10px 14px;
+
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:13px;
+
+  background:rgba(255,255,255,.025);
+}
+
+.reflex-game-hud span{
+  color:#7c8798;
+
+  font-size:9px;
+  font-weight:900;
+
+  letter-spacing:.14em;
+}
+
+.reflex-game-hud strong{
+  font-size:20px;
+  font-weight:1000;
+}
+
+
+/* ==========================================
+COMMON EFFECT
+========================================== */
+
+.reflex-screen-hit{
+  animation:
+    reflex-hit-flash
+    .18s ease;
+}
+
+.reflex-screen-fail{
+  animation:
+    reflex-fail-flash
+    .20s ease;
+}
+
+@keyframes reflex-hit-flash{
+
+  0%{
+    filter:
+      brightness(1);
+  }
+
+  40%{
+    filter:
+      brightness(1.8);
+  }
+
+  100%{
+    filter:
+      brightness(1);
+  }
+
+}
+
+@keyframes reflex-fail-flash{
+
+  0%,
+  100%{
+    transform:
+      translateX(0);
+  }
+
+  30%{
+    transform:
+      translateX(-7px);
+  }
+
+  60%{
+    transform:
+      translateX(7px);
+  }
+
+}
+
+
+/* ==========================================
+NINJA COUNTER
+========================================== */
+
+.ninja-arena{
+  position:relative;
+
+  flex:1;
+
+  min-height:0;
+
+  overflow:hidden;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:22px;
+
+  background:
+    radial-gradient(
+      circle at 50% 55%,
+      rgba(84,255,164,.13),
+      transparent 25%
+    ),
+    linear-gradient(
+      180deg,
+      #07120d,
+      #040806
+    );
+}
+
+.ninja-player{
+  position:relative;
+
+  z-index:5;
+
+  font-size:
+    clamp(
+      90px,
+      18vw,
+      160px
+    );
+
+  transition:
+    transform .12s ease;
+
+  filter:
+    drop-shadow(
+      0 18px 24px
+      rgba(0,0,0,.45)
+    );
+}
+
+.ninja-player.slash-left{
+  transform:
+    translateX(-35px)
+    rotate(-12deg)
+    scale(1.08);
+}
+
+.ninja-player.slash-right{
+  transform:
+    translateX(35px)
+    rotate(12deg)
+    scale(1.08);
+}
+
+.ninja-player.slash-up{
+  transform:
+    translateY(-30px)
+    scale(1.08);
+}
+
+.ninja-danger{
+  position:absolute;
+
+  z-index:4;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:76px;
+  height:76px;
+
+  border-radius:50%;
+
+  background:
+    rgba(255,70,95,.18);
+
+  color:#ff526e;
+
+  font-size:44px;
+  font-weight:1000;
+
+  opacity:0;
+
+  transform:
+    scale(.4);
+
+  transition:
+    opacity .08s ease,
+    transform .08s ease;
+
+  box-shadow:
+    0 0 35px
+    rgba(255,70,95,.35);
+}
+
+.ninja-danger.show{
+  opacity:1;
+
+  transform:
+    scale(1);
+}
+
+.ninja-danger-top{
+  top:12%;
+  left:50%;
+
+  transform:
+    translateX(-50%)
+    scale(.4);
+}
+
+.ninja-danger-top.show{
+  transform:
+    translateX(-50%)
+    scale(1);
+}
+
+.ninja-danger-left{
+  left:10%;
+  top:50%;
+
+  transform:
+    translateY(-50%)
+    scale(.4);
+}
+
+.ninja-danger-left.show{
+  transform:
+    translateY(-50%)
+    scale(1);
+}
+
+.ninja-danger-right{
+  right:10%;
+  top:50%;
+
+  transform:
+    translateY(-50%)
+    scale(.4);
+}
+
+.ninja-danger-right.show{
+  transform:
+    translateY(-50%)
+    scale(1);
+}
+
+.reflex-impact{
+  position:absolute;
+
+  z-index:20;
+
+  left:50%;
+  top:22%;
+
+  transform:
+    translate(-50%,-50%)
+    scale(.6);
+
+  font-size:
+    clamp(
+      28px,
+      5vw,
+      46px
+    );
+
+  font-weight:1000;
+
+  letter-spacing:.04em;
+
+  opacity:0;
+
+  pointer-events:none;
+}
+
+.reflex-impact.show{
+  animation:
+    reflex-impact
+    .28s ease forwards;
+}
+
+.reflex-impact.success{
+  color:#74ffa4;
+}
+
+.reflex-impact.fail{
+  color:#ff5873;
+}
+
+@keyframes reflex-impact{
+
+  0%{
+    opacity:0;
+
+    transform:
+      translate(-50%,-50%)
+      scale(.6);
+  }
+
+  45%{
+    opacity:1;
+
+    transform:
+      translate(-50%,-50%)
+      scale(1.18);
+  }
+
+  100%{
+    opacity:0;
+
+    transform:
+      translate(-50%,-65%)
+      scale(1);
+  }
+
+}
+
+.ninja-controls{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:9px;
+}
+
+.ninja-controls button{
+  min-height:60px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.10);
+
+  border-radius:15px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #17221d,
+      #09100c
+    );
+
+  color:#8effaf;
+
+  font-size:28px;
+  font-weight:1000;
+
+  cursor:pointer;
+}
+
+.ninja-controls button:active{
+  transform:
+    scale(.96);
+}
+
+
+/* ==========================================
+QUICK DRAW
+========================================== */
+
+.duel-arena{
+  position:relative;
+
+  flex:1;
+
+  min-height:0;
+
+  overflow:hidden;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:22px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f58b45 0%,
+      #6b321e 43%,
+      #17100c 44%,
+      #080706 100%
+    );
+}
+
+.duel-sun{
+  position:absolute;
+
+  top:13%;
+
+  width:120px;
+  height:120px;
+
+  border-radius:50%;
+
+  background:
+    rgba(255,224,135,.75);
+
+  filter:
+    blur(1px);
+}
+
+.duel-opponent{
+  position:relative;
+
+  z-index:4;
+
+  margin-top:60px;
+
+  font-size:
+    clamp(
+      100px,
+      19vw,
+      170px
+    );
+
+  transition:
+    transform .14s ease,
+    filter .14s ease;
+}
+
+.duel-opponent.duel-fake{
+  transform:
+    translateY(-5px)
+    rotate(-4deg);
+}
+
+.duel-opponent.duel-hit{
+  transform:
+    rotate(22deg)
+    translateX(32px);
+
+  filter:
+    brightness(1.8);
+}
+
+.duel-message{
+  position:absolute;
+
+  z-index:10;
+
+  bottom:12%;
+
+  padding:10px 18px;
+
+  border-radius:999px;
+
+  background:
+    rgba(0,0,0,.55);
+
+  color:#fff;
+
+  font-weight:1000;
+
+  letter-spacing:.15em;
+}
+
+.duel-draw
+.duel-message{
+  color:#ffdc75;
+
+  transform:
+    scale(1.16);
+
+  box-shadow:
+    0 0 30px
+    rgba(255,210,90,.35);
+}
+
+.duel-shoot{
+  min-height:60px;
+
+  border:0;
+  border-radius:15px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffd77a,
+      #ff9e45
+    );
+
+  color:#201004;
+
+  font-size:17px;
+  font-weight:1000;
+
+  letter-spacing:.15em;
+
+  cursor:pointer;
+}
+
+
+/* ==========================================
+LANE PANIC
+========================================== */
+
+.lane-panic-arena{
+  flex:1;
+
+  min-height:0;
+
+  overflow:hidden;
+
+  border-radius:22px;
+
+  background:
+    #080b10;
+}
+
+.lane-panic-road{
+  position:relative;
+
+  width:100%;
+  height:100%;
+
+  min-height:300px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 32.5%,
+      rgba(255,255,255,.11) 33%,
+      transparent 33.5%,
+      transparent 66%,
+      rgba(255,255,255,.11) 66.5%,
+      transparent 67%
+    ),
+    linear-gradient(
+      180deg,
+      #101722,
+      #05070a
+    );
+}
+
+.lane-warning{
+  position:absolute;
+
+  top:10%;
+
+  transform:
+    translateX(-50%);
+
+  font-size:58px;
+
+  opacity:0;
+}
+
+.lane-warning.show{
+  animation:
+    lane-warning-drop
+    .7s linear;
+}
+
+@keyframes lane-warning-drop{
+
+  0%{
+    top:8%;
+
+    opacity:0;
+  }
+
+  15%{
+    opacity:1;
+  }
+
+  100%{
+    top:76%;
+
+    opacity:1;
+  }
+
+}
+
+.lane-player{
+  position:absolute;
+
+  left:50%;
+  bottom:8%;
+
+  transform:
+    translateX(-50%);
+
+  color:#61eaff;
+
+  font-size:52px;
+
+  transition:
+    left .13s ease,
+    transform .12s ease;
+}
+
+.lane-player.lane-safe{
+  transform:
+    translateX(-50%)
+    scale(1.2);
+
+  color:#72f59d;
+}
+
+.lane-player.lane-crash{
+  color:#ff496c;
+
+  animation:
+    reflex-fail-flash
+    .2s ease;
+}
+
+.lane-panic-controls{
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:10px;
+}
+
+.lane-panic-controls button{
+  min-height:60px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
+  border-radius:15px;
+
+  background:#121a25;
+
+  color:#fff;
+
+  font-size:28px;
+
+  cursor:pointer;
+}
+
+
+/* ==========================================
+FRIEND OR FOE
+========================================== */
+
+.friend-foe-arena{
+  flex:1;
+
+  min-height:0;
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:12px;
+
+  align-items:center;
+
+  padding:22px;
+
+  border-radius:22px;
+
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(97,234,255,.08),
+      transparent 30%
+    ),
+    #050913;
+}
+
+.foe-target{
+  min-width:0;
+
+  aspect-ratio:1/1;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:18px;
+
+  background:
+    rgba(255,255,255,.035);
+
+  font-size:
+    clamp(
+      52px,
+      9vw,
+      90px
+    );
+
+  cursor:pointer;
+
+  transition:
+    transform .12s ease,
+    background .12s ease;
+}
+
+.foe-target:active{
+  transform:
+    scale(.94);
+}
+
+.foe-target.foe-hit{
+  background:
+    rgba(77,235,132,.25);
+
+  transform:
+    scale(1.12);
+}
+
+.foe-target.foe-wrong{
+  background:
+    rgba(255,73,108,.25);
+
+  animation:
+    reflex-fail-flash
+    .2s ease;
+}
+
+.foe-status{
+  min-height:34px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:#8b95a5;
+
+  font-size:11px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+}
+
+
+/* ==========================================
+MOBILE
+========================================== */
+
+@media(max-width:600px){
+
+  .ninja-controls button,
+  .lane-panic-controls button,
+  .duel-shoot{
+    min-height:54px;
+  }
+
+  .friend-foe-arena{
+    gap:7px;
+
+    padding:10px;
+  }
+
+  .foe-target{
+    border-radius:13px;
+  }
+
+}
