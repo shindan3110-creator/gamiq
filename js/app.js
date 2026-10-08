@@ -640,8 +640,45 @@ async function enterGame(
   let completed = false;
 
 
-  const onComplete =
-    result => {
+/*
+ * どのゲームも必ず一定時間で終了させる
+ * ゲーム側の不具合で無限に続くのを防止
+ */
+
+const maxGameDuration =
+  Math.max(
+    6000,
+    Number(game.duration) || 10000
+  );
+
+
+const forceFinishTimer =
+  setTimeout(
+    () => {
+
+      if (
+        completed ||
+        runToken !== activeRunToken
+      ) {
+        return;
+      }
+
+
+      onComplete({
+        score: 50,
+        adapt: 50,
+        meta: {
+          forcedFinish: true
+        }
+      });
+
+    },
+    maxGameDuration
+  );
+
+
+const onComplete =
+  result => {
 
       if (
         completed ||
