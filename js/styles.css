@@ -4174,3 +4174,452 @@ MOBILE
   }
 
 }
+
+
+
+/* ==========================================
+ZOMBIE SLASH
+========================================== */
+
+.zombie-slash-wrap{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:10px;
+}
+
+
+.zombie-slash-hud{
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr 1fr;
+
+  gap:8px;
+}
+
+
+.zombie-hud-item{
+  padding:9px 12px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:12px;
+
+  background:
+    rgba(5,12,8,.76);
+
+  text-align:center;
+}
+
+
+.zombie-hud-item span{
+  display:block;
+
+  margin-bottom:3px;
+
+  color:
+    rgba(255,255,255,.48);
+
+  font-size:8px;
+  font-weight:900;
+
+  letter-spacing:.16em;
+}
+
+
+.zombie-hud-item strong{
+  color:#fff;
+
+  font-size:17px;
+  font-weight:1000;
+}
+
+
+.zombie-combo-item strong{
+  color:#7aff9d;
+}
+
+
+.zombie-life-item strong{
+  color:#ff5068;
+
+  letter-spacing:.08em;
+}
+
+
+/* ==========================================
+STAGE
+========================================== */
+
+.zombie-slash-stage{
+  position:relative;
+
+  flex:1;
+
+  min-height:0;
+
+  overflow:hidden;
+
+  border-radius:20px;
+
+  background:#030706;
+
+  touch-action:none;
+}
+
+
+.zombie-3d-world{
+  position:absolute;
+
+  inset:0;
+
+  width:100%;
+  height:100%;
+}
+
+
+.zombie-3d-world canvas{
+  display:block;
+
+  width:100% !important;
+  height:100% !important;
+}
+
+
+/* ==========================================
+SLASH INPUT CANVAS
+========================================== */
+
+.zombie-slash-canvas{
+  position:absolute;
+
+  z-index:20;
+
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  cursor:crosshair;
+
+  touch-action:none;
+}
+
+
+/* ==========================================
+HINT
+========================================== */
+
+.zombie-slash-hint{
+  position:absolute;
+
+  z-index:12;
+
+  left:50%;
+  bottom:14px;
+
+  transform:
+    translateX(-50%);
+
+  padding:7px 12px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
+  border-radius:999px;
+
+  background:
+    rgba(0,0,0,.44);
+
+  color:
+    rgba(255,255,255,.65);
+
+  font-size:9px;
+  font-weight:900;
+
+  letter-spacing:.15em;
+
+  pointer-events:none;
+
+  animation:
+    zombie-hint-fade
+    2.4s ease forwards;
+}
+
+
+@keyframes zombie-hint-fade{
+
+  0%{
+    opacity:0;
+  }
+
+  15%{
+    opacity:1;
+  }
+
+  65%{
+    opacity:1;
+  }
+
+  100%{
+    opacity:0;
+  }
+
+}
+
+
+/* ==========================================
+HIT TEXT
+========================================== */
+
+.zombie-slash-message{
+  position:absolute;
+
+  z-index:30;
+
+  left:50%;
+  top:32%;
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    )
+    scale(.55);
+
+  color:#fff;
+
+  font-size:
+    clamp(
+      30px,
+      6vw,
+      54px
+    );
+
+  font-weight:1000;
+
+  font-style:italic;
+
+  letter-spacing:.04em;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  text-shadow:
+    0 0 18px
+    rgba(100,255,150,.8);
+}
+
+
+.zombie-slash-message.show{
+  animation:
+    zombie-message-pop
+    .4s ease;
+}
+
+
+@keyframes zombie-message-pop{
+
+  0%{
+    opacity:0;
+
+    transform:
+      translate(
+        -50%,
+        -50%
+      )
+      scale(.5);
+  }
+
+  35%{
+    opacity:1;
+
+    transform:
+      translate(
+        -50%,
+        -50%
+      )
+      scale(1.2);
+  }
+
+  100%{
+    opacity:0;
+
+    transform:
+      translate(
+        -50%,
+        -75%
+      )
+      scale(.95);
+  }
+
+}
+
+
+/* ==========================================
+COMBO POP
+========================================== */
+
+.zombie-slash-combo-pop{
+  position:absolute;
+
+  z-index:31;
+
+  right:8%;
+  top:16%;
+
+  color:#7aff9d;
+
+  font-size:
+    clamp(
+      26px,
+      5vw,
+      44px
+    );
+
+  font-weight:1000;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  text-shadow:
+    0 0 18px
+    rgba(70,255,130,.65);
+}
+
+
+.zombie-slash-combo-pop.show{
+  animation:
+    zombie-combo-pop
+    .36s ease;
+}
+
+
+@keyframes zombie-combo-pop{
+
+  0%{
+    opacity:0;
+    transform:scale(.5);
+  }
+
+  45%{
+    opacity:1;
+    transform:scale(1.25);
+  }
+
+  100%{
+    opacity:0;
+    transform:scale(1);
+  }
+
+}
+
+
+/* ==========================================
+SCREEN FEEDBACK
+========================================== */
+
+.zombie-stage-hit{
+  animation:
+    zombie-hit-screen
+    .14s ease;
+}
+
+
+@keyframes zombie-hit-screen{
+
+  0%{
+    filter:
+      brightness(1);
+  }
+
+  45%{
+    filter:
+      brightness(1.55)
+      saturate(1.4);
+  }
+
+  100%{
+    filter:
+      brightness(1);
+  }
+
+}
+
+
+.zombie-stage-damage{
+  animation:
+    zombie-damage-screen
+    .28s ease;
+}
+
+
+@keyframes zombie-damage-screen{
+
+  0%,
+  100%{
+    transform:
+      translateX(0);
+
+    box-shadow:
+      inset 0 0 0
+      rgba(255,40,70,0);
+  }
+
+  25%{
+    transform:
+      translateX(-7px);
+
+    box-shadow:
+      inset 0 0 70px
+      rgba(255,40,70,.42);
+  }
+
+  50%{
+    transform:
+      translateX(7px);
+  }
+
+  75%{
+    transform:
+      translateX(-4px);
+  }
+
+}
+
+
+/* ==========================================
+MOBILE
+========================================== */
+
+@media(max-width:600px){
+
+  .zombie-slash-hud{
+    gap:5px;
+  }
+
+
+  .zombie-hud-item{
+    padding:7px 5px;
+  }
+
+
+  .zombie-hud-item strong{
+    font-size:14px;
+  }
+
+
+  .zombie-slash-stage{
+    border-radius:15px;
+  }
+
+}
