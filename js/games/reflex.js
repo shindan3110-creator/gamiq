@@ -95,73 +95,185 @@ function runNinjaCounter({
 }) {
   let active = true;
 
-  let round = 0;
-  let correct = 0;
+  let successfulCounters = 0;
   let misses = 0;
   let combo = 0;
   let maxCombo = 0;
+  let lives = 3;
 
-  const rounds = 7;
+  const goal = 7;
 
   let answer = null;
   let reactionStartedAt = 0;
 
+  let attackTimer = null;
+  let timeoutTimer = null;
+  let roundTimer = null;
+
+  let acceptingInput = false;
+  let fakeActive = false;
+
   const reactionTimes = [];
 
-  let timer = null;
+  const startedAt =
+    performance.now();
 
+
+  /* ==========================================
+  HTML
+  ========================================== */
 
   container.innerHTML = `
-    <div class="reflex-game reflex-ninja-game">
+    <div class="ninja-counter-wrap">
 
-      <div class="reflex-game-hud">
-        <span>COMBO</span>
-        <strong data-ninja-combo>0</strong>
+      <div class="ninja-counter-hud">
+
+        <div class="ninja-counter-hud-item">
+          <span>COUNTER</span>
+
+          <strong>
+            <b data-ninja-score>
+              0
+            </b>
+            / ${goal}
+          </strong>
+        </div>
+
+
+        <div class="ninja-counter-hud-item">
+          <span>COMBO</span>
+
+          <strong data-ninja-combo>
+            0
+          </strong>
+        </div>
+
+
+        <div class="ninja-counter-hud-item">
+          <span>LIFE</span>
+
+          <strong
+            class="ninja-life-value"
+            data-ninja-life
+          >
+            ♥ ♥ ♥
+          </strong>
+        </div>
+
       </div>
+
 
       <div
-        class="ninja-arena"
-        data-ninja-arena
+        class="ninja-counter-stage"
+        data-ninja-stage
       >
-        <div
-          class="ninja-danger ninja-danger-top"
-          data-danger="UP"
-        >
-          ↓
+
+        <div class="ninja-dojo-bg">
+
+          <div class="ninja-moon"></div>
+
+          <div class="ninja-floor-line"></div>
+
         </div>
 
-        <div
-          class="ninja-danger ninja-danger-left"
-          data-danger="LEFT"
-        >
-          →
-        </div>
 
         <div
-          class="ninja-danger ninja-danger-right"
-          data-danger="RIGHT"
+          class="ninja-enemy ninja-enemy-left"
+          data-ninja-enemy="LEFT"
         >
-          ←
+          <div class="ninja-enemy-head">
+            <i></i>
+          </div>
+
+          <div class="ninja-enemy-body"></div>
+
+          <div class="ninja-enemy-sword"></div>
         </div>
 
+
         <div
-          class="ninja-player"
+          class="ninja-enemy ninja-enemy-up"
+          data-ninja-enemy="UP"
+        >
+          <div class="ninja-enemy-head">
+            <i></i>
+          </div>
+
+          <div class="ninja-enemy-body"></div>
+
+          <div class="ninja-enemy-sword"></div>
+        </div>
+
+
+        <div
+          class="ninja-enemy ninja-enemy-right"
+          data-ninja-enemy="RIGHT"
+        >
+          <div class="ninja-enemy-head">
+            <i></i>
+          </div>
+
+          <div class="ninja-enemy-body"></div>
+
+          <div class="ninja-enemy-sword"></div>
+        </div>
+
+
+        <div
+          class="ninja-player-v2"
           data-ninja-player
         >
-          🥷
+
+          <div class="ninja-player-head">
+            <i></i>
+          </div>
+
+          <div class="ninja-player-body"></div>
+
+          <div class="ninja-player-arm"></div>
+
+          <div class="ninja-player-sword"></div>
+
         </div>
 
+
         <div
-          class="reflex-impact"
-          data-ninja-impact
+          class="ninja-slash-trail"
+          data-ninja-slash
         ></div>
+
+
+        <div
+          class="ninja-impact-sparks"
+          data-ninja-sparks
+        ></div>
+
+
+        <div
+          class="ninja-counter-message"
+          data-ninja-message
+        ></div>
+
+
+        <div
+          class="ninja-counter-combo-pop"
+          data-ninja-combo-pop
+        ></div>
+
+
+        <div class="ninja-counter-hint">
+          攻撃方向へCOUNTER
+        </div>
+
       </div>
 
-      <div class="ninja-controls">
+
+      <div class="ninja-counter-controls">
 
         <button
           type="button"
           data-ninja-answer="LEFT"
+          aria-label="Counter left"
         >
           ←
         </button>
@@ -169,6 +281,7 @@ function runNinjaCounter({
         <button
           type="button"
           data-ninja-answer="UP"
+          aria-label="Counter up"
         >
           ↑
         </button>
@@ -176,6 +289,7 @@ function runNinjaCounter({
         <button
           type="button"
           data-ninja-answer="RIGHT"
+          aria-label="Counter right"
         >
           →
         </button>
@@ -186,9 +300,13 @@ function runNinjaCounter({
   `;
 
 
-  const arena =
+  /* ==========================================
+  ELEMENTS
+  ========================================== */
+
+  const stage =
     container.querySelector(
-      "[data-ninja-arena]"
+      "[data-ninja-stage]"
     );
 
   const player =
@@ -196,129 +314,420 @@ function runNinjaCounter({
       "[data-ninja-player]"
     );
 
+  const scoreElement =
+    container.querySelector(
+      "[data-ninja-score]"
+    );
+
   const comboElement =
     container.querySelector(
       "[data-ninja-combo]"
     );
 
-  const impact =
+  const lifeElement =
     container.querySelector(
-      "[data-ninja-impact]"
+      "[data-ninja-life]"
     );
 
-  const dangerElements =
-    [...container.querySelectorAll(
-      "[data-danger]"
-    )];
+  const messageElement =
+    container.querySelector(
+      "[data-ninja-message]"
+    );
+
+  const comboPop =
+    container.querySelector(
+      "[data-ninja-combo-pop]"
+    );
+
+  const slashTrail =
+    container.querySelector(
+      "[data-ninja-slash]"
+    );
+
+  const sparks =
+    container.querySelector(
+      "[data-ninja-sparks]"
+    );
+
+  const enemies =
+    [
+      ...container.querySelectorAll(
+        "[data-ninja-enemy]"
+      )
+    ];
 
   const buttons =
-    [...container.querySelectorAll(
-      "[data-ninja-answer]"
-    )];
+    [
+      ...container.querySelectorAll(
+        "[data-ninja-answer]"
+      )
+    ];
 
 
-  function clearDanger() {
-    dangerElements.forEach(
-      element => {
-        element.classList.remove(
-          "show"
+  /* ==========================================
+  UTIL
+  ========================================== */
+
+  function clearTimers() {
+    clearTimeout(
+      attackTimer
+    );
+
+    clearTimeout(
+      timeoutTimer
+    );
+
+    clearTimeout(
+      roundTimer
+    );
+  }
+
+
+  function clearEnemies() {
+    enemies.forEach(
+      enemy => {
+
+        enemy.classList.remove(
+          "attack",
+          "fake",
+          "hit",
+          "retreat"
         );
+
       }
     );
   }
 
 
-  function nextRound() {
+  function getEnemy(
+    direction
+  ) {
+    return container.querySelector(
+      `[data-ninja-enemy="${direction}"]`
+    );
+  }
+
+
+  function updateHud() {
+    scoreElement.textContent =
+      successfulCounters;
+
+
+    comboElement.textContent =
+      combo;
+
+
+    lifeElement.textContent =
+      Array.from(
+        {
+          length:
+            3
+        },
+
+        (
+          _,
+          index
+        ) =>
+          index <
+          lives
+            ? "♥"
+            : "♡"
+      )
+      .join(
+        " "
+      );
+  }
+
+
+  /* ==========================================
+  NEXT ATTACK
+  ========================================== */
+
+  function nextAttack() {
     if (!active) {
       return;
     }
 
-    clearDanger();
 
-    answer = null;
+    clearTimers();
+
+    clearEnemies();
+
+
+    answer =
+      null;
+
+
+    acceptingInput =
+      false;
+
+
+    fakeActive =
+      false;
+
+
+    const difficulty =
+      successfulCounters;
+
 
     const delay =
-      450 +
-      Math.random() * 700;
+      Math.max(
+        330,
 
-    timer =
+        720 -
+        difficulty *
+        40
+      ) +
+      Math.random() *
+      500;
+
+
+    attackTimer =
       setTimeout(
         () => {
+
           if (!active) {
             return;
           }
 
-          const directions =
-            [
-              "LEFT",
-              "UP",
-              "RIGHT"
-            ];
 
-          answer =
-            directions[
-              Math.floor(
-                Math.random() *
-                directions.length
-              )
-            ];
+          /*
+           * 25%程度でフェイント
+           */
 
-          const danger =
-            container.querySelector(
-              `[data-danger="${answer}"]`
-            );
+          const shouldFake =
+            successfulCounters >= 2 &&
+            Math.random() <
+            0.25;
 
-          danger?.classList.add(
-            "show"
-          );
 
-          arena.classList.add(
-            "ninja-danger-active"
-          );
+          if (shouldFake) {
+            showFakeAttack();
 
-          reactionStartedAt =
-            performance.now();
-
-          timer =
-            setTimeout(
-              () => {
-                if (
-                  active &&
-                  answer
-                ) {
-                  missRound();
-                }
-              },
-              720
-            );
+          } else {
+            launchRealAttack();
+          }
 
         },
+
         delay
       );
   }
 
 
+  /* ==========================================
+  FAKE
+  ========================================== */
+
+  function showFakeAttack() {
+    fakeActive =
+      true;
+
+
+    const directions =
+      [
+        "LEFT",
+        "UP",
+        "RIGHT"
+      ];
+
+
+    const fakeDirection =
+      directions[
+        Math.floor(
+          Math.random() *
+          directions.length
+        )
+      ];
+
+
+    const enemy =
+      getEnemy(
+        fakeDirection
+      );
+
+
+    enemy?.classList.add(
+      "fake"
+    );
+
+
+    roundTimer =
+      setTimeout(
+        () => {
+
+          if (!active) {
+            return;
+          }
+
+
+          enemy?.classList.remove(
+            "fake"
+          );
+
+
+          fakeActive =
+            false;
+
+
+          roundTimer =
+            setTimeout(
+              launchRealAttack,
+              180 +
+              Math.random() *
+              180
+            );
+
+        },
+
+        260
+      );
+  }
+
+
+  /* ==========================================
+  REAL ATTACK
+  ========================================== */
+
+  function launchRealAttack() {
+    if (!active) {
+      return;
+    }
+
+
+    fakeActive =
+      false;
+
+
+    const directions =
+      [
+        "LEFT",
+        "UP",
+        "RIGHT"
+      ];
+
+
+    answer =
+      directions[
+        Math.floor(
+          Math.random() *
+          directions.length
+        )
+      ];
+
+
+    const enemy =
+      getEnemy(
+        answer
+      );
+
+
+    enemy?.classList.add(
+      "attack"
+    );
+
+
+    acceptingInput =
+      true;
+
+
+    reactionStartedAt =
+      performance.now();
+
+
+    /*
+     * 上手くなるほど猶予を短くする
+     */
+
+    const windowMs =
+      Math.max(
+        430,
+
+        700 -
+        successfulCounters *
+        30
+      );
+
+
+    timeoutTimer =
+      setTimeout(
+        () => {
+
+          if (
+            active &&
+            acceptingInput
+          ) {
+            failCounter(
+              "TOO SLOW"
+            );
+          }
+
+        },
+
+        windowMs
+      );
+  }
+
+
+  /* ==========================================
+  INPUT
+  ========================================== */
+
   function choose(
     direction
   ) {
+    if (!active) {
+      return;
+    }
+
+
+    /*
+     * フェイント中に押した
+     */
+
     if (
-      !active ||
+      fakeActive &&
+      !acceptingInput
+    ) {
+      failCounter(
+        "FAKE!"
+      );
+
+      return;
+    }
+
+
+    if (
+      !acceptingInput ||
       !answer
     ) {
       return;
     }
 
-    clearTimeout(timer);
+
+    clearTimeout(
+      timeoutTimer
+    );
+
+
+    acceptingInput =
+      false;
+
 
     const reaction =
       performance.now() -
       reactionStartedAt;
 
+
     if (
-      direction === answer
+      direction ===
+      answer
     ) {
-      correct++;
+      successfulCounters++;
+
+
       combo++;
+
 
       maxCombo =
         Math.max(
@@ -326,160 +735,443 @@ function runNinjaCounter({
           combo
         );
 
+
       reactionTimes.push(
         reaction
       );
 
-      comboElement.textContent =
-        combo;
 
-      player.classList.remove(
-        "slash-left",
-        "slash-up",
-        "slash-right"
-      );
-
-      player.classList.add(
-        `slash-${direction.toLowerCase()}`
-      );
-
-      impact.textContent =
-        "SLASH!";
-
-      impact.classList.add(
-        "show",
-        "success"
-      );
-
-      arena.classList.add(
-        "reflex-screen-hit"
+      successfulCounter(
+        direction,
+        reaction
       );
 
     } else {
-      misses++;
-      combo = 0;
 
-      comboElement.textContent =
-        combo;
-
-      impact.textContent =
-        "MISS";
-
-      impact.classList.add(
-        "show",
-        "fail"
-      );
-
-      arena.classList.add(
-        "reflex-screen-fail"
+      failCounter(
+        "MISS"
       );
     }
-
-    finishRound();
   }
 
 
-  function missRound() {
+  /* ==========================================
+  SUCCESS
+  ========================================== */
+
+  function successfulCounter(
+    direction,
+    reaction
+  ) {
+    const enemy =
+      getEnemy(
+        answer
+      );
+
+
+    enemy?.classList.add(
+      "hit"
+    );
+
+
+    player.classList.remove(
+      "counter-left",
+      "counter-up",
+      "counter-right"
+    );
+
+
+    player.classList.add(
+      `counter-${direction.toLowerCase()}`
+    );
+
+
+    slashTrail.className =
+      "ninja-slash-trail";
+
+
+    void slashTrail.offsetWidth;
+
+
+    slashTrail.classList.add(
+      `slash-${direction.toLowerCase()}`,
+      "show"
+    );
+
+
+    createSparks(
+      direction
+    );
+
+
+    showMessage(
+      reaction <= 250
+        ? "PERFECT!"
+        : "COUNTER!"
+    );
+
+
+    showCombo();
+
+
+    /*
+     * HIT STOP
+     */
+
+    stage.classList.remove(
+      "ninja-hit-stop"
+    );
+
+
+    void stage.offsetWidth;
+
+
+    stage.classList.add(
+      "ninja-hit-stop"
+    );
+
+
+    updateHud();
+
+
+    roundTimer =
+      setTimeout(
+        () => {
+
+          if (!active) {
+            return;
+          }
+
+
+          enemy?.classList.add(
+            "retreat"
+          );
+
+
+          player.classList.remove(
+            "counter-left",
+            "counter-up",
+            "counter-right"
+          );
+
+
+          if (
+            successfulCounters >=
+            goal
+          ) {
+            finish(
+              true
+            );
+
+            return;
+          }
+
+
+          roundTimer =
+            setTimeout(
+              nextAttack,
+              220
+            );
+
+        },
+
+        220
+      );
+  }
+
+
+  /* ==========================================
+  FAIL
+  ========================================== */
+
+  function failCounter(
+    text
+  ) {
     if (!active) {
       return;
     }
 
+
+    clearTimeout(
+      timeoutTimer
+    );
+
+
+    acceptingInput =
+      false;
+
+
+    fakeActive =
+      false;
+
+
     misses++;
-    combo = 0;
 
-    comboElement.textContent =
-      combo;
 
-    impact.textContent =
-      "TOO SLOW";
+    lives--;
 
-    impact.classList.add(
+
+    combo =
+      0;
+
+
+    showMessage(
+      text,
+      true
+    );
+
+
+    stage.classList.remove(
+      "ninja-damage"
+    );
+
+
+    void stage.offsetWidth;
+
+
+    stage.classList.add(
+      "ninja-damage"
+    );
+
+
+    updateHud();
+
+
+    clearEnemies();
+
+
+    if (
+      lives <=
+      0
+    ) {
+      roundTimer =
+        setTimeout(
+          () => {
+            finish(
+              false
+            );
+          },
+
+          350
+        );
+
+      return;
+    }
+
+
+    roundTimer =
+      setTimeout(
+        nextAttack,
+        480
+      );
+  }
+
+
+  /* ==========================================
+  MESSAGE
+  ========================================== */
+
+  function showMessage(
+    text,
+    fail = false
+  ) {
+    messageElement.textContent =
+      text;
+
+
+    messageElement.classList.remove(
       "show",
       "fail"
     );
 
-    arena.classList.add(
-      "reflex-screen-fail"
-    );
 
-    finishRound();
+    void messageElement.offsetWidth;
+
+
+    if (fail) {
+      messageElement.classList.add(
+        "fail"
+      );
+    }
+
+
+    messageElement.classList.add(
+      "show"
+    );
   }
 
 
-  function finishRound() {
-    answer = null;
+  function showCombo() {
+    if (
+      combo <
+      2
+    ) {
+      return;
+    }
 
-    clearDanger();
 
-    round++;
+    comboPop.textContent =
+      `×${combo}`;
+
+
+    comboPop.classList.remove(
+      "show"
+    );
+
+
+    void comboPop.offsetWidth;
+
+
+    comboPop.classList.add(
+      "show"
+    );
+  }
+
+
+  /* ==========================================
+  SPARKS
+  ========================================== */
+
+  function createSparks(
+    direction
+  ) {
+    sparks.innerHTML =
+      "";
+
+
+    sparks.className =
+      `ninja-impact-sparks sparks-${direction.toLowerCase()}`;
+
+
+    for (
+      let i = 0;
+      i < 12;
+      i++
+    ) {
+      const spark =
+        document.createElement(
+          "i"
+        );
+
+
+      const angle =
+        Math.random() *
+        Math.PI *
+        2;
+
+
+      const distance =
+        35 +
+        Math.random() *
+        55;
+
+
+      spark.style.setProperty(
+        "--spark-x",
+
+        `${Math.cos(angle) *
+        distance}px`
+      );
+
+
+      spark.style.setProperty(
+        "--spark-y",
+
+        `${Math.sin(angle) *
+        distance}px`
+      );
+
+
+      spark.style.animationDelay =
+        `${Math.random() *
+        0.04}s`;
+
+
+      sparks.appendChild(
+        spark
+      );
+    }
+
+
+    sparks.classList.add(
+      "show"
+    );
+
 
     setTimeout(
       () => {
-        impact.classList.remove(
-          "show",
-          "success",
-          "fail"
+
+        sparks.classList.remove(
+          "show"
         );
 
-        arena.classList.remove(
-          "ninja-danger-active",
-          "reflex-screen-hit",
-          "reflex-screen-fail"
-        );
-
-        player.classList.remove(
-          "slash-left",
-          "slash-up",
-          "slash-right"
-        );
-
-        if (
-          round >= rounds
-        ) {
-          finish();
-        } else {
-          nextRound();
-        }
       },
-      280
+
+      300
     );
   }
 
+
+  /* ==========================================
+  KEYBOARD
+  ========================================== */
 
   function keyDown(
     event
   ) {
     if (
-      event.key === "ArrowLeft"
+      event.key ===
+      "ArrowLeft"
     ) {
-      choose("LEFT");
+      event.preventDefault();
+
+      choose(
+        "LEFT"
+      );
     }
 
-    if (
-      event.key === "ArrowUp"
-    ) {
-      choose("UP");
-    }
 
     if (
-      event.key === "ArrowRight"
+      event.key ===
+      "ArrowUp"
     ) {
-      choose("RIGHT");
+      event.preventDefault();
+
+      choose(
+        "UP"
+      );
+    }
+
+
+    if (
+      event.key ===
+      "ArrowRight"
+    ) {
+      event.preventDefault();
+
+      choose(
+        "RIGHT"
+      );
     }
   }
 
 
   buttons.forEach(
     button => {
+
       button.addEventListener(
         "pointerdown",
+
         () => {
+
           choose(
             button.dataset
               .ninjaAnswer
           );
+
         }
       );
+
     }
   );
 
@@ -490,75 +1182,191 @@ function runNinjaCounter({
   );
 
 
-  function finish() {
+  /* ==========================================
+  FINISH
+  ========================================== */
+
+  function finish(
+    success
+  ) {
     if (!active) {
       return;
     }
 
-    active = false;
 
-    clearTimeout(timer);
+    active =
+      false;
+
+
+    clearTimers();
+
+
+    const elapsed =
+      performance.now() -
+      startedAt;
+
 
     const accuracy =
-      correct / rounds;
+      successfulCounters /
+      Math.max(
+        1,
+
+        successfulCounters +
+        misses
+      );
+
 
     const averageReaction =
       reactionTimes.length
         ? average(
             reactionTimes
           )
-        : 900;
+        : 800;
+
 
     const reactionScore =
       clamp(
         100 -
         (
           averageReaction -
-          200
-        ) / 6,
+          180
+        ) /
+        5,
+
         0,
+
         100
       );
 
+
+    const completion =
+      successfulCounters /
+      goal;
+
+
+    const lifeScore =
+      lives /
+      3;
+
+
+    const comboScore =
+      clamp(
+        maxCombo /
+        goal,
+
+        0,
+
+        1
+      );
+
+
     const score =
-      accuracy * 65 +
-      reactionScore * 35;
+      clamp(
+        completion *
+        35 +
 
-    onComplete?.({
-      score:
-        Math.round(score),
+        accuracy *
+        25 +
 
-      adapt:
-        Math.round(
-          clamp(
-            45 +
-            accuracy * 35 +
-            maxCombo * 3,
-            0,
-            100
-          )
-        ),
+        reactionScore /
+        100 *
+        25 +
 
-      meta: {
-        correct,
-        misses,
-        maxCombo,
-        averageReaction:
-          Math.round(
-            averageReaction
-          )
-      }
-    });
+        lifeScore *
+        10 +
+
+        comboScore *
+        5,
+
+        0,
+
+        100
+      );
+
+
+    setTimeout(
+      () => {
+
+        onComplete?.({
+          score:
+            Math.round(
+              score
+            ),
+
+          adapt:
+            Math.round(
+              clamp(
+                40 +
+                accuracy *
+                30 +
+                comboScore *
+                20 +
+                (
+                  success
+                    ? 10
+                    : 0
+                ),
+
+                0,
+
+                100
+              )
+            ),
+
+          meta: {
+            success,
+
+            counters:
+              successfulCounters,
+
+            misses,
+
+            lives,
+
+            maxCombo,
+
+            averageReaction:
+              Math.round(
+                averageReaction
+              ),
+
+            elapsed:
+              Math.round(
+                elapsed
+              )
+          }
+        });
+
+      },
+
+      success
+        ? 480
+        : 250
+    );
   }
 
 
-  nextRound();
+  /* ==========================================
+  START
+  ========================================== */
 
+  updateHud();
+
+
+  nextAttack();
+
+
+  /* ==========================================
+  CLEANUP
+  ========================================== */
 
   return () => {
-    active = false;
+    active =
+      false;
 
-    clearTimeout(timer);
+
+    clearTimers();
+
 
     window.removeEventListener(
       "keydown",
