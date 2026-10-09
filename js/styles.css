@@ -4187,3 +4187,566 @@ MOBILE COMPATIBILITY
     grid-template-columns:1fr;
   }
 }
+
+
+
+
+
+/* =========================================================
+HIGHWAY DODGE V2
+========================================================= */
+
+.highway-dodge-wrap{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:9px;
+}
+
+
+/* =============================
+HUD
+============================= */
+
+.highway-dodge-hud{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:7px;
+}
+
+
+.highway-hud-item{
+  padding:
+    8px 9px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:11px;
+
+  background:
+    rgba(5,9,16,.82);
+
+  text-align:center;
+}
+
+
+.highway-hud-item span{
+  display:block;
+
+  margin-bottom:2px;
+
+  color:
+    rgba(255,255,255,.46);
+
+  font-size:7px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+}
+
+
+.highway-hud-item strong{
+  color:#fff;
+
+  font-size:15px;
+  font-weight:1000;
+}
+
+
+.highway-hud-item:nth-child(2)
+strong{
+  color:#67efff;
+}
+
+
+/* =============================
+STAGE
+============================= */
+
+.highway-dodge-stage{
+  position:relative;
+
+  flex:1;
+
+  min-height:0;
+
+  overflow:hidden;
+
+  border-radius:19px;
+
+  background:#03060a;
+
+  touch-action:none;
+}
+
+
+.highway-dodge-world{
+  position:absolute;
+
+  inset:0;
+
+  width:100%;
+  height:100%;
+}
+
+
+.highway-dodge-world canvas{
+  display:block;
+
+  width:100% !important;
+  height:100% !important;
+}
+
+
+/* =============================
+LIFE
+============================= */
+
+.highway-life-panel{
+  position:absolute;
+
+  z-index:20;
+
+  left:14px;
+  top:14px;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:3px;
+
+  padding:
+    7px 10px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.09);
+
+  border-radius:10px;
+
+  background:
+    rgba(0,0,0,.4);
+
+  backdrop-filter:
+    blur(5px);
+}
+
+
+.highway-life-panel span{
+  color:
+    rgba(255,255,255,.45);
+
+  font-size:7px;
+  font-weight:1000;
+
+  letter-spacing:.15em;
+}
+
+
+.highway-life-panel strong{
+  color:#ff5773;
+
+  font-size:14px;
+
+  letter-spacing:.1em;
+}
+
+
+/* =============================
+MESSAGE
+============================= */
+
+.highway-message{
+  position:absolute;
+
+  z-index:30;
+
+  left:50%;
+  top:28%;
+
+  transform:
+    translate(-50%,-50%)
+    scale(.55);
+
+  color:#fff;
+
+  font-size:
+    clamp(
+      29px,
+      6vw,
+      52px
+    );
+
+  font-weight:1000;
+
+  font-style:italic;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  text-shadow:
+    0 0 22px
+    rgba(70,220,255,.75);
+}
+
+
+.highway-message.show{
+  animation:
+    highway-message-pop
+    .42s ease;
+}
+
+
+@keyframes highway-message-pop{
+
+  0%{
+    opacity:0;
+
+    transform:
+      translate(-50%,-50%)
+      scale(.5);
+  }
+
+  35%{
+    opacity:1;
+
+    transform:
+      translate(-50%,-50%)
+      scale(1.18);
+  }
+
+  100%{
+    opacity:0;
+
+    transform:
+      translate(-50%,-75%)
+      scale(.95);
+  }
+
+}
+
+
+/* =============================
+COMBO
+============================= */
+
+.highway-combo-pop{
+  position:absolute;
+
+  z-index:30;
+
+  right:8%;
+  top:16%;
+
+  color:#69efff;
+
+  font-size:
+    clamp(
+      26px,
+      5vw,
+      44px
+    );
+
+  font-weight:1000;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  text-shadow:
+    0 0 20px
+    rgba(70,225,255,.7);
+}
+
+
+.highway-combo-pop.show{
+  animation:
+    highway-combo-pop
+    .35s ease;
+}
+
+
+@keyframes highway-combo-pop{
+
+  0%{
+    opacity:0;
+    transform:scale(.5);
+  }
+
+  45%{
+    opacity:1;
+    transform:scale(1.3);
+  }
+
+  100%{
+    opacity:0;
+    transform:scale(1);
+  }
+
+}
+
+
+/* =============================
+HINT
+============================= */
+
+.highway-hint{
+  position:absolute;
+
+  z-index:15;
+
+  left:50%;
+  bottom:13px;
+
+  transform:
+    translateX(-50%);
+
+  padding:
+    6px 11px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
+  border-radius:999px;
+
+  background:
+    rgba(0,0,0,.4);
+
+  color:
+    rgba(255,255,255,.65);
+
+  font-size:8px;
+  font-weight:1000;
+
+  letter-spacing:.16em;
+
+  pointer-events:none;
+
+  animation:
+    highway-hint-fade
+    2.4s ease forwards;
+}
+
+
+@keyframes highway-hint-fade{
+
+  0%{
+    opacity:0;
+  }
+
+  15%,
+  65%{
+    opacity:1;
+  }
+
+  100%{
+    opacity:0;
+  }
+
+}
+
+
+/* =============================
+CONTROLS
+============================= */
+
+.highway-controls{
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:10px;
+}
+
+
+.highway-control-button{
+  min-height:58px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
+  border-radius:15px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #172230,
+      #0b111a
+    );
+
+  color:#fff;
+
+  font-size:29px;
+  font-weight:1000;
+
+  cursor:pointer;
+
+  box-shadow:
+    inset 0 1px
+    rgba(255,255,255,.05);
+}
+
+
+.highway-control-button:active{
+  transform:
+    scale(.96);
+
+  background:
+    linear-gradient(
+      180deg,
+      #203247,
+      #0d1723
+    );
+}
+
+
+/* =============================
+FX
+============================= */
+
+.highway-crash{
+  animation:
+    highway-crash-screen
+    .34s ease;
+}
+
+
+@keyframes highway-crash-screen{
+
+  0%,
+  100%{
+    transform:
+      translateX(0);
+
+    filter:
+      brightness(1);
+  }
+
+  20%{
+    transform:
+      translateX(-9px);
+
+    filter:
+      brightness(1.8)
+      saturate(1.5);
+  }
+
+  40%{
+    transform:
+      translateX(9px);
+  }
+
+  60%{
+    transform:
+      translateX(-5px);
+  }
+
+  80%{
+    transform:
+      translateX(4px);
+  }
+
+}
+
+
+.highway-near-miss{
+  animation:
+    highway-near-miss
+    .2s ease;
+}
+
+
+@keyframes highway-near-miss{
+
+  0%{
+    filter:
+      brightness(1);
+  }
+
+  40%{
+    filter:
+      brightness(1.45)
+      saturate(1.4);
+  }
+
+  100%{
+    filter:
+      brightness(1);
+  }
+
+}
+
+
+.highway-lane-shift{
+  animation:
+    highway-lane-shift
+    .14s ease;
+}
+
+
+@keyframes highway-lane-shift{
+
+  0%{
+    filter:
+      brightness(1);
+  }
+
+  50%{
+    filter:
+      brightness(1.12);
+  }
+
+  100%{
+    filter:
+      brightness(1);
+  }
+
+}
+
+
+/* =============================
+MOBILE
+============================= */
+
+@media(max-width:700px){
+
+  .highway-dodge-hud{
+    gap:4px;
+  }
+
+
+  .highway-hud-item{
+    padding:
+      6px 4px;
+  }
+
+
+  .highway-hud-item strong{
+    font-size:13px;
+  }
+
+
+  .highway-dodge-stage{
+    border-radius:14px;
+  }
+
+
+  .highway-control-button{
+    min-height:62px;
+
+    font-size:31px;
+  }
+
+}
