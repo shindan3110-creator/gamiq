@@ -1,4 +1,13 @@
-// GAMIQ（ゲーミック） v2 - 3D Highway Dodge
+// GAMIQ（ゲーミック） v2
+// HIGHWAY DODGE
+//
+// 操作:
+// PC   : ← →
+// Mobile: 左右ボタン
+//
+// 終了:
+// 10台回避 → CLEAR
+// LIFE 0 → GAME OVER
 
 import {
   GamiqThreeScene
@@ -14,11 +23,25 @@ export async function runRace3D({
   }
 
 
+  /* ==========================================
+  STATE
+  ========================================== */
+
   let active = true;
 
   let lane = 1;
+
   let avoided = 0;
   let crashes = 0;
+
+  let combo = 0;
+  let maxCombo = 0;
+
+  let lives = 3;
+
+  let invincible = false;
+
+  let screenShake = 0;
 
   const goal = 10;
 
@@ -26,27 +49,40 @@ export async function runRace3D({
     performance.now();
 
 
+  /* ==========================================
+  HTML
+  ========================================== */
+
   container.innerHTML = `
-    <div class="race-3d-wrap">
+    <div class="highway-dodge-wrap">
 
-      <div class="race-3d-hud">
+      <div class="highway-dodge-hud">
 
-        <div>
+        <div class="highway-hud-item">
           <span>DODGED</span>
 
-          <strong
-            data-race3d-dodged
-          >
-            0 / ${goal}
+          <strong>
+            <b data-highway-dodged>
+              0
+            </b>
+            / ${goal}
           </strong>
         </div>
 
-        <div>
+
+        <div class="highway-hud-item">
+          <span>COMBO</span>
+
+          <strong data-highway-combo>
+            0
+          </strong>
+        </div>
+
+
+        <div class="highway-hud-item">
           <span>SPEED</span>
 
-          <strong
-            data-race3d-speed
-          >
+          <strong data-highway-speed>
             1.0x
           </strong>
         </div>
@@ -55,23 +91,64 @@ export async function runRace3D({
 
 
       <div
-        class="race-3d-world"
-        data-race3d-world
-      ></div>
+        class="highway-dodge-stage"
+        data-highway-stage
+      >
+
+        <div
+          class="highway-dodge-world"
+          data-highway-world
+        ></div>
 
 
-      <div class="race-3d-controls">
+        <div
+          class="highway-message"
+          data-highway-message
+        ></div>
+
+
+        <div
+          class="highway-combo-pop"
+          data-highway-combo-pop
+        ></div>
+
+
+        <div class="highway-life-panel">
+
+          <span>
+            LIFE
+          </span>
+
+          <strong data-highway-lives>
+            ♥ ♥ ♥
+          </strong>
+
+        </div>
+
+
+        <div class="highway-hint">
+          ← DODGE →
+        </div>
+
+      </div>
+
+
+      <div class="highway-controls">
 
         <button
           type="button"
-          data-race3d-left
+          class="highway-control-button"
+          data-highway-left
+          aria-label="Move left"
         >
           ←
         </button>
 
         <button
           type="button"
-          data-race3d-right
+          class="highway-control-button"
+          data-highway-right
+          aria-label="Move right"
         >
           →
         </button>
@@ -82,35 +159,64 @@ export async function runRace3D({
   `;
 
 
+  /* ==========================================
+  ELEMENTS
+  ========================================== */
+
   const worldElement =
     container.querySelector(
-      "[data-race3d-world]"
+      "[data-highway-world]"
     );
 
+  const stage =
+    container.querySelector(
+      "[data-highway-stage]"
+    );
 
   const dodgedElement =
     container.querySelector(
-      "[data-race3d-dodged]"
+      "[data-highway-dodged]"
     );
 
+  const comboElement =
+    container.querySelector(
+      "[data-highway-combo]"
+    );
 
   const speedElement =
     container.querySelector(
-      "[data-race3d-speed]"
+      "[data-highway-speed]"
     );
 
+  const livesElement =
+    container.querySelector(
+      "[data-highway-lives]"
+    );
+
+  const messageElement =
+    container.querySelector(
+      "[data-highway-message]"
+    );
+
+  const comboPop =
+    container.querySelector(
+      "[data-highway-combo-pop]"
+    );
 
   const leftButton =
     container.querySelector(
-      "[data-race3d-left]"
+      "[data-highway-left]"
     );
-
 
   const rightButton =
     container.querySelector(
-      "[data-race3d-right]"
+      "[data-highway-right]"
     );
 
+
+  /* ==========================================
+  WORLD
+  ========================================== */
 
   const world =
     new GamiqThreeScene({
@@ -121,7 +227,7 @@ export async function runRace3D({
         8,
 
       background:
-        0x05070a
+        0x03060a
     });
 
 
@@ -150,15 +256,15 @@ export async function runRace3D({
 
   world.camera.position.set(
     0,
-    3.4,
+    3.7,
     8
   );
 
 
   world.camera.lookAt(
     0,
-    -0.5,
-    -12
+    -0.6,
+    -13
   );
 
 
@@ -166,29 +272,29 @@ export async function runRace3D({
   LIGHTS
   ========================================== */
 
-  const streetLight =
+  const mainLight =
     new T.DirectionalLight(
       0xffffff,
-      2.4
+      2.5
     );
 
 
-  streetLight.position.set(
+  mainLight.position.set(
     0,
     8,
-    5
+    6
   );
 
 
   world.scene.add(
-    streetLight
+    mainLight
   );
 
 
   const blueLight =
     new T.PointLight(
-      0x61eaff,
-      2.5,
+      0x49ddff,
+      3,
       20
     );
 
@@ -196,12 +302,32 @@ export async function runRace3D({
   blueLight.position.set(
     -5,
     2,
-    2
+    1
   );
 
 
   world.scene.add(
     blueLight
+  );
+
+
+  const pinkLight =
+    new T.PointLight(
+      0xff3e72,
+      2.4,
+      20
+    );
+
+
+  pinkLight.position.set(
+    5,
+    1,
+    -8
+  );
+
+
+  world.scene.add(
+    pinkLight
   );
 
 
@@ -212,13 +338,13 @@ export async function runRace3D({
   const road =
     world.addFloor({
       width:
-        9,
+        10,
 
       depth:
-        60,
+        70,
 
       color:
-        0x151922,
+        0x111722,
 
       y:
         -2
@@ -226,8 +352,63 @@ export async function runRace3D({
 
 
   road.position.z =
-    -18;
+    -20;
 
+
+  /*
+   * ROAD SIDE
+   */
+
+  const shoulderMaterial =
+    new T.MeshStandardMaterial({
+      color:
+        0x202733,
+
+      roughness:
+        0.95
+    });
+
+
+  const leftShoulder =
+    new T.Mesh(
+      new T.BoxGeometry(
+        1.1,
+        0.05,
+        70
+      ),
+
+      shoulderMaterial
+    );
+
+
+  leftShoulder.position.set(
+    -5.5,
+    -1.97,
+    -20
+  );
+
+
+  world.scene.add(
+    leftShoulder
+  );
+
+
+  const rightShoulder =
+    leftShoulder.clone();
+
+
+  rightShoulder.position.x =
+    5.5;
+
+
+  world.scene.add(
+    rightShoulder
+  );
+
+
+  /* ==========================================
+  LANE MARKERS
+  ========================================== */
 
   const laneMaterial =
     new T.MeshStandardMaterial({
@@ -235,10 +416,10 @@ export async function runRace3D({
         0xf4f4f4,
 
       emissive:
-        0x222222,
+        0x555555,
 
       emissiveIntensity:
-        0.2
+        0.45
     });
 
 
@@ -246,9 +427,9 @@ export async function runRace3D({
 
 
   for (
-    let z = -42;
-    z < 8;
-    z += 5
+    let z = -48;
+    z < 10;
+    z += 4.2
   ) {
     for (
       const x of
@@ -257,9 +438,9 @@ export async function runRace3D({
       const line =
         new T.Mesh(
           new T.BoxGeometry(
-            0.08,
-            0.03,
-            2.4
+            0.09,
+            0.035,
+            2.2
           ),
 
           laneMaterial
@@ -268,7 +449,7 @@ export async function runRace3D({
 
       line.position.set(
         x,
-        -1.96,
+        -1.95,
         z
       );
 
@@ -281,30 +462,89 @@ export async function runRace3D({
       laneMarks.push(
         line
       );
+    }
+  }
 
 
-      world.objects.push(
-        line
+  /* ==========================================
+  ROAD LIGHTS
+  ========================================== */
+
+  const roadLights = [];
+
+
+  for (
+    let z = -45;
+    z < 6;
+    z += 5
+  ) {
+    for (
+      const x of
+      [-4.7, 4.7]
+    ) {
+      const light =
+        new T.Mesh(
+          new T.BoxGeometry(
+            0.12,
+            0.08,
+            0.35
+          ),
+
+          new T.MeshStandardMaterial({
+            color:
+              x < 0
+                ? 0x51ddff
+                : 0xff4c74,
+
+            emissive:
+              x < 0
+                ? 0x35c6ff
+                : 0xff315d,
+
+            emissiveIntensity:
+              2.5
+          })
+        );
+
+
+      light.position.set(
+        x,
+        -1.88,
+        z
+      );
+
+
+      world.scene.add(
+        light
+      );
+
+
+      roadLights.push(
+        light
       );
     }
   }
 
 
   /* ==========================================
-  PLAYER CAR
+  PLAYER
   ========================================== */
 
   const player =
     createCar({
       T,
+
       color:
-        0x39d9ff
+        0x38ddff,
+
+      player:
+        true
     });
 
 
   player.position.set(
     0,
-    -1.45,
+    -1.43,
     3
   );
 
@@ -318,17 +558,33 @@ export async function runRace3D({
   );
 
 
-  world.objects.push(
-    player
+  /* ==========================================
+  PLAYER UNDERGLOW
+  ========================================== */
+
+  const underGlow =
+    new T.PointLight(
+      0x34dfff,
+      2.2,
+      5
+    );
+
+
+  underGlow.position.set(
+    0,
+    -1.3,
+    3
+  );
+
+
+  world.scene.add(
+    underGlow
   );
 
 
   /* ==========================================
   OBSTACLES
   ========================================== */
-
-  const obstacles = [];
-
 
   const lanePositions =
     [
@@ -338,31 +594,41 @@ export async function runRace3D({
     ];
 
 
+  const obstacles = [];
+
+
   let spawnTimer =
     0;
 
 
   let spawnInterval =
-    1.25;
+    1.2;
 
 
   let worldSpeed =
-    11;
+    12;
 
 
   function spawnObstacle() {
+    if (!active) {
+      return;
+    }
+
+
     const obstacleLane =
       Math.floor(
-        Math.random() * 3
+        Math.random() *
+        3
       );
 
 
     const colors =
       [
-        0xff496c,
-        0xffb347,
-        0x9b7cff,
-        0x72f5a1
+        0xff486c,
+        0xffad45,
+        0x9c7cff,
+        0x72f5a1,
+        0xffffff
       ];
 
 
@@ -385,10 +651,16 @@ export async function runRace3D({
         obstacleLane
       ],
 
-      -1.45,
+      -1.43,
 
-      -35
+      -38 -
+      Math.random() *
+      3
     );
+
+
+    obstacle.rotation.y =
+      Math.PI;
 
 
     world.scene.add(
@@ -400,27 +672,54 @@ export async function runRace3D({
       mesh:
         obstacle,
 
+      lane:
+        obstacleLane,
+
+      targetLane:
+        obstacleLane,
+
       passed:
-        false
+        false,
+
+      nearMiss:
+        false,
+
+      laneChangeTimer:
+        randomBetween(
+          0.6,
+          2
+        ),
+
+      laneChangeSpeed:
+        randomBetween(
+          2.8,
+          4.2
+        )
     });
-
-
-    world.objects.push(
-      obstacle
-    );
   }
 
 
   /* ==========================================
-  CONTROLS
+  CONTROL
   ========================================== */
+
+  let laneInputLocked =
+    false;
+
 
   function changeLane(
     direction
   ) {
-    if (!active) {
+    if (
+      !active ||
+      laneInputLocked
+    ) {
       return;
     }
+
+
+    const oldLane =
+      lane;
 
 
     lane =
@@ -432,16 +731,53 @@ export async function runRace3D({
 
         2
       );
+
+
+    if (
+      lane === oldLane
+    ) {
+      return;
+    }
+
+
+    laneInputLocked =
+      true;
+
+
+    stage.classList.remove(
+      "highway-lane-shift"
+    );
+
+
+    void stage.offsetWidth;
+
+
+    stage.classList.add(
+      "highway-lane-shift"
+    );
+
+
+    setTimeout(
+      () => {
+        laneInputLocked =
+          false;
+      },
+      120
+    );
   }
 
 
   function left() {
-    changeLane(-1);
+    changeLane(
+      -1
+    );
   }
 
 
   function right() {
-    changeLane(1);
+    changeLane(
+      1
+    );
   }
 
 
@@ -452,6 +788,8 @@ export async function runRace3D({
       event.key ===
       "ArrowLeft"
     ) {
+      event.preventDefault();
+
       left();
     }
 
@@ -460,6 +798,8 @@ export async function runRace3D({
       event.key ===
       "ArrowRight"
     ) {
+      event.preventDefault();
+
       right();
     }
   }
@@ -484,18 +824,58 @@ export async function runRace3D({
 
 
   /* ==========================================
-  GAME LOOP
+  LOOP
   ========================================== */
 
   world.addUpdate(
-    (delta, elapsed) => {
+    (
+      delta,
+      elapsed
+    ) => {
 
       if (!active) {
         return;
       }
 
 
-      /* player movement */
+      /* ======================================
+      SPEED
+      ====================================== */
+
+      worldSpeed =
+        12 +
+        Math.min(
+          avoided *
+          0.75,
+
+          8
+        );
+
+
+      spawnInterval =
+        Math.max(
+          0.58,
+
+          1.2 -
+          avoided *
+          0.045
+        );
+
+
+      speedElement.textContent =
+        (
+          worldSpeed /
+          12
+        )
+        .toFixed(
+          1
+        ) +
+        "x";
+
+
+      /* ======================================
+      PLAYER MOVEMENT
+      ====================================== */
 
       const targetX =
         lanePositions[
@@ -503,52 +883,95 @@ export async function runRace3D({
         ];
 
 
+      const difference =
+        targetX -
+        player.position.x;
+
+
+      /*
+       * 少し慣性を残した車線変更
+       */
+
       player.position.x +=
-        (
-          targetX -
-          player.position.x
-        ) *
+        difference *
         Math.min(
           1,
-          delta * 12
+          delta *
+          8.5
         );
 
+
+      /*
+       * 車体を傾ける
+       */
 
       player.rotation.z =
-        (
-          targetX -
-          player.position.x
+        clamp(
+          difference *
+          -0.10,
+
+          -0.28,
+
+          0.28
+        );
+
+
+      player.rotation.x =
+        Math.sin(
+          elapsed *
+          9
         ) *
-        -0.05;
+        0.006;
 
 
-      /* increasing difficulty */
-
-      worldSpeed =
-        11 +
-        Math.min(
-          avoided * 0.55,
-          6
-        );
+      underGlow.position.x =
+        player.position.x;
 
 
-      spawnInterval =
-        Math.max(
-          0.65,
-          1.25 -
-          avoided * 0.035
-        );
+      /* ======================================
+      CAMERA SHAKE
+      ====================================== */
+
+      if (
+        screenShake >
+        0
+      ) {
+        screenShake -=
+          delta;
 
 
-      speedElement.textContent =
-        (
-          worldSpeed /
-          11
-        ).toFixed(1) +
-        "x";
+        world.camera.position.x =
+          randomBetween(
+            -0.09,
+            0.09
+          );
 
 
-      /* road movement */
+        world.camera.position.y =
+          3.7 +
+          randomBetween(
+            -0.07,
+            0.07
+          );
+
+      } else {
+
+        world.camera.position.x =
+          Math.sin(
+            elapsed *
+            0.9
+          ) *
+          0.045;
+
+
+        world.camera.position.y =
+          3.7;
+      }
+
+
+      /* ======================================
+      ROAD
+      ====================================== */
 
       for (
         const line of
@@ -564,12 +987,33 @@ export async function runRace3D({
           8
         ) {
           line.position.z -=
-            50;
+            58;
         }
       }
 
 
-      /* spawning */
+      for (
+        const light of
+        roadLights
+      ) {
+        light.position.z +=
+          worldSpeed *
+          delta;
+
+
+        if (
+          light.position.z >
+          8
+        ) {
+          light.position.z -=
+            55;
+        }
+      }
+
+
+      /* ======================================
+      SPAWN
+      ====================================== */
 
       spawnTimer +=
         delta;
@@ -582,16 +1026,22 @@ export async function runRace3D({
         spawnTimer =
           0;
 
+
         spawnObstacle();
       }
 
 
-      /* obstacles */
+      /* ======================================
+      OBSTACLES
+      ====================================== */
 
       for (
         let i =
-          obstacles.length - 1;
+          obstacles.length -
+          1;
+
         i >= 0;
+
         i--
       ) {
         const item =
@@ -607,9 +1057,86 @@ export async function runRace3D({
           delta;
 
 
-        obstacle.rotation.y =
-          Math.PI;
+        /*
+         * 敵車がたまに車線変更
+         */
 
+        item.laneChangeTimer -=
+          delta;
+
+
+        if (
+          item.laneChangeTimer <=
+          0 &&
+          obstacle.position.z <
+          -4
+        ) {
+          item.laneChangeTimer =
+            randomBetween(
+              1.2,
+              2.6
+            );
+
+
+          if (
+            Math.random() <
+            0.45
+          ) {
+            const direction =
+              Math.random() <
+              0.5
+                ? -1
+                : 1;
+
+
+            item.targetLane =
+              clamp(
+                item.targetLane +
+                direction,
+
+                0,
+
+                2
+              );
+          }
+        }
+
+
+        const targetObstacleX =
+          lanePositions[
+            item.targetLane
+          ];
+
+
+        const obstacleDifference =
+          targetObstacleX -
+          obstacle.position.x;
+
+
+        obstacle.position.x +=
+          obstacleDifference *
+          Math.min(
+            1,
+
+            delta *
+            item.laneChangeSpeed
+          );
+
+
+        obstacle.rotation.z =
+          clamp(
+            obstacleDifference *
+            -0.07,
+
+            -0.18,
+
+            0.18
+          );
+
+
+        /* ======================================
+        COLLISION
+        ====================================== */
 
         const dx =
           Math.abs(
@@ -626,22 +1153,94 @@ export async function runRace3D({
 
 
         if (
-          dx < 1.15 &&
-          dz < 1.8
+          !invincible &&
+          dx <
+          1.25 &&
+          dz <
+          1.65
         ) {
-          crashes++;
+          crash(
+            item
+          );
 
-          finish(false);
 
-          return;
+          obstacles.splice(
+            i,
+            1
+          );
+
+
+          continue;
         }
 
+
+        /* ======================================
+        NEAR MISS
+        ====================================== */
+
+        if (
+          !item.nearMiss &&
+          !item.passed &&
+          obstacle.position.z >
+          player.position.z -
+          0.6 &&
+          obstacle.position.z <
+          player.position.z +
+          1.3
+        ) {
+          if (
+            dx >=
+            1.25 &&
+            dx <
+            1.85
+          ) {
+            item.nearMiss =
+              true;
+
+
+            combo +=
+              2;
+
+
+            maxCombo =
+              Math.max(
+                maxCombo,
+                combo
+              );
+
+
+            showMessage(
+              "NEAR MISS!"
+            );
+
+
+            showCombo();
+
+
+            stage.classList.remove(
+              "highway-near-miss"
+            );
+
+
+            void stage.offsetWidth;
+
+
+            stage.classList.add(
+              "highway-near-miss"
+            );
+          }
+        }
+
+
+        /* ======================================
+        PASSED
+        ====================================== */
 
         if (
           !item.passed &&
           obstacle.position.z >
           player.position.z +
-          1.8
+          1.9
         ) {
           item.passed =
             true;
@@ -650,23 +1249,43 @@ export async function runRace3D({
           avoided++;
 
 
+          combo++;
+
+
+          maxCombo =
+            Math.max(
+              maxCombo,
+              combo
+            );
+
+
           updateHud();
+
+
+          showCombo();
 
 
           if (
             avoided >=
             goal
           ) {
-            finish(true);
+            finish(
+              true
+            );
+
 
             return;
           }
         }
 
 
+        /* ======================================
+        REMOVE
+        ====================================== */
+
         if (
           obstacle.position.z >
-          12
+          13
         ) {
           world.disposeObject(
             obstacle
@@ -680,17 +1299,314 @@ export async function runRace3D({
         }
       }
 
-
-      /* subtle camera movement */
-
-      world.camera.position.x =
-        Math.sin(
-          elapsed * 0.7
-        ) *
-        0.08;
-
     }
   );
+
+
+  /* ==========================================
+  CRASH
+  ========================================== */
+
+  function crash(
+    item
+  ) {
+    if (
+      !active ||
+      invincible
+    ) {
+      return;
+    }
+
+
+    crashes++;
+
+
+    lives--;
+
+
+    combo =
+      0;
+
+
+    invincible =
+      true;
+
+
+    screenShake =
+      0.45;
+
+
+    createCrashParticles(
+      item.mesh.position
+        .clone()
+    );
+
+
+    world.disposeObject(
+      item.mesh
+    );
+
+
+    stage.classList.remove(
+      "highway-crash"
+    );
+
+
+    void stage.offsetWidth;
+
+
+    stage.classList.add(
+      "highway-crash"
+    );
+
+
+    showMessage(
+      "CRASH!"
+    );
+
+
+    updateHud();
+
+
+    /*
+     * 一瞬点滅して無敵
+     */
+
+    let blinkCount =
+      0;
+
+
+    const blink =
+      setInterval(
+        () => {
+
+          if (
+            !active
+          ) {
+            clearInterval(
+              blink
+            );
+
+            return;
+          }
+
+
+          player.visible =
+            !player.visible;
+
+
+          blinkCount++;
+
+
+          if (
+            blinkCount >=
+            8
+          ) {
+            clearInterval(
+              blink
+            );
+
+
+            player.visible =
+              true;
+
+
+            invincible =
+              false;
+          }
+
+        },
+        90
+      );
+
+
+    if (
+      lives <=
+      0
+    ) {
+      clearInterval(
+        blink
+      );
+
+
+      player.visible =
+        true;
+
+
+      setTimeout(
+        () => {
+          finish(
+            false
+          );
+        },
+        450
+      );
+    }
+  }
+
+
+  /* ==========================================
+  PARTICLES
+  ========================================== */
+
+  function createCrashParticles(
+    position
+  ) {
+    const group =
+      new T.Group();
+
+
+    group.position.copy(
+      position
+    );
+
+
+    world.scene.add(
+      group
+    );
+
+
+    const particles =
+      [];
+
+
+    for (
+      let i = 0;
+      i < 28;
+      i++
+    ) {
+      const piece =
+        new T.Mesh(
+          new T.BoxGeometry(
+            randomBetween(
+              0.04,
+              0.12
+            ),
+
+            randomBetween(
+              0.04,
+              0.12
+            ),
+
+            randomBetween(
+              0.04,
+              0.12
+            )
+          ),
+
+          new T.MeshBasicMaterial({
+            color:
+              [
+                0xff4d67,
+                0xffb347,
+                0xffffff,
+                0x58eaff
+              ][
+                Math.floor(
+                  Math.random() *
+                  4
+                )
+              ]
+          })
+        );
+
+
+      const velocity =
+        new T.Vector3(
+          randomBetween(
+            -5,
+            5
+          ),
+
+          randomBetween(
+            1,
+            6
+          ),
+
+          randomBetween(
+            -3,
+            5
+          )
+        );
+
+
+      particles.push({
+        piece,
+        velocity
+      });
+
+
+      group.add(
+        piece
+      );
+    }
+
+
+    let age =
+      0;
+
+
+    const updater =
+      delta => {
+
+        age +=
+          delta;
+
+
+        particles.forEach(
+          item => {
+
+            item.piece.position
+              .addScaledVector(
+                item.velocity,
+                delta
+              );
+
+
+            item.velocity.y -=
+              7 *
+              delta;
+
+
+            item.piece.rotation.x +=
+              delta *
+              8;
+
+
+            item.piece.rotation.y +=
+              delta *
+              7;
+
+
+            item.piece.scale
+              .multiplyScalar(
+                0.96
+              );
+
+          }
+        );
+
+
+        if (
+          age >
+          0.6
+        ) {
+          world.removeUpdate?.(
+            updater
+          );
+
+
+          world.disposeObject?.(
+            group
+          );
+        }
+      };
+
+
+    world.addUpdate(
+      updater
+    );
+  }
 
 
   /* ==========================================
@@ -699,7 +1615,118 @@ export async function runRace3D({
 
   function updateHud() {
     dodgedElement.textContent =
-      `${avoided} / ${goal}`;
+      avoided;
+
+
+    comboElement.textContent =
+      combo;
+
+
+    livesElement.textContent =
+      Array.from(
+        {
+          length:
+            3
+        },
+
+        (
+          _,
+          index
+        ) =>
+          index <
+          lives
+            ? "♥"
+            : "♡"
+      )
+      .join(
+        " "
+      );
+  }
+
+
+  /* ==========================================
+  MESSAGE
+  ========================================== */
+
+  let messageTimer =
+    null;
+
+
+  function showMessage(
+    text
+  ) {
+    clearTimeout(
+      messageTimer
+    );
+
+
+    messageElement.textContent =
+      text;
+
+
+    messageElement.classList.remove(
+      "show"
+    );
+
+
+    void messageElement.offsetWidth;
+
+
+    messageElement.classList.add(
+      "show"
+    );
+
+
+    messageTimer =
+      setTimeout(
+        () => {
+
+          messageElement.classList.remove(
+            "show"
+          );
+
+        },
+        420
+      );
+  }
+
+
+  function showCombo() {
+    if (
+      combo <
+      2
+    ) {
+      return;
+    }
+
+
+    comboPop.textContent =
+      `×${combo}`;
+
+
+    comboPop.classList.remove(
+      "show"
+    );
+
+
+    void comboPop.offsetWidth;
+
+
+    comboPop.classList.add(
+      "show"
+    );
+
+
+    setTimeout(
+      () => {
+
+        comboPop.classList.remove(
+          "show"
+        );
+
+      },
+      340
+    );
   }
 
 
@@ -715,7 +1742,13 @@ export async function runRace3D({
     }
 
 
-    active = false;
+    active =
+      false;
+
+
+    clearTimeout(
+      messageTimer
+    );
 
 
     const elapsed =
@@ -724,55 +1757,75 @@ export async function runRace3D({
 
 
     const completion =
-      avoided /
-      goal;
+      clamp(
+        avoided /
+        goal,
+
+        0,
+
+        1
+      );
 
 
-    const reactionScore =
-      success
-        ? clamp(
-            75 +
-            avoided * 2.5,
+    const lifeScore =
+      clamp(
+        lives /
+        3,
 
-            0,
+        0,
 
-            100
-          )
-
-        :
-          clamp(
-            avoided *
-            7,
-
-            0,
-
-            70
-          );
+        1
+      );
 
 
     const speedScore =
       success
         ? clamp(
             100 -
-            elapsed / 220,
+            Math.max(
+              0,
 
-            20,
+              elapsed -
+              11000
+            ) /
+            170,
+
+            0,
 
             100
           )
-
-        :
-          20;
+        : 0;
 
 
-    const score =
-      (
-        reactionScore *
-        0.65
-      ) +
-      (
-        speedScore *
-        0.35
+    const comboScore =
+      clamp(
+        maxCombo /
+        12,
+
+        0,
+
+        1
+      );
+
+
+    const finalScore =
+      clamp(
+        completion *
+        40 +
+
+        lifeScore *
+        25 +
+
+        comboScore *
+        20 +
+
+        speedScore /
+        100 *
+        15,
+
+        0,
+
+        100
       );
 
 
@@ -782,19 +1835,17 @@ export async function runRace3D({
         onComplete?.({
           score:
             Math.round(
-              clamp(
-                score,
-                0,
-                100
-              )
+              finalScore
             ),
 
           adapt:
             Math.round(
               clamp(
-                35 +
+                45 +
                 completion *
-                60,
+                30 +
+                comboScore *
+                25,
 
                 0,
 
@@ -809,6 +1860,10 @@ export async function runRace3D({
 
             crashes,
 
+            lives,
+
+            maxCombo,
+
             elapsed:
               Math.round(
                 elapsed
@@ -817,10 +1872,9 @@ export async function runRace3D({
         });
 
       },
-
       success
-        ? 350
-        : 100
+        ? 550
+        : 300
     );
   }
 
@@ -831,7 +1885,9 @@ export async function runRace3D({
 
   updateHud();
 
+
   spawnObstacle();
+
 
   world.start();
 
@@ -841,7 +1897,13 @@ export async function runRace3D({
   ========================================== */
 
   return () => {
-    active = false;
+    active =
+      false;
+
+
+    clearTimeout(
+      messageTimer
+    );
 
 
     leftButton.removeEventListener(
@@ -873,7 +1935,8 @@ CAR MODEL
 
 function createCar({
   T,
-  color
+  color,
+  player = false
 }) {
   const car =
     new T.Group();
@@ -884,44 +1947,71 @@ function createCar({
       color,
 
       metalness:
-        0.55,
+        0.62,
 
       roughness:
-        0.35
+        0.3
     });
 
 
-  const darkMaterial =
+  const glassMaterial =
     new T.MeshStandardMaterial({
       color:
-        0x0b1018,
+        0x07111c,
 
       metalness:
-        0.3,
+        0.5,
 
       roughness:
-        0.45
+        0.2
     });
 
 
-  const glowMaterial =
+  const tireMaterial =
     new T.MeshStandardMaterial({
       color:
-        0xff405f,
+        0x050608,
 
-      emissive:
-        0xff183c,
-
-      emissiveIntensity:
-        2
+      roughness:
+        0.95
     });
 
+
+  const rearLightMaterial =
+    new T.MeshStandardMaterial({
+      color:
+        0xff3155,
+
+      emissive:
+        0xff1738,
+
+      emissiveIntensity:
+        2.8
+    });
+
+
+  const frontLightMaterial =
+    new T.MeshStandardMaterial({
+      color:
+        0xd8faff,
+
+      emissive:
+        0x7befff,
+
+      emissiveIntensity:
+        2.5
+    });
+
+
+  /*
+   * BODY
+   */
 
   const body =
     new T.Mesh(
       new T.BoxGeometry(
         1.7,
-        0.55,
+        0.48,
         3
       ),
 
@@ -938,22 +2028,26 @@ function createCar({
   );
 
 
+  /*
+   * CABIN
+   */
+
   const cabin =
     new T.Mesh(
       new T.BoxGeometry(
-        1.25,
-        0.55,
-        1.3
+        1.22,
+        0.58,
+        1.35
       ),
 
-      darkMaterial
+      glassMaterial
     );
 
 
   cabin.position.set(
     0,
-    0.5,
-    -0.15
+    0.48,
+    -0.18
   );
 
 
@@ -962,41 +2056,135 @@ function createCar({
   );
 
 
-  const rearLightLeft =
-    new T.Mesh(
-      new T.BoxGeometry(
-        0.32,
-        0.15,
-        0.08
-      ),
+  /*
+   * HOOD STRIPE FOR PLAYER
+   */
 
-      glowMaterial
+  if (player) {
+    const stripe =
+      new T.Mesh(
+        new T.BoxGeometry(
+          0.22,
+          0.03,
+          2.75
+        ),
+
+        new T.MeshStandardMaterial({
+          color:
+            0xffffff,
+
+          emissive:
+            0x5aeaff,
+
+          emissiveIntensity:
+            1.2
+        })
+      );
+
+
+    stripe.position.y =
+      0.265;
+
+
+    car.add(
+      stripe
+    );
+  }
+
+
+  /*
+   * LIGHTS
+   */
+
+  for (
+    const x of
+    [-0.48, 0.48]
+  ) {
+    const rearLight =
+      new T.Mesh(
+        new T.BoxGeometry(
+          0.3,
+          0.13,
+          0.08
+        ),
+
+        rearLightMaterial
+      );
+
+
+    rearLight.position.set(
+      x,
+      0,
+      1.54
     );
 
 
-  rearLightLeft.position.set(
-    -0.48,
-    0,
-    1.54
-  );
+    car.add(
+      rearLight
+    );
 
 
-  car.add(
-    rearLightLeft
-  );
+    const frontLight =
+      new T.Mesh(
+        new T.BoxGeometry(
+          0.3,
+          0.13,
+          0.08
+        ),
+
+        frontLightMaterial
+      );
 
 
-  const rearLightRight =
-    rearLightLeft.clone();
+    frontLight.position.set(
+      x,
+      0,
+      -1.54
+    );
 
 
-  rearLightRight.position.x =
-    0.48;
+    car.add(
+      frontLight
+    );
+  }
 
 
-  car.add(
-    rearLightRight
-  );
+  /*
+   * TIRES
+   */
+
+  for (
+    const x of
+    [-0.9, 0.9]
+  ) {
+    for (
+      const z of
+      [-0.9, 0.9]
+    ) {
+      const tire =
+        new T.Mesh(
+          new T.BoxGeometry(
+            0.18,
+            0.28,
+            0.55
+          ),
+
+          tireMaterial
+        );
+
+
+      tire.position.set(
+        x,
+        -0.25,
+        z
+      );
+
+
+      car.add(
+        tire
+      );
+    }
+  }
 
 
   return car;
@@ -1017,6 +2205,21 @@ function clamp(
     Math.min(
       max,
       value
+    )
+  );
+}
+
+
+function randomBetween(
+  min,
+  max
+) {
+  return (
+    min +
+    Math.random() *
+    (
+      max -
+      min
     )
   );
 }
