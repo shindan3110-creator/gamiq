@@ -54,14 +54,13 @@ const randomizer =
 const analytics =
   new GamiqAnalytics();
 
-
 let feedController =
   null;
 
 let activeCleanup =
   null;
 
-let activeForceFinishTimer =
+let activeSafetyTimer =
   null;
 
 let activeRunToken =
@@ -228,11 +227,9 @@ function getOrCreateMount() {
       "#gamiq-app"
     );
 
-
   if (mount) {
     return mount;
   }
-
 
   mount =
     document.createElement(
@@ -242,11 +239,9 @@ function getOrCreateMount() {
   mount.id =
     "gamiq-app";
 
-
   document.body.appendChild(
     mount
   );
-
 
   return mount;
 }
@@ -274,7 +269,6 @@ function createAppMarkup() {
 
         </div>
 
-
         <div class="gamiq-live-data">
 
           <div class="gamiq-live-item">
@@ -291,7 +285,6 @@ function createAppMarkup() {
 
           </div>
 
-
           <div class="gamiq-live-item">
 
             <span>
@@ -306,7 +299,6 @@ function createAppMarkup() {
 
           </div>
 
-
           <button
             type="button"
             class="gamiq-results-button"
@@ -319,7 +311,6 @@ function createAppMarkup() {
 
       </header>
 
-
       <main
         class="gamiq-feed"
         data-gamiq-feed
@@ -330,14 +321,12 @@ function createAppMarkup() {
           data-feed-current
         ></section>
 
-
         <section
           class="gamiq-feed-card next"
           data-feed-next
         ></section>
 
       </main>
-
 
       <div
         class="gamiq-start-screen"
@@ -415,10 +404,8 @@ function renderGameCard(
     return;
   }
 
-
   card.dataset.gameId =
     game.id;
-
 
   card.innerHTML = `
     <div class="gamiq-game-shell">
@@ -441,7 +428,6 @@ function renderGameCard(
 
         </div>
 
-
         <div class="gamiq-game-type">
           ${escapeHtml(
             game.theme || ""
@@ -450,12 +436,10 @@ function renderGameCard(
 
       </div>
 
-
       <div
         class="gamiq-game-host"
         data-game-host
       ></div>
-
 
       <div
         class="gamiq-rule-overlay"
@@ -473,7 +457,6 @@ function renderGameCard(
         </strong>
 
       </div>
-
 
       <div
         class="gamiq-card-complete"
@@ -506,7 +489,6 @@ function renderGameCard(
     </div>
   `;
 
-
   if (preview) {
     card.classList.add(
       "preview"
@@ -534,13 +516,10 @@ async function enterGame(
     return;
   }
 
-
   const runToken =
     ++activeRunToken;
 
-
   cleanupCurrentGame();
-
 
   previousGame =
     currentGame;
@@ -580,12 +559,10 @@ async function enterGame(
       "[data-game-host]"
     );
 
-
   const ruleOverlay =
     card.querySelector(
       "[data-rule-overlay]"
     );
-
 
   const completeOverlay =
     card.querySelector(
@@ -605,20 +582,19 @@ async function enterGame(
     "show"
   );
 
-
   ruleOverlay.classList.remove(
     "hide"
   );
-
 
   host.innerHTML = "";
 
 
   /*
-   * RULE表示
+   * RULEを読む時間
+   * 0.9秒 → 1.8秒に延長
    */
 
-  await wait(900);
+  await wait(1800);
 
 
   if (
@@ -643,10 +619,6 @@ async function enterGame(
     false;
 
 
-  /*
-   * GAME COMPLETE
-   */
-
   const onComplete =
     result => {
 
@@ -663,19 +635,15 @@ async function enterGame(
         true;
 
 
-      /*
-       * 強制終了タイマー解除
-       */
-
       if (
-        activeForceFinishTimer !==
+        activeSafetyTimer !==
         null
       ) {
         clearTimeout(
-          activeForceFinishTimer
+          activeSafetyTimer
         );
 
-        activeForceFinishTimer =
+        activeSafetyTimer =
           null;
       }
 
@@ -733,26 +701,15 @@ async function enterGame(
 
 
   /*
-   * SAFETY TIMER
+   * SAFETY ONLY
    *
-   * どのゲームも一定時間を超えたら
-   * 必ず終了する。
+   * 45秒経ってもゲームが終了しない場合だけ
+   * バグ回避として強制終了。
    *
-   * これによって
-   * 「ゲームが終わらず次へ行けない」
-   * 状態を防止する。
+   * 通常のゲーム終了条件には使わない。
    */
 
-  const maxGameDuration =
-    Math.max(
-      6000,
-      Number(
-        game.duration
-      ) || 10000
-    );
-
-
-  activeForceFinishTimer =
+  activeSafetyTimer =
     setTimeout(
       () => {
 
@@ -765,21 +722,27 @@ async function enterGame(
         }
 
 
+        console.warn(
+          "Safety timeout:",
+          game.id
+        );
+
+
         onComplete({
           score:
-            50,
+            0,
 
           adapt:
-            50,
+            25,
 
           meta: {
-            forcedFinish:
+            safetyTimeout:
               true
           }
         });
 
       },
-      maxGameDuration
+      45000
     );
 
 
@@ -802,11 +765,6 @@ async function enterGame(
         runnerResult
       );
 
-
-    /*
-     * 3Dゲームなどの初期化中に
-     * 別ゲームへ移動した場合
-     */
 
     if (
       runToken !==
@@ -847,19 +805,15 @@ async function enterGame(
     });
 
 
-    /*
-     * エラー時も次へ進める
-     */
-
     if (
-      activeForceFinishTimer !==
+      activeSafetyTimer !==
       null
     ) {
       clearTimeout(
-        activeForceFinishTimer
+        activeSafetyTimer
       );
 
-      activeForceFinishTimer =
+      activeSafetyTimer =
         null;
     }
 
@@ -902,12 +856,12 @@ function runSelectedGame({
   onComplete
 }) {
   const reflexTypes =
-  new Set([
-    "ninja_counter",
-    "quick_draw",
-    "lane_panic",
-    "friend_foe"
-  ]);
+    new Set([
+      "ninja_counter",
+      "quick_draw",
+      "lane_panic",
+      "friend_foe"
+    ]);
 
 
   const puzzleTypes =
@@ -1007,17 +961,14 @@ function showCardComplete(
       "[data-card-complete]"
     );
 
-
   const scoreElement =
     card.querySelector(
       "[data-complete-score]"
     );
 
-
   if (!overlay) {
     return;
   }
-
 
   if (scoreElement) {
     scoreElement.textContent =
@@ -1026,12 +977,10 @@ function showCardComplete(
         : score ?? "--";
   }
 
-
   overlay.classList.toggle(
     "error",
     error
   );
-
 
   requestAnimationFrame(
     () => {
@@ -1051,25 +1000,21 @@ function updateLiveStatus() {
   const summary =
     scoreEngine.getSummary();
 
-
   const gamiqElement =
     document.querySelector(
       "[data-live-gamiq]"
     );
-
 
   const confidenceElement =
     document.querySelector(
       "[data-live-confidence]"
     );
 
-
   if (gamiqElement) {
     gamiqElement.textContent =
       summary.gamiq ??
       "---";
   }
-
 
   if (
     confidenceElement
@@ -1086,26 +1031,18 @@ CLEANUP
 
 function cleanupCurrentGame() {
 
-  /*
-   * Safety timer
-   */
-
   if (
-    activeForceFinishTimer !==
+    activeSafetyTimer !==
     null
   ) {
     clearTimeout(
-      activeForceFinishTimer
+      activeSafetyTimer
     );
 
-    activeForceFinishTimer =
+    activeSafetyTimer =
       null;
   }
 
-
-  /*
-   * Game cleanup
-   */
 
   if (
     typeof activeCleanup ===
@@ -1138,7 +1075,6 @@ function safeScore(
   const numeric =
     Number(value);
 
-
   if (
     !Number.isFinite(
       numeric
@@ -1146,7 +1082,6 @@ function safeScore(
   ) {
     return fallback;
   }
-
 
   return Math.max(
     0,
