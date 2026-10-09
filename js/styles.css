@@ -39,7 +39,7 @@ button,
   -webkit-tap-highlight-color:transparent;
 }
 
-#㇐gamiq-app{
+#繚身amiq-app{
   min-height:100vh;
 }
 
@@ -3577,4 +3577,613 @@ VERY SMALL MOBILE
       0 13px;
   }
 
+}
+
+
+/* =========================================================
+GAMIQ V2 - CURRENT JS COMPATIBILITY FIX
+Exact selectors for current puzzle.js / memory.js / results.js
+========================================================= */
+
+
+/* =========================================================
+PUZZLE - CURRENT puzzle.js
+========================================================= */
+
+.puzzle-wrap{
+  width:100%;
+  height:100%;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:flex-start;
+  gap:12px;
+}
+
+.puzzle-top{
+  width:100%;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  color:#ffffff;
+}
+
+.puzzle-top span{
+  color:rgba(255,255,255,.62);
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+.puzzle-top strong{
+  color:#ffffff;
+  font-size:18px;
+  font-weight:1000;
+}
+
+.puzzle-message{
+  min-height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:rgba(255,255,255,.86);
+  font-size:14px;
+  font-weight:700;
+  text-align:center;
+}
+
+
+/* BLOCK ESCAPE */
+
+.block-board{
+  position:relative;
+  flex:1;
+  width:min(100%, 560px);
+  min-height:0;
+  margin:0 auto;
+  aspect-ratio:1/1;
+  display:grid;
+  grid-template-columns:repeat(var(--grid-size, 6), minmax(0,1fr));
+  grid-template-rows:repeat(var(--grid-size, 6), minmax(0,1fr));
+  gap:6px;
+  padding:8px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:20px;
+  background:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(180deg,#111923,#070b11);
+  background-size:
+    calc(100% / 6) calc(100% / 6),
+    calc(100% / 6) calc(100% / 6),
+    auto;
+}
+
+.block-board::after{
+  content:"EXIT";
+  position:absolute;
+  right:7px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:2;
+  padding:5px 7px;
+  border-radius:7px;
+  background:rgba(255,80,105,.14);
+  color:#ff657d;
+  font-size:8px;
+  font-weight:1000;
+  letter-spacing:.12em;
+  pointer-events:none;
+}
+
+.puzzle-block{
+  position:relative;
+  z-index:3;
+  min-width:0;
+  min-height:0;
+  width:auto;
+  height:auto;
+  margin:0;
+  padding:0;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;
+  background:linear-gradient(180deg,#596779,#303a47);
+  color:#ffffff;
+  font-size:10px;
+  font-weight:1000;
+  cursor:grab;
+  touch-action:none;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.10),
+    0 5px 14px rgba(0,0,0,.18);
+  transition:transform .1s ease, filter .1s ease;
+}
+
+.puzzle-block:active{
+  cursor:grabbing;
+  transform:scale(.97);
+  filter:brightness(1.12);
+}
+
+.puzzle-block.target{
+  background:linear-gradient(180deg,#ff7885,#ec3f60);
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.24),
+    0 0 24px rgba(255,63,96,.28);
+}
+
+
+/* PIPE CONNECT */
+
+.pipe-grid{
+  flex:1;
+  width:min(100%, 520px);
+  min-height:0;
+  margin:0 auto;
+  aspect-ratio:1/1;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-rows:repeat(3,minmax(0,1fr));
+  gap:8px;
+  padding:10px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:20px;
+  background:linear-gradient(180deg,#101822,#060a10);
+}
+
+.pipe-tile{
+  min-width:0;
+  min-height:0;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:14px;
+  background:linear-gradient(180deg,#182433,#0d141e);
+  color:#5feaff;
+  font-size:clamp(32px,7vw,64px);
+  font-weight:800;
+  line-height:1;
+  cursor:pointer;
+  box-shadow:inset 0 1px rgba(255,255,255,.05);
+  transition:filter .12s ease;
+}
+
+.pipe-tile:active{
+  filter:brightness(1.3);
+}
+
+
+/* LASER MIRROR */
+
+.laser-puzzle{
+  position:relative;
+  flex:1;
+  width:min(100%, 560px);
+  min-height:0;
+  margin:0 auto;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 20% 50%,rgba(255,216,77,.05),transparent 18%),
+    radial-gradient(circle at 80% 50%,rgba(90,235,255,.05),transparent 18%),
+    linear-gradient(180deg,#101822,#060a10);
+}
+
+.laser-source,
+.laser-target{
+  position:absolute;
+  z-index:5;
+  top:50%;
+  transform:translateY(-50%);
+  width:56px;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  font-size:28px;
+  pointer-events:none;
+}
+
+.laser-source{
+  left:9%;
+  background:rgba(255,210,70,.10);
+  box-shadow:0 0 25px rgba(255,210,70,.12);
+}
+
+.laser-target{
+  right:9%;
+  border:2px solid rgba(90,235,255,.5);
+  color:#69efff;
+  background:rgba(90,235,255,.06);
+  box-shadow:0 0 25px rgba(90,235,255,.12);
+}
+
+.laser-mirror{
+  position:absolute;
+  z-index:10;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:78px;
+  height:78px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+  padding:0;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:16px;
+  background:linear-gradient(180deg,#202d3b,#0e151e);
+  color:#ffffff;
+  font-size:46px;
+  font-weight:300;
+  cursor:pointer;
+  box-shadow:0 0 26px rgba(255,255,255,.06);
+}
+
+.laser-mirror:active{
+  transform:translate(-50%,-50%) scale(.95);
+}
+
+.laser-beam{
+  position:absolute;
+  z-index:4;
+  left:17%;
+  top:50%;
+  width:33%;
+  height:3px;
+  transform:translateY(-50%);
+  background:linear-gradient(90deg,#ffd54c,#fff6be);
+  box-shadow:0 0 14px rgba(255,215,76,.75);
+  pointer-events:none;
+}
+
+.laser-beam::after{
+  content:"";
+  position:absolute;
+  left:100%;
+  top:0;
+  width:0;
+  height:3px;
+  background:linear-gradient(90deg,#fff6be,#61efff);
+  box-shadow:0 0 14px rgba(97,239,255,.75);
+  transition:width .22s ease;
+}
+
+.laser-beam.success::after{
+  width:100%;
+}
+
+
+/* =========================================================
+MEMORY - CURRENT memory.js
+========================================================= */
+
+.memory-wrap{
+  width:100%;
+  height:100%;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:flex-start;
+  gap:10px;
+}
+
+.memory-top{
+  width:100%;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 4px;
+  color:#ffffff;
+}
+
+.memory-top span{
+  color:rgba(255,255,255,.72);
+  font-size:14px;
+  font-weight:800;
+}
+
+.memory-top strong{
+  color:#ffffff;
+  font-size:18px;
+  font-weight:1000;
+}
+
+.memory-grid{
+  flex:1;
+  width:100%;
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-rows:repeat(4,minmax(0,1fr));
+  gap:10px;
+  padding:10px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  background:#050a0f;
+}
+
+.memory-cell{
+  min-width:0;
+  min-height:0;
+  margin:0;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:15px;
+  background:linear-gradient(180deg,#182231,#0d141e);
+  color:#06120b;
+  font-size:clamp(24px,5vw,44px);
+  font-weight:1000;
+  cursor:pointer;
+  transition:
+    transform .10s ease,
+    background .12s ease,
+    box-shadow .12s ease,
+    color .12s ease;
+}
+
+.memory-cell:active{
+  transform:scale(.96);
+}
+
+.memory-flash,
+.memory-target,
+.memory-number-visible{
+  background:linear-gradient(180deg,#98ffba,#49e77f) !important;
+  color:#06120b !important;
+  box-shadow:
+    0 0 26px rgba(81,255,145,.35),
+    inset 0 1px rgba(255,255,255,.35) !important;
+  transform:scale(.97);
+}
+
+.memory-correct{
+  background:linear-gradient(180deg,#8effb4,#36da75) !important;
+  color:#06120b !important;
+  box-shadow:0 0 24px rgba(70,240,125,.25) !important;
+}
+
+.memory-wrong{
+  background:linear-gradient(180deg,#ff7187,#e63c5d) !important;
+  color:#ffffff !important;
+  animation:gamiq-shake .18s ease;
+}
+
+.memory-message{
+  min-height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:rgba(255,255,255,.82);
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-align:center;
+}
+
+
+/* =========================================================
+RESULTS - CURRENT results.js
+========================================================= */
+
+.gamiq-results-overlay{
+  position:fixed;
+  z-index:1000;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(2,5,10,.88);
+  backdrop-filter:blur(15px);
+
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+
+  transition:
+    opacity .20s ease,
+    visibility .20s ease;
+}
+
+.gamiq-results-overlay.show{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+.gamiq-results-card{
+  width:min(520px,100%);
+  max-height:calc(100vh - 40px);
+  overflow:auto;
+  padding:26px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:22px;
+  background:linear-gradient(180deg,#121a24,#080c12);
+  box-shadow:0 30px 100px rgba(0,0,0,.5);
+}
+
+.gamiq-results-label{
+  color:#7c8798;
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:.16em;
+}
+
+.gamiq-results-score{
+  margin:8px 0 18px;
+  color:#ffffff;
+  font-size:clamp(68px,11vw,104px);
+  font-weight:1000;
+  line-height:.9;
+  letter-spacing:-.05em;
+}
+
+.gamiq-results-confidence{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:7px;
+  color:rgba(255,255,255,.72);
+  font-size:12px;
+}
+
+.gamiq-results-confidence strong{
+  color:#ffffff;
+  font-size:15px;
+}
+
+.gamiq-results-confidence-track{
+  width:100%;
+  height:8px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+}
+
+.gamiq-results-confidence-fill{
+  width:0;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#58dff3,#79f6ab);
+  transition:width .35s ease;
+}
+
+.gamiq-results-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:20px;
+}
+
+.gamiq-result-item{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:11px 12px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:11px;
+  background:rgba(255,255,255,.025);
+}
+
+.gamiq-result-item span{
+  color:#7c8798;
+  font-size:9px;
+  font-weight:1000;
+}
+
+.gamiq-result-item strong{
+  color:#ffffff;
+  font-size:17px;
+  font-weight:1000;
+}
+
+.gamiq-results-played{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:14px;
+  padding:11px 12px;
+  border-top:1px solid rgba(255,255,255,.07);
+}
+
+.gamiq-results-played span{
+  color:#7c8798;
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.12em;
+}
+
+.gamiq-results-played strong{
+  color:#ffffff;
+  font-size:17px;
+}
+
+.gamiq-results-next{
+  min-height:22px;
+  margin-top:7px;
+  color:#9aa5b5;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.gamiq-results-continue{
+  width:100%;
+  min-height:52px;
+  margin-top:18px;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(180deg,#b5f8ff,#59dced);
+  color:#031014;
+  font-size:14px;
+  font-weight:1000;
+  cursor:pointer;
+}
+
+.gamiq-results-continue:hover{
+  filter:brightness(1.05);
+}
+
+.gamiq-results-continue:active{
+  transform:scale(.98);
+}
+
+
+/* =========================================================
+MOBILE COMPATIBILITY
+========================================================= */
+
+@media(max-width:700px){
+
+  .puzzle-top,
+  .memory-top{
+    min-height:36px;
+  }
+
+  .block-board,
+  .pipe-grid,
+  .laser-puzzle{
+    width:100%;
+  }
+
+  .puzzle-block{
+    border-radius:8px;
+  }
+
+  .memory-grid{
+    gap:7px;
+    padding:8px;
+  }
+
+  .memory-cell{
+    border-radius:12px;
+  }
+
+  .gamiq-results-card{
+    padding:20px 16px;
+  }
+
+  .gamiq-results-grid{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media(max-width:390px){
+
+  .gamiq-results-grid{
+    grid-template-columns:1fr;
+  }
 }
