@@ -8,21 +8,39 @@ export class GamiqResults {
     this.scoreEngine = scoreEngine;
     this.onContinue = onContinue;
     this.overlay = null;
+
+    this.handleEscape =
+      this.handleEscape.bind(this);
   }
+
 
   create() {
     if (this.overlay) {
       return this.overlay;
     }
 
+
     const overlay =
       document.createElement("div");
+
 
     overlay.className =
       "gamiq-results-overlay";
 
+
+    overlay.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+
     overlay.innerHTML = `
-      <div class="gamiq-results-card">
+      <div
+        class="gamiq-results-card"
+        role="dialog"
+        aria-modal="true"
+        aria-label="GAMIQ結果"
+      >
 
         <div class="gamiq-results-label">
           CURRENT GAMIQ
@@ -138,75 +156,98 @@ export class GamiqResults {
       </div>
     `;
 
+
     document.body.appendChild(
       overlay
     );
+
 
     const continueButton =
       overlay.querySelector(
         "[data-results-continue]"
       );
 
+
     continueButton.addEventListener(
       "click",
       () => {
-        this.hide();
-
-        if (
-          typeof this.onContinue ===
-          "function"
-        ) {
-          this.onContinue();
-        }
+        this.closeAndContinue();
       }
     );
+
+
+    overlay.addEventListener(
+      "pointerdown",
+      event => {
+
+        if (
+          event.target === overlay
+        ) {
+          this.closeAndContinue();
+        }
+
+      }
+    );
+
 
     this.overlay =
       overlay;
 
+
     return overlay;
   }
+
 
   update() {
     const overlay =
       this.create();
 
+
     const summary =
       this.scoreEngine.getSummary();
+
 
     const gamiqElement =
       overlay.querySelector(
         "[data-results-gamiq]"
       );
 
+
     const confidenceElement =
       overlay.querySelector(
         "[data-results-confidence]"
       );
+
 
     const confidenceFill =
       overlay.querySelector(
         "[data-results-confidence-fill]"
       );
 
+
     const playedElement =
       overlay.querySelector(
         "[data-results-played]"
       );
+
 
     const nextElement =
       overlay.querySelector(
         "[data-results-next]"
       );
 
+
     gamiqElement.textContent =
       summary.gamiq ?? "---";
+
 
     confidenceElement.textContent =
       `${summary.confidence}%`;
 
+
     confidenceFill.style.width =
       `${summary.confidence}%`;
+
 
     playedElement.textContent =
       summary.played;
@@ -223,9 +264,11 @@ export class GamiqResults {
             `[data-result-skill="${skill}"]`
           );
 
+
         if (!element) {
           return;
         }
+
 
         element.textContent =
           value === null
@@ -247,37 +290,106 @@ export class GamiqResults {
     }
   }
 
+
   show() {
     const overlay =
       this.create();
 
+
     this.update();
+
 
     overlay.classList.add(
       "show"
     );
+
+
+    overlay.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+
+
+    document.addEventListener(
+      "keydown",
+      this.handleEscape
+    );
+
+
+    requestAnimationFrame(
+      () => {
+
+        overlay
+          .querySelector(
+            "[data-results-continue]"
+          )
+          ?.focus();
+
+      }
+    );
   }
+
 
   hide() {
     if (!this.overlay) {
       return;
     }
 
+
     this.overlay.classList.remove(
       "show"
     );
+
+
+    this.overlay.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+
+    document.removeEventListener(
+      "keydown",
+      this.handleEscape
+    );
   }
+
+
+  closeAndContinue() {
+    this.hide();
+
+
+    if (
+      typeof this.onContinue ===
+      "function"
+    ) {
+      this.onContinue();
+    }
+  }
+
+
+  handleEscape(event) {
+    if (
+      event.key !== "Escape"
+    ) {
+      return;
+    }
+
+
+    this.closeAndContinue();
+  }
+
 
   toggle() {
     const overlay =
       this.create();
+
 
     if (
       overlay.classList.contains(
         "show"
       )
     ) {
-      this.hide();
+      this.closeAndContinue();
     } else {
       this.show();
     }
