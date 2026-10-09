@@ -1,13 +1,5 @@
 // GAMIQ（ゲーミック） v2
-// SPACE BLASTER
-//
-// 操作:
-// マウス / 指で照準を動かす
-// タップ / クリック / FIREで射撃
-//
-// 終了:
-// 敵機を6機撃破 → CLEAR
-// 敵を3機逃す → GAME OVER
+// SPACE BLASTER - Dynamic Mobile Control Edition
 
 import {
   GamiqThreeScene
@@ -44,17 +36,20 @@ export async function runSpace3D({
     performance.now();
 
   let enemy = null;
-
   let enemyDying = false;
 
-  let enemySpawnTimer = null;
-
+  let spawnTimer = null;
   let messageTimer = null;
 
-  let crosshairX = 0;
-  let crosshairY = 0;
-
   let screenShake = 0;
+
+  let crosshairLocalX = 0;
+  let crosshairLocalY = 0;
+
+  let joystickX = 0;
+  let joystickY = 0;
+
+  let joystickActive = false;
 
 
   /* ==========================================
@@ -75,7 +70,6 @@ export async function runSpace3D({
           </strong>
         </div>
 
-
         <div class="space-hud-item">
           <span>COMBO</span>
 
@@ -83,7 +77,6 @@ export async function runSpace3D({
             0
           </strong>
         </div>
-
 
         <div class="space-hud-item">
           <span>ACCURACY</span>
@@ -128,7 +121,34 @@ export async function runSpace3D({
 
 
         <div class="space-blaster-hint">
-          AIM + FIRE
+          AIM & SHOOT
+        </div>
+
+
+        <!-- MOBILE CONTROLS -->
+
+        <div class="space-mobile-controls">
+
+          <div
+            class="space-joystick"
+            data-space-joystick
+          >
+            <div
+              class="space-joystick-knob"
+              data-space-joystick-knob
+            ></div>
+          </div>
+
+
+          <button
+            type="button"
+            class="space-mobile-fire"
+            data-space-mobile-fire
+            aria-label="Shoot"
+          >
+            <span>✦</span>
+          </button>
+
         </div>
 
       </div>
@@ -137,21 +157,14 @@ export async function runSpace3D({
       <div class="space-blaster-bottom">
 
         <div class="space-life">
+
           ESCAPE
 
           <strong data-space-escape>
             ○ ○ ○
           </strong>
+
         </div>
-
-
-        <button
-          type="button"
-          class="space-blaster-fire"
-          data-space-fire
-        >
-          FIRE
-        </button>
 
       </div>
 
@@ -173,7 +186,7 @@ export async function runSpace3D({
       "[data-space-world]"
     );
 
-  const crosshairElement =
+  const crosshair =
     container.querySelector(
       "[data-space-crosshair]"
     );
@@ -208,9 +221,19 @@ export async function runSpace3D({
       "[data-space-combo-pop]"
     );
 
-  const fireButton =
+  const joystick =
     container.querySelector(
-      "[data-space-fire]"
+      "[data-space-joystick]"
+    );
+
+  const joystickKnob =
+    container.querySelector(
+      "[data-space-joystick-knob]"
+    );
+
+  const mobileFireButton =
+    container.querySelector(
+      "[data-space-mobile-fire]"
     );
 
 
@@ -270,7 +293,7 @@ export async function runSpace3D({
 
   const blueLight =
     new T.PointLight(
-      0x3de8ff,
+      0x39eaff,
       4,
       22
     );
@@ -290,7 +313,7 @@ export async function runSpace3D({
 
   const purpleLight =
     new T.PointLight(
-      0x7755ff,
+      0x7655ff,
       3,
       20
     );
@@ -310,8 +333,8 @@ export async function runSpace3D({
 
   const redLight =
     new T.PointLight(
-      0xff345f,
-      2,
+      0xff3159,
+      2.4,
       15
     );
 
@@ -333,7 +356,7 @@ export async function runSpace3D({
   ========================================== */
 
   const starCount =
-    600;
+    650;
 
 
   const starGeometry =
@@ -418,7 +441,7 @@ export async function runSpace3D({
 
 
   /* ==========================================
-  ENEMY CREATOR
+  ENEMY MODEL
   ========================================== */
 
   function buildEnemy() {
@@ -429,7 +452,7 @@ export async function runSpace3D({
     const bodyMaterial =
       new T.MeshStandardMaterial({
         color:
-          0x40566f,
+          0x40556f,
 
         metalness:
           0.82,
@@ -442,10 +465,10 @@ export async function runSpace3D({
     const glowMaterial =
       new T.MeshStandardMaterial({
         color:
-          0x66efff,
+          0x5ff0ff,
 
         emissive:
-          0x3bdcff,
+          0x32dfff,
 
         emissiveIntensity:
           3,
@@ -461,23 +484,15 @@ export async function runSpace3D({
     const coreMaterial =
       new T.MeshStandardMaterial({
         color:
-          0xff355d,
+          0xff315d,
 
         emissive:
           0xff1744,
 
         emissiveIntensity:
-          3.3,
-
-        metalness:
-          0.3,
-
-        roughness:
-          0.2
+          3.5
       });
 
-
-    /* body */
 
     const body =
       new T.Mesh(
@@ -503,12 +518,10 @@ export async function runSpace3D({
     );
 
 
-    /* cockpit */
-
     const cockpit =
       new T.Mesh(
         new T.SphereGeometry(
-          0.3,
+          0.31,
           16,
           12
         ),
@@ -529,12 +542,10 @@ export async function runSpace3D({
     );
 
 
-    /* wings */
-
     const wingGeometry =
       new T.BoxGeometry(
-        1.65,
-        0.11,
+        1.7,
+        0.12,
         0.55
       );
 
@@ -579,8 +590,6 @@ export async function runSpace3D({
     );
 
 
-    /* target core */
-
     const core =
       new T.Mesh(
         new T.SphereGeometry(
@@ -608,8 +617,6 @@ export async function runSpace3D({
       core
     );
 
-
-    /* engines */
 
     const engineLeft =
       new T.Mesh(
@@ -684,13 +691,13 @@ export async function runSpace3D({
 
     enemy.position.set(
       randomBetween(
-        -3.4,
-        3.4
+        -3.5,
+        3.5
       ),
 
       randomBetween(
-        -2.1,
-        2.3
+        -2.2,
+        2.5
       ),
 
       randomBetween(
@@ -702,56 +709,61 @@ export async function runSpace3D({
 
     enemy.userData.health =
       destroyed >= 4
-        ? 115
+        ? 120
         : 100;
 
 
-    enemy.userData.vx =
-      randomSigned(
-        randomBetween(
-          1.2,
-          2.2
-        )
+    /*
+     * 敵は速度そのものではなく、
+     * 「次にどこへ逃げるか」を持つ
+     */
+
+    enemy.userData.targetX =
+      randomBetween(
+        -4.5,
+        4.5
       );
 
 
-    enemy.userData.vy =
-      randomSigned(
-        randomBetween(
-          0.8,
-          1.7
-        )
+    enemy.userData.targetY =
+      randomBetween(
+        -3,
+        3
+      );
+
+
+    enemy.userData.moveSpeed =
+      randomBetween(
+        3.2,
+        4.8
       );
 
 
     enemy.userData.forwardSpeed =
-      randomBetween(
-        0.5,
-        0.9
-      ) +
+      0.65 +
       destroyed *
-        0.08;
+        0.10;
 
 
-    enemy.userData.turnTimer =
+    enemy.userData.decisionTimer =
       randomBetween(
-        0.35,
+        0.45,
         0.9
       );
 
 
     enemy.userData.dashTimer =
       randomBetween(
-        1.1,
-        2.1
+        0.9,
+        1.5
       );
 
 
-    enemy.userData.dash =
-      0;
+    enemy.userData.isDashing =
+      false;
 
 
-    enemy.userData.age =
+    enemy.userData.dashTime =
       0;
 
 
@@ -784,11 +796,11 @@ export async function runSpace3D({
       }
 
 
-      /* stars move toward player */
+      /* STAR SPEED */
 
       stars.position.z +=
         delta *
-        3.4;
+        4.4;
 
 
       if (
@@ -800,7 +812,7 @@ export async function runSpace3D({
       }
 
 
-      /* camera shake */
+      /* CAMERA SHAKE */
 
       if (
         screenShake >
@@ -812,16 +824,16 @@ export async function runSpace3D({
 
         world.camera.position.x =
           randomBetween(
-            -0.035,
-            0.035
+            -0.055,
+            0.055
           );
 
 
         world.camera.position.y =
           0.4 +
           randomBetween(
-            -0.035,
-            0.035
+            -0.055,
+            0.055
           );
       } else {
         world.camera.position.x =
@@ -833,6 +845,57 @@ export async function runSpace3D({
       }
 
 
+      /* MOBILE JOYSTICK AIM */
+
+      if (
+        joystickActive
+      ) {
+        const rect =
+          stage
+            .getBoundingClientRect();
+
+
+        const speed =
+          390;
+
+
+        crosshairLocalX +=
+          joystickX *
+          speed *
+          delta;
+
+
+        crosshairLocalY +=
+          joystickY *
+          speed *
+          delta;
+
+
+        crosshairLocalX =
+          clamp(
+            crosshairLocalX,
+            15,
+            rect.width -
+            15
+          );
+
+
+        crosshairLocalY =
+          clamp(
+            crosshairLocalY,
+            15,
+            rect.height -
+            15
+          );
+
+
+        updateCrosshairFromLocal(
+          crosshairLocalX,
+          crosshairLocalY
+        );
+      }
+
+
       if (
         !enemy ||
         enemyDying
@@ -841,11 +904,7 @@ export async function runSpace3D({
       }
 
 
-      enemy.userData.age +=
-        delta;
-
-
-      enemy.userData.turnTimer -=
+      enemy.userData.decisionTimer -=
         delta;
 
 
@@ -853,115 +912,199 @@ export async function runSpace3D({
         delta;
 
 
-      /* ======================================
-      RANDOM DIRECTION CHANGE
-      ====================================== */
+      /*
+       * 通常の大きな方向転換
+       */
 
       if (
-        enemy.userData.turnTimer <=
+        enemy.userData.decisionTimer <=
         0
       ) {
-        enemy.userData.vx =
-          randomSigned(
-            randomBetween(
-              1.3,
-              2.8
-            )
+        enemy.userData.targetX =
+          randomBetween(
+            -4.8,
+            4.8
           );
 
 
-        enemy.userData.vy =
-          randomSigned(
-            randomBetween(
-              0.7,
-              2
-            )
+        enemy.userData.targetY =
+          randomBetween(
+            -3.1,
+            3.1
           );
 
 
-        enemy.userData.turnTimer =
+        enemy.userData.moveSpeed =
+          randomBetween(
+            3.5,
+            5.7
+          ) +
+          destroyed *
+            0.25;
+
+
+        enemy.userData.decisionTimer =
           randomBetween(
             0.35,
-            0.85
+            0.75
           );
       }
 
 
-      /* ======================================
-      DODGE / DASH
-      ====================================== */
+      /*
+       * 大きなDASH
+       */
 
       if (
         enemy.userData.dashTimer <=
         0
       ) {
-        enemy.userData.dash =
+        enemy.userData.isDashing =
+          true;
+
+
+        enemy.userData.dashTime =
           randomBetween(
-            2.2,
-            4
+            0.25,
+            0.45
           );
 
 
-        enemy.userData.vx *=
-          1.8;
+        /*
+         * 今いる位置と逆側へ大きく逃げる
+         */
+
+        enemy.userData.targetX =
+          enemy.position.x >=
+          0
+            ? randomBetween(
+                -4.8,
+                -2.2
+              )
+            : randomBetween(
+                2.2,
+                4.8
+              );
 
 
-        enemy.userData.vy *=
-          1.35;
+        enemy.userData.targetY =
+          randomBetween(
+            -3,
+            3
+          );
+
+
+        enemy.userData.moveSpeed =
+          randomBetween(
+            8,
+            11
+          );
 
 
         enemy.userData.dashTimer =
           randomBetween(
-            1,
-            1.8
+            0.9,
+            1.6
           );
+
+
+        showEnemyDashEffect();
       }
 
 
       if (
-        enemy.userData.dash >
-        0
+        enemy.userData.isDashing
       ) {
-        enemy.userData.dash -=
-          delta * 5;
+        enemy.userData.dashTime -=
+          delta;
+
+
+        if (
+          enemy.userData.dashTime <=
+          0
+        ) {
+          enemy.userData.isDashing =
+            false;
+
+
+          enemy.userData.moveSpeed =
+            randomBetween(
+              3.5,
+              5.5
+            );
+        }
       }
 
 
-      /* ======================================
-      MOVE
-      ====================================== */
-
-      enemy.position.x +=
-        enemy.userData.vx *
-        delta;
+      const dx =
+        enemy.userData.targetX -
+        enemy.position.x;
 
 
-      enemy.position.y +=
-        enemy.userData.vy *
-        delta;
+      const dy =
+        enemy.userData.targetY -
+        enemy.position.y;
 
+
+      const distance =
+        Math.hypot(
+          dx,
+          dy
+        );
+
+
+      if (
+        distance >
+        0.05
+      ) {
+        enemy.position.x +=
+          (
+            dx /
+            distance
+          ) *
+          enemy.userData.moveSpeed *
+          delta;
+
+
+        enemy.position.y +=
+          (
+            dy /
+            distance
+          ) *
+          enemy.userData.moveSpeed *
+          delta;
+      }
+
+
+      /*
+       * プレイヤー側へ進行
+       */
 
       enemy.position.z +=
         enemy.userData.forwardSpeed *
         delta;
 
 
-      /* banking */
+      /*
+       * バンク
+       */
 
       enemy.rotation.z =
         clamp(
-          -enemy.userData.vx *
-          0.12,
-          -0.38,
-          0.38
+          -dx *
+          0.16,
+          -0.6,
+          0.6
         );
 
 
       enemy.rotation.x =
-        Math.sin(
-          elapsed * 2.2
-        ) *
-        0.08;
+        clamp(
+          dy *
+          0.1,
+          -0.35,
+          0.35
+        );
 
 
       enemy.rotation.y +=
@@ -969,71 +1112,9 @@ export async function runSpace3D({
         0.55;
 
 
-      /* ======================================
-      BOUNDS
-      ====================================== */
-
-      if (
-        enemy.position.x >
-        4
-      ) {
-        enemy.position.x =
-          4;
-
-
-        enemy.userData.vx =
-          -Math.abs(
-            enemy.userData.vx
-          );
-      }
-
-
-      if (
-        enemy.position.x <
-        -4
-      ) {
-        enemy.position.x =
-          -4;
-
-
-        enemy.userData.vx =
-          Math.abs(
-            enemy.userData.vx
-          );
-      }
-
-
-      if (
-        enemy.position.y >
-        2.8
-      ) {
-        enemy.position.y =
-          2.8;
-
-
-        enemy.userData.vy =
-          -Math.abs(
-            enemy.userData.vy
-          );
-      }
-
-
-      if (
-        enemy.position.y <
-        -2.5
-      ) {
-        enemy.position.y =
-          -2.5;
-
-
-        enemy.userData.vy =
-          Math.abs(
-            enemy.userData.vy
-          );
-      }
-
-
-      /* escaped */
+      /*
+       * プレイヤーまで来たらESCAPE
+       */
 
       if (
         enemy.position.z >
@@ -1047,7 +1128,7 @@ export async function runSpace3D({
 
 
   /* ==========================================
-  POINTER / AIM
+  AIM
   ========================================== */
 
   const pointer =
@@ -1061,6 +1142,58 @@ export async function runSpace3D({
     new T.Raycaster();
 
 
+  function updateCrosshairFromLocal(
+    x,
+    y
+  ) {
+    const rect =
+      stage
+        .getBoundingClientRect();
+
+
+    crosshairLocalX =
+      clamp(
+        x,
+        0,
+        rect.width
+      );
+
+
+    crosshairLocalY =
+      clamp(
+        y,
+        0,
+        rect.height
+      );
+
+
+    crosshair.style.left =
+      `${crosshairLocalX}px`;
+
+
+    crosshair.style.top =
+      `${crosshairLocalY}px`;
+
+
+    pointer.x =
+      (
+        crosshairLocalX /
+        rect.width
+      ) *
+      2 -
+      1;
+
+
+    pointer.y =
+      -(
+        crosshairLocalY /
+        rect.height
+      ) *
+      2 +
+      1;
+  }
+
+
   function updatePointer(
     clientX,
     clientY
@@ -1070,63 +1203,23 @@ export async function runSpace3D({
         .getBoundingClientRect();
 
 
-    const localX =
-      clamp(
-        clientX -
-        rect.left,
-        0,
-        rect.width
-      );
+    updateCrosshairFromLocal(
+      clientX -
+      rect.left,
 
-
-    const localY =
-      clamp(
-        clientY -
-        rect.top,
-        0,
-        rect.height
-      );
-
-
-    crosshairElement.style.left =
-      `${localX}px`;
-
-
-    crosshairElement.style.top =
-      `${localY}px`;
-
-
-    pointer.x =
-      (
-        localX /
-        rect.width
-      ) *
-      2 -
-      1;
-
-
-    pointer.y =
-      -(
-        localY /
-        rect.height
-      ) *
-      2 +
-      1;
-
-
-    crosshairX =
-      clientX;
-
-
-    crosshairY =
-      clientY;
+      clientY -
+      rect.top
+    );
   }
 
 
-  function pointerMove(
+  function stagePointerMove(
     event
   ) {
-    if (!active) {
+    if (
+      !active ||
+      isMobileLike()
+    ) {
       return;
     }
 
@@ -1139,13 +1232,10 @@ export async function runSpace3D({
 
 
   /* ==========================================
-  SHOOT
+  SHOOTING
   ========================================== */
 
-  function shoot(
-    clientX = null,
-    clientY = null
-  ) {
+  function shoot() {
     if (
       !active ||
       !enemy ||
@@ -1156,17 +1246,6 @@ export async function runSpace3D({
 
 
     shots++;
-
-
-    if (
-      clientX !== null &&
-      clientY !== null
-    ) {
-      updatePointer(
-        clientX,
-        clientY
-      );
-    }
 
 
     createLaserEffect();
@@ -1194,30 +1273,29 @@ export async function runSpace3D({
       hits++;
 
 
-      const hitObject =
-        intersections[0]
-          .object;
+      const hit =
+        intersections[0];
 
 
       let damage =
         randomBetween(
-          38,
-          50
+          36,
+          48
         );
 
 
       if (
-        hitObject.userData
+        hit.object
+          .userData
           ?.isCore
       ) {
         damage *=
-          1.75;
+          1.8;
 
 
         showMessage(
           "CRITICAL!"
         );
-
       } else {
         showMessage(
           "HIT!"
@@ -1240,8 +1318,7 @@ export async function runSpace3D({
 
 
       createHitParticles(
-        intersections[0]
-          .point
+        hit.point
       );
 
 
@@ -1249,15 +1326,46 @@ export async function runSpace3D({
 
 
       screenShake =
-        0.13;
+        0.15;
+
+
+      /*
+       * 撃たれたら敵が逆サイドへ急回避
+       */
+
+      enemy.userData.targetX =
+        enemy.position.x >=
+        0
+          ? randomBetween(
+              -4.8,
+              -2.5
+            )
+          : randomBetween(
+              2.5,
+              4.8
+            );
+
+
+      enemy.userData.targetY =
+        randomBetween(
+          -3,
+          3
+        );
+
+
+      enemy.userData.moveSpeed =
+        randomBetween(
+          7,
+          10
+        );
+
+
+      enemy.userData.decisionTimer =
+        0.3;
 
 
       enemy.position.z -=
         0.45;
-
-
-      enemy.userData.vx *=
-        -0.8;
 
 
       showCombo();
@@ -1271,7 +1379,6 @@ export async function runSpace3D({
       }
 
     } else {
-
       combo =
         0;
 
@@ -1294,13 +1401,37 @@ export async function runSpace3D({
   }
 
 
-  function canvasShoot(
+  /* ==========================================
+  PC CLICK
+  ========================================== */
+
+  function stagePointerDown(
     event
   ) {
-    shoot(
+    if (
+      !active ||
+      isMobileLike()
+    ) {
+      return;
+    }
+
+
+    if (
+      event.target.closest(
+        ".space-mobile-controls"
+      )
+    ) {
+      return;
+    }
+
+
+    updatePointer(
       event.clientX,
       event.clientY
     );
+
+
+    shoot();
   }
 
 
@@ -1309,12 +1440,12 @@ export async function runSpace3D({
   ========================================== */
 
   function createLaserEffect() {
-    const origin =
+    const start =
       world.camera.position
         .clone();
 
 
-    const destination =
+    const point =
       new T.Vector3(
         pointer.x,
         pointer.y,
@@ -1322,13 +1453,13 @@ export async function runSpace3D({
       );
 
 
-    destination.unproject(
+    point.unproject(
       world.camera
     );
 
 
     const direction =
-      destination
+      point
         .sub(
           world.camera.position
         )
@@ -1336,11 +1467,11 @@ export async function runSpace3D({
 
 
     const end =
-      origin
+      start
         .clone()
         .add(
           direction.multiplyScalar(
-            22
+            25
           )
         );
 
@@ -1348,7 +1479,7 @@ export async function runSpace3D({
     const geometry =
       new T.BufferGeometry()
         .setFromPoints([
-          origin,
+          start,
           end
         ]);
 
@@ -1356,7 +1487,7 @@ export async function runSpace3D({
     const material =
       new T.LineBasicMaterial({
         color:
-          0x5af4ff,
+          0x62f5ff,
 
         transparent:
           true,
@@ -1378,16 +1509,16 @@ export async function runSpace3D({
     );
 
 
-    fireButton.classList.remove(
-      "fire-kick"
+    mobileFireButton.classList.remove(
+      "shoot-kick"
     );
 
 
-    void fireButton.offsetWidth;
+    void mobileFireButton.offsetWidth;
 
 
-    fireButton.classList.add(
-      "fire-kick"
+    mobileFireButton.classList.add(
+      "shoot-kick"
     );
 
 
@@ -1404,13 +1535,13 @@ export async function runSpace3D({
         material.dispose();
 
       },
-      70
+      75
     );
   }
 
 
   /* ==========================================
-  HIT FLASH
+  ENEMY FLASH
   ========================================== */
 
   function flashEnemy() {
@@ -1419,7 +1550,7 @@ export async function runSpace3D({
     }
 
 
-    const originals =
+    const materials =
       [];
 
 
@@ -1456,7 +1587,7 @@ export async function runSpace3D({
           flash;
 
 
-        originals.push({
+        materials.push({
           object,
           original,
           flash
@@ -1469,7 +1600,7 @@ export async function runSpace3D({
     setTimeout(
       () => {
 
-        originals.forEach(
+        materials.forEach(
           item => {
 
             item.object.material =
@@ -1482,7 +1613,7 @@ export async function runSpace3D({
         );
 
       },
-      80
+      85
     );
   }
 
@@ -1508,7 +1639,7 @@ export async function runSpace3D({
     );
 
 
-    const pieces =
+    const particles =
       [];
 
 
@@ -1517,19 +1648,19 @@ export async function runSpace3D({
       i < 16;
       i++
     ) {
-      const piece =
+      const mesh =
         new T.Mesh(
           new T.BoxGeometry(
-            0.055,
-            0.055,
-            0.055
+            0.06,
+            0.06,
+            0.06
           ),
 
           new T.MeshBasicMaterial({
             color:
               Math.random() <
               0.5
-                ? 0x5ef2ff
+                ? 0x5ff1ff
                 : 0xffffff
           })
         );
@@ -1538,13 +1669,13 @@ export async function runSpace3D({
       const velocity =
         new T.Vector3(
           randomBetween(
-            -3,
-            3
+            -3.5,
+            3.5
           ),
 
           randomBetween(
-            -3,
-            3
+            -3.5,
+            3.5
           ),
 
           randomBetween(
@@ -1554,14 +1685,14 @@ export async function runSpace3D({
         );
 
 
-      pieces.push({
-        piece,
+      particles.push({
+        mesh,
         velocity
       });
 
 
       group.add(
-        piece
+        mesh
       );
     }
 
@@ -1570,24 +1701,24 @@ export async function runSpace3D({
       0;
 
 
-    const updater =
+    const update =
       delta => {
 
         age +=
           delta;
 
 
-        pieces.forEach(
+        particles.forEach(
           item => {
 
-            item.piece.position
+            item.mesh.position
               .addScaledVector(
                 item.velocity,
                 delta
               );
 
 
-            item.piece.scale
+            item.mesh.scale
               .multiplyScalar(
                 0.94
               );
@@ -1601,7 +1732,7 @@ export async function runSpace3D({
           0.38
         ) {
           world.removeUpdate?.(
-            updater
+            update
           );
 
 
@@ -1613,7 +1744,7 @@ export async function runSpace3D({
 
 
     world.addUpdate(
-      updater
+      update
     );
   }
 
@@ -1639,92 +1770,86 @@ export async function runSpace3D({
     );
 
 
-    const fragments =
+    const pieces =
       [];
 
 
     for (
       let i = 0;
-      i < 28;
+      i < 34;
       i++
     ) {
-      const material =
-        new T.MeshBasicMaterial({
-          color:
-            [
-              0xff365d,
-              0xffa53d,
-              0x66efff,
-              0xffffff
-            ][
-              Math.floor(
-                Math.random() *
-                4
-              )
-            ]
-        });
-
-
-      const fragment =
+      const mesh =
         new T.Mesh(
           new T.BoxGeometry(
             randomBetween(
               0.05,
-              0.13
+              0.15
             ),
 
             randomBetween(
               0.05,
-              0.13
+              0.15
             ),
 
             randomBetween(
               0.05,
-              0.13
+              0.15
             )
           ),
 
-          material
+          new T.MeshBasicMaterial({
+            color:
+              [
+                0xff345e,
+                0xffa53c,
+                0x5ff0ff,
+                0xffffff
+              ][
+                Math.floor(
+                  Math.random() *
+                  4
+                )
+              ]
+          })
         );
 
 
       const velocity =
         new T.Vector3(
           randomBetween(
-            -5,
-            5
+            -6,
+            6
           ),
 
           randomBetween(
-            -5,
-            5
+            -6,
+            6
           ),
 
           randomBetween(
             -3,
-            5
+            6
           )
         );
 
 
-      fragments.push({
-        fragment,
+      pieces.push({
+        mesh,
         velocity
       });
 
 
       group.add(
-        fragment
+        mesh
       );
     }
 
 
-    /* expanding core */
-
     const core =
       new T.Mesh(
         new T.SphereGeometry(
-          0.3,
+          0.35,
           16,
           10
         ),
@@ -1737,7 +1862,7 @@ export async function runSpace3D({
             true,
 
           opacity:
-            0.95
+            1
         })
       );
 
@@ -1751,45 +1876,45 @@ export async function runSpace3D({
       0;
 
 
-    const updater =
+    const update =
       delta => {
 
         age +=
           delta;
 
 
-        fragments.forEach(
+        pieces.forEach(
           item => {
 
-            item.fragment.position
+            item.mesh.position
               .addScaledVector(
                 item.velocity,
                 delta
               );
 
 
-            item.fragment.rotation.x +=
+            item.mesh.rotation.x +=
               delta * 8;
 
 
-            item.fragment.rotation.y +=
-              delta * 6;
+            item.mesh.rotation.y +=
+              delta * 7;
 
 
-            item.fragment.scale
+            item.mesh.scale
               .multiplyScalar(
-                0.96
+                0.95
               );
 
           }
         );
 
 
-        core.scale
-          .multiplyScalar(
-            1 +
-            delta * 7
-          );
+        core.scale.multiplyScalar(
+          1 +
+          delta *
+          8
+        );
 
 
         core.material.opacity =
@@ -1805,7 +1930,7 @@ export async function runSpace3D({
           0.55
         ) {
           world.removeUpdate?.(
-            updater
+            update
           );
 
 
@@ -1817,7 +1942,7 @@ export async function runSpace3D({
 
 
     world.addUpdate(
-      updater
+      update
     );
   }
 
@@ -1857,7 +1982,7 @@ export async function runSpace3D({
 
 
     screenShake =
-      0.28;
+      0.3;
 
 
     stage.classList.remove(
@@ -1895,14 +2020,15 @@ export async function runSpace3D({
     ) {
       setTimeout(
         () => finish(true),
-        500
+        550
       );
+
 
       return;
     }
 
 
-    enemySpawnTimer =
+    spawnTimer =
       setTimeout(
         () => {
 
@@ -1935,7 +2061,7 @@ export async function runSpace3D({
       true;
 
 
-    const escapedEnemy =
+    const oldEnemy =
       enemy;
 
 
@@ -1943,33 +2069,18 @@ export async function runSpace3D({
       null;
 
 
-    combo =
-      0;
-
-
     escaped++;
+
+    combo = 0;
 
 
     world.disposeObject(
-      escapedEnemy
+      oldEnemy
     );
 
 
     showMessage(
       "ESCAPED!"
-    );
-
-
-    stage.classList.remove(
-      "space-stage-miss"
-    );
-
-
-    void stage.offsetWidth;
-
-
-    stage.classList.add(
-      "space-stage-miss"
     );
 
 
@@ -1986,7 +2097,7 @@ export async function runSpace3D({
     }
 
 
-    enemySpawnTimer =
+    spawnTimer =
       setTimeout(
         () => {
 
@@ -1997,8 +2108,233 @@ export async function runSpace3D({
           spawnEnemy();
 
         },
-        420
+        400
       );
+  }
+
+
+  /* ==========================================
+  ENEMY DASH FX
+  ========================================== */
+
+  function showEnemyDashEffect() {
+    if (!enemy) {
+      return;
+    }
+
+
+    enemy.scale.set(
+      1.12,
+      0.92,
+      1.05
+    );
+
+
+    setTimeout(
+      () => {
+
+        if (enemy) {
+          enemy.scale.set(
+            1,
+            1,
+            1
+          );
+        }
+
+      },
+      120
+    );
+  }
+
+
+  /* ==========================================
+  JOYSTICK
+  ========================================== */
+
+  let joystickPointerId =
+    null;
+
+
+  function joystickPointerDown(
+    event
+  ) {
+    if (!active) {
+      return;
+    }
+
+
+    event.preventDefault();
+    event.stopPropagation();
+
+
+    joystickActive =
+      true;
+
+
+    joystickPointerId =
+      event.pointerId;
+
+
+    joystick.setPointerCapture?.(
+      event.pointerId
+    );
+
+
+    updateJoystick(
+      event
+    );
+  }
+
+
+  function joystickPointerMove(
+    event
+  ) {
+    if (
+      !joystickActive ||
+      event.pointerId !==
+      joystickPointerId
+    ) {
+      return;
+    }
+
+
+    event.preventDefault();
+
+
+    updateJoystick(
+      event
+    );
+  }
+
+
+  function joystickPointerUp(
+    event
+  ) {
+    if (
+      event.pointerId !==
+      joystickPointerId
+    ) {
+      return;
+    }
+
+
+    joystickActive =
+      false;
+
+
+    joystickPointerId =
+      null;
+
+
+    joystickX =
+      0;
+
+
+    joystickY =
+      0;
+
+
+    joystickKnob.style.transform =
+      "translate(-50%, -50%)";
+
+
+    joystick.releasePointerCapture?.(
+      event.pointerId
+    );
+  }
+
+
+  function updateJoystick(
+    event
+  ) {
+    const rect =
+      joystick
+        .getBoundingClientRect();
+
+
+    const centerX =
+      rect.left +
+      rect.width /
+      2;
+
+
+    const centerY =
+      rect.top +
+      rect.height /
+      2;
+
+
+    let dx =
+      event.clientX -
+      centerX;
+
+
+    let dy =
+      event.clientY -
+      centerY;
+
+
+    const radius =
+      rect.width *
+      0.33;
+
+
+    const distance =
+      Math.hypot(
+        dx,
+        dy
+      );
+
+
+    if (
+      distance >
+      radius
+    ) {
+      dx =
+        dx /
+        distance *
+        radius;
+
+
+      dy =
+        dy /
+        distance *
+        radius;
+    }
+
+
+    joystickX =
+      dx /
+      radius;
+
+
+    joystickY =
+      dy /
+      radius;
+
+
+    joystickKnob.style.transform =
+      `
+        translate(
+          calc(-50% + ${dx}px),
+          calc(-50% + ${dy}px)
+        )
+      `;
+  }
+
+
+  /* ==========================================
+  MOBILE FIRE
+  ========================================== */
+
+  function mobileFire(
+    event
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+
+
+    shoot();
   }
 
 
@@ -2024,7 +2360,8 @@ export async function runSpace3D({
 
     accuracyElement.textContent =
       `${Math.round(
-        accuracy * 100
+        accuracy *
+        100
       )}%`;
 
 
@@ -2051,7 +2388,7 @@ export async function runSpace3D({
 
 
   /* ==========================================
-  MESSAGE FX
+  MESSAGE
   ========================================== */
 
   function showMessage(
@@ -2149,7 +2486,7 @@ export async function runSpace3D({
 
 
     clearTimeout(
-      enemySpawnTimer
+      spawnTimer
     );
 
 
@@ -2164,8 +2501,7 @@ export async function runSpace3D({
 
 
     const accuracy =
-      shots >
-      0
+      shots > 0
         ? hits /
           shots
         : 0;
@@ -2179,6 +2515,7 @@ export async function runSpace3D({
     const survival =
       Math.max(
         0,
+
         1 -
         escaped /
         maxEscapes
@@ -2280,42 +2617,68 @@ export async function runSpace3D({
 
 
   /* ==========================================
+  DEVICE
+  ========================================== */
+
+  function isMobileLike() {
+    return (
+      window.matchMedia(
+        "(pointer: coarse)"
+      ).matches ||
+      window.innerWidth <=
+      700
+    );
+  }
+
+
+  /* ==========================================
   EVENTS
   ========================================== */
 
   stage.addEventListener(
     "pointermove",
-    pointerMove
+    stagePointerMove
   );
 
 
   stage.addEventListener(
     "pointerdown",
-    canvasShoot
+    stagePointerDown
   );
 
 
-  function fireButtonHandler(
-    event
-  ) {
-    event.stopPropagation();
-
-
-    shoot(
-      crosshairX || null,
-      crosshairY || null
-    );
-  }
-
-
-  fireButton.addEventListener(
+  joystick.addEventListener(
     "pointerdown",
-    fireButtonHandler
+    joystickPointerDown
+  );
+
+
+  joystick.addEventListener(
+    "pointermove",
+    joystickPointerMove
+  );
+
+
+  joystick.addEventListener(
+    "pointerup",
+    joystickPointerUp
+  );
+
+
+  joystick.addEventListener(
+    "pointercancel",
+    joystickPointerUp
+  );
+
+
+  mobileFireButton.addEventListener(
+    "pointerdown",
+    mobileFire
   );
 
 
   /* ==========================================
-  INITIAL CROSSHAIR
+  INITIAL AIM
   ========================================== */
 
   requestAnimationFrame(
@@ -2326,14 +2689,12 @@ export async function runSpace3D({
           .getBoundingClientRect();
 
 
-      updatePointer(
-        rect.left +
+      updateCrosshairFromLocal(
         rect.width /
-          2,
+        2,
 
-        rect.top +
         rect.height /
-          2
+        2
       );
 
     }
@@ -2341,7 +2702,6 @@ export async function runSpace3D({
 
 
   updateHud();
-
 
   world.start();
 
@@ -2356,7 +2716,7 @@ export async function runSpace3D({
 
 
     clearTimeout(
-      enemySpawnTimer
+      spawnTimer
     );
 
 
@@ -2367,19 +2727,43 @@ export async function runSpace3D({
 
     stage.removeEventListener(
       "pointermove",
-      pointerMove
+      stagePointerMove
     );
 
 
     stage.removeEventListener(
       "pointerdown",
-      canvasShoot
+      stagePointerDown
     );
 
 
-    fireButton.removeEventListener(
+    joystick.removeEventListener(
       "pointerdown",
-      fireButtonHandler
+      joystickPointerDown
+    );
+
+
+    joystick.removeEventListener(
+      "pointermove",
+      joystickPointerMove
+    );
+
+
+    joystick.removeEventListener(
+      "pointerup",
+      joystickPointerUp
+    );
+
+
+    joystick.removeEventListener(
+      "pointercancel",
+      joystickPointerUp
+    );
+
+
+    mobileFireButton.removeEventListener(
+      "pointerdown",
+      mobileFire
     );
 
 
@@ -2399,22 +2783,10 @@ function randomBetween(
   return (
     min +
     Math.random() *
-      (
-        max -
-        min
-      )
-  );
-}
-
-
-function randomSigned(
-  value
-) {
-  return (
-    Math.random() <
-    0.5
-      ? -value
-      : value
+    (
+      max -
+      min
+    )
   );
 }
 
