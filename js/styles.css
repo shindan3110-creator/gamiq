@@ -4623,3 +4623,647 @@ MOBILE
   }
 
 }
+
+
+
+
+/* ==========================================
+SPACE BLASTER V2
+========================================== */
+
+.space-blaster-wrap{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:10px;
+}
+
+
+/* ==========================================
+HUD
+========================================== */
+
+.space-blaster-hud{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:8px;
+}
+
+
+.space-hud-item{
+  padding:9px 10px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:12px;
+
+  background:
+    rgba(4,8,18,.8);
+
+  text-align:center;
+}
+
+
+.space-hud-item span{
+  display:block;
+
+  margin-bottom:3px;
+
+  color:
+    rgba(255,255,255,.48);
+
+  font-size:8px;
+  font-weight:900;
+
+  letter-spacing:.14em;
+}
+
+
+.space-hud-item strong{
+  color:#fff;
+
+  font-size:16px;
+  font-weight:1000;
+}
+
+
+.space-hud-item:nth-child(2)
+strong{
+  color:#66efff;
+}
+
+
+/* ==========================================
+STAGE
+========================================== */
+
+.space-blaster-stage{
+  position:relative;
+
+  flex:1;
+
+  min-height:0;
+
+  overflow:hidden;
+
+  border-radius:20px;
+
+  background:#01040b;
+
+  cursor:none;
+
+  touch-action:none;
+}
+
+
+.space-blaster-world{
+  position:absolute;
+
+  inset:0;
+
+  width:100%;
+  height:100%;
+}
+
+
+.space-blaster-world canvas{
+  display:block;
+
+  width:100% !important;
+  height:100% !important;
+}
+
+
+/* ==========================================
+CROSSHAIR
+========================================== */
+
+.space-crosshair{
+  position:absolute;
+
+  z-index:30;
+
+  width:42px;
+  height:42px;
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    );
+
+  border:
+    2px solid
+    rgba(98,239,255,.95);
+
+  border-radius:50%;
+
+  pointer-events:none;
+
+  box-shadow:
+    0 0 16px
+    rgba(90,235,255,.65),
+
+    inset 0 0 10px
+    rgba(90,235,255,.2);
+}
+
+
+.space-crosshair::before,
+.space-crosshair::after{
+  content:"";
+
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  background:
+    rgba(220,255,255,.98);
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    );
+}
+
+
+.space-crosshair::before{
+  width:58px;
+  height:2px;
+}
+
+
+.space-crosshair::after{
+  width:2px;
+  height:58px;
+}
+
+
+.space-crosshair span{
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  width:5px;
+  height:5px;
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    );
+
+  border-radius:50%;
+
+  background:#fff;
+
+  box-shadow:
+    0 0 10px
+    #66efff;
+}
+
+
+/* ==========================================
+MESSAGE
+========================================== */
+
+.space-blaster-message{
+  position:absolute;
+
+  z-index:40;
+
+  left:50%;
+  top:27%;
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    )
+    scale(.55);
+
+  color:#fff;
+
+  font-size:
+    clamp(
+      28px,
+      6vw,
+      52px
+    );
+
+  font-weight:1000;
+
+  font-style:italic;
+
+  letter-spacing:.03em;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  text-shadow:
+    0 0 22px
+    rgba(100,240,255,.8);
+}
+
+
+.space-blaster-message.show{
+  animation:
+    space-message-pop
+    .42s ease;
+}
+
+
+@keyframes space-message-pop{
+
+  0%{
+    opacity:0;
+
+    transform:
+      translate(
+        -50%,
+        -50%
+      )
+      scale(.5);
+  }
+
+  35%{
+    opacity:1;
+
+    transform:
+      translate(
+        -50%,
+        -50%
+      )
+      scale(1.16);
+  }
+
+  100%{
+    opacity:0;
+
+    transform:
+      translate(
+        -50%,
+        -75%
+      )
+      scale(.95);
+  }
+
+}
+
+
+/* ==========================================
+COMBO
+========================================== */
+
+.space-blaster-combo{
+  position:absolute;
+
+  z-index:40;
+
+  right:7%;
+  top:13%;
+
+  color:#66efff;
+
+  font-size:
+    clamp(
+      26px,
+      5vw,
+      46px
+    );
+
+  font-weight:1000;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  text-shadow:
+    0 0 20px
+    rgba(70,225,255,.7);
+}
+
+
+.space-blaster-combo.show{
+  animation:
+    space-combo-pop
+    .36s ease;
+}
+
+
+@keyframes space-combo-pop{
+
+  0%{
+    opacity:0;
+    transform:scale(.55);
+  }
+
+  45%{
+    opacity:1;
+    transform:scale(1.3);
+  }
+
+  100%{
+    opacity:0;
+    transform:scale(1);
+  }
+
+}
+
+
+/* ==========================================
+HINT
+========================================== */
+
+.space-blaster-hint{
+  position:absolute;
+
+  z-index:15;
+
+  left:50%;
+  bottom:14px;
+
+  transform:
+    translateX(-50%);
+
+  padding:7px 12px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
+  border-radius:999px;
+
+  background:
+    rgba(0,0,0,.45);
+
+  color:
+    rgba(255,255,255,.7);
+
+  font-size:9px;
+  font-weight:900;
+
+  letter-spacing:.16em;
+
+  pointer-events:none;
+
+  animation:
+    space-hint-fade
+    2.5s ease forwards;
+}
+
+
+@keyframes space-hint-fade{
+
+  0%{
+    opacity:0;
+  }
+
+  15%{
+    opacity:1;
+  }
+
+  65%{
+    opacity:1;
+  }
+
+  100%{
+    opacity:0;
+  }
+
+}
+
+
+/* ==========================================
+BOTTOM
+========================================== */
+
+.space-blaster-bottom{
+  display:grid;
+
+  grid-template-columns:
+    1fr 1.35fr;
+
+  gap:9px;
+}
+
+
+.space-life{
+  min-height:56px;
+
+  display:flex;
+  flex-direction:column;
+
+  align-items:center;
+  justify-content:center;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:14px;
+
+  background:
+    rgba(4,8,18,.85);
+
+  color:
+    rgba(255,255,255,.45);
+
+  font-size:8px;
+  font-weight:900;
+
+  letter-spacing:.14em;
+}
+
+
+.space-life strong{
+  margin-top:3px;
+
+  color:#ff5270;
+
+  font-size:15px;
+
+  letter-spacing:.13em;
+}
+
+
+.space-blaster-fire{
+  min-height:56px;
+
+  border:0;
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #6ff4ff,
+      #25aeda
+    );
+
+  color:#001119;
+
+  font-size:16px;
+  font-weight:1000;
+
+  letter-spacing:.18em;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 0 22px
+    rgba(55,215,255,.18);
+}
+
+
+.space-blaster-fire:active{
+  transform:
+    scale(.97);
+}
+
+
+.space-blaster-fire.fire-kick{
+  animation:
+    space-fire-kick
+    .12s ease;
+}
+
+
+@keyframes space-fire-kick{
+
+  0%{
+    transform:scale(1);
+  }
+
+  45%{
+    transform:scale(.92);
+  }
+
+  100%{
+    transform:scale(1);
+  }
+
+}
+
+
+/* ==========================================
+SCREEN FEEDBACK
+========================================== */
+
+.space-stage-kill{
+  animation:
+    space-kill-flash
+    .22s ease;
+}
+
+
+@keyframes space-kill-flash{
+
+  0%{
+    filter:
+      brightness(1);
+  }
+
+  35%{
+    filter:
+      brightness(1.85)
+      saturate(1.5);
+  }
+
+  100%{
+    filter:
+      brightness(1);
+  }
+
+}
+
+
+.space-stage-miss{
+  animation:
+    space-miss-shake
+    .2s ease;
+}
+
+
+@keyframes space-miss-shake{
+
+  0%,
+  100%{
+    transform:
+      translateX(0);
+  }
+
+  35%{
+    transform:
+      translateX(-4px);
+  }
+
+  70%{
+    transform:
+      translateX(4px);
+  }
+
+}
+
+
+/* ==========================================
+MOBILE
+========================================== */
+
+@media(max-width:600px){
+
+  .space-blaster-hud{
+    gap:5px;
+  }
+
+
+  .space-hud-item{
+    padding:
+      7px 4px;
+  }
+
+
+  .space-hud-item strong{
+    font-size:14px;
+  }
+
+
+  .space-blaster-stage{
+    border-radius:15px;
+  }
+
+
+  .space-crosshair{
+    width:36px;
+    height:36px;
+  }
+
+
+  .space-crosshair::before{
+    width:48px;
+  }
+
+
+  .space-crosshair::after{
+    height:48px;
+  }
+
+
+  .space-blaster-bottom{
+    grid-template-columns:
+      .8fr 1.4fr;
+  }
+
+}
