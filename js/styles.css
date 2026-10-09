@@ -4750,3 +4750,1337 @@ MOBILE
   }
 
 }
+
+
+
+/* =========================================================
+NINJA COUNTER V2
+========================================================= */
+
+.ninja-counter-wrap{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:9px;
+}
+
+
+/* =============================
+HUD
+============================= */
+
+.ninja-counter-hud{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:7px;
+}
+
+
+.ninja-counter-hud-item{
+  padding:8px 9px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:11px;
+
+  background:
+    rgba(4,10,7,.84);
+
+  text-align:center;
+}
+
+
+.ninja-counter-hud-item span{
+  display:block;
+
+  margin-bottom:2px;
+
+  color:
+    rgba(255,255,255,.45);
+
+  font-size:7px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+}
+
+
+.ninja-counter-hud-item strong{
+  color:#fff;
+
+  font-size:15px;
+  font-weight:1000;
+}
+
+
+.ninja-counter-hud-item:nth-child(2)
+strong{
+  color:#75ffa5;
+}
+
+
+.ninja-life-value{
+  color:#ff5672 !important;
+
+  letter-spacing:.08em;
+}
+
+
+/* =============================
+STAGE
+============================= */
+
+.ninja-counter-stage{
+  position:relative;
+
+  flex:1;
+
+  min-height:0;
+
+  overflow:hidden;
+
+  border-radius:19px;
+
+  background:
+    radial-gradient(
+      circle at 50% 55%,
+      rgba(42,150,70,.13),
+      transparent 27%
+    ),
+    linear-gradient(
+      180deg,
+      #07100c,
+      #020403
+    );
+
+  touch-action:none;
+}
+
+
+.ninja-dojo-bg{
+  position:absolute;
+
+  inset:0;
+
+  overflow:hidden;
+}
+
+
+.ninja-dojo-bg::before{
+  content:"";
+
+  position:absolute;
+
+  left:0;
+  right:0;
+  bottom:0;
+
+  height:33%;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,.025) 0 1px,
+      transparent 1px 70px
+    ),
+    linear-gradient(
+      180deg,
+      #080d09,
+      #020302
+    );
+
+  transform:
+    perspective(280px)
+    rotateX(60deg);
+
+  transform-origin:
+    bottom;
+}
+
+
+.ninja-moon{
+  position:absolute;
+
+  left:50%;
+  top:14%;
+
+  width:130px;
+  height:130px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      #e6f4dc,
+      #9ab68e 65%,
+      #566b51
+    );
+
+  opacity:.16;
+
+  box-shadow:
+    0 0 70px
+    rgba(180,255,190,.12);
+}
+
+
+.ninja-floor-line{
+  position:absolute;
+
+  left:0;
+  right:0;
+  bottom:24%;
+
+  height:1px;
+
+  background:
+    rgba(125,255,160,.09);
+}
+
+
+/* =============================
+PLAYER
+============================= */
+
+.ninja-player-v2{
+  position:absolute;
+
+  z-index:10;
+
+  left:50%;
+  bottom:16%;
+
+  width:82px;
+  height:128px;
+
+  transform:
+    translateX(-50%);
+
+  transform-origin:
+    50% 80%;
+
+  transition:
+    transform .08s ease;
+}
+
+
+.ninja-player-head{
+  position:absolute;
+
+  left:50%;
+  top:2px;
+
+  width:42px;
+  height:38px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    45% 45% 38% 38%;
+
+  background:#111b15;
+
+  border:
+    2px solid
+    rgba(110,255,150,.22);
+}
+
+
+.ninja-player-head::after{
+  content:"";
+
+  position:absolute;
+
+  left:5px;
+  right:5px;
+  top:16px;
+
+  height:7px;
+
+  border-radius:4px;
+
+  background:#060a07;
+}
+
+
+.ninja-player-head i{
+  position:absolute;
+
+  z-index:2;
+
+  left:11px;
+  top:18px;
+
+  width:5px;
+  height:2px;
+
+  background:#84ffab;
+
+  box-shadow:
+    15px 0
+    #84ffab;
+}
+
+
+.ninja-player-body{
+  position:absolute;
+
+  left:50%;
+  top:35px;
+
+  width:58px;
+  height:72px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    18px 18px 10px 10px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #18281d,
+      #09110c
+    );
+
+  border:
+    1px solid
+    rgba(110,255,150,.15);
+}
+
+
+.ninja-player-arm{
+  position:absolute;
+
+  left:47px;
+  top:55px;
+
+  width:43px;
+  height:13px;
+
+  border-radius:10px;
+
+  background:#101d15;
+
+  transform:
+    rotate(-18deg);
+
+  transform-origin:left center;
+}
+
+
+.ninja-player-sword{
+  position:absolute;
+
+  left:66px;
+  top:31px;
+
+  width:5px;
+  height:91px;
+
+  border-radius:4px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #9db5ad,
+      #ffffff,
+      #6e837c
+    );
+
+  transform:
+    rotate(30deg);
+
+  transform-origin:
+    50% 85%;
+
+  box-shadow:
+    0 0 9px
+    rgba(180,255,220,.32);
+}
+
+
+.ninja-player-sword::after{
+  content:"";
+
+  position:absolute;
+
+  left:-7px;
+  bottom:13px;
+
+  width:19px;
+  height:5px;
+
+  border-radius:3px;
+
+  background:#896d31;
+}
+
+
+/* =============================
+ENEMY
+============================= */
+
+.ninja-enemy{
+  position:absolute;
+
+  z-index:8;
+
+  width:66px;
+  height:100px;
+
+  opacity:0;
+
+  pointer-events:none;
+}
+
+
+.ninja-enemy-head{
+  position:absolute;
+
+  left:50%;
+  top:0;
+
+  width:35px;
+  height:34px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    45% 45% 38% 38%;
+
+  background:#211317;
+
+  border:
+    1px solid
+    rgba(255,80,110,.34);
+}
+
+
+.ninja-enemy-head::after{
+  content:"";
+
+  position:absolute;
+
+  left:5px;
+  right:5px;
+  top:15px;
+
+  height:6px;
+
+  border-radius:3px;
+
+  background:#080506;
+}
+
+
+.ninja-enemy-head i{
+  position:absolute;
+
+  z-index:2;
+
+  left:9px;
+  top:17px;
+
+  width:4px;
+  height:2px;
+
+  background:#ff536d;
+
+  box-shadow:
+    13px 0
+    #ff536d;
+}
+
+
+.ninja-enemy-body{
+  position:absolute;
+
+  left:50%;
+  top:30px;
+
+  width:48px;
+  height:60px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    13px 13px 8px 8px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #331921,
+      #10080b
+    );
+
+  border:
+    1px solid
+    rgba(255,75,105,.22);
+}
+
+
+.ninja-enemy-sword{
+  position:absolute;
+
+  left:47px;
+  top:13px;
+
+  width:4px;
+  height:72px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #8d9298,
+      #ffffff,
+      #6d747b
+    );
+
+  transform:
+    rotate(35deg);
+
+  transform-origin:
+    bottom center;
+}
+
+
+.ninja-enemy-left{
+  left:-85px;
+  bottom:26%;
+}
+
+
+.ninja-enemy-right{
+  right:-85px;
+  bottom:26%;
+}
+
+
+.ninja-enemy-up{
+  left:50%;
+  top:-115px;
+
+  transform:
+    translateX(-50%)
+    rotate(180deg);
+}
+
+
+/* =============================
+ATTACK ANIMATION
+============================= */
+
+.ninja-enemy-left.attack{
+  animation:
+    ninja-left-attack
+    .7s cubic-bezier(.15,.75,.35,1)
+    forwards;
+}
+
+
+@keyframes ninja-left-attack{
+
+  0%{
+    left:-85px;
+    opacity:0;
+  }
+
+  18%{
+    opacity:1;
+  }
+
+  100%{
+    left:calc(50% - 95px);
+    opacity:1;
+  }
+
+}
+
+
+.ninja-enemy-right.attack{
+  animation:
+    ninja-right-attack
+    .7s cubic-bezier(.15,.75,.35,1)
+    forwards;
+}
+
+
+@keyframes ninja-right-attack{
+
+  0%{
+    right:-85px;
+    opacity:0;
+  }
+
+  18%{
+    opacity:1;
+  }
+
+  100%{
+    right:calc(50% - 95px);
+    opacity:1;
+  }
+
+}
+
+
+.ninja-enemy-up.attack{
+  animation:
+    ninja-up-attack
+    .7s cubic-bezier(.15,.75,.35,1)
+    forwards;
+}
+
+
+@keyframes ninja-up-attack{
+
+  0%{
+    top:-115px;
+    opacity:0;
+  }
+
+  18%{
+    opacity:1;
+  }
+
+  100%{
+    top:16%;
+    opacity:1;
+  }
+
+}
+
+
+/* =============================
+FAKE
+============================= */
+
+.ninja-enemy-left.fake{
+  animation:
+    ninja-left-fake
+    .28s ease
+    forwards;
+}
+
+
+@keyframes ninja-left-fake{
+
+  0%{
+    left:-85px;
+    opacity:0;
+  }
+
+  60%{
+    left:4%;
+    opacity:1;
+  }
+
+  100%{
+    left:-85px;
+    opacity:0;
+  }
+
+}
+
+
+.ninja-enemy-right.fake{
+  animation:
+    ninja-right-fake
+    .28s ease
+    forwards;
+}
+
+
+@keyframes ninja-right-fake{
+
+  0%{
+    right:-85px;
+    opacity:0;
+  }
+
+  60%{
+    right:4%;
+    opacity:1;
+  }
+
+  100%{
+    right:-85px;
+    opacity:0;
+  }
+
+}
+
+
+.ninja-enemy-up.fake{
+  animation:
+    ninja-up-fake
+    .28s ease
+    forwards;
+}
+
+
+@keyframes ninja-up-fake{
+
+  0%{
+    top:-115px;
+    opacity:0;
+  }
+
+  60%{
+    top:-15px;
+    opacity:1;
+  }
+
+  100%{
+    top:-115px;
+    opacity:0;
+  }
+
+}
+
+
+/* =============================
+COUNTER MOVEMENT
+============================= */
+
+.ninja-player-v2.counter-left{
+  transform:
+    translateX(-75%)
+    rotate(-11deg)
+    scale(1.08);
+}
+
+
+.ninja-player-v2.counter-right{
+  transform:
+    translateX(-25%)
+    rotate(11deg)
+    scale(1.08);
+}
+
+
+.ninja-player-v2.counter-up{
+  transform:
+    translate(-50%,-20px)
+    scale(1.08);
+}
+
+
+.ninja-player-v2.counter-left
+.ninja-player-sword{
+  transform:
+    rotate(-75deg);
+}
+
+
+.ninja-player-v2.counter-right
+.ninja-player-sword{
+  transform:
+    rotate(78deg);
+}
+
+
+.ninja-player-v2.counter-up
+.ninja-player-sword{
+  transform:
+    rotate(0deg);
+}
+
+
+/* =============================
+ENEMY HIT
+============================= */
+
+.ninja-enemy.hit{
+  filter:
+    brightness(2)
+    saturate(.2);
+}
+
+
+.ninja-enemy-left.retreat{
+  transform:
+    translate(-70px,-30px)
+    rotate(-30deg);
+
+  opacity:0;
+
+  transition:
+    transform .18s ease,
+    opacity .18s ease;
+}
+
+
+.ninja-enemy-right.retreat{
+  transform:
+    translate(70px,-30px)
+    rotate(30deg);
+
+  opacity:0;
+
+  transition:
+    transform .18s ease,
+    opacity .18s ease;
+}
+
+
+.ninja-enemy-up.retreat{
+  opacity:0;
+
+  transition:
+    opacity .18s ease;
+}
+
+
+/* =============================
+SLASH
+============================= */
+
+.ninja-slash-trail{
+  position:absolute;
+
+  z-index:20;
+
+  left:50%;
+  top:52%;
+
+  width:5px;
+  height:180px;
+
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      #ffffff 30%,
+      #87ffae 60%,
+      transparent
+    );
+
+  opacity:0;
+
+  pointer-events:none;
+
+  box-shadow:
+    0 0 16px
+    rgba(110,255,160,.85);
+}
+
+
+.ninja-slash-trail.show{
+  animation:
+    ninja-slash-trail
+    .22s ease;
+}
+
+
+.ninja-slash-trail.slash-left{
+  transform:
+    translate(-50%,-50%)
+    rotate(-58deg);
+}
+
+
+.ninja-slash-trail.slash-right{
+  transform:
+    translate(-50%,-50%)
+    rotate(58deg);
+}
+
+
+.ninja-slash-trail.slash-up{
+  transform:
+    translate(-50%,-60%)
+    rotate(0deg);
+}
+
+
+@keyframes ninja-slash-trail{
+
+  0%{
+    opacity:0;
+    scale:.5;
+  }
+
+  25%{
+    opacity:1;
+    scale:1.15;
+  }
+
+  100%{
+    opacity:0;
+    scale:1;
+  }
+
+}
+
+
+/* =============================
+SPARKS
+============================= */
+
+.ninja-impact-sparks{
+  position:absolute;
+
+  z-index:21;
+
+  left:50%;
+  top:49%;
+
+  width:1px;
+  height:1px;
+
+  pointer-events:none;
+}
+
+
+.ninja-impact-sparks i{
+  position:absolute;
+
+  width:4px;
+  height:15px;
+
+  border-radius:4px;
+
+  background:
+    linear-gradient(
+      #ffffff,
+      #8cffad
+    );
+
+  opacity:0;
+}
+
+
+.ninja-impact-sparks.show i{
+  animation:
+    ninja-spark
+    .28s ease-out
+    forwards;
+}
+
+
+@keyframes ninja-spark{
+
+  0%{
+    opacity:1;
+
+    transform:
+      translate(0,0)
+      scale(1);
+  }
+
+  100%{
+    opacity:0;
+
+    transform:
+      translate(
+        var(--spark-x),
+        var(--spark-y)
+      )
+      scale(.3);
+  }
+
+}
+
+
+/* =============================
+MESSAGE
+============================= */
+
+.ninja-counter-message{
+  position:absolute;
+
+  z-index:30;
+
+  left:50%;
+  top:27%;
+
+  transform:
+    translate(-50%,-50%)
+    scale(.55);
+
+  color:#7dffa8;
+
+  font-size:
+    clamp(
+      28px,
+      6vw,
+      50px
+    );
+
+  font-weight:1000;
+
+  font-style:italic;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  text-shadow:
+    0 0 22px
+    rgba(90,255,140,.7);
+}
+
+
+.ninja-counter-message.fail{
+  color:#ff5874;
+
+  text-shadow:
+    0 0 22px
+    rgba(255,70,105,.55);
+}
+
+
+.ninja-counter-message.show{
+  animation:
+    ninja-message-pop
+    .4s ease;
+}
+
+
+@keyframes ninja-message-pop{
+
+  0%{
+    opacity:0;
+
+    transform:
+      translate(-50%,-50%)
+      scale(.5);
+  }
+
+  35%{
+    opacity:1;
+
+    transform:
+      translate(-50%,-50%)
+      scale(1.18);
+  }
+
+  100%{
+    opacity:0;
+
+    transform:
+      translate(-50%,-72%)
+      scale(.95);
+  }
+
+}
+
+
+/* =============================
+COMBO POP
+============================= */
+
+.ninja-counter-combo-pop{
+  position:absolute;
+
+  z-index:30;
+
+  right:8%;
+  top:14%;
+
+  color:#83ffab;
+
+  font-size:
+    clamp(
+      25px,
+      5vw,
+      43px
+    );
+
+  font-weight:1000;
+
+  opacity:0;
+
+  pointer-events:none;
+}
+
+
+.ninja-counter-combo-pop.show{
+  animation:
+    ninja-combo-pop
+    .34s ease;
+}
+
+
+@keyframes ninja-combo-pop{
+
+  0%{
+    opacity:0;
+    transform:scale(.5);
+  }
+
+  45%{
+    opacity:1;
+    transform:scale(1.3);
+  }
+
+  100%{
+    opacity:0;
+    transform:scale(1);
+  }
+
+}
+
+
+/* =============================
+HIT STOP
+============================= */
+
+.ninja-hit-stop{
+  animation:
+    ninja-hit-stop
+    .15s ease;
+}
+
+
+@keyframes ninja-hit-stop{
+
+  0%{
+    filter:
+      brightness(1);
+  }
+
+  35%{
+    filter:
+      brightness(2.15)
+      saturate(.6);
+  }
+
+  100%{
+    filter:
+      brightness(1);
+  }
+
+}
+
+
+/* =============================
+DAMAGE
+============================= */
+
+.ninja-damage{
+  animation:
+    ninja-damage
+    .28s ease;
+}
+
+
+@keyframes ninja-damage{
+
+  0%,
+  100%{
+    transform:
+      translateX(0);
+
+    box-shadow:
+      inset 0 0 0
+      rgba(255,30,60,0);
+  }
+
+  20%{
+    transform:
+      translateX(-8px);
+
+    box-shadow:
+      inset 0 0 80px
+      rgba(255,30,60,.28);
+  }
+
+  40%{
+    transform:
+      translateX(8px);
+  }
+
+  60%{
+    transform:
+      translateX(-5px);
+  }
+
+  80%{
+    transform:
+      translateX(4px);
+  }
+
+}
+
+
+/* =============================
+HINT
+============================= */
+
+.ninja-counter-hint{
+  position:absolute;
+
+  z-index:15;
+
+  left:50%;
+  bottom:12px;
+
+  transform:
+    translateX(-50%);
+
+  padding:
+    6px 11px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.09);
+
+  border-radius:999px;
+
+  background:
+    rgba(0,0,0,.4);
+
+  color:
+    rgba(255,255,255,.6);
+
+  font-size:8px;
+  font-weight:900;
+
+  letter-spacing:.12em;
+
+  pointer-events:none;
+
+  animation:
+    ninja-hint-fade
+    2.6s ease
+    forwards;
+}
+
+
+@keyframes ninja-hint-fade{
+
+  0%{
+    opacity:0;
+  }
+
+  15%,
+  65%{
+    opacity:1;
+  }
+
+  100%{
+    opacity:0;
+  }
+
+}
+
+
+/* =============================
+CONTROLS
+============================= */
+
+.ninja-counter-controls{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:8px;
+}
+
+
+.ninja-counter-controls button{
+  min-height:58px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.1);
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #17231b,
+      #09110c
+    );
+
+  color:#8cffad;
+
+  font-size:28px;
+  font-weight:1000;
+
+  cursor:pointer;
+
+  touch-action:none;
+}
+
+
+.ninja-counter-controls button:active{
+  transform:
+    scale(.95);
+
+  background:
+    linear-gradient(
+      180deg,
+      #24412d,
+      #0d1b12
+    );
+}
+
+
+/* =============================
+MOBILE
+============================= */
+
+@media(max-width:700px){
+
+  .ninja-counter-hud{
+    gap:4px;
+  }
+
+
+  .ninja-counter-hud-item{
+    padding:
+      6px 4px;
+  }
+
+
+  .ninja-counter-hud-item strong{
+    font-size:13px;
+  }
+
+
+  .ninja-counter-stage{
+    border-radius:14px;
+  }
+
+
+  .ninja-player-v2{
+    transform:
+      translateX(-50%)
+      scale(.90);
+
+    transform-origin:
+      bottom center;
+  }
+
+
+  .ninja-counter-controls button{
+    min-height:62px;
+
+    font-size:30px;
+  }
+
+}
