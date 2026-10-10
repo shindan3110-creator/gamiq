@@ -8385,3 +8385,275 @@ MOBILE
   }
 
 }
+
+
+
+/* ==========================================
+GAMIQ — RUSH RUN
+========================================== */
+
+.rush-run {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rush-hud {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.rush-hud > div {
+  padding: 8px 6px;
+  border-radius: 11px;
+  text-align: center;
+  background: #09111a;
+  border: 1px solid rgba(255,255,255,.09);
+}
+
+.rush-hud span {
+  display: block;
+  color: #738395;
+  font-size: 8px;
+  letter-spacing: .12em;
+  font-weight: 900;
+  margin-bottom: 2px;
+}
+
+.rush-hud strong {
+  font-size: 17px;
+  line-height: 1.2;
+  font-weight: 1000;
+  color: #f2f7ff;
+}
+
+.rush-hud > div:nth-child(2) strong {
+  color: #77efff;
+}
+
+.rush-hud > div:nth-child(3) strong {
+  color: #ffe376;
+}
+
+.rush-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #0c1420;
+  touch-action: none;
+  user-select: none;
+}
+
+.rush-world {
+  position: absolute;
+  inset: 0;
+}
+
+.rush-world canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.rush-instruction {
+  position: absolute;
+  z-index: 8;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+  font-size: 9px;
+  letter-spacing: .12em;
+  font-weight: 1000;
+  color: rgba(255,255,255,.8);
+  padding: 7px 12px;
+  background: rgba(4,9,15,.6);
+  border-radius: 20px;
+  animation: rush-instruction-fade 3.8s forwards;
+}
+
+@keyframes rush-instruction-fade {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.rush-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rush-progress {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: #090f16;
+  border-radius: 10px;
+  padding: 6px 4px;
+}
+
+.rush-progress span {
+  color: #889bad;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .07em;
+}
+
+.rush-progress b {
+  color: #f6ffff;
+  font-size: 12px;
+  margin-left: 3px;
+}
+
+.rush-controls {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr 1fr;
+  gap: 9px;
+}
+
+.rush-controls button {
+  height: 57px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 13px;
+  background: linear-gradient(#202e3b,#0d1824);
+  color: #ecfbff;
+  font-size: 28px;
+  font-weight: 1000;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rush-controls button:active {
+  transform: scale(.94);
+  background: #2c4458;
+}
+
+.rush-controls .rush-jump-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(#ffd65d,#f59a33);
+  color: #271805;
+  border-color: #ffdf8c;
+}
+
+.rush-controls .rush-jump-button small {
+  font-size: 11px;
+  letter-spacing: .08em;
+  font-weight: 1000;
+}
+
+.rush-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rush-flash.good {
+  background: radial-gradient(
+    circle,
+    rgba(80,225,255,.15),
+    transparent 67%
+  );
+}
+
+.rush-flash.boost {
+  background: radial-gradient(
+    circle,
+    rgba(255,216,65,.27),
+    transparent 74%
+  );
+}
+
+.rush-flash.bad {
+  background: radial-gradient(
+    circle,
+    transparent 30%,
+    rgba(255,46,86,.3)
+  );
+}
+
+.rush-flash.show {
+  animation: rush-fx .45s ease-out;
+}
+
+@keyframes rush-fx {
+  0% { opacity: 0; }
+  25% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.rush-message {
+  position: absolute;
+  z-index: 12;
+  top: 27%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  pointer-events: none;
+  opacity: 0;
+  font-weight: 1000;
+  font-size: clamp(26px,5vw,45px);
+  font-style: italic;
+  white-space: nowrap;
+  text-shadow: 0 3px 15px #08111a;
+  color: #90f3ff;
+}
+
+.rush-message.bad {
+  color: #ff667e;
+}
+
+.rush-message.boost {
+  color: #ffe16c;
+}
+
+.rush-message.show {
+  animation: rush-pop .46s ease-out;
+}
+
+@keyframes rush-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%,-45%) scale(.6);
+  }
+  40% {
+    opacity: 1;
+    transform: translate(-50%,-50%) scale(1.13);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%,-75%) scale(1);
+  }
+}
+
+.rush-stage.boosting {
+  box-shadow: inset 0 0 35px rgba(255,222,72,.15);
+}
+
+@media (max-width:700px) {
+  .rush-run { gap: 6px; }
+  .rush-hud { gap: 4px; }
+  .rush-hud > div { padding: 6px 3px; }
+  .rush-hud strong { font-size: 14px; }
+  .rush-stage { border-radius: 14px; }
+  .rush-progress span { font-size: 8px; }
+  .rush-controls { gap: 6px; }
+  .rush-controls button {
+    height: 62px;
+    font-size: 30px;
+  }
+  .rush-instruction { font-size: 8px; }
+}
