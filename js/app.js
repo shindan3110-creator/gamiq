@@ -741,8 +741,10 @@ async function enterGame(
           }
         });
 
-      },
-      45000
+            },
+      game.type === "lane_dodge"
+        ? 75000
+        : 45000
     );
 
 
