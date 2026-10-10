@@ -1,239 +1,105 @@
-// GAMIQ（ゲーミック） v2
-// HIGHWAY DODGE
-//
-// 操作:
-// PC   : ← →
-// Mobile: 左右ボタン
-//
-// 終了:
-// 10台回避 → CLEAR
-// LIFE 0 → GAME OVER
 
-import {
-  GamiqThreeScene
-} from "./three-renderer.js";
+import { GamiqThreeScene } from "./three-renderer.js";
 
-
-export async function runRace3D({
-  container,
-  onComplete
-}) {
-  if (!container) {
-    return () => {};
-  }
-
-
-  /* ==========================================
-  STATE
-  ========================================== */
+export async function runRace3D({ container, onComplete }) {
+  if (!container) return () => {};
 
   let active = true;
+  let finished = false;
+
+  const TOTAL_SECONDS = 60;
+  const PLAYER_Z = 3;
+  const LANES = [-2.65, 0, 2.65];
 
   let lane = 1;
-
+  let jumpHeight = 0;
+  let jumpVelocity = 0;
+  let distance = 0;
   let avoided = 0;
   let crashes = 0;
+  let boosts = 0;
+  let streak = 0;
+  let bestStreak = 0;
+  let boostSeconds = 0;
+  let boostLeft = 0;
+  let slowLeft = 0;
+  let invincibleLeft = 0;
+  let spawnLeft = 1.25;
+  let currentSpeed = 14;
+  let startTime = 0;
+  let endTimer = null;
+  let messageTimer = null;
+  let pointerStart = null;
 
-  let combo = 0;
-  let maxCombo = 0;
-
-  let lives = 3;
-
-  let invincible = false;
-
-  let screenShake = 0;
-
-  const goal = 10;
-
-  const startedAt =
-    performance.now();
-
-
-  /* ==========================================
-  HTML
-  ========================================== */
+  const obstacles = [];
+  const laneMarks = [];
+  const roadside = [];
 
   container.innerHTML = `
-    <div class="highway-dodge-wrap">
-
-      <div class="highway-dodge-hud">
-
-        <div class="highway-hud-item">
-          <span>DODGED</span>
-
-          <strong>
-            <b data-highway-dodged>
-              0
-            </b>
-            / ${goal}
-          </strong>
+    <div class="rush-run">
+      <div class="rush-hud">
+        <div>
+          <span>TIME</span>
+          <strong data-rush-time>60</strong>
         </div>
-
-
-        <div class="highway-hud-item">
-          <span>COMBO</span>
-
-          <strong data-highway-combo>
-            0
-          </strong>
+        <div>
+          <span>DISTANCE</span>
+          <strong><b data-rush-distance>0</b> m</strong>
         </div>
-
-
-        <div class="highway-hud-item">
+        <div>
           <span>SPEED</span>
-
-          <strong data-highway-speed>
-            1.0x
-          </strong>
+          <strong data-rush-speed>1.0×</strong>
         </div>
-
       </div>
 
-
-      <div
-        class="highway-dodge-stage"
-        data-highway-stage
-      >
-
-        <div
-          class="highway-dodge-world"
-          data-highway-world
-        ></div>
-
-
-        <div
-          class="highway-message"
-          data-highway-message
-        ></div>
-
-
-        <div
-          class="highway-combo-pop"
-          data-highway-combo-pop
-        ></div>
-
-
-        <div class="highway-life-panel">
-
-          <span>
-            LIFE
-          </span>
-
-          <strong data-highway-lives>
-            ♥ ♥ ♥
-          </strong>
-
+      <div class="rush-stage" data-rush-stage>
+        <div class="rush-world" data-rush-world></div>
+        <div class="rush-flash" data-rush-flash></div>
+        <div class="rush-message" data-rush-message></div>
+        <div class="rush-instruction">
+          ← → DODGE · ↑ JUMP · ⚡ BOOST
         </div>
-
-
-        <div class="highway-hint">
-          ← DODGE →
-        </div>
-
       </div>
 
+      <div class="rush-bottom">
+        <div class="rush-progress">
+          <span>AVOIDED <b data-rush-avoided>0</b></span>
+          <span>STREAK <b data-rush-streak>0</b></span>
+          <span>CRASH <b data-rush-crashes>0</b></span>
+        </div>
 
-      <div class="highway-controls">
-
-        <button
-          type="button"
-          class="highway-control-button"
-          data-highway-left
-          aria-label="Move left"
-        >
-          ←
-        </button>
-
-        <button
-          type="button"
-          class="highway-control-button"
-          data-highway-right
-          aria-label="Move right"
-        >
-          →
-        </button>
-
+        <div class="rush-controls">
+          <button type="button" data-rush-left aria-label="Move left">←</button>
+          <button type="button" class="rush-jump-button" data-rush-jump aria-label="Jump">
+            ↑ <small>JUMP</small>
+          </button>
+          <button type="button" data-rush-right aria-label="Move right">→</button>
+        </div>
       </div>
-
     </div>
   `;
 
+  const stage = container.querySelector("[data-rush-stage]");
+  const worldElement = container.querySelector("[data-rush-world]");
+  const timeEl = container.querySelector("[data-rush-time]");
+  const distanceEl = container.querySelector("[data-rush-distance]");
+  const speedEl = container.querySelector("[data-rush-speed]");
+  const avoidedEl = container.querySelector("[data-rush-avoided]");
+  const streakEl = container.querySelector("[data-rush-streak]");
+  const crashesEl = container.querySelector("[data-rush-crashes]");
+  const messageEl = container.querySelector("[data-rush-message]");
+  const flashEl = container.querySelector("[data-rush-flash]");
+  const leftBtn = container.querySelector("[data-rush-left]");
+  const rightBtn = container.querySelector("[data-rush-right]");
+  const jumpBtn = container.querySelector("[data-rush-jump]");
 
-  /* ==========================================
-  ELEMENTS
-  ========================================== */
+  const world = new GamiqThreeScene({
+    container: worldElement,
+    cameraZ: 8,
+    background: 0x101a26
+  });
 
-  const worldElement =
-    container.querySelector(
-      "[data-highway-world]"
-    );
-
-  const stage =
-    container.querySelector(
-      "[data-highway-stage]"
-    );
-
-  const dodgedElement =
-    container.querySelector(
-      "[data-highway-dodged]"
-    );
-
-  const comboElement =
-    container.querySelector(
-      "[data-highway-combo]"
-    );
-
-  const speedElement =
-    container.querySelector(
-      "[data-highway-speed]"
-    );
-
-  const livesElement =
-    container.querySelector(
-      "[data-highway-lives]"
-    );
-
-  const messageElement =
-    container.querySelector(
-      "[data-highway-message]"
-    );
-
-  const comboPop =
-    container.querySelector(
-      "[data-highway-combo-pop]"
-    );
-
-  const leftButton =
-    container.querySelector(
-      "[data-highway-left]"
-    );
-
-  const rightButton =
-    container.querySelector(
-      "[data-highway-right]"
-    );
-
-
-  /* ==========================================
-  WORLD
-  ========================================== */
-
-  const world =
-    new GamiqThreeScene({
-      container:
-        worldElement,
-
-      cameraZ:
-        8,
-
-      background:
-        0x03060a
-    });
-
-
-  const initialized =
-    await world.init();
-
+  const initialized = await world.init();
 
   if (!initialized) {
     container.innerHTML = `
@@ -241,1985 +107,646 @@ export async function runRace3D({
         3Dの読み込みに失敗しました
       </div>
     `;
-
     return () => {};
   }
 
+  const T = world.THREE;
 
-  const T =
-    world.THREE;
-
-
-  /* ==========================================
-  CAMERA
-  ========================================== */
-
-  world.camera.position.set(
-    0,
-    3.7,
-    8
-  );
-
-
-  world.camera.lookAt(
-    0,
-    -0.6,
-    -13
-  );
-
-
-  /* ==========================================
-  LIGHTS
-  ========================================== */
-
-  const mainLight =
-    new T.DirectionalLight(
-      0xffffff,
-      2.5
-    );
-
-
-  mainLight.position.set(
-    0,
-    8,
-    6
-  );
-
+  world.camera.position.set(0, 3.2, 8.4);
+  world.camera.lookAt(0, -1.0, -14);
 
   world.scene.add(
-    mainLight
+    new T.HemisphereLight(0xa4ddff, 0x26301e, 2.0)
   );
 
+  const sun = new T.DirectionalLight(0xffe6ac, 2.5);
+  sun.position.set(-6, 12, 4);
+  world.scene.add(sun);
 
-  const blueLight =
-    new T.PointLight(
-      0x49ddff,
-      3,
-      20
-    );
+  const mats = {
+    road: new T.MeshStandardMaterial({
+      color: 0x222d38,
+      roughness: 0.95
+    }),
+    border: new T.MeshStandardMaterial({
+      color: 0x87deef,
+      emissive: 0x205364,
+      emissiveIntensity: 0.3
+    }),
+    stripe: new T.MeshBasicMaterial({
+      color: 0xe2edf1
+    }),
+    rock: new T.MeshStandardMaterial({
+      color: 0x7b817f,
+      roughness: 1
+    }),
+    wood: new T.MeshStandardMaterial({
+      color: 0x94572e,
+      roughness: 0.9
+    }),
+    barrier: new T.MeshStandardMaterial({
+      color: 0xee754b
+    }),
+    dark: new T.MeshStandardMaterial({
+      color: 0x1d2731,
+      roughness: 0.7
+    }),
+    glass: new T.MeshStandardMaterial({
+      color: 0x8ae9ff,
+      metalness: 0.35,
+      roughness: 0.12
+    }),
+    cyan: new T.MeshStandardMaterial({
+      color: 0x42deff,
+      emissive: 0x158bbb,
+      emissiveIntensity: 0.8
+    }),
+    red: new T.MeshBasicMaterial({
+      color: 0xff446b
+    }),
+    boost: new T.MeshStandardMaterial({
+      color: 0xffe46b,
+      emissive: 0xffb700,
+      emissiveIntensity: 1.6
+    })
+  };
 
-
-  blueLight.position.set(
-    -5,
-    2,
-    1
+  const road = new T.Mesh(
+    new T.BoxGeometry(9.7, 0.2, 115),
+    mats.road
   );
+  road.position.set(0, -2.13, -24);
+  world.scene.add(road);
 
-
-  world.scene.add(
-    blueLight
-  );
-
-
-  const pinkLight =
-    new T.PointLight(
-      0xff3e72,
-      2.4,
-      20
-    );
-
-
-  pinkLight.position.set(
-    5,
-    1,
-    -8
-  );
-
-
-  world.scene.add(
-    pinkLight
-  );
-
-
-  /* ==========================================
-  ROAD
-  ========================================== */
-
-  const road =
-    world.addFloor({
-      width:
-        10,
-
-      depth:
-        70,
-
-      color:
-        0x111722,
-
-      y:
-        -2
-    });
-
-
-  road.position.z =
-    -20;
-
-
-  /*
-   * ROAD SIDE
-   */
-
-  const shoulderMaterial =
+  const ground = new T.Mesh(
+    new T.BoxGeometry(120, 0.15, 115),
     new T.MeshStandardMaterial({
-      color:
-        0x202733,
+      color: 0x183326,
+      roughness: 1
+    })
+  );
+  ground.position.set(0, -2.27, -24);
+  world.scene.add(ground);
 
-      roughness:
-        0.95
-    });
-
-
-  const leftShoulder =
-    new T.Mesh(
-      new T.BoxGeometry(
-        1.1,
-        0.05,
-        70
-      ),
-
-      shoulderMaterial
+  function box(w, h, d, material, x, y, z, parent = world.scene) {
+    const mesh = new T.Mesh(
+      new T.BoxGeometry(w, h, d),
+      material
     );
+    mesh.position.set(x, y, z);
+    parent.add(mesh);
+    return mesh;
+  }
 
-
-  leftShoulder.position.set(
-    -5.5,
-    -1.97,
-    -20
-  );
-
-
-  world.scene.add(
-    leftShoulder
-  );
-
-
-  const rightShoulder =
-    leftShoulder.clone();
-
-
-  rightShoulder.position.x =
-    5.5;
-
-
-  world.scene.add(
-    rightShoulder
-  );
-
-
-  /* ==========================================
-  LANE MARKERS
-  ========================================== */
-
-  const laneMaterial =
-    new T.MeshStandardMaterial({
-      color:
-        0xf4f4f4,
-
-      emissive:
-        0x555555,
-
-      emissiveIntensity:
-        0.45
-    });
-
-
-  const laneMarks = [];
-
-
-  for (
-    let z = -48;
-    z < 10;
-    z += 4.2
-  ) {
-    for (
-      const x of
-      [-1.5, 1.5]
-    ) {
-      const line =
-        new T.Mesh(
-          new T.BoxGeometry(
-            0.09,
-            0.035,
-            2.2
-          ),
-
-          laneMaterial
-        );
-
-
-      line.position.set(
-        x,
-        -1.95,
-        z
-      );
-
-
-      world.scene.add(
-        line
-      );
-
-
+  for (let z = -53; z < 9; z += 6.2) {
+    for (const x of [-1.33, 1.33]) {
       laneMarks.push(
-        line
+        box(0.09, 0.025, 2.6, mats.stripe, x, -1.99, z)
+      );
+    }
+
+    for (const x of [-5.45, 5.45]) {
+      roadside.push(
+        box(0.18, 0.18, 2.4, mats.border, x, -1.92, z)
       );
     }
   }
 
+  /* PLAYER CAR */
 
-  /* ==========================================
-  ROAD LIGHTS
-  ========================================== */
+  const player = new T.Group();
 
-  const roadLights = [];
+  const paint = new T.MeshStandardMaterial({
+    color: 0x27bfff,
+    metalness: 0.48,
+    roughness: 0.23
+  });
 
+  box(1.62, 0.43, 2.5, paint, 0, 0, 0, player);
+  box(1.26, 0.43, 1.28, mats.glass, 0, 0.41, -0.24, player);
 
-  for (
-    let z = -45;
-    z < 6;
-    z += 5
-  ) {
-    for (
-      const x of
-      [-4.7, 4.7]
-    ) {
-      const light =
-        new T.Mesh(
-          new T.BoxGeometry(
-            0.12,
-            0.08,
-            0.35
-          ),
+  for (const x of [-0.85, 0.85]) {
+    for (const z of [-0.77, 0.77]) {
+      const wheel = new T.Mesh(
+        new T.CylinderGeometry(0.35, 0.35, 0.26, 12),
+        mats.dark
+      );
 
-          new T.MeshStandardMaterial({
-            color:
-              x < 0
-                ? 0x51ddff
-                : 0xff4c74,
+      wheel.rotation.z = Math.PI / 2;
+      wheel.position.set(x, -0.29, z);
+      player.add(wheel);
+    }
 
-            emissive:
-              x < 0
-                ? 0x35c6ff
-                : 0xff315d,
+    box(
+      0.34, 0.17, 0.12,
+      mats.red,
+      x * 0.65, 0.09, 1.27,
+      player
+    );
+  }
 
-            emissiveIntensity:
-              2.5
-          })
+  box(1.5, 0.10, 0.14, mats.cyan, 0, 0.22, 1.35, player);
+
+  player.position.set(LANES[lane], -1.40, PLAYER_Z);
+  world.scene.add(player);
+
+  /* OBSTACLE MODELS */
+
+  function makeObstacle(kind, idx) {
+    const group = new T.Group();
+    group.position.set(LANES[idx], -1.55, -46);
+
+    if (kind === "rock") {
+      const rock = new T.Mesh(
+        new T.DodecahedronGeometry(0.77, 0),
+        mats.rock
+      );
+      rock.scale.set(1.05, 0.75, 1.05);
+      group.add(rock);
+
+    } else if (kind === "log") {
+      const log = new T.Mesh(
+        new T.CylinderGeometry(0.35, 0.35, 1.9, 12),
+        mats.wood
+      );
+      log.rotation.z = Math.PI / 2;
+      group.add(log);
+
+    } else if (kind === "truck") {
+      box(2.1, 1.42, 2.55, mats.barrier, 0, 0.65, 0, group);
+      box(1.72, 0.49, 0.12, mats.dark, 0, 0.73, 1.32, group);
+
+      for (const side of [-1, 1]) {
+        box(
+          0.37, 0.25, 0.18,
+          mats.red,
+          side * 0.73, 0.27, 1.4,
+          group
         );
+      }
 
+    } else if (kind === "barrier") {
+      box(2.25, 1.48, 0.45, mats.barrier, 0, 0.65, 0, group);
+      box(2.3, 0.18, 0.50, mats.stripe, 0, 0.65, 0.01, group);
 
-      light.position.set(
-        x,
-        -1.88,
-        z
+    } else if (kind === "boost") {
+      group.position.y = -0.65;
+
+      const icon = new T.Mesh(
+        new T.OctahedronGeometry(0.62),
+        mats.boost
       );
+      icon.rotation.z = 0.25;
+      group.add(icon);
 
-
-      world.scene.add(
-        light
+      const ring = new T.Mesh(
+        new T.TorusGeometry(0.86, 0.09, 8, 24),
+        mats.boost
       );
-
-
-      roadLights.push(
-        light
-      );
-    }
-  }
-
-
-  /* ==========================================
-  PLAYER
-  ========================================== */
-
-  const player =
-    createCar({
-      T,
-
-      color:
-        0x38ddff,
-
-      player:
-        true
-    });
-
-
-  player.position.set(
-    0,
-    -1.43,
-    3
-  );
-
-
-  player.rotation.y =
-    Math.PI;
-
-
-  world.scene.add(
-    player
-  );
-
-
-  /* ==========================================
-  PLAYER UNDERGLOW
-  ========================================== */
-
-  const underGlow =
-    new T.PointLight(
-      0x34dfff,
-      2.2,
-      5
-    );
-
-
-  underGlow.position.set(
-    0,
-    -1.3,
-    3
-  );
-
-
-  world.scene.add(
-    underGlow
-  );
-
-
-  /* ==========================================
-  OBSTACLES
-  ========================================== */
-
-  const lanePositions =
-    [
-      -3,
-      0,
-      3
-    ];
-
-
-  const obstacles = [];
-
-
-  let spawnTimer =
-    0;
-
-
-  let spawnInterval =
-    1.2;
-
-
-  let worldSpeed =
-    12;
-
-
-  function spawnObstacle() {
-    if (!active) {
-      return;
+      group.add(ring);
     }
 
-
-    const obstacleLane =
-      Math.floor(
-        Math.random() *
-        3
-      );
-
-
-    const colors =
-      [
-        0xff486c,
-        0xffad45,
-        0x9c7cff,
-        0x72f5a1,
-        0xffffff
-      ];
-
-
-    const obstacle =
-      createCar({
-        T,
-
-        color:
-          colors[
-            Math.floor(
-              Math.random() *
-              colors.length
-            )
-          ]
-      });
-
-
-    obstacle.position.set(
-      lanePositions[
-        obstacleLane
-      ],
-
-      -1.43,
-
-      -38 -
-      Math.random() *
-      3
-    );
-
-
-    obstacle.rotation.y =
-      Math.PI;
-
-
-    world.scene.add(
-      obstacle
-    );
-
+    world.scene.add(group);
 
     obstacles.push({
-      mesh:
-        obstacle,
-
-      lane:
-        obstacleLane,
-
-      targetLane:
-        obstacleLane,
-
-      passed:
-        false,
-
-      nearMiss:
-        false,
-
-      laneChangeTimer:
-        randomBetween(
-          0.6,
-          2
-        ),
-
-      laneChangeSpeed:
-        randomBetween(
-          2.8,
-          4.2
-        )
+      group,
+      kind,
+      lane: idx,
+      resolved: false
     });
   }
 
+  function spawn() {
+    const idx = Math.floor(Math.random() * 3);
+    const r = Math.random();
 
-  /* ==========================================
-  CONTROL
-  ========================================== */
+    const kind =
+      r < 0.22 ? "boost" :
+      r < 0.46 ? "rock" :
+      r < 0.69 ? "log" :
+      r < 0.86 ? "barrier" :
+      "truck";
 
-  let laneInputLocked =
-    false;
+    makeObstacle(kind, idx);
+  }
 
+  /* CONTROLS */
 
-  function changeLane(
-    direction
-  ) {
+  function laneChange(amount) {
+    if (!active || finished) return;
+    lane = Math.max(0, Math.min(2, lane + amount));
+  }
+
+  function jump() {
     if (
       !active ||
-      laneInputLocked
+      finished ||
+      jumpHeight > 0.02 ||
+      jumpVelocity > 0
     ) {
       return;
     }
 
-
-    const oldLane =
-      lane;
-
-
-    lane =
-      clamp(
-        lane +
-        direction,
-
-        0,
-
-        2
-      );
-
-
-    if (
-      lane === oldLane
-    ) {
-      return;
-    }
-
-
-    laneInputLocked =
-      true;
-
-
-    stage.classList.remove(
-      "highway-lane-shift"
-    );
-
-
-    void stage.offsetWidth;
-
-
-    stage.classList.add(
-      "highway-lane-shift"
-    );
-
-
-    setTimeout(
-      () => {
-        laneInputLocked =
-          false;
-      },
-      120
-    );
+    jumpVelocity = 8.7;
+    flash("JUMP!", "good");
   }
-
 
   function left() {
-    changeLane(
-      -1
-    );
+    laneChange(-1);
   }
-
 
   function right() {
-    changeLane(
-      1
-    );
+    laneChange(1);
   }
 
+  function onKey(e) {
+    if (!active || finished) return;
 
-  function keyDown(
-    event
-  ) {
     if (
-      event.key ===
-      "ArrowLeft"
+      e.key === "ArrowLeft" ||
+      e.key.toLowerCase() === "a"
     ) {
-      event.preventDefault();
-
+      e.preventDefault();
       left();
     }
 
-
     if (
-      event.key ===
-      "ArrowRight"
+      e.key === "ArrowRight" ||
+      e.key.toLowerCase() === "d"
     ) {
-      event.preventDefault();
-
+      e.preventDefault();
       right();
     }
+
+    if (
+      e.key === "ArrowUp" ||
+      e.code === "Space" ||
+      e.key.toLowerCase() === "w"
+    ) {
+      e.preventDefault();
+      jump();
+    }
   }
 
-
-  leftButton.addEventListener(
-    "pointerdown",
-    left
-  );
-
-
-  rightButton.addEventListener(
-    "pointerdown",
-    right
-  );
-
-
-  window.addEventListener(
-    "keydown",
-    keyDown
-  );
-
-
-  /* ==========================================
-  LOOP
-  ========================================== */
-
-  world.addUpdate(
-    (
-      delta,
-      elapsed
-    ) => {
-
-      if (!active) {
-        return;
-      }
-
-
-      /* ======================================
-      SPEED
-      ====================================== */
-
-      worldSpeed =
-        12 +
-        Math.min(
-          avoided *
-          0.75,
-
-          8
-        );
-
-
-      spawnInterval =
-        Math.max(
-          0.58,
-
-          1.2 -
-          avoided *
-          0.045
-        );
-
-
-      speedElement.textContent =
-        (
-          worldSpeed /
-          12
-        )
-        .toFixed(
-          1
-        ) +
-        "x";
-
-
-      /* ======================================
-      PLAYER MOVEMENT
-      ====================================== */
-
-      const targetX =
-        lanePositions[
-          lane
-        ];
-
-
-      const difference =
-        targetX -
-        player.position.x;
-
-
-      /*
-       * 少し慣性を残した車線変更
-       */
-
-      player.position.x +=
-        difference *
-        Math.min(
-          1,
-          delta *
-          8.5
-        );
-
-
-      /*
-       * 車体を傾ける
-       */
-
-      player.rotation.z =
-        clamp(
-          difference *
-          -0.10,
-
-          -0.28,
-
-          0.28
-        );
-
-
-      player.rotation.x =
-        Math.sin(
-          elapsed *
-          9
-        ) *
-        0.006;
-
-
-      underGlow.position.x =
-        player.position.x;
-
-
-      /* ======================================
-      CAMERA SHAKE
-      ====================================== */
-
-      if (
-        screenShake >
-        0
-      ) {
-        screenShake -=
-          delta;
-
-
-        world.camera.position.x =
-          randomBetween(
-            -0.09,
-            0.09
-          );
-
-
-        world.camera.position.y =
-          3.7 +
-          randomBetween(
-            -0.07,
-            0.07
-          );
-
-      } else {
-
-        world.camera.position.x =
-          Math.sin(
-            elapsed *
-            0.9
-          ) *
-          0.045;
-
-
-        world.camera.position.y =
-          3.7;
-      }
-
-
-      /* ======================================
-      ROAD
-      ====================================== */
-
-      for (
-        const line of
-        laneMarks
-      ) {
-        line.position.z +=
-          worldSpeed *
-          delta;
-
-
-        if (
-          line.position.z >
-          8
-        ) {
-          line.position.z -=
-            58;
-        }
-      }
-
-
-      for (
-        const light of
-        roadLights
-      ) {
-        light.position.z +=
-          worldSpeed *
-          delta;
-
-
-        if (
-          light.position.z >
-          8
-        ) {
-          light.position.z -=
-            55;
-        }
-      }
-
-
-      /* ======================================
-      SPAWN
-      ====================================== */
-
-      spawnTimer +=
-        delta;
-
-
-      if (
-        spawnTimer >=
-        spawnInterval
-      ) {
-        spawnTimer =
-          0;
-
-
-        spawnObstacle();
-      }
-
-
-      /* ======================================
-      OBSTACLES
-      ====================================== */
-
-      for (
-        let i =
-          obstacles.length -
-          1;
-
-        i >= 0;
-
-        i--
-      ) {
-        const item =
-          obstacles[i];
-
-
-        const obstacle =
-          item.mesh;
-
-
-        obstacle.position.z +=
-          worldSpeed *
-          delta;
-
-
-        /*
-         * 敵車がたまに車線変更
-         */
-
-        item.laneChangeTimer -=
-          delta;
-
-
-        if (
-          item.laneChangeTimer <=
-          0 &&
-          obstacle.position.z <
-          -4
-        ) {
-          item.laneChangeTimer =
-            randomBetween(
-              1.2,
-              2.6
-            );
-
-
-          if (
-            Math.random() <
-            0.45
-          ) {
-            const direction =
-              Math.random() <
-              0.5
-                ? -1
-                : 1;
-
-
-            item.targetLane =
-              clamp(
-                item.targetLane +
-                direction,
-
-                0,
-
-                2
-              );
-          }
-        }
-
-
-        const targetObstacleX =
-          lanePositions[
-            item.targetLane
-          ];
-
-
-        const obstacleDifference =
-          targetObstacleX -
-          obstacle.position.x;
-
-
-        obstacle.position.x +=
-          obstacleDifference *
-          Math.min(
-            1,
-
-            delta *
-            item.laneChangeSpeed
-          );
-
-
-        obstacle.rotation.z =
-          clamp(
-            obstacleDifference *
-            -0.07,
-
-            -0.18,
-
-            0.18
-          );
-
-
-        /* ======================================
-        COLLISION
-        ====================================== */
-
-        const dx =
-          Math.abs(
-            obstacle.position.x -
-            player.position.x
-          );
-
-
-        const dz =
-          Math.abs(
-            obstacle.position.z -
-            player.position.z
-          );
-
-
-        if (
-          !invincible &&
-          dx <
-          1.25 &&
-          dz <
-          1.65
-        ) {
-          crash(
-            item
-          );
-
-
-          obstacles.splice(
-            i,
-            1
-          );
-
-
-          continue;
-        }
-
-
-        /* ======================================
-        NEAR MISS
-        ====================================== */
-
-        if (
-          !item.nearMiss &&
-          !item.passed &&
-          obstacle.position.z >
-          player.position.z -
-          0.6 &&
-          obstacle.position.z <
-          player.position.z +
-          1.3
-        ) {
-          if (
-            dx >=
-            1.25 &&
-            dx <
-            1.85
-          ) {
-            item.nearMiss =
-              true;
-
-
-            combo +=
-              2;
-
-
-            maxCombo =
-              Math.max(
-                maxCombo,
-                combo
-              );
-
-
-            showMessage(
-              "NEAR MISS!"
-            );
-
-
-            showCombo();
-
-
-            stage.classList.remove(
-              "highway-near-miss"
-            );
-
-
-            void stage.offsetWidth;
-
-
-            stage.classList.add(
-              "highway-near-miss"
-            );
-          }
-        }
-
-
-        /* ======================================
-        PASSED
-        ====================================== */
-
-        if (
-          !item.passed &&
-          obstacle.position.z >
-          player.position.z +
-          1.9
-        ) {
-          item.passed =
-            true;
-
-
-          avoided++;
-
-
-          combo++;
-
-
-          maxCombo =
-            Math.max(
-              maxCombo,
-              combo
-            );
-
-
-          updateHud();
-
-
-          showCombo();
-
-
-          if (
-            avoided >=
-            goal
-          ) {
-            finish(
-              true
-            );
-
-
-            return;
-          }
-        }
-
-
-        /* ======================================
-        REMOVE
-        ====================================== */
-
-        if (
-          obstacle.position.z >
-          13
-        ) {
-          world.disposeObject(
-            obstacle
-          );
-
-
-          obstacles.splice(
-            i,
-            1
-          );
-        }
-      }
-
-    }
-  );
-
-
-  /* ==========================================
-  CRASH
-  ========================================== */
-
-  function crash(
-    item
-  ) {
+  function swipeStart(e) {
     if (
       !active ||
-      invincible
+      finished ||
+      e.target.closest("button")
     ) {
       return;
     }
 
+    pointerStart = {
+      x: e.clientX,
+      y: e.clientY,
+      id: e.pointerId
+    };
+  }
 
+  function swipeEnd(e) {
+    if (
+      !pointerStart ||
+      e.pointerId !== pointerStart.id
+    ) {
+      return;
+    }
+
+    const dx = e.clientX - pointerStart.x;
+    const dy = e.clientY - pointerStart.y;
+
+    pointerStart = null;
+
+    if (Math.hypot(dx, dy) < 36) return;
+
+    if (dy < -Math.abs(dx) * 0.75) {
+      jump();
+
+    } else if (Math.abs(dx) > Math.abs(dy) * 0.7) {
+      laneChange(dx > 0 ? 1 : -1);
+    }
+  }
+
+  leftBtn.addEventListener("pointerdown", left);
+  rightBtn.addEventListener("pointerdown", right);
+  jumpBtn.addEventListener("pointerdown", jump);
+
+  stage.addEventListener("pointerdown", swipeStart);
+  stage.addEventListener("pointerup", swipeEnd);
+
+  window.addEventListener("keydown", onKey);
+
+  /* EFFECTS */
+
+  function flash(text, type) {
+    if (!active) return;
+
+    messageEl.textContent = text;
+    messageEl.className = "rush-message";
+    flashEl.className = "rush-flash";
+
+    void messageEl.offsetWidth;
+
+    messageEl.className =
+      `rush-message ${type || "good"} show`;
+
+    flashEl.className =
+      `rush-flash ${type || "good"} show`;
+
+    clearTimeout(messageTimer);
+
+    messageTimer = setTimeout(() => {
+      messageEl.classList.remove("show");
+      flashEl.classList.remove("show");
+    }, 470);
+  }
+
+  function hit() {
     crashes++;
+    streak = 0;
+    slowLeft = 2.2;
+    invincibleLeft = 1.4;
+    boostLeft = 0;
 
+    flash("CRASH!", "bad");
+  }
 
-    lives--;
+  function collectBoost() {
+    boosts++;
+    boostLeft = Math.max(boostLeft, 3.4);
 
+    flash("BOOST!", "boost");
+  }
 
-    combo =
-      0;
+  function clearObstacle(obj) {
+    world.scene.remove(obj.group);
 
+    obj.group.traverse(child => {
+      if (child.isMesh) {
+        child.geometry.dispose();
+      }
+    });
 
-    invincible =
-      true;
+    const idx = obstacles.indexOf(obj);
 
-
-    screenShake =
-      0.45;
-
-
-    createCrashParticles(
-      item.mesh.position
-        .clone()
-    );
-
-
-    world.disposeObject(
-      item.mesh
-    );
-
-
-    stage.classList.remove(
-      "highway-crash"
-    );
-
-
-    void stage.offsetWidth;
-
-
-    stage.classList.add(
-      "highway-crash"
-    );
-
-
-    showMessage(
-      "CRASH!"
-    );
-
-
-    updateHud();
-
-
-    /*
-     * 一瞬点滅して無敵
-     */
-
-    let blinkCount =
-      0;
-
-
-    const blink =
-      setInterval(
-        () => {
-
-          if (
-            !active
-          ) {
-            clearInterval(
-              blink
-            );
-
-            return;
-          }
-
-
-          player.visible =
-            !player.visible;
-
-
-          blinkCount++;
-
-
-          if (
-            blinkCount >=
-            8
-          ) {
-            clearInterval(
-              blink
-            );
-
-
-            player.visible =
-              true;
-
-
-            invincible =
-              false;
-          }
-
-        },
-        90
-      );
-
-
-    if (
-      lives <=
-      0
-    ) {
-      clearInterval(
-        blink
-      );
-
-
-      player.visible =
-        true;
-
-
-      setTimeout(
-        () => {
-          finish(
-            false
-          );
-        },
-        450
-      );
+    if (idx !== -1) {
+      obstacles.splice(idx, 1);
     }
   }
 
+  /* FINISH */
 
-  /* ==========================================
-  PARTICLES
-  ========================================== */
+  function finish() {
+    if (finished || !active) return;
 
-  function createCrashParticles(
-    position
-  ) {
-    const group =
-      new T.Group();
+    finished = true;
+    active = false;
 
+    const accuracy =
+      avoided / Math.max(1, avoided + crashes);
 
-    group.position.copy(
-      position
-    );
+    const distanceScore =
+      Math.min(1, distance / 1200);
 
-
-    world.scene.add(
-      group
-    );
-
-
-    const particles =
-      [];
-
-
-    for (
-      let i = 0;
-      i < 28;
-      i++
-    ) {
-      const piece =
-        new T.Mesh(
-          new T.BoxGeometry(
-            randomBetween(
-              0.04,
-              0.12
-            ),
-
-            randomBetween(
-              0.04,
-              0.12
-            ),
-
-            randomBetween(
-              0.04,
-              0.12
-            )
-          ),
-
-          new T.MeshBasicMaterial({
-            color:
-              [
-                0xff4d67,
-                0xffb347,
-                0xffffff,
-                0x58eaff
-              ][
-                Math.floor(
-                  Math.random() *
-                  4
-                )
-              ]
-          })
-        );
-
-
-      const velocity =
-        new T.Vector3(
-          randomBetween(
-            -5,
-            5
-          ),
-
-          randomBetween(
-            1,
-            6
-          ),
-
-          randomBetween(
-            -3,
-            5
-          )
-        );
-
-
-      particles.push({
-        piece,
-        velocity
-      });
-
-
-      group.add(
-        piece
-      );
-    }
-
-
-    let age =
-      0;
-
-
-    const updater =
-      delta => {
-
-        age +=
-          delta;
-
-
-        particles.forEach(
-          item => {
-
-            item.piece.position
-              .addScaledVector(
-                item.velocity,
-                delta
-              );
-
-
-            item.velocity.y -=
-              7 *
-              delta;
-
-
-            item.piece.rotation.x +=
-              delta *
-              8;
-
-
-            item.piece.rotation.y +=
-              delta *
-              7;
-
-
-            item.piece.scale
-              .multiplyScalar(
-                0.96
-              );
-
-          }
-        );
-
-
-        if (
-          age >
-          0.6
-        ) {
-          world.removeUpdate?.(
-            updater
-          );
-
-
-          world.disposeObject?.(
-            group
-          );
-        }
-      };
-
-
-    world.addUpdate(
-      updater
-    );
-  }
-
-
-  /* ==========================================
-  HUD
-  ========================================== */
-
-  function updateHud() {
-    dodgedElement.textContent =
-      avoided;
-
-
-    comboElement.textContent =
-      combo;
-
-
-    livesElement.textContent =
-      Array.from(
-        {
-          length:
-            3
-        },
-
-        (
-          _,
-          index
-        ) =>
-          index <
-          lives
-            ? "♥"
-            : "♡"
+    const finalScore = Math.round(
+      Math.min(
+        100,
+        distanceScore * 80 +
+        accuracy * 12 +
+        Math.min(1, boostSeconds / 20) * 5 +
+        Math.min(1, bestStreak / 12) * 3
       )
-      .join(
-        " "
-      );
+    );
+
+    const adapt = Math.round(
+      Math.min(
+        100,
+        35 +
+        accuracy * 30 +
+        Math.min(1, boosts / 7) * 20 +
+        Math.min(1, bestStreak / 12) * 15
+      )
+    );
+
+    timeEl.textContent = "0";
+
+    endTimer = setTimeout(() => {
+      onComplete?.({
+        score: finalScore,
+        adapt,
+        meta: {
+          distance: Math.round(distance),
+          avoided,
+          crashes,
+          boosts,
+          bestStreak,
+          durationSeconds: 60
+        }
+      });
+    }, 460);
   }
 
+  /* GAME LOOP */
 
-  /* ==========================================
-  MESSAGE
-  ========================================== */
+  world.addUpdate(delta => {
+    if (!active || finished) return;
 
-  let messageTimer =
-    null;
+    const t = (performance.now() - startTime) / 1000;
+    const remaining = Math.max(0, TOTAL_SECONDS - t);
 
-
-  function showMessage(
-    text
-  ) {
-    clearTimeout(
-      messageTimer
-    );
-
-
-    messageElement.textContent =
-      text;
-
-
-    messageElement.classList.remove(
-      "show"
-    );
-
-
-    void messageElement.offsetWidth;
-
-
-    messageElement.classList.add(
-      "show"
-    );
-
-
-    messageTimer =
-      setTimeout(
-        () => {
-
-          messageElement.classList.remove(
-            "show"
-          );
-
-        },
-        420
-      );
-  }
-
-
-  function showCombo() {
-    if (
-      combo <
-      2
-    ) {
+    if (remaining <= 0) {
+      finish();
       return;
     }
 
+    boostLeft = Math.max(0, boostLeft - delta);
+    slowLeft = Math.max(0, slowLeft - delta);
 
-    comboPop.textContent =
-      `×${combo}`;
-
-
-    comboPop.classList.remove(
-      "show"
+    invincibleLeft = Math.max(
+      0,
+      invincibleLeft - delta
     );
 
+    const baseSpeed = 14 + Math.min(4, t / 15);
 
-    void comboPop.offsetWidth;
+    const factor =
+      slowLeft > 0 ? 0.65 :
+      boostLeft > 0 ? 1.65 :
+      1;
 
+    currentSpeed = baseSpeed * factor;
+    distance += currentSpeed * delta;
 
-    comboPop.classList.add(
-      "show"
-    );
-
-
-    setTimeout(
-      () => {
-
-        comboPop.classList.remove(
-          "show"
-        );
-
-      },
-      340
-    );
-  }
-
-
-  /* ==========================================
-  FINISH
-  ========================================== */
-
-  function finish(
-    success
-  ) {
-    if (!active) {
-      return;
+    if (boostLeft > 0 && slowLeft <= 0) {
+      boostSeconds += delta;
     }
 
+    timeEl.textContent = String(Math.ceil(remaining));
+    distanceEl.textContent = Math.floor(distance);
 
-    active =
-      false;
+    speedEl.textContent =
+      `${(currentSpeed / 14).toFixed(1)}×`;
 
+    avoidedEl.textContent = avoided;
+    streakEl.textContent = streak;
+    crashesEl.textContent = crashes;
 
-    clearTimeout(
-      messageTimer
+    stage.classList.toggle(
+      "boosting",
+      boostLeft > 0
     );
 
+    /* ROAD MOVEMENT */
 
-    const elapsed =
-      performance.now() -
-      startedAt;
+    for (const line of laneMarks) {
+      line.position.z += currentSpeed * delta;
 
+      if (line.position.z > 10) {
+        line.position.z -= 62;
+      }
+    }
 
-    const completion =
-      clamp(
-        avoided /
-        goal,
+    for (const curb of roadside) {
+      curb.position.z += currentSpeed * delta;
 
-        0,
+      if (curb.position.z > 10) {
+        curb.position.z -= 62;
+      }
+    }
 
-        1
-      );
+    /* PLAYER */
 
+    const targetX = LANES[lane];
 
-    const lifeScore =
-      clamp(
-        lives /
-        3,
+    player.position.x +=
+      (targetX - player.position.x) *
+      Math.min(1, delta * 13);
 
-        0,
+    player.rotation.z =
+      (targetX - player.position.x) * -0.055;
 
-        1
-      );
+    /* JUMP PHYSICS */
 
+    if (jumpVelocity !== 0 || jumpHeight > 0) {
+      jumpHeight += jumpVelocity * delta;
+      jumpVelocity -= 23 * delta;
 
-    const speedScore =
-      success
-        ? clamp(
-            100 -
-            Math.max(
-              0,
+      if (jumpHeight <= 0) {
+        jumpHeight = 0;
+        jumpVelocity = 0;
+      }
+    }
 
-              elapsed -
-              11000
-            ) /
-            170,
+    player.position.y = -1.4 + jumpHeight;
 
-            0,
+    player.visible =
+      invincibleLeft <= 0 ||
+      Math.floor(t * 14) % 2 === 0;
 
-            100
-          )
-        : 0;
+    /* SPAWN */
 
+    spawnLeft -= delta;
 
-    const comboScore =
-      clamp(
-        maxCombo /
-        12,
+    if (spawnLeft <= 0) {
+      spawn();
 
-        0,
+      spawnLeft =
+        Math.max(0.82, 1.25 - t / 250) +
+        Math.random() * 0.30;
+    }
 
-        1
-      );
+    /* OBSTACLES */
 
+    for (const obj of [...obstacles]) {
+      obj.group.position.z += currentSpeed * delta;
 
-    const finalScore =
-      clamp(
-        completion *
-        40 +
+      if (obj.kind === "boost") {
+        obj.group.rotation.y += delta * 2.1;
+      }
 
-        lifeScore *
-        25 +
+      if (
+        !obj.resolved &&
+        obj.group.position.z >= PLAYER_Z - 0.15
+      ) {
+        obj.resolved = true;
 
-        comboScore *
-        20 +
+        const inLane =
+          Math.abs(
+            obj.group.position.x -
+            player.position.x
+          ) < 1.2;
 
-        speedScore /
-        100 *
-        15,
-
-        0,
-
-        100
-      );
-
-
-    setTimeout(
-      () => {
-
-        onComplete?.({
-          score:
-            Math.round(
-              finalScore
-            ),
-
-          adapt:
-            Math.round(
-              clamp(
-                45 +
-                completion *
-                30 +
-                comboScore *
-                25,
-
-                0,
-
-                100
-              )
-            ),
-
-          meta: {
-            success,
-
-            avoided,
-
-            crashes,
-
-            lives,
-
-            maxCombo,
-
-            elapsed:
-              Math.round(
-                elapsed
-              )
+        if (obj.kind === "boost") {
+          if (inLane) {
+            collectBoost();
           }
-        });
 
-      },
-      success
-        ? 550
-        : 300
-    );
-  }
+        } else {
+          const jumpable =
+            obj.kind === "rock" ||
+            obj.kind === "log";
 
+          const safeJump =
+            jumpable &&
+            jumpHeight > 0.75;
 
-  /* ==========================================
-  START
-  ========================================== */
+          if (inLane && !safeJump) {
+            if (invincibleLeft <= 0) {
+              hit();
+            }
 
-  updateHud();
+          } else {
+            avoided++;
+            streak++;
 
+            bestStreak = Math.max(
+              bestStreak,
+              streak
+            );
 
-  spawnObstacle();
+            if (
+              streak > 0 &&
+              streak % 6 === 0
+            ) {
+              boostLeft = Math.max(
+                boostLeft,
+                2.2
+              );
 
+              flash("STREAK BOOST!", "boost");
+            }
+          }
+        }
+      }
 
+      if (obj.group.position.z > PLAYER_Z + 8) {
+        clearObstacle(obj);
+      }
+    }
+  });
+
+  /* START */
+
+  startTime = performance.now();
   world.start();
 
-
-  /* ==========================================
-  CLEANUP
-  ========================================== */
+  /* CLEANUP */
 
   return () => {
-    active =
-      false;
+    active = false;
 
+    clearTimeout(messageTimer);
+    clearTimeout(endTimer);
 
-    clearTimeout(
-      messageTimer
-    );
+    leftBtn.removeEventListener("pointerdown", left);
+    rightBtn.removeEventListener("pointerdown", right);
+    jumpBtn.removeEventListener("pointerdown", jump);
 
+    stage.removeEventListener("pointerdown", swipeStart);
+    stage.removeEventListener("pointerup", swipeEnd);
 
-    leftButton.removeEventListener(
-      "pointerdown",
-      left
-    );
-
-
-    rightButton.removeEventListener(
-      "pointerdown",
-      right
-    );
-
-
-    window.removeEventListener(
-      "keydown",
-      keyDown
-    );
-
+    window.removeEventListener("keydown", onKey);
 
     world.destroy();
   };
-}
-
-
-/* ==========================================
-CAR MODEL
-========================================== */
-
-function createCar({
-  T,
-  color,
-  player = false
-}) {
-  const car =
-    new T.Group();
-
-
-  const bodyMaterial =
-    new T.MeshStandardMaterial({
-      color,
-
-      metalness:
-        0.62,
-
-      roughness:
-        0.3
-    });
-
-
-  const glassMaterial =
-    new T.MeshStandardMaterial({
-      color:
-        0x07111c,
-
-      metalness:
-        0.5,
-
-      roughness:
-        0.2
-    });
-
-
-  const tireMaterial =
-    new T.MeshStandardMaterial({
-      color:
-        0x050608,
-
-      roughness:
-        0.95
-    });
-
-
-  const rearLightMaterial =
-    new T.MeshStandardMaterial({
-      color:
-        0xff3155,
-
-      emissive:
-        0xff1738,
-
-      emissiveIntensity:
-        2.8
-    });
-
-
-  const frontLightMaterial =
-    new T.MeshStandardMaterial({
-      color:
-        0xd8faff,
-
-      emissive:
-        0x7befff,
-
-      emissiveIntensity:
-        2.5
-    });
-
-
-  /*
-   * BODY
-   */
-
-  const body =
-    new T.Mesh(
-      new T.BoxGeometry(
-        1.7,
-        0.48,
-        3
-      ),
-
-      bodyMaterial
-    );
-
-
-  body.castShadow =
-    true;
-
-
-  car.add(
-    body
-  );
-
-
-  /*
-   * CABIN
-   */
-
-  const cabin =
-    new T.Mesh(
-      new T.BoxGeometry(
-        1.22,
-        0.58,
-        1.35
-      ),
-
-      glassMaterial
-    );
-
-
-  cabin.position.set(
-    0,
-    0.48,
-    -0.18
-  );
-
-
-  car.add(
-    cabin
-  );
-
-
-  /*
-   * HOOD STRIPE FOR PLAYER
-   */
-
-  if (player) {
-    const stripe =
-      new T.Mesh(
-        new T.BoxGeometry(
-          0.22,
-          0.03,
-          2.75
-        ),
-
-        new T.MeshStandardMaterial({
-          color:
-            0xffffff,
-
-          emissive:
-            0x5aeaff,
-
-          emissiveIntensity:
-            1.2
-        })
-      );
-
-
-    stripe.position.y =
-      0.265;
-
-
-    car.add(
-      stripe
-    );
-  }
-
-
-  /*
-   * LIGHTS
-   */
-
-  for (
-    const x of
-    [-0.48, 0.48]
-  ) {
-    const rearLight =
-      new T.Mesh(
-        new T.BoxGeometry(
-          0.3,
-          0.13,
-          0.08
-        ),
-
-        rearLightMaterial
-      );
-
-
-    rearLight.position.set(
-      x,
-      0,
-      1.54
-    );
-
-
-    car.add(
-      rearLight
-    );
-
-
-    const frontLight =
-      new T.Mesh(
-        new T.BoxGeometry(
-          0.3,
-          0.13,
-          0.08
-        ),
-
-        frontLightMaterial
-      );
-
-
-    frontLight.position.set(
-      x,
-      0,
-      -1.54
-    );
-
-
-    car.add(
-      frontLight
-    );
-  }
-
-
-  /*
-   * TIRES
-   */
-
-  for (
-    const x of
-    [-0.9, 0.9]
-  ) {
-    for (
-      const z of
-      [-0.9, 0.9]
-    ) {
-      const tire =
-        new T.Mesh(
-          new T.BoxGeometry(
-            0.18,
-            0.28,
-            0.55
-          ),
-
-          tireMaterial
-        );
-
-
-      tire.position.set(
-        x,
-        -0.25,
-        z
-      );
-
-
-      car.add(
-        tire
-      );
-    }
-  }
-
-
-  return car;
-}
-
-
-/* ==========================================
-UTIL
-========================================== */
-
-function clamp(
-  value,
-  min,
-  max
-) {
-  return Math.max(
-    min,
-    Math.min(
-      max,
-      value
-    )
-  );
-}
-
-
-function randomBetween(
-  min,
-  max
-) {
-  return (
-    min +
-    Math.random() *
-    (
-      max -
-      min
-    )
-  );
 }
