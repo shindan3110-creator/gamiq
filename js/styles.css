@@ -7360,3 +7360,1028 @@ MOBILE
   }
 
 }
+
+
+/* =========================================================
+NINJA COUNTER - WHACK STYLE
+========================================================= */
+
+.ninja-whack-game{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:9px;
+}
+
+
+/* =============================
+HUD
+============================= */
+
+.ninja-whack-hud{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:7px;
+}
+
+
+.ninja-whack-hud-item{
+  padding:8px 9px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:11px;
+
+  background:
+    rgba(5,10,7,.82);
+
+  text-align:center;
+}
+
+
+.ninja-whack-hud-item span{
+  display:block;
+
+  margin-bottom:2px;
+
+  color:
+    rgba(255,255,255,.45);
+
+  font-size:7px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+}
+
+
+.ninja-whack-hud-item strong{
+  color:#fff;
+
+  font-size:15px;
+  font-weight:1000;
+}
+
+
+.ninja-whack-hud-item:nth-child(2)
+strong{
+  color:#7dffa6;
+}
+
+
+.ninja-whack-life{
+  color:#ff5873 !important;
+}
+
+
+/* =============================
+STAGE
+============================= */
+
+.ninja-whack-stage{
+  position:relative;
+
+  flex:1;
+
+  min-height:0;
+
+  overflow:hidden;
+
+  border-radius:19px;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(60,170,85,.1),
+      transparent 28%
+    ),
+    linear-gradient(
+      180deg,
+      #08110c,
+      #020403
+    );
+
+  touch-action:none;
+}
+
+
+.ninja-whack-bg{
+  position:absolute;
+
+  inset:0;
+
+  pointer-events:none;
+}
+
+
+.ninja-whack-moon{
+  position:absolute;
+
+  left:50%;
+  top:10%;
+
+  width:120px;
+  height:120px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      #e1eddc,
+      #87977e
+    );
+
+  opacity:.12;
+}
+
+
+.ninja-whack-roof{
+  position:absolute;
+
+  left:0;
+  right:0;
+  bottom:0;
+
+  height:34%;
+
+  background:
+    linear-gradient(
+      180deg,
+      #0a0e0b,
+      #030403
+    );
+
+  clip-path:
+    polygon(
+      0 40%,
+      20% 22%,
+      35% 35%,
+      50% 12%,
+      67% 34%,
+      82% 20%,
+      100% 40%,
+      100% 100%,
+      0 100%
+    );
+}
+
+
+/* =============================
+HOLES
+============================= */
+
+.ninja-whack-hole{
+  position:absolute;
+
+  z-index:8;
+
+  width:86px;
+  height:86px;
+
+  padding:0;
+
+  border:0;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      #050806 0 45%,
+      #111912 46% 57%,
+      #050806 58%
+    );
+
+  overflow:hidden;
+
+  cursor:pointer;
+
+  touch-action:manipulation;
+
+  box-shadow:
+    inset 0 5px 18px
+    rgba(0,0,0,.8),
+
+    0 0 0 1px
+    rgba(255,255,255,.04);
+}
+
+
+.ninja-whack-hole-1{
+  left:10%;
+  top:19%;
+}
+
+
+.ninja-whack-hole-2{
+  left:50%;
+  top:12%;
+
+  transform:
+    translateX(-50%);
+}
+
+
+.ninja-whack-hole-3{
+  right:10%;
+  top:19%;
+}
+
+
+.ninja-whack-hole-4{
+  left:22%;
+  top:50%;
+}
+
+
+.ninja-whack-hole-5{
+  right:22%;
+  top:50%;
+}
+
+
+/* =============================
+CHARACTER
+============================= */
+
+.ninja-whack-character{
+  position:absolute;
+
+  left:50%;
+  bottom:-70%;
+
+  width:58px;
+  height:78px;
+
+  transform:
+    translateX(-50%);
+
+  transition:
+    bottom .12s ease;
+}
+
+
+.ninja-whack-hole.show
+.ninja-whack-character{
+  bottom:0;
+}
+
+
+.ninja-whack-character-head{
+  position:absolute;
+
+  left:50%;
+  top:0;
+
+  width:34px;
+  height:32px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    45% 45% 38% 38%;
+}
+
+
+.ninja-whack-character-head::after{
+  content:"";
+
+  position:absolute;
+
+  left:4px;
+  right:4px;
+  top:14px;
+
+  height:6px;
+
+  border-radius:3px;
+
+  background:#050505;
+}
+
+
+.ninja-whack-character-head i{
+  position:absolute;
+
+  z-index:2;
+
+  left:8px;
+  top:17px;
+
+  width:4px;
+  height:2px;
+}
+
+
+.ninja-whack-character-body{
+  position:absolute;
+
+  left:50%;
+  top:28px;
+
+  width:46px;
+  height:48px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    13px 13px 7px 7px;
+}
+
+
+/* =============================
+ENEMY
+============================= */
+
+.ninja-whack-character-enemy
+.ninja-whack-character-head{
+  background:#2a141b;
+
+  border:
+    1px solid
+    rgba(255,70,105,.35);
+}
+
+
+.ninja-whack-character-enemy
+.ninja-whack-character-head i{
+  background:#ff506b;
+
+  box-shadow:
+    13px 0
+    #ff506b;
+}
+
+
+.ninja-whack-character-enemy
+.ninja-whack-character-body{
+  background:
+    linear-gradient(
+      180deg,
+      #3c1c25,
+      #12090c
+    );
+}
+
+
+.ninja-whack-character-sword{
+  position:absolute;
+
+  left:43px;
+  top:8px;
+
+  width:4px;
+  height:57px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #8b9398,
+      #ffffff,
+      #687076
+    );
+
+  transform:
+    rotate(34deg);
+}
+
+
+/* =============================
+FRIEND
+============================= */
+
+.ninja-whack-character-friend
+.ninja-whack-character-head{
+  background:#12233a;
+
+  border:
+    1px solid
+    rgba(80,170,255,.35);
+}
+
+
+.ninja-whack-character-friend
+.ninja-whack-character-head i{
+  background:#61c8ff;
+
+  box-shadow:
+    13px 0
+    #61c8ff;
+}
+
+
+.ninja-whack-character-friend
+.ninja-whack-character-body{
+  background:
+    linear-gradient(
+      180deg,
+      #19395d,
+      #0a1524
+    );
+}
+
+
+/* =============================
+FAKE
+============================= */
+
+.ninja-whack-hole.fake{
+  filter:
+    saturate(.5);
+}
+
+
+/* =============================
+PLAYER
+============================= */
+
+.ninja-whack-player{
+  position:absolute;
+
+  z-index:12;
+
+  left:50%;
+  bottom:7%;
+
+  width:70px;
+  height:100px;
+
+  transform:
+    translateX(-50%);
+
+  pointer-events:none;
+}
+
+
+.ninja-whack-player-head{
+  position:absolute;
+
+  left:50%;
+  top:0;
+
+  width:36px;
+  height:34px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    45% 45% 38% 38%;
+
+  background:#101b14;
+
+  border:
+    1px solid
+    rgba(100,255,145,.2);
+}
+
+
+.ninja-whack-player-head::after{
+  content:"";
+
+  position:absolute;
+
+  left:5px;
+  right:5px;
+  top:14px;
+
+  height:7px;
+
+  background:#050806;
+}
+
+
+.ninja-whack-player-head i{
+  position:absolute;
+
+  z-index:2;
+
+  left:8px;
+  top:17px;
+
+  width:4px;
+  height:2px;
+
+  background:#83ffab;
+
+  box-shadow:
+    14px 0
+    #83ffab;
+}
+
+
+.ninja-whack-player-body{
+  position:absolute;
+
+  left:50%;
+  top:29px;
+
+  width:49px;
+  height:61px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    14px 14px 8px 8px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #1c2d21,
+      #09110d
+    );
+}
+
+
+.ninja-whack-player-sword{
+  position:absolute;
+
+  left:51px;
+  top:17px;
+
+  width:4px;
+  height:70px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #8d9c97,
+      #ffffff,
+      #697871
+    );
+
+  transform:
+    rotate(31deg);
+}
+
+
+/* =============================
+PLAYER DASH
+============================= */
+
+.ninja-whack-player.dash{
+  animation:
+    ninja-whack-dash
+    .32s cubic-bezier(.18,.8,.3,1);
+}
+
+
+@keyframes ninja-whack-dash{
+
+  0%{
+    transform:
+      translateX(-50%);
+  }
+
+  42%{
+    transform:
+      translate(
+        calc(-50% + var(--dash-x)),
+        var(--dash-y)
+      )
+      scale(1.08);
+  }
+
+  58%{
+    transform:
+      translate(
+        calc(-50% + var(--dash-x)),
+        var(--dash-y)
+      )
+      scale(1.08);
+  }
+
+  100%{
+    transform:
+      translateX(-50%);
+  }
+
+}
+
+
+/* =============================
+SLASH
+============================= */
+
+.ninja-whack-slash{
+  position:absolute;
+
+  z-index:22;
+
+  width:5px;
+  height:82px;
+
+  border-radius:999px;
+
+  transform:
+    translate(-50%,-50%)
+    rotate(52deg);
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      #ffffff 28%,
+      #86ffae 62%,
+      transparent
+    );
+
+  opacity:0;
+
+  pointer-events:none;
+
+  box-shadow:
+    0 0 16px
+    rgba(100,255,150,.8);
+}
+
+
+.ninja-whack-slash.show{
+  animation:
+    ninja-whack-slash
+    .22s ease;
+}
+
+
+@keyframes ninja-whack-slash{
+
+  0%{
+    opacity:0;
+    scale:.5;
+  }
+
+  35%{
+    opacity:1;
+    scale:1.1;
+  }
+
+  100%{
+    opacity:0;
+    scale:.9;
+  }
+
+}
+
+
+/* =============================
+SPARKS
+============================= */
+
+.ninja-whack-sparks{
+  position:absolute;
+
+  z-index:24;
+
+  width:1px;
+  height:1px;
+
+  pointer-events:none;
+}
+
+
+.ninja-whack-sparks i{
+  position:absolute;
+
+  width:4px;
+  height:13px;
+
+  border-radius:4px;
+
+  background:
+    linear-gradient(
+      #ffffff,
+      #7effa7
+    );
+
+  opacity:0;
+}
+
+
+.ninja-whack-sparks.show i{
+  animation:
+    ninja-whack-spark
+    .28s ease-out
+    forwards;
+}
+
+
+@keyframes ninja-whack-spark{
+
+  0%{
+    opacity:1;
+
+    transform:
+      translate(0,0)
+      scale(1);
+  }
+
+  100%{
+    opacity:0;
+
+    transform:
+      translate(
+        var(--x),
+        var(--y)
+      )
+      scale(.2);
+  }
+
+}
+
+
+/* =============================
+MESSAGE
+============================= */
+
+.ninja-whack-message{
+  position:absolute;
+
+  z-index:30;
+
+  left:50%;
+  top:26%;
+
+  transform:
+    translate(-50%,-50%)
+    scale(.55);
+
+  color:#80ffaa;
+
+  font-size:
+    clamp(
+      28px,
+      6vw,
+      48px
+    );
+
+  font-weight:1000;
+
+  font-style:italic;
+
+  opacity:0;
+
+  pointer-events:none;
+}
+
+
+.ninja-whack-message.fail{
+  color:#ff5874;
+}
+
+
+.ninja-whack-message.show{
+  animation:
+    ninja-whack-message
+    .4s ease;
+}
+
+
+@keyframes ninja-whack-message{
+
+  0%{
+    opacity:0;
+
+    transform:
+      translate(-50%,-50%)
+      scale(.5);
+  }
+
+  35%{
+    opacity:1;
+
+    transform:
+      translate(-50%,-50%)
+      scale(1.16);
+  }
+
+  100%{
+    opacity:0;
+
+    transform:
+      translate(-50%,-70%)
+      scale(.95);
+  }
+
+}
+
+
+/* =============================
+COMBO
+============================= */
+
+.ninja-whack-combo-pop{
+  position:absolute;
+
+  z-index:30;
+
+  right:8%;
+  top:12%;
+
+  color:#82ffab;
+
+  font-size:
+    clamp(
+      25px,
+      5vw,
+      42px
+    );
+
+  font-weight:1000;
+
+  opacity:0;
+}
+
+
+.ninja-whack-combo-pop.show{
+  animation:
+    ninja-whack-combo
+    .34s ease;
+}
+
+
+@keyframes ninja-whack-combo{
+
+  0%{
+    opacity:0;
+    transform:scale(.5);
+  }
+
+  45%{
+    opacity:1;
+    transform:scale(1.25);
+  }
+
+  100%{
+    opacity:0;
+    transform:scale(1);
+  }
+
+}
+
+
+/* =============================
+HIT / DAMAGE
+============================= */
+
+.ninja-whack-hit{
+  animation:
+    ninja-whack-hit
+    .15s ease;
+}
+
+
+@keyframes ninja-whack-hit{
+
+  0%{
+    filter:brightness(1);
+  }
+
+  38%{
+    filter:
+      brightness(1.9)
+      saturate(.7);
+  }
+
+  100%{
+    filter:brightness(1);
+  }
+
+}
+
+
+.ninja-whack-damage{
+  animation:
+    ninja-whack-damage
+    .28s ease;
+}
+
+
+@keyframes ninja-whack-damage{
+
+  0%,
+  100%{
+    transform:translateX(0);
+  }
+
+  20%{
+    transform:translateX(-8px);
+  }
+
+  40%{
+    transform:translateX(8px);
+  }
+
+  60%{
+    transform:translateX(-5px);
+  }
+
+  80%{
+    transform:translateX(4px);
+  }
+
+}
+
+
+/* =============================
+HINT
+============================= */
+
+.ninja-whack-hint{
+  position:absolute;
+
+  z-index:18;
+
+  left:50%;
+  bottom:10px;
+
+  transform:
+    translateX(-50%);
+
+  padding:
+    6px 11px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.09);
+
+  border-radius:999px;
+
+  background:
+    rgba(0,0,0,.4);
+
+  color:
+    rgba(255,255,255,.6);
+
+  font-size:8px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+
+  pointer-events:none;
+
+  animation:
+    ninja-whack-hint
+    2.4s ease forwards;
+}
+
+
+@keyframes ninja-whack-hint{
+
+  0%{
+    opacity:0;
+  }
+
+  15%,
+  65%{
+    opacity:1;
+  }
+
+  100%{
+    opacity:0;
+  }
+
+}
+
+
+/* =============================
+MOBILE
+============================= */
+
+@media(max-width:700px){
+
+  .ninja-whack-hud{
+    gap:4px;
+  }
+
+
+  .ninja-whack-hud-item{
+    padding:
+      6px 4px;
+  }
+
+
+  .ninja-whack-hole{
+    width:72px;
+    height:72px;
+  }
+
+
+  .ninja-whack-player{
+    bottom:5%;
+  }
+
+}
