@@ -1,5 +1,6 @@
 // GAMIQ（ゲーミック） v2
-// SPACE BLASTER - Dynamic Mobile Control Edition
+// SPACE BLASTER
+// Approach -> Combat -> Retreat Edition
 
 import {
   GamiqThreeScene
@@ -23,6 +24,7 @@ export async function runSpace3D({
 
   let shots = 0;
   let hits = 0;
+
   let destroyed = 0;
   let escaped = 0;
 
@@ -51,6 +53,8 @@ export async function runSpace3D({
 
   let joystickActive = false;
 
+  let joystickPointerId = null;
+
 
   /* ==========================================
   HTML
@@ -70,6 +74,7 @@ export async function runSpace3D({
           </strong>
         </div>
 
+
         <div class="space-hud-item">
           <span>COMBO</span>
 
@@ -77,6 +82,7 @@ export async function runSpace3D({
             0
           </strong>
         </div>
+
 
         <div class="space-hud-item">
           <span>ACCURACY</span>
@@ -124,8 +130,6 @@ export async function runSpace3D({
           AIM & SHOOT
         </div>
 
-
-        <!-- MOBILE CONTROLS -->
 
         <div class="space-mobile-controls">
 
@@ -355,13 +359,10 @@ export async function runSpace3D({
   STAR FIELD
   ========================================== */
 
-  const starCount =
-    650;
-
+  const starCount = 650;
 
   const starGeometry =
     new T.BufferGeometry();
-
 
   const starPositions =
     new Float32Array(
@@ -494,6 +495,8 @@ export async function runSpace3D({
       });
 
 
+    /* BODY */
+
     const body =
       new T.Mesh(
         new T.SphereGeometry(
@@ -518,6 +521,8 @@ export async function runSpace3D({
     );
 
 
+    /* COCKPIT */
+
     const cockpit =
       new T.Mesh(
         new T.SphereGeometry(
@@ -541,6 +546,8 @@ export async function runSpace3D({
       cockpit
     );
 
+
+    /* WINGS */
 
     const wingGeometry =
       new T.BoxGeometry(
@@ -590,6 +597,8 @@ export async function runSpace3D({
     );
 
 
+    /* CORE */
+
     const core =
       new T.Mesh(
         new T.SphereGeometry(
@@ -617,6 +626,8 @@ export async function runSpace3D({
       core
     );
 
+
+    /* ENGINES */
 
     const engineLeft =
       new T.Mesh(
@@ -664,6 +675,17 @@ export async function runSpace3D({
     ];
 
 
+    /*
+     * 少し大きめ
+     */
+
+    ship.scale.set(
+      1.25,
+      1.25,
+      1.25
+    );
+
+
     return ship;
   }
 
@@ -673,477 +695,109 @@ export async function runSpace3D({
   ========================================== */
 
   function spawnEnemy() {
-  if (
-    !active ||
-    enemy
-  ) {
-    return;
-  }
-
-
-  enemyDying =
-    false;
-
-
-  enemy =
-    buildEnemy();
-
-
-  /*
-   * 少し遠くから出現
-   */
-
-  enemy.position.set(
-  randomBetween(
-    -2.2,
-    2.2
-  ),
-
-  randomBetween(
-    -1.4,
-    1.6
-  ),
-
-  randomBetween(
-    -9.5,
-    -7.8
-  )
-);
-
-
-  /*
-   * 正面をプレイヤー側へ向ける
-   *
-   * このモデルは +Z 側が機首
-   * カメラは +Z 側にあるため
-   * rotation.y = 0 が基本正面
-   */
-
-  enemy.rotation.set(
-    0,
-    0,
-    0
-  );
-
-
-  enemy.userData.health =
-    destroyed >= 4
-      ? 120
-      : 100;
-
-
-  /*
-   * COMBAT POSITION
-   *
-   * 最初はこちらへ近づき、
-   * -5〜-6付近で戦闘する
-   */
-
-  enemy.userData.combatZ =
-  randomBetween(
-    -5.3,
-    -4.4
-  );
-
-
-  enemy.userData.approachSpeed =
-  randomBetween(
-    2.1,
-    2.7
-  );
-
-
-  /*
-   * 横移動は今までよりかなり弱くする
-   */
-
-  enemy.userData.targetX =
-    randomBetween(
-      -2.4,
-      2.4
-    );
-
-
-  enemy.userData.targetY =
-    randomBetween(
-      -1.5,
-      1.5
-    );
-
-
-  enemy.userData.moveSpeed =
-    randomBetween(
-      1.35,
-      1.9
-    );
-
-
-  /*
-   * 方向転換もゆっくり
-   */
-
-  enemy.userData.decisionTimer =
-    randomBetween(
-      0.9,
-      1.5
-    );
-
-
-  /*
-   * 出現から4.5〜7秒ほどで逃走開始
-   */
-
-  enemy.userData.escapeTimer =
-    randomBetween(
-      4.5,
-      7
-    );
-
-
-  enemy.userData.isEscaping =
-    false;
-
-
-  enemy.userData.escapeSpeed =
-    randomBetween(
-      5.5,
-      7.0
-    );
-
-
-  enemy.userData.escapeTurn =
-    0;
-
-
-  world.scene.add(
-    enemy
-  );
-
-
-  showMessage(
-    "TARGET!"
-  );
-}
-
-  /* ==========================================
-  ENEMY MOVEMENT
-  ========================================== */
-
-  world.addUpdate(
-    (
-      delta,
-      elapsed
-    ) => {
-
-      if (!active) {
-        return;
-      }
-
-
-      /* STAR SPEED */
-
-      stars.position.z +=
-        delta *
-        4.4;
-
-
-      if (
-        stars.position.z >
-        8
-      ) {
-        stars.position.z =
-          0;
-      }
-
-
-      /* CAMERA SHAKE */
-
-      if (
-        screenShake >
-        0
-      ) {
-        screenShake -=
-          delta;
-
-
-        world.camera.position.x =
-          randomBetween(
-            -0.055,
-            0.055
-          );
-
-
-        world.camera.position.y =
-          0.4 +
-          randomBetween(
-            -0.055,
-            0.055
-          );
-      } else {
-        world.camera.position.x =
-          0;
-
-
-        world.camera.position.y =
-          0.4;
-      }
-
-
-      /* MOBILE JOYSTICK AIM */
-
-      if (
-        joystickActive
-      ) {
-        const rect =
-          stage
-            .getBoundingClientRect();
-
-
-        const speed =
-          390;
-
-
-        crosshairLocalX +=
-          joystickX *
-          speed *
-          delta;
-
-
-        crosshairLocalY +=
-          joystickY *
-          speed *
-          delta;
-
-
-        crosshairLocalX =
-          clamp(
-            crosshairLocalX,
-            15,
-            rect.width -
-            15
-          );
-
-
-        crosshairLocalY =
-          clamp(
-            crosshairLocalY,
-            15,
-            rect.height -
-            15
-          );
-
-
-        updateCrosshairFromLocal(
-          crosshairLocalX,
-          crosshairLocalY
-        );
-      }
-
-
-      if (
-        !enemy ||
-        enemyDying
-      ) {
-        return;
-      }
-
-
-      /*
- * ESCAPE TIMER
- */
-
-if (
-  enemy.position.z <
-  enemy.userData.combatZ
-) {
-  enemy.position.z +=
-    enemy.userData.approachSpeed *
-    delta;
-}
-
-
-/* ======================================
-NORMAL COMBAT
-====================================== */
-
-if (
-  !enemy.userData.isEscaping
-) {
-
-  /*
-   * 敵艦は常にほぼこちらを向く
-   *
-   * 横移動に合わせて少しだけBANKするが
-   * 機体そのものは回転させない
-   */
-
-  enemy.rotation.y +=
-    (
-      0 -
-      enemy.rotation.y
-    ) *
-    Math.min(
-      1,
-      delta * 5
-    );
-
-
-  /*
-   * 一定距離までこちらへ近づく
-   */
-
-  if (
-    enemy.position.z <
-    enemy.userData.combatZ
-  ) {
-    enemy.position.z +=
-      enemy.userData.approachSpeed *
-      delta;
-  }
-
-
-  /*
-   * 横方向の行動変更
-   */
-
-  enemy.userData.decisionTimer -=
-    delta;
-
-
-  if (
-    enemy.userData.decisionTimer <=
-    0
-  ) {
-    const behavior =
-      Math.random();
-
-
-    /*
-     * 60%
-     * 左右へ小さく移動
-     */
-
     if (
-      behavior <
-      0.60
+      !active ||
+      enemy
     ) {
-      enemy.userData.targetX =
-        clamp(
-          enemy.position.x +
-          randomBetween(
-            -2.0,
-            2.0
-          ),
-
-          -3.0,
-
-          3.0
-        );
-
-
-      enemy.userData.targetY =
-        clamp(
-          enemy.position.y +
-          randomBetween(
-            -0.45,
-            0.45
-          ),
-
-          -1.8,
-
-          1.8
-        );
-
-
-      enemy.userData.moveSpeed =
-        randomBetween(
-          1.25,
-          1.7
-        );
-
-    /*
-     * 25%
-     * 上下へ小さく動く
-     */
-
-    } else if (
-      behavior <
-      0.85
-    ) {
-      enemy.userData.targetX =
-        clamp(
-          enemy.position.x +
-          randomBetween(
-            -0.65,
-            0.65
-          ),
-
-          -3.0,
-
-          3.0
-        );
-
-
-      enemy.userData.targetY =
-        clamp(
-          enemy.position.y +
-          randomBetween(
-            -1.2,
-            1.2
-          ),
-
-          -1.8,
-
-          1.8
-        );
-
-
-      enemy.userData.moveSpeed =
-        randomBetween(
-          1.25,
-          1.75
-        );
-
-    /*
-     * 15%
-     * 少しだけ大きい回避
-     */
-
-    } else {
-      enemy.userData.targetX =
-        enemy.position.x >= 0
-
-          ? randomBetween(
-              -2.8,
-              -1.2
-            )
-
-          : randomBetween(
-              1.2,
-              2.8
-            );
-
-
-      enemy.userData.targetY =
-        clamp(
-          enemy.position.y +
-          randomBetween(
-            -0.8,
-            0.8
-          ),
-
-          -1.8,
-
-          1.8
-        );
-
-
-      enemy.userData.moveSpeed =
-        randomBetween(
-          2.0,
-          2.5
-        );
+      return;
     }
+
+
+    enemyDying =
+      false;
+
+
+    enemy =
+      buildEnemy();
+
+
+    /*
+     * 最初から完全な遠方には置かない。
+     * 小さく見える位置から接近開始。
+     */
+
+    enemy.position.set(
+      randomBetween(
+        -2.0,
+        2.0
+      ),
+
+      randomBetween(
+        -1.3,
+        1.5
+      ),
+
+      randomBetween(
+        -5.5,
+        -4.0
+      )
+    );
+
+
+    /*
+     * +Z側が機首。
+     * cameraはz=8なので
+     * rotation.y=0でプレイヤー側を向く。
+     */
+
+    enemy.rotation.set(
+      0,
+      0,
+      0
+    );
+
+
+    enemy.userData.health =
+      destroyed >= 4
+        ? 120
+        : 100;
+
+
+    /*
+     * 戦闘位置。
+     *
+     * camera z=8に対して
+     * enemy z=1〜2なので
+     * しっかり見える距離。
+     */
+
+    enemy.userData.combatZ =
+      randomBetween(
+        1.0,
+        2.2
+      );
+
+
+    enemy.userData.approachSpeed =
+      randomBetween(
+        2.8,
+        3.6
+      );
+
+
+    /*
+     * 通常回避
+     */
+
+    enemy.userData.targetX =
+      randomBetween(
+        -2.2,
+        2.2
+      );
+
+
+    enemy.userData.targetY =
+      randomBetween(
+        -1.4,
+        1.4
+      );
+
+
+    enemy.userData.moveSpeed =
+      randomBetween(
+        1.25,
+        1.7
+      );
 
 
     enemy.userData.decisionTimer =
@@ -1151,234 +805,43 @@ if (
         0.9,
         1.5
       );
-  }
-
-
-  /*
-   * XY MOVE
-   */
-
-  const dx =
-    enemy.userData.targetX -
-    enemy.position.x;
-
-
-  const dy =
-    enemy.userData.targetY -
-    enemy.position.y;
-
-
-  const distance =
-    Math.hypot(
-      dx,
-      dy
-    );
-
-
-  if (
-    distance >
-    0.05
-  ) {
-    const step =
-      Math.min(
-        distance,
-
-        enemy.userData.moveSpeed *
-        delta
-      );
-
-
-    enemy.position.x +=
-      (
-        dx /
-        distance
-      ) *
-      step;
-
-
-    enemy.position.y +=
-      (
-        dy /
-        distance
-      ) *
-      step;
-  }
-
-
-  /*
-   * BANKだけ少しつける
-   */
-
-  enemy.rotation.z +=
-    (
-      clamp(
-        -dx * 0.08,
-        -0.18,
-        0.18
-      ) -
-      enemy.rotation.z
-    ) *
-    Math.min(
-      1,
-      delta * 6
-    );
-
-
-  enemy.rotation.x +=
-    (
-      clamp(
-        dy * 0.04,
-        -0.09,
-        0.09
-      ) -
-      enemy.rotation.x
-    ) *
-    Math.min(
-      1,
-      delta * 6
-    );
-
-
-  /*
-   * 一定時間経過で本当に逃走
-   */
-
-  if (
-    enemy.userData.escapeTimer <=
-    0
-  ) {
-    enemy.userData.isEscaping =
-      true;
 
 
     /*
-     * 少し横へ逃げながら奥へ
+     * これは戦闘距離到達後から減らす
      */
 
-    enemy.userData.targetX =
-      clamp(
-        enemy.position.x +
-        (
-          enemy.position.x >=
-          0
-            ? 1.8
-            : -1.8
-        ),
-
-        -4,
-
-        4
+    enemy.userData.escapeTimer =
+      randomBetween(
+        4.5,
+        7
       );
 
 
+    enemy.userData.isEscaping =
+      false;
+
+
+    enemy.userData.escapeSpeed =
+      randomBetween(
+        5.5,
+        7
+      );
+
+
+    enemy.userData.escapeTurn =
+      0;
+
+
+    world.scene.add(
+      enemy
+    );
+
+
     showMessage(
-      "RETREAT!"
+      "TARGET!"
     );
   }
-
-
-/* ======================================
-ESCAPING
-====================================== */
-
-} else {
-
-  /*
-   * 逃げるときだけ機首を反転
-   *
-   * 0 → PI
-   */
-
-  enemy.userData.escapeTurn +=
-    delta * 4.5;
-
-
-  const turnRatio =
-    clamp(
-      enemy.userData.escapeTurn,
-      0,
-      1
-    );
-
-
-  enemy.rotation.y =
-    Math.PI *
-    smoothStep(
-      turnRatio
-    );
-
-
-  /*
-   * 徐々に奥へ加速
-   */
-
-  const acceleration =
-    1 +
-    turnRatio *
-    1.8;
-
-
-  enemy.position.z -=
-    enemy.userData.escapeSpeed *
-    acceleration *
-    delta;
-
-
-  /*
-   * 横にも少し逃げる
-   */
-
-  enemy.position.x +=
-    (
-      enemy.userData.targetX -
-      enemy.position.x
-    ) *
-    Math.min(
-      1,
-      delta * 1.6
-    );
-
-
-  /*
-   * BANKを戻す
-   */
-
-  enemy.rotation.z +=
-    (
-      0 -
-      enemy.rotation.z
-    ) *
-    Math.min(
-      1,
-      delta * 4
-    );
-
-
-  enemy.rotation.x +=
-    (
-      0 -
-      enemy.rotation.x
-    ) *
-    Math.min(
-      1,
-      delta * 4
-    );
-
-
-  /*
-   * 本当に画面奥まで逃げたらESCAPED
-   */
-
-  if (
-    enemy.position.z <
-    -24
-  ) {
-    enemyEscaped();
-  }
-}
-
-    }
-  );
 
 
   /* ==========================================
@@ -1486,7 +949,562 @@ ESCAPING
 
 
   /* ==========================================
-  SHOOTING
+  MAIN UPDATE
+  ========================================== */
+
+  world.addUpdate(
+    delta => {
+
+      if (!active) {
+        return;
+      }
+
+
+      /* STAR MOVEMENT */
+
+      stars.position.z +=
+        delta *
+        4.4;
+
+
+      if (
+        stars.position.z >
+        8
+      ) {
+        stars.position.z =
+          0;
+      }
+
+
+      /* CAMERA SHAKE */
+
+      if (
+        screenShake >
+        0
+      ) {
+        screenShake -=
+          delta;
+
+
+        world.camera.position.x =
+          randomBetween(
+            -0.055,
+            0.055
+          );
+
+
+        world.camera.position.y =
+          0.4 +
+          randomBetween(
+            -0.055,
+            0.055
+          );
+
+      } else {
+
+        world.camera.position.x =
+          0;
+
+
+        world.camera.position.y =
+          0.4;
+      }
+
+
+      /* MOBILE JOYSTICK */
+
+      if (
+        joystickActive
+      ) {
+        const rect =
+          stage
+            .getBoundingClientRect();
+
+
+        const speed =
+          390;
+
+
+        crosshairLocalX +=
+          joystickX *
+          speed *
+          delta;
+
+
+        crosshairLocalY +=
+          joystickY *
+          speed *
+          delta;
+
+
+        crosshairLocalX =
+          clamp(
+            crosshairLocalX,
+            15,
+            rect.width - 15
+          );
+
+
+        crosshairLocalY =
+          clamp(
+            crosshairLocalY,
+            15,
+            rect.height - 15
+          );
+
+
+        updateCrosshairFromLocal(
+          crosshairLocalX,
+          crosshairLocalY
+        );
+      }
+
+
+      if (
+        !enemy ||
+        enemyDying
+      ) {
+        return;
+      }
+
+
+      /* ======================================
+      NORMAL COMBAT
+      ====================================== */
+
+      if (
+        !enemy.userData.isEscaping
+      ) {
+
+        /*
+         * 常にほぼ正面。
+         */
+
+        enemy.rotation.y +=
+          (
+            0 -
+            enemy.rotation.y
+          ) *
+          Math.min(
+            1,
+            delta * 5
+          );
+
+
+        /*
+         * 戦闘距離まで接近。
+         *
+         * 重要：
+         * 逃走タイマーは
+         * ここでは減らさない。
+         */
+
+        if (
+          enemy.position.z <
+          enemy.userData.combatZ
+        ) {
+          enemy.position.z +=
+            enemy.userData
+              .approachSpeed *
+            delta;
+
+        } else {
+
+          /*
+           * 戦闘距離まで来てから
+           * 逃走タイマー開始。
+           */
+
+          enemy.userData
+            .escapeTimer -=
+            delta;
+        }
+
+
+        /*
+         * 行動変更
+         */
+
+        enemy.userData
+          .decisionTimer -=
+          delta;
+
+
+        if (
+          enemy.userData
+            .decisionTimer <=
+          0
+        ) {
+          const behavior =
+            Math.random();
+
+
+          /*
+           * 60%
+           * ゆっくり左右
+           */
+
+          if (
+            behavior <
+            0.60
+          ) {
+            enemy.userData.targetX =
+              clamp(
+                enemy.position.x +
+                randomBetween(
+                  -1.7,
+                  1.7
+                ),
+
+                -2.8,
+                2.8
+              );
+
+
+            enemy.userData.targetY =
+              clamp(
+                enemy.position.y +
+                randomBetween(
+                  -0.4,
+                  0.4
+                ),
+
+                -1.6,
+                1.6
+              );
+
+
+            enemy.userData.moveSpeed =
+              randomBetween(
+                1.15,
+                1.55
+              );
+
+
+          /*
+           * 25%
+           * 小さく上下
+           */
+
+          } else if (
+            behavior <
+            0.85
+          ) {
+            enemy.userData.targetX =
+              clamp(
+                enemy.position.x +
+                randomBetween(
+                  -0.5,
+                  0.5
+                ),
+
+                -2.8,
+                2.8
+              );
+
+
+            enemy.userData.targetY =
+              clamp(
+                enemy.position.y +
+                randomBetween(
+                  -1.0,
+                  1.0
+                ),
+
+                -1.6,
+                1.6
+              );
+
+
+            enemy.userData.moveSpeed =
+              randomBetween(
+                1.15,
+                1.6
+              );
+
+
+          /*
+           * 15%
+           * 少し大きめ回避
+           */
+
+          } else {
+
+            enemy.userData.targetX =
+              enemy.position.x >=
+              0
+
+                ? randomBetween(
+                    -2.6,
+                    -1.1
+                  )
+
+                : randomBetween(
+                    1.1,
+                    2.6
+                  );
+
+
+            enemy.userData.targetY =
+              clamp(
+                enemy.position.y +
+                randomBetween(
+                  -0.7,
+                  0.7
+                ),
+
+                -1.6,
+                1.6
+              );
+
+
+            enemy.userData.moveSpeed =
+              randomBetween(
+                1.8,
+                2.2
+              );
+          }
+
+
+          enemy.userData
+            .decisionTimer =
+            randomBetween(
+              0.9,
+              1.5
+            );
+        }
+
+
+        /*
+         * XY MOVE
+         */
+
+        const dx =
+          enemy.userData.targetX -
+          enemy.position.x;
+
+
+        const dy =
+          enemy.userData.targetY -
+          enemy.position.y;
+
+
+        const distance =
+          Math.hypot(
+            dx,
+            dy
+          );
+
+
+        if (
+          distance >
+          0.05
+        ) {
+          const step =
+            Math.min(
+              distance,
+
+              enemy.userData
+                .moveSpeed *
+              delta
+            );
+
+
+          enemy.position.x +=
+            (
+              dx /
+              distance
+            ) *
+            step;
+
+
+          enemy.position.y +=
+            (
+              dy /
+              distance
+            ) *
+            step;
+        }
+
+
+        /*
+         * BANKのみ。
+         * 機体をグルグル回転させない。
+         */
+
+        enemy.rotation.z +=
+          (
+            clamp(
+              -dx * 0.08,
+              -0.18,
+              0.18
+            ) -
+            enemy.rotation.z
+          ) *
+          Math.min(
+            1,
+            delta * 6
+          );
+
+
+        enemy.rotation.x +=
+          (
+            clamp(
+              dy * 0.04,
+              -0.09,
+              0.09
+            ) -
+            enemy.rotation.x
+          ) *
+          Math.min(
+            1,
+            delta * 6
+          );
+
+
+        /*
+         * 戦闘後に本当の逃走開始
+         */
+
+        if (
+          enemy.userData.escapeTimer <=
+          0
+        ) {
+          enemy.userData.isEscaping =
+            true;
+
+
+          enemy.userData.escapeTurn =
+            0;
+
+
+          enemy.userData.targetX =
+            clamp(
+              enemy.position.x +
+              (
+                enemy.position.x >= 0
+                  ? 1.8
+                  : -1.8
+              ),
+
+              -4,
+              4
+            );
+
+
+          showMessage(
+            "RETREAT!"
+          );
+        }
+
+
+      /* ======================================
+      ESCAPING
+      ====================================== */
+
+      } else {
+
+        /*
+         * 逃走開始時だけ180度旋回。
+         */
+
+        enemy.userData.escapeTurn +=
+          delta *
+          4.5;
+
+
+        const turnRatio =
+          clamp(
+            enemy.userData.escapeTurn,
+            0,
+            1
+          );
+
+
+        enemy.rotation.y =
+          Math.PI *
+          smoothStep(
+            turnRatio
+          );
+
+
+        /*
+         * 奥へ加速
+         */
+
+        const acceleration =
+          1 +
+          turnRatio *
+          1.8;
+
+
+        enemy.position.z -=
+          enemy.userData
+            .escapeSpeed *
+          acceleration *
+          delta;
+
+
+        /*
+         * 横にも少し逃げる
+         */
+
+        enemy.position.x +=
+          (
+            enemy.userData.targetX -
+            enemy.position.x
+          ) *
+          Math.min(
+            1,
+            delta * 1.6
+          );
+
+
+        /*
+         * BANKを戻す
+         */
+
+        enemy.rotation.z +=
+          (
+            0 -
+            enemy.rotation.z
+          ) *
+          Math.min(
+            1,
+            delta * 4
+          );
+
+
+        enemy.rotation.x +=
+          (
+            0 -
+            enemy.rotation.x
+          ) *
+          Math.min(
+            1,
+            delta * 4
+          );
+
+
+        /*
+         * 本当に遠くへ逃げてから
+         * ESCAPED判定。
+         */
+
+        if (
+          enemy.position.z <
+          -24
+        ) {
+          enemyEscaped();
+        }
+      }
+
+    }
+  );
+
+
+  /* ==========================================
+  SHOOT
   ========================================== */
 
   function shoot() {
@@ -1513,8 +1531,7 @@ ESCAPING
 
     const intersections =
       raycaster.intersectObjects(
-        enemy.userData
-          .hitTargets ||
+        enemy.userData.hitTargets ||
         [],
         true
       );
@@ -1550,7 +1567,9 @@ ESCAPING
         showMessage(
           "CRITICAL!"
         );
+
       } else {
+
         showMessage(
           "HIT!"
         );
@@ -1584,65 +1603,61 @@ ESCAPING
 
 
       /*
- * 被弾後は少しだけ回避する
- *
- * 以前のように画面反対側まで
- * 一気に飛ばない
- */
+       * 被弾後は少しだけ回避。
+       * ワープのような動きは禁止。
+       */
 
-if (
-  !enemy.userData.isEscaping
-) {
-  enemy.userData.targetX =
-    clamp(
-      enemy.position.x +
-      (
-        enemy.position.x >=
-        0
-          ? randomBetween(
-              -1.5,
-              -0.7
-            )
+      if (
+        !enemy.userData.isEscaping
+      ) {
+        enemy.userData.targetX =
+          clamp(
+            enemy.position.x +
+            (
+              enemy.position.x >= 0
 
-          : randomBetween(
-              0.7,
-              1.5
-            )
-      ),
+                ? randomBetween(
+                    -1.3,
+                    -0.6
+                  )
 
-      -3,
+                : randomBetween(
+                    0.6,
+                    1.3
+                  )
+            ),
 
-      3
-    );
+            -2.8,
+            2.8
+          );
 
 
-  enemy.userData.targetY =
-    clamp(
-      enemy.position.y +
-      randomBetween(
-        -0.65,
-        0.65
-      ),
+        enemy.userData.targetY =
+          clamp(
+            enemy.position.y +
+            randomBetween(
+              -0.55,
+              0.55
+            ),
 
-      -1.8,
-
-      1.8
-    );
-
-
-  enemy.userData.moveSpeed =
-    randomBetween(
-      1.8,
-      2.4
-    );
+            -1.6,
+            1.6
+          );
 
 
-  enemy.userData.decisionTimer =
-    randomBetween(
-      0.7,
-      1.1
-    );
-}
+        enemy.userData.moveSpeed =
+          randomBetween(
+            1.6,
+            2.1
+          );
+
+
+        enemy.userData.decisionTimer =
+          randomBetween(
+            0.7,
+            1.1
+          );
+      }
 
 
       showCombo();
@@ -1655,9 +1670,10 @@ if (
         destroyEnemy();
       }
 
+
     } else {
-      combo =
-        0;
+
+      combo = 0;
 
 
       stage.classList.remove(
@@ -1679,7 +1695,7 @@ if (
 
 
   /* ==========================================
-  PC CLICK
+  PC INPUT
   ========================================== */
 
   function stagePointerDown(
@@ -1694,7 +1710,7 @@ if (
 
 
     if (
-      event.target.closest(
+      event.target.closest?.(
         ".space-mobile-controls"
       )
     ) {
@@ -1786,17 +1802,21 @@ if (
     );
 
 
-    mobileFireButton.classList.remove(
-      "shoot-kick"
-    );
+    mobileFireButton
+      .classList
+      .remove(
+        "shoot-kick"
+      );
 
 
     void mobileFireButton.offsetWidth;
 
 
-    mobileFireButton.classList.add(
-      "shoot-kick"
-    );
+    mobileFireButton
+      .classList
+      .add(
+        "shoot-kick"
+      );
 
 
     setTimeout(
@@ -1818,7 +1838,7 @@ if (
 
 
   /* ==========================================
-  ENEMY FLASH
+  FLASH
   ========================================== */
 
   function flashEnemy() {
@@ -1827,8 +1847,7 @@ if (
     }
 
 
-    const materials =
-      [];
+    const materials = [];
 
 
     enemy.traverse(
@@ -1880,8 +1899,12 @@ if (
         materials.forEach(
           item => {
 
-            item.object.material =
-              item.original;
+            if (
+              item.object
+            ) {
+              item.object.material =
+                item.original;
+            }
 
 
             item.flash.dispose();
@@ -1916,8 +1939,7 @@ if (
     );
 
 
-    const particles =
-      [];
+    const particles = [];
 
 
     for (
@@ -1925,21 +1947,28 @@ if (
       i < 16;
       i++
     ) {
+      const geometry =
+        new T.BoxGeometry(
+          0.06,
+          0.06,
+          0.06
+        );
+
+
+      const material =
+        new T.MeshBasicMaterial({
+          color:
+            Math.random() <
+            0.5
+              ? 0x5ff1ff
+              : 0xffffff
+        });
+
+
       const mesh =
         new T.Mesh(
-          new T.BoxGeometry(
-            0.06,
-            0.06,
-            0.06
-          ),
-
-          new T.MeshBasicMaterial({
-            color:
-              Math.random() <
-              0.5
-                ? 0x5ff1ff
-                : 0xffffff
-          })
+          geometry,
+          material
         );
 
 
@@ -1964,7 +1993,9 @@ if (
 
       particles.push({
         mesh,
-        velocity
+        velocity,
+        geometry,
+        material
       });
 
 
@@ -1974,55 +2005,48 @@ if (
     }
 
 
-    let age =
-      0;
+    animateTemporaryGroup({
+      group,
+      duration:
+        380,
+
+      update:
+        delta => {
+
+          particles.forEach(
+            item => {
+
+              item.mesh.position
+                .addScaledVector(
+                  item.velocity,
+                  delta
+                );
 
 
-    const update =
-      delta => {
+              item.mesh.scale
+                .multiplyScalar(
+                  0.94
+                );
 
-        age +=
-          delta;
-
-
-        particles.forEach(
-          item => {
-
-            item.mesh.position
-              .addScaledVector(
-                item.velocity,
-                delta
-              );
-
-
-            item.mesh.scale
-              .multiplyScalar(
-                0.94
-              );
-
-          }
-        );
-
-
-        if (
-          age >
-          0.38
-        ) {
-          world.removeUpdate?.(
-            update
+            }
           );
 
+        },
 
-          world.disposeObject?.(
-            group
+      dispose:
+        () => {
+
+          particles.forEach(
+            item => {
+
+              item.geometry.dispose();
+              item.material.dispose();
+
+            }
           );
+
         }
-      };
-
-
-    world.addUpdate(
-      update
-    );
+    });
   }
 
 
@@ -2047,8 +2071,7 @@ if (
     );
 
 
-    const pieces =
-      [];
+    const pieces = [];
 
 
     for (
@@ -2056,39 +2079,49 @@ if (
       i < 34;
       i++
     ) {
-      const mesh =
-        new T.Mesh(
-          new T.BoxGeometry(
-            randomBetween(
-              0.05,
-              0.15
-            ),
-
-            randomBetween(
-              0.05,
-              0.15
-            ),
-
-            randomBetween(
-              0.05,
-              0.15
-            )
+      const geometry =
+        new T.BoxGeometry(
+          randomBetween(
+            0.05,
+            0.15
           ),
 
-          new T.MeshBasicMaterial({
-            color:
-              [
-                0xff345e,
-                0xffa53c,
-                0x5ff0ff,
-                0xffffff
-              ][
-                Math.floor(
-                  Math.random() *
-                  4
-                )
-              ]
-          })
+          randomBetween(
+            0.05,
+            0.15
+          ),
+
+          randomBetween(
+            0.05,
+            0.15
+          )
+        );
+
+
+      const colors = [
+        0xff345e,
+        0xffa53c,
+        0x5ff0ff,
+        0xffffff
+      ];
+
+
+      const material =
+        new T.MeshBasicMaterial({
+          color:
+            colors[
+              Math.floor(
+                Math.random() *
+                colors.length
+              )
+            ]
+        });
+
+
+      const mesh =
+        new T.Mesh(
+          geometry,
+          material
         );
 
 
@@ -2113,7 +2146,9 @@ if (
 
       pieces.push({
         mesh,
-        velocity
+        velocity,
+        geometry,
+        material
       });
 
 
@@ -2123,24 +2158,31 @@ if (
     }
 
 
+    const coreGeometry =
+      new T.SphereGeometry(
+        0.35,
+        16,
+        10
+      );
+
+
+    const coreMaterial =
+      new T.MeshBasicMaterial({
+        color:
+          0xffffff,
+
+        transparent:
+          true,
+
+        opacity:
+          1
+      });
+
+
     const core =
       new T.Mesh(
-        new T.SphereGeometry(
-          0.35,
-          16,
-          10
-        ),
-
-        new T.MeshBasicMaterial({
-          color:
-            0xffffff,
-
-          transparent:
-            true,
-
-          opacity:
-            1
-        })
+        coreGeometry,
+        coreMaterial
       );
 
 
@@ -2149,83 +2191,170 @@ if (
     );
 
 
-    let age =
-      0;
+    let age = 0;
 
 
-    const update =
-      delta => {
+    animateTemporaryGroup({
+      group,
+      duration:
+        550,
 
-        age +=
-          delta;
+      update:
+        delta => {
 
-
-        pieces.forEach(
-          item => {
-
-            item.mesh.position
-              .addScaledVector(
-                item.velocity,
-                delta
-              );
+          age +=
+            delta;
 
 
-            item.mesh.rotation.x +=
-              delta * 8;
+          pieces.forEach(
+            item => {
+
+              item.mesh.position
+                .addScaledVector(
+                  item.velocity,
+                  delta
+                );
 
 
-            item.mesh.rotation.y +=
-              delta * 7;
+              item.mesh.rotation.x +=
+                delta *
+                8;
 
 
-            item.mesh.scale
-              .multiplyScalar(
-                0.95
-              );
-
-          }
-        );
+              item.mesh.rotation.y +=
+                delta *
+                7;
 
 
-        core.scale.multiplyScalar(
-          1 +
-          delta *
-          8
-        );
+              item.mesh.scale
+                .multiplyScalar(
+                  0.95
+                );
 
-
-        core.material.opacity =
-          Math.max(
-            0,
-            1 -
-            age * 3
+            }
           );
 
 
-        if (
-          age >
-          0.55
-        ) {
-          world.removeUpdate?.(
-            update
+          core.scale.multiplyScalar(
+            1 +
+            delta *
+            8
           );
 
 
-          world.disposeObject?.(
-            group
+          core.material.opacity =
+            Math.max(
+              0,
+              1 -
+              age *
+              3
+            );
+
+        },
+
+      dispose:
+        () => {
+
+          pieces.forEach(
+            item => {
+
+              item.geometry.dispose();
+              item.material.dispose();
+
+            }
           );
+
+
+          coreGeometry.dispose();
+          coreMaterial.dispose();
+
         }
-      };
+    });
+  }
 
 
-    world.addUpdate(
-      update
+  /* ==========================================
+  TEMPORARY THREE EFFECT
+  ========================================== */
+
+  function animateTemporaryGroup({
+    group,
+    duration,
+    update,
+    dispose
+  }) {
+    const start =
+      performance.now();
+
+
+    let last =
+      start;
+
+
+    function frame(
+      now
+    ) {
+      if (!active) {
+        cleanup();
+        return;
+      }
+
+
+      const delta =
+        Math.min(
+          0.033,
+
+          (
+            now -
+            last
+          ) /
+          1000
+        );
+
+
+      last =
+        now;
+
+
+      update?.(
+        delta
+      );
+
+
+      if (
+        now -
+        start >=
+        duration
+      ) {
+        cleanup();
+        return;
+      }
+
+
+      requestAnimationFrame(
+        frame
+      );
+    }
+
+
+    function cleanup() {
+      world.scene.remove(
+        group
+      );
+
+
+      dispose?.();
+    }
+
+
+    requestAnimationFrame(
+      frame
     );
   }
 
 
   /* ==========================================
-  DESTROY
+  DESTROY ENEMY
   ========================================== */
 
   function destroyEnemy() {
@@ -2278,7 +2407,9 @@ if (
     showMessage(
       destroyed >=
       targetDestroyedGoal
+
         ? "FINAL HIT!"
+
         : "DESTROYED!"
     );
 
@@ -2296,7 +2427,13 @@ if (
       targetDestroyedGoal
     ) {
       setTimeout(
-        () => finish(true),
+        () => {
+
+          finish(
+            true
+          );
+
+        },
         550
       );
 
@@ -2368,7 +2505,9 @@ if (
       escaped >=
       maxEscapes
     ) {
-      finish(false);
+      finish(
+        false
+      );
 
       return;
     }
@@ -2391,46 +2530,8 @@ if (
 
 
   /* ==========================================
-  ENEMY DASH FX
-  ========================================== */
-
-  function showEnemyDashEffect() {
-    if (!enemy) {
-      return;
-    }
-
-
-    enemy.scale.set(
-      1.12,
-      0.92,
-      1.05
-    );
-
-
-    setTimeout(
-      () => {
-
-        if (enemy) {
-          enemy.scale.set(
-            1,
-            1,
-            1
-          );
-        }
-
-      },
-      120
-    );
-  }
-
-
-  /* ==========================================
   JOYSTICK
   ========================================== */
-
-  let joystickPointerId =
-    null;
-
 
   function joystickPointerDown(
     event
@@ -2503,12 +2604,8 @@ if (
       null;
 
 
-    joystickX =
-      0;
-
-
-    joystickY =
-      0;
+    joystickX = 0;
+    joystickY = 0;
 
 
     joystickKnob.style.transform =
@@ -2656,11 +2753,14 @@ if (
           index <
           maxEscapes -
           escaped
+
             ? "○"
+
             : "×"
-      ).join(
-        " "
-      );
+      )
+        .join(
+          " "
+        );
   }
 
 
@@ -2680,26 +2780,32 @@ if (
       text;
 
 
-    messageElement.classList.remove(
-      "show"
-    );
+    messageElement
+      .classList
+      .remove(
+        "show"
+      );
 
 
     void messageElement.offsetWidth;
 
 
-    messageElement.classList.add(
-      "show"
-    );
+    messageElement
+      .classList
+      .add(
+        "show"
+      );
 
 
     messageTimer =
       setTimeout(
         () => {
 
-          messageElement.classList.remove(
-            "show"
-          );
+          messageElement
+            .classList
+            .remove(
+              "show"
+            );
 
         },
         420
@@ -2720,25 +2826,31 @@ if (
       `×${combo}`;
 
 
-    comboPop.classList.remove(
-      "show"
-    );
+    comboPop
+      .classList
+      .remove(
+        "show"
+      );
 
 
     void comboPop.offsetWidth;
 
 
-    comboPop.classList.add(
-      "show"
-    );
+    comboPop
+      .classList
+      .add(
+        "show"
+      );
 
 
     setTimeout(
       () => {
 
-        comboPop.classList.remove(
-          "show"
-        );
+        comboPop
+          .classList
+          .remove(
+            "show"
+          );
 
       },
       360
@@ -2785,8 +2897,13 @@ if (
 
 
     const completion =
-      destroyed /
-      targetDestroyedGoal;
+      clamp(
+        destroyed /
+        targetDestroyedGoal,
+
+        0,
+        1
+      );
 
 
     const survival =
@@ -2805,6 +2922,7 @@ if (
             100 -
             Math.max(
               0,
+
               elapsed -
               10000
             ) /
@@ -2813,6 +2931,7 @@ if (
             0,
             100
           )
+
         : 0;
 
 
@@ -2849,8 +2968,10 @@ if (
             Math.round(
               clamp(
                 45 +
+
                 maxCombo *
                   5 +
+
                 survival *
                   20,
 
@@ -2886,6 +3007,7 @@ if (
         });
 
       },
+
       success
         ? 650
         : 250
@@ -2902,6 +3024,7 @@ if (
       window.matchMedia(
         "(pointer: coarse)"
       ).matches ||
+
       window.innerWidth <=
       700
     );
@@ -2978,7 +3101,13 @@ if (
   );
 
 
+  /* ==========================================
+  START
+  ========================================== */
+
   updateHud();
+
+  spawnEnemy();
 
   world.start();
 
@@ -3075,12 +3204,14 @@ function clamp(
 ) {
   return Math.max(
     min,
+
     Math.min(
       max,
       value
     )
   );
 }
+
 
 function smoothStep(
   value
@@ -3091,6 +3222,7 @@ function smoothStep(
       0,
       1
     );
+
 
   return (
     t *
