@@ -95,7 +95,7 @@ function runNinjaCounter({
 }) {
   let active = true;
 
-  let counters = 0;
+  let score = 0;
   let misses = 0;
 
   let combo = 0;
@@ -103,20 +103,20 @@ function runNinjaCounter({
 
   let lives = 3;
 
-  const goal = 7;
+  const goal = 12;
 
-  let answer = null;
+  let round = 0;
 
-  let acceptingInput = false;
-  let fakeActive = false;
+  let currentTarget = null;
+  let currentType = null;
 
-  let reactionStartedAt = 0;
+  let spawnTimer = null;
+  let hideTimer = null;
+  let nextTimer = null;
+
+  let signalTime = 0;
 
   const reactionTimes = [];
-
-  let attackTimer = null;
-  let timeoutTimer = null;
-  let nextTimer = null;
 
   const startedAt =
     performance.now();
@@ -127,34 +127,24 @@ function runNinjaCounter({
   ========================================== */
 
   container.innerHTML = `
-    <div class="ninja-swipe-game">
+    <div class="ninja-whack-game">
 
-      <div class="ninja-swipe-hud">
+      <div class="ninja-whack-hud">
 
-        <div class="ninja-swipe-hud-item">
-          <span>COUNTER</span>
-
-          <strong>
-            <b data-ninja-counter>0</b>
-            / ${goal}
-          </strong>
+        <div class="ninja-whack-hud-item">
+          <span>SCORE</span>
+          <strong data-ninja-score>0 / ${goal}</strong>
         </div>
 
-
-        <div class="ninja-swipe-hud-item">
+        <div class="ninja-whack-hud-item">
           <span>COMBO</span>
-
-          <strong data-ninja-combo>
-            0
-          </strong>
+          <strong data-ninja-combo>0</strong>
         </div>
 
-
-        <div class="ninja-swipe-hud-item">
+        <div class="ninja-whack-hud-item">
           <span>LIFE</span>
-
           <strong
-            class="ninja-swipe-life"
+            class="ninja-whack-life"
             data-ninja-life
           >
             ♥ ♥ ♥
@@ -165,144 +155,109 @@ function runNinjaCounter({
 
 
       <div
-        class="ninja-swipe-stage"
+        class="ninja-whack-stage"
         data-ninja-stage
       >
 
-        <div class="ninja-swipe-background">
+        <div class="ninja-whack-bg">
 
-          <div class="ninja-swipe-moon"></div>
+          <div class="ninja-whack-moon"></div>
 
-          <div class="ninja-swipe-ground"></div>
+          <div class="ninja-whack-roof"></div>
 
         </div>
 
 
-        <!-- LEFT ENEMY -->
-
-        <div
+        <button
+          type="button"
           class="
-            ninja-swipe-enemy
-            ninja-swipe-enemy-left
+            ninja-whack-hole
+            ninja-whack-hole-1
           "
-          data-ninja-enemy="LEFT"
-        >
-
-          <div class="ninja-swipe-enemy-head">
-            <i></i>
-          </div>
-
-          <div class="ninja-swipe-enemy-body"></div>
-
-          <div class="ninja-swipe-enemy-arm"></div>
-
-          <div class="ninja-swipe-enemy-sword"></div>
-
-        </div>
+          data-hole="0"
+        ></button>
 
 
-        <!-- UP ENEMY -->
-
-        <div
+        <button
+          type="button"
           class="
-            ninja-swipe-enemy
-            ninja-swipe-enemy-up
+            ninja-whack-hole
+            ninja-whack-hole-2
           "
-          data-ninja-enemy="UP"
-        >
-
-          <div class="ninja-swipe-enemy-head">
-            <i></i>
-          </div>
-
-          <div class="ninja-swipe-enemy-body"></div>
-
-          <div class="ninja-swipe-enemy-arm"></div>
-
-          <div class="ninja-swipe-enemy-sword"></div>
-
-        </div>
+          data-hole="1"
+        ></button>
 
 
-        <!-- RIGHT ENEMY -->
-
-        <div
+        <button
+          type="button"
           class="
-            ninja-swipe-enemy
-            ninja-swipe-enemy-right
+            ninja-whack-hole
+            ninja-whack-hole-3
           "
-          data-ninja-enemy="RIGHT"
-        >
-
-          <div class="ninja-swipe-enemy-head">
-            <i></i>
-          </div>
-
-          <div class="ninja-swipe-enemy-body"></div>
-
-          <div class="ninja-swipe-enemy-arm"></div>
-
-          <div class="ninja-swipe-enemy-sword"></div>
-
-        </div>
+          data-hole="2"
+        ></button>
 
 
-        <!-- PLAYER -->
+        <button
+          type="button"
+          class="
+            ninja-whack-hole
+            ninja-whack-hole-4
+          "
+          data-hole="3"
+        ></button>
+
+
+        <button
+          type="button"
+          class="
+            ninja-whack-hole
+            ninja-whack-hole-5
+          "
+          data-hole="4"
+        ></button>
+
 
         <div
-          class="ninja-swipe-player"
+          class="ninja-whack-player"
           data-ninja-player
         >
-
-          <div class="ninja-swipe-player-head">
+          <div class="ninja-whack-player-head">
             <i></i>
           </div>
 
-          <div class="ninja-swipe-player-body"></div>
+          <div class="ninja-whack-player-body"></div>
 
-          <div
-            class="ninja-swipe-player-arm"
-            data-ninja-arm
-          ></div>
-
-          <div
-            class="ninja-swipe-player-sword"
-            data-ninja-sword
-          ></div>
-
+          <div class="ninja-whack-player-sword"></div>
         </div>
 
 
-        <!-- SWIPE TRAIL -->
+        <div
+          class="ninja-whack-slash"
+          data-ninja-slash
+        ></div>
 
-        <canvas
-          class="ninja-swipe-canvas"
-          data-ninja-canvas
-        ></canvas>
-
-
-        <!-- IMPACT -->
 
         <div
-          class="ninja-swipe-sparks"
+          class="ninja-whack-sparks"
           data-ninja-sparks
         ></div>
 
 
         <div
-          class="ninja-swipe-message"
+          class="ninja-whack-message"
           data-ninja-message
         ></div>
 
 
         <div
-          class="ninja-swipe-combo-pop"
+          class="ninja-whack-combo-pop"
           data-ninja-combo-pop
         ></div>
 
 
-        <div class="ninja-swipe-hint">
-          SWIPE TO COUNTER
+        <div class="ninja-whack-hint">
+          HIT ENEMIES
         </div>
 
       </div>
@@ -320,32 +275,21 @@ function runNinjaCounter({
       "[data-ninja-stage]"
     );
 
-  const canvas =
-    container.querySelector(
-      "[data-ninja-canvas]"
-    );
-
-  const ctx =
-    canvas.getContext("2d");
-
   const player =
     container.querySelector(
       "[data-ninja-player]"
     );
 
-  const arm =
-    container.querySelector(
-      "[data-ninja-arm]"
-    );
+  const holes =
+    [
+      ...container.querySelectorAll(
+        "[data-hole]"
+      )
+    ];
 
-  const sword =
+  const scoreElement =
     container.querySelector(
-      "[data-ninja-sword]"
-    );
-
-  const counterElement =
-    container.querySelector(
-      "[data-ninja-counter]"
+      "[data-ninja-score]"
     );
 
   const comboElement =
@@ -358,7 +302,17 @@ function runNinjaCounter({
       "[data-ninja-life]"
     );
 
-  const messageElement =
+  const slash =
+    container.querySelector(
+      "[data-ninja-slash]"
+    );
+
+  const sparks =
+    container.querySelector(
+      "[data-ninja-sparks]"
+    );
+
+  const message =
     container.querySelector(
       "[data-ninja-message]"
     );
@@ -368,546 +322,18 @@ function runNinjaCounter({
       "[data-ninja-combo-pop]"
     );
 
-  const sparks =
-    container.querySelector(
-      "[data-ninja-sparks]"
-    );
-
-  const enemies =
-    [
-      ...container.querySelectorAll(
-        "[data-ninja-enemy]"
-      )
-    ];
-
 
   /* ==========================================
-  CANVAS
+  STATE HELPERS
   ========================================== */
-
-  let canvasWidth = 0;
-  let canvasHeight = 0;
-
-  let drawing = false;
-
-  let startX = 0;
-  let startY = 0;
-
-  let lastX = 0;
-  let lastY = 0;
-
-  let fadeFrame = null;
-
-
-  function resizeCanvas() {
-    const rect =
-      stage.getBoundingClientRect();
-
-    const dpr =
-      Math.min(
-        2,
-        window.devicePixelRatio ||
-        1
-      );
-
-
-    canvasWidth =
-      rect.width;
-
-    canvasHeight =
-      rect.height;
-
-
-    canvas.width =
-      Math.max(
-        1,
-        Math.round(
-          rect.width *
-          dpr
-        )
-      );
-
-
-    canvas.height =
-      Math.max(
-        1,
-        Math.round(
-          rect.height *
-          dpr
-        )
-      );
-
-
-    canvas.style.width =
-      `${rect.width}px`;
-
-    canvas.style.height =
-      `${rect.height}px`;
-
-
-    ctx.setTransform(
-      dpr,
-      0,
-      0,
-      dpr,
-      0,
-      0
-    );
-
-
-    ctx.lineCap =
-      "round";
-
-    ctx.lineJoin =
-      "round";
-  }
-
-
-  resizeCanvas();
-
-
-  const resizeObserver =
-    new ResizeObserver(
-      resizeCanvas
-    );
-
-
-  resizeObserver.observe(
-    stage
-  );
-
-
-  function clearCanvas() {
-    ctx.clearRect(
-      0,
-      0,
-      canvasWidth,
-      canvasHeight
-    );
-  }
-
-
-  function drawTrail(
-    x1,
-    y1,
-    x2,
-    y2
-  ) {
-    ctx.beginPath();
-
-    ctx.moveTo(
-      x1,
-      y1
-    );
-
-    ctx.lineTo(
-      x2,
-      y2
-    );
-
-
-    ctx.strokeStyle =
-      "rgba(220,255,235,.92)";
-
-    ctx.lineWidth =
-      7;
-
-    ctx.shadowBlur =
-      20;
-
-    ctx.shadowColor =
-      "rgba(105,255,155,.95)";
-
-    ctx.stroke();
-
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      x1,
-      y1
-    );
-
-    ctx.lineTo(
-      x2,
-      y2
-    );
-
-
-    ctx.strokeStyle =
-      "rgba(255,255,255,.98)";
-
-    ctx.lineWidth =
-      2.5;
-
-    ctx.shadowBlur =
-      5;
-
-    ctx.shadowColor =
-      "#ffffff";
-
-    ctx.stroke();
-  }
-
-
-  function fadeTrail() {
-    cancelAnimationFrame(
-      fadeFrame
-    );
-
-
-    let opacity =
-      1;
-
-
-    function fade() {
-      if (!active) {
-        return;
-      }
-
-
-      opacity -=
-        0.11;
-
-
-      if (
-        opacity <=
-        0
-      ) {
-        clearCanvas();
-
-        return;
-      }
-
-
-      ctx.save();
-
-
-      ctx.globalCompositeOperation =
-        "destination-out";
-
-
-      ctx.fillStyle =
-        "rgba(0,0,0,.22)";
-
-
-      ctx.fillRect(
-        0,
-        0,
-        canvasWidth,
-        canvasHeight
-      );
-
-
-      ctx.restore();
-
-
-      fadeFrame =
-        requestAnimationFrame(
-          fade
-        );
-    }
-
-
-    fadeFrame =
-      requestAnimationFrame(
-        fade
-      );
-  }
-
-
-  /* ==========================================
-  POINTER
-  ========================================== */
-
-  function pointerDown(
-    event
-  ) {
-    if (!active) {
-      return;
-    }
-
-
-    const rect =
-      stage.getBoundingClientRect();
-
-
-    startX =
-      event.clientX -
-      rect.left;
-
-    startY =
-      event.clientY -
-      rect.top;
-
-
-    lastX =
-      startX;
-
-    lastY =
-      startY;
-
-
-    drawing =
-      true;
-
-
-    clearCanvas();
-
-
-    canvas.setPointerCapture?.(
-      event.pointerId
-    );
-  }
-
-
-  function pointerMove(
-    event
-  ) {
-    if (
-      !active ||
-      !drawing
-    ) {
-      return;
-    }
-
-
-    const rect =
-      stage.getBoundingClientRect();
-
-
-    const x =
-      event.clientX -
-      rect.left;
-
-    const y =
-      event.clientY -
-      rect.top;
-
-
-    drawTrail(
-      lastX,
-      lastY,
-      x,
-      y
-    );
-
-
-    lastX =
-      x;
-
-    lastY =
-      y;
-  }
-
-
-  function pointerUp(
-    event
-  ) {
-    if (
-      !active ||
-      !drawing
-    ) {
-      return;
-    }
-
-
-    drawing =
-      false;
-
-
-    const rect =
-      stage.getBoundingClientRect();
-
-
-    const endX =
-      event.clientX -
-      rect.left;
-
-    const endY =
-      event.clientY -
-      rect.top;
-
-
-    const dx =
-      endX -
-      startX;
-
-    const dy =
-      endY -
-      startY;
-
-
-    const distance =
-      Math.hypot(
-        dx,
-        dy
-      );
-
-
-    fadeTrail();
-
-
-    /*
-     * 小さすぎる操作は無視
-     */
-
-    if (
-      distance <
-      38
-    ) {
-      return;
-    }
-
-
-    const direction =
-      getSwipeDirection(
-        dx,
-        dy
-      );
-
-
-    choose(
-      direction
-    );
-  }
-
-
-  function pointerCancel() {
-    drawing =
-      false;
-
-    fadeTrail();
-  }
-
-
-  function getSwipeDirection(
-    dx,
-    dy
-  ) {
-    /*
-     * 上方向を優先判定
-     */
-
-    if (
-      dy <
-      -Math.abs(dx) *
-      0.65
-    ) {
-      return "UP";
-    }
-
-
-    if (
-      dx < 0
-    ) {
-      return "LEFT";
-    }
-
-
-    return "RIGHT";
-  }
-
-
-  canvas.addEventListener(
-    "pointerdown",
-    pointerDown
-  );
-
-
-  canvas.addEventListener(
-    "pointermove",
-    pointerMove
-  );
-
-
-  canvas.addEventListener(
-    "pointerup",
-    pointerUp
-  );
-
-
-  canvas.addEventListener(
-    "pointercancel",
-    pointerCancel
-  );
-
-
-  /* ==========================================
-  KEYBOARD
-  ========================================== */
-
-  function keyDown(
-    event
-  ) {
-    if (!active) {
-      return;
-    }
-
-
-    if (
-      event.key ===
-      "ArrowLeft"
-    ) {
-      event.preventDefault();
-
-      choose(
-        "LEFT"
-      );
-    }
-
-
-    if (
-      event.key ===
-      "ArrowUp"
-    ) {
-      event.preventDefault();
-
-      choose(
-        "UP"
-      );
-    }
-
-
-    if (
-      event.key ===
-      "ArrowRight"
-    ) {
-      event.preventDefault();
-
-      choose(
-        "RIGHT"
-      );
-    }
-  }
-
-
-  window.addEventListener(
-    "keydown",
-    keyDown
-  );
-
-
-  /* ==========================================
-  HELPERS
-  ========================================== */
-
-  function getEnemy(
-    direction
-  ) {
-    return container.querySelector(
-      `[data-ninja-enemy="${direction}"]`
-    );
-  }
-
 
   function clearTimers() {
     clearTimeout(
-      attackTimer
+      spawnTimer
     );
 
     clearTimeout(
-      timeoutTimer
+      hideTimer
     );
 
     clearTimeout(
@@ -916,25 +342,9 @@ function runNinjaCounter({
   }
 
 
-  function clearEnemies() {
-    enemies.forEach(
-      enemy => {
-
-        enemy.classList.remove(
-          "attack",
-          "fake",
-          "countered",
-          "retreat"
-        );
-
-      }
-    );
-  }
-
-
   function updateHud() {
-    counterElement.textContent =
-      counters;
+    scoreElement.textContent =
+      `${score} / ${goal}`;
 
 
     comboElement.textContent =
@@ -964,7 +374,92 @@ function runNinjaCounter({
 
 
   /* ==========================================
-  NEXT ROUND
+  CHARACTER
+  ========================================== */
+
+  function createCharacter(
+    type
+  ) {
+    const wrapper =
+      document.createElement(
+        "div"
+      );
+
+
+    wrapper.className =
+      `
+        ninja-whack-character
+        ninja-whack-character-${type}
+      `;
+
+
+    const head =
+      document.createElement(
+        "div"
+      );
+
+
+    head.className =
+      "ninja-whack-character-head";
+
+
+    const eyes =
+      document.createElement(
+        "i"
+      );
+
+
+    head.appendChild(
+      eyes
+    );
+
+
+    const body =
+      document.createElement(
+        "div"
+      );
+
+
+    body.className =
+      "ninja-whack-character-body";
+
+
+    wrapper.appendChild(
+      head
+    );
+
+
+    wrapper.appendChild(
+      body
+    );
+
+
+    if (
+      type ===
+      "enemy"
+    ) {
+      const sword =
+        document.createElement(
+          "div"
+        );
+
+
+      sword.className =
+        "ninja-whack-character-sword";
+
+
+      wrapper.appendChild(
+        sword
+      );
+    }
+
+
+    return wrapper;
+  }
+
+
+  /* ==========================================
+  ROUND
   ========================================== */
 
   function nextRound() {
@@ -975,108 +470,184 @@ function runNinjaCounter({
 
     clearTimers();
 
-    clearEnemies();
+
+    clearCurrentTarget();
 
 
-    answer =
-      null;
-
-
-    acceptingInput =
-      false;
-
-
-    fakeActive =
-      false;
+    round++;
 
 
     const delay =
       Math.max(
-        380,
+        280,
 
-        780 -
-        counters *
-        38
+        650 -
+        score *
+        22
       ) +
       Math.random() *
-      500;
+      420;
 
 
-    attackTimer =
+    spawnTimer =
       setTimeout(
-        () => {
-
-          if (!active) {
-            return;
-          }
-
-
-          const useFake =
-            counters >=
-              2 &&
-            Math.random() <
-              0.22;
-
-
-          if (
-            useFake
-          ) {
-            fakeAttack();
-
-          } else {
-            realAttack();
-          }
-
-        },
-
+        spawnTarget,
         delay
       );
   }
 
 
-  /* ==========================================
-  FAKE
-  ========================================== */
-
-  function fakeAttack() {
+  function spawnTarget() {
     if (!active) {
       return;
     }
 
 
-    fakeActive =
-      true;
-
-
-    const directions =
-      [
-        "LEFT",
-        "UP",
-        "RIGHT"
-      ];
-
-
-    const direction =
-      directions[
-        Math.floor(
-          Math.random() *
-          directions.length
-        )
-      ];
-
-
-    const enemy =
-      getEnemy(
-        direction
+    const index =
+      Math.floor(
+        Math.random() *
+        holes.length
       );
 
 
-    enemy?.classList.add(
+    const hole =
+      holes[
+        index
+      ];
+
+
+    /*
+     * 後半ほど味方やフェイントを増やす
+     */
+
+    let type =
+      "enemy";
+
+
+    const roll =
+      Math.random();
+
+
+    if (
+      score >= 3 &&
+      roll <
+      0.18
+    ) {
+      type =
+        "friend";
+    }
+
+
+    if (
+      score >= 6 &&
+      roll >=
+        0.18 &&
+      roll <
+        0.29
+    ) {
+      type =
+        "fake";
+    }
+
+
+    currentTarget =
+      hole;
+
+
+    currentType =
+      type;
+
+
+    const character =
+      createCharacter(
+        type ===
+          "fake"
+          ? "enemy"
+          : type
+      );
+
+
+    hole.innerHTML =
+      "";
+
+
+    hole.appendChild(
+      character
+    );
+
+
+    hole.classList.remove(
+      "show",
+      "friend",
+      "enemy",
       "fake"
     );
 
 
-    nextTimer =
+    hole.classList.add(
+      type
+    );
+
+
+    void hole.offsetWidth;
+
+
+    hole.classList.add(
+      "show"
+    );
+
+
+    signalTime =
+      performance.now();
+
+
+    const visibilityTime =
+      Math.max(
+        460,
+
+        850 -
+        score *
+        28
+      );
+
+
+    if (
+      type ===
+      "fake"
+    ) {
+      hideTimer =
+        setTimeout(
+          () => {
+
+            if (!active) {
+              return;
+            }
+
+
+            hole.classList.remove(
+              "show"
+            );
+
+
+            clearCurrentTarget();
+
+
+            nextTimer =
+              setTimeout(
+                nextRound,
+                160
+              );
+
+          },
+
+          240
+        );
+
+      return;
+    }
+
+
+    hideTimer =
       setTimeout(
         () => {
 
@@ -1085,225 +656,257 @@ function runNinjaCounter({
           }
 
 
-          enemy?.classList.remove(
-            "fake"
-          );
-
-
-          fakeActive =
-            false;
-
-
-          nextTimer =
-            setTimeout(
-              realAttack,
-
-              170 +
-              Math.random() *
-              170
-            );
-
-        },
-
-        300
-      );
-  }
-
-
-  /* ==========================================
-  REAL ATTACK
-  ========================================== */
-
-  function realAttack() {
-    if (!active) {
-      return;
-    }
-
-
-    fakeActive =
-      false;
-
-
-    const directions =
-      [
-        "LEFT",
-        "UP",
-        "RIGHT"
-      ];
-
-
-    answer =
-      directions[
-        Math.floor(
-          Math.random() *
-          directions.length
-        )
-      ];
-
-
-    const enemy =
-      getEnemy(
-        answer
-      );
-
-
-    enemy?.classList.add(
-      "attack"
-    );
-
-
-    reactionStartedAt =
-      performance.now();
-
-
-    acceptingInput =
-      true;
-
-
-    const responseWindow =
-      Math.max(
-        470,
-
-        720 -
-        counters *
-        28
-      );
-
-
-    timeoutTimer =
-      setTimeout(
-        () => {
-
           if (
-            active &&
-            acceptingInput
+            currentType ===
+            "enemy"
           ) {
-            fail(
+            registerMiss(
               "TOO SLOW"
             );
+
+          } else {
+
+            /*
+             * 味方は触らなければ正解
+             */
+
+            combo++;
+
+
+            maxCombo =
+              Math.max(
+                maxCombo,
+                combo
+              );
+
+
+            showMessage(
+              "GOOD!"
+            );
+
+
+            updateHud();
+
+
+            clearCurrentTarget();
+
+
+            nextTimer =
+              setTimeout(
+                nextRound,
+                180
+              );
           }
 
         },
 
-        responseWindow
+        visibilityTime
       );
   }
 
 
   /* ==========================================
-  ANSWER
+  TAP
   ========================================== */
 
-  function choose(
-    direction
+  function handleHoleTap(
+    event
   ) {
     if (!active) {
       return;
     }
 
 
-    /*
-     * フェイント中にスワイプ
-     */
-
-    if (
-      fakeActive &&
-      !acceptingInput
-    ) {
-      fail(
-        "FAKE!"
-      );
-
-      return;
-    }
+    const hole =
+      event.currentTarget;
 
 
     if (
-      !acceptingInput ||
-      !answer
+      hole !==
+      currentTarget ||
+      !currentType
     ) {
       return;
     }
 
 
     clearTimeout(
-      timeoutTimer
+      hideTimer
     );
-
-
-    acceptingInput =
-      false;
 
 
     const reaction =
       performance.now() -
-      reactionStartedAt;
+      signalTime;
 
 
     if (
-      direction ===
-      answer
+      currentType ===
+      "enemy"
     ) {
-      success(
-        direction,
+      score++;
+
+
+      combo++;
+
+
+      maxCombo =
+        Math.max(
+          maxCombo,
+          combo
+        );
+
+
+      reactionTimes.push(
         reaction
       );
 
-    } else {
 
-      fail(
-        "MISS"
+      attackTarget(
+        hole
+      );
+
+
+      showMessage(
+        reaction <=
+          280
+          ? "PERFECT!"
+          : "SLASH!"
+      );
+
+
+      showCombo();
+
+
+      updateHud();
+
+
+      clearCurrentTarget();
+
+
+      if (
+        score >=
+        goal
+      ) {
+        nextTimer =
+          setTimeout(
+            () => {
+
+              finish(
+                true
+              );
+
+            },
+
+            400
+          );
+
+        return;
+      }
+
+
+      nextTimer =
+        setTimeout(
+          nextRound,
+          260
+        );
+
+      return;
+    }
+
+
+    if (
+      currentType ===
+      "friend"
+    ) {
+      registerMiss(
+        "FRIEND!"
+      );
+
+      return;
+    }
+
+
+    if (
+      currentType ===
+      "fake"
+    ) {
+      registerMiss(
+        "FAKE!"
       );
     }
   }
 
 
+  holes.forEach(
+    hole => {
+
+      hole.addEventListener(
+        "pointerdown",
+        handleHoleTap
+      );
+
+    }
+  );
+
+
   /* ==========================================
-  SUCCESS
+  PLAYER DASH
   ========================================== */
 
-  function success(
-    direction,
-    reaction
+  function attackTarget(
+    hole
   ) {
-    counters++;
+    const stageRect =
+      stage.getBoundingClientRect();
 
 
-    combo++;
+    const holeRect =
+      hole.getBoundingClientRect();
 
 
-    maxCombo =
-      Math.max(
-        maxCombo,
-        combo
+    const targetX =
+      (
+        holeRect.left +
+        holeRect.width /
+        2
+      ) -
+      (
+        stageRect.left +
+        stageRect.width /
+        2
       );
 
 
-    reactionTimes.push(
-      reaction
-    );
-
-
-    const enemy =
-      getEnemy(
-        answer
+    const targetY =
+      (
+        holeRect.top +
+        holeRect.height /
+        2
+      ) -
+      (
+        stageRect.top +
+        stageRect.height *
+        0.72
       );
 
 
-    enemy?.classList.add(
-      "countered"
+    player.style.setProperty(
+      "--dash-x",
+
+      `${targetX}px`
     );
 
 
-    /*
-     * 主人公本体は傾けない。
-     * 腕と刀だけ動かす。
-     */
+    player.style.setProperty(
+      "--dash-y",
+
+      `${targetY}px`
+    );
+
 
     player.classList.remove(
-      "strike-left",
-      "strike-up",
-      "strike-right"
+      "dash"
     );
 
 
@@ -1311,28 +914,49 @@ function runNinjaCounter({
 
 
     player.classList.add(
-      `strike-${direction.toLowerCase()}`
+      "dash"
+    );
+
+
+    slash.style.left =
+      `${
+        holeRect.left -
+        stageRect.left +
+        holeRect.width /
+        2
+      }px`;
+
+
+    slash.style.top =
+      `${
+        holeRect.top -
+        stageRect.top +
+        holeRect.height /
+        2
+      }px`;
+
+
+    slash.classList.remove(
+      "show"
+    );
+
+
+    void slash.offsetWidth;
+
+
+    slash.classList.add(
+      "show"
     );
 
 
     createSparks(
-      direction
+      holeRect,
+      stageRect
     );
-
-
-    showMessage(
-      reaction <=
-        250
-        ? "PERFECT!"
-        : "COUNTER!"
-    );
-
-
-    showCombo();
 
 
     stage.classList.remove(
-      "ninja-swipe-hit"
+      "ninja-whack-hit"
     );
 
 
@@ -1340,81 +964,21 @@ function runNinjaCounter({
 
 
     stage.classList.add(
-      "ninja-swipe-hit"
+      "ninja-whack-hit"
     );
-
-
-    updateHud();
-
-
-    nextTimer =
-      setTimeout(
-        () => {
-
-          if (!active) {
-            return;
-          }
-
-
-          enemy?.classList.add(
-            "retreat"
-          );
-
-
-          player.classList.remove(
-            "strike-left",
-            "strike-up",
-            "strike-right"
-          );
-
-
-          if (
-            counters >=
-            goal
-          ) {
-            finish(
-              true
-            );
-
-            return;
-          }
-
-
-          nextTimer =
-            setTimeout(
-              nextRound,
-              180
-            );
-
-        },
-
-        220
-      );
   }
 
 
   /* ==========================================
-  FAIL
+  MISS
   ========================================== */
 
-  function fail(
+  function registerMiss(
     text
   ) {
-    if (!active) {
-      return;
-    }
-
-
     clearTimeout(
-      timeoutTimer
+      hideTimer
     );
-
-
-    acceptingInput =
-      false;
-
-    fakeActive =
-      false;
 
 
     misses++;
@@ -1434,7 +998,7 @@ function runNinjaCounter({
 
 
     stage.classList.remove(
-      "ninja-swipe-damage"
+      "ninja-whack-damage"
     );
 
 
@@ -1442,14 +1006,14 @@ function runNinjaCounter({
 
 
     stage.classList.add(
-      "ninja-swipe-damage"
+      "ninja-whack-damage"
     );
 
 
     updateHud();
 
 
-    clearEnemies();
+    clearCurrentTarget();
 
 
     if (
@@ -1466,7 +1030,7 @@ function runNinjaCounter({
 
           },
 
-          420
+          350
         );
 
       return;
@@ -1476,42 +1040,74 @@ function runNinjaCounter({
     nextTimer =
       setTimeout(
         nextRound,
-        500
+        420
       );
   }
 
 
   /* ==========================================
-  MESSAGE
+  CLEAR TARGET
+  ========================================== */
+
+  function clearCurrentTarget() {
+    holes.forEach(
+      hole => {
+
+        hole.classList.remove(
+          "show",
+          "enemy",
+          "friend",
+          "fake"
+        );
+
+
+        hole.innerHTML =
+          "";
+
+      }
+    );
+
+
+    currentTarget =
+      null;
+
+
+    currentType =
+      null;
+  }
+
+
+  /* ==========================================
+  EFFECTS
   ========================================== */
 
   function showMessage(
     text,
     failed = false
   ) {
-    messageElement.textContent =
+    message.textContent =
       text;
 
 
-    messageElement.classList.remove(
+    message.classList.remove(
       "show",
       "fail"
     );
 
 
-    void messageElement.offsetWidth;
+    void message.offsetWidth;
 
 
     if (
       failed
     ) {
-      messageElement.classList.add(
+      message.classList.add(
         "fail"
       );
     }
 
 
-    messageElement.classList.add(
+    message.classList.add(
       "show"
     );
   }
@@ -1544,22 +1140,30 @@ function runNinjaCounter({
   }
 
 
-  /* ==========================================
-  SPARKS
-  ========================================== */
-
   function createSparks(
-    direction
+    holeRect,
+    stageRect
   ) {
     sparks.innerHTML =
       "";
 
 
-    sparks.className =
-      `
-        ninja-swipe-sparks
-        sparks-${direction.toLowerCase()}
-      `;
+    sparks.style.left =
+      `${
+        holeRect.left -
+        stageRect.left +
+        holeRect.width /
+        2
+      }px`;
+
+
+    sparks.style.top =
+      `${
+        holeRect.top -
+        stageRect.top +
+        holeRect.height /
+        2
+      }px`;
 
 
     for (
@@ -1580,24 +1184,32 @@ function runNinjaCounter({
 
 
       const distance =
-        30 +
+        25 +
         Math.random() *
-        65;
+        55;
 
 
       spark.style.setProperty(
         "--x",
 
-        `${Math.cos(angle) *
-        distance}px`
+        `${
+          Math.cos(
+            angle
+          ) *
+          distance
+        }px`
       );
 
 
       spark.style.setProperty(
         "--y",
 
-        `${Math.sin(angle) *
-        distance}px`
+        `${
+          Math.sin(
+            angle
+          ) *
+          distance
+        }px`
       );
 
 
@@ -1605,6 +1217,11 @@ function runNinjaCounter({
         spark
       );
     }
+
+
+    sparks.classList.remove(
+      "show"
+    );
 
 
     void sparks.offsetWidth;
@@ -1621,7 +1238,7 @@ function runNinjaCounter({
   ========================================== */
 
   function finish(
-    successResult
+    success
   ) {
     if (!active) {
       return;
@@ -1635,43 +1252,38 @@ function runNinjaCounter({
     clearTimers();
 
 
-    cancelAnimationFrame(
-      fadeFrame
-    );
-
-
     const elapsed =
       performance.now() -
       startedAt;
 
 
-    const totalAttempts =
-      counters +
+    const total =
+      score +
       misses;
 
 
     const accuracy =
-      counters /
+      score /
       Math.max(
         1,
-        totalAttempts
+        total
       );
 
 
-    const averageReaction =
+    const avgReaction =
       reactionTimes.length
         ? average(
             reactionTimes
           )
-        : 800;
+        : 900;
 
 
     const reactionScore =
       clamp(
         100 -
         (
-          averageReaction -
-          180
+          avgReaction -
+          200
         ) /
         5,
 
@@ -1683,19 +1295,8 @@ function runNinjaCounter({
 
     const completion =
       clamp(
-        counters /
+        score /
         goal,
-
-        0,
-
-        1
-      );
-
-
-    const lifeScore =
-      clamp(
-        lives /
-        3,
 
         0,
 
@@ -1720,17 +1321,14 @@ function runNinjaCounter({
         35 +
 
         accuracy *
-        25 +
+        30 +
 
         reactionScore /
         100 *
         25 +
 
-        lifeScore *
-        10 +
-
         comboScore *
-        5,
+        10,
 
         0,
 
@@ -1753,13 +1351,13 @@ function runNinjaCounter({
                 40 +
 
                 accuracy *
-                30 +
+                35 +
 
                 comboScore *
-                20 +
+                15 +
 
                 (
-                  successResult
+                  success
                     ? 10
                     : 0
                 ),
@@ -1771,10 +1369,9 @@ function runNinjaCounter({
             ),
 
           meta: {
-            success:
-              successResult,
+            success,
 
-            counters,
+            score,
 
             misses,
 
@@ -1782,9 +1379,9 @@ function runNinjaCounter({
 
             maxCombo,
 
-            averageReaction:
+            avgReaction:
               Math.round(
-                averageReaction
+                avgReaction
               ),
 
             elapsed:
@@ -1822,41 +1419,15 @@ function runNinjaCounter({
     clearTimers();
 
 
-    cancelAnimationFrame(
-      fadeFrame
-    );
+    holes.forEach(
+      hole => {
 
+        hole.removeEventListener(
+          "pointerdown",
+          handleHoleTap
+        );
 
-    resizeObserver.disconnect();
-
-
-    canvas.removeEventListener(
-      "pointerdown",
-      pointerDown
-    );
-
-
-    canvas.removeEventListener(
-      "pointermove",
-      pointerMove
-    );
-
-
-    canvas.removeEventListener(
-      "pointerup",
-      pointerUp
-    );
-
-
-    canvas.removeEventListener(
-      "pointercancel",
-      pointerCancel
-    );
-
-
-    window.removeEventListener(
-      "keydown",
-      keyDown
+      }
     );
   };
 }
