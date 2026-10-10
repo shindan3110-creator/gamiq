@@ -673,113 +673,157 @@ export async function runSpace3D({
   ========================================== */
 
   function spawnEnemy() {
-    if (
-      !active ||
-      enemy
-    ) {
-      return;
-    }
-
-
-    enemyDying =
-      false;
-
-
-    enemy =
-      buildEnemy();
-
-
-    enemy.position.set(
-      randomBetween(
-        -3.5,
-        3.5
-      ),
-
-      randomBetween(
-        -2.2,
-        2.5
-      ),
-
-      randomBetween(
-        -14,
-        -10
-      )
-    );
-
-
-    enemy.userData.health =
-      destroyed >= 4
-        ? 120
-        : 100;
-
-
-    /*
-     * 敵は速度そのものではなく、
-     * 「次にどこへ逃げるか」を持つ
-     */
-
-    enemy.userData.targetX =
-      randomBetween(
-        -4.5,
-        4.5
-      );
-
-
-    enemy.userData.targetY =
-      randomBetween(
-        -3,
-        3
-      );
-
-
-    enemy.userData.moveSpeed =
-      randomBetween(
-        3.2,
-        4.8
-      );
-
-
-    enemy.userData.forwardSpeed =
-      0.65 +
-      destroyed *
-        0.10;
-
-
-    enemy.userData.decisionTimer =
-      randomBetween(
-        0.45,
-        0.9
-      );
-
-
-    enemy.userData.dashTimer =
-      randomBetween(
-        0.9,
-        1.5
-      );
-
-
-    enemy.userData.isDashing =
-      false;
-
-
-    enemy.userData.dashTime =
-      0;
-
-
-    world.scene.add(
-      enemy
-    );
-
-
-    showMessage(
-      "TARGET!"
-    );
+  if (
+    !active ||
+    enemy
+  ) {
+    return;
   }
 
 
-  spawnEnemy();
+  enemyDying =
+    false;
 
+
+  enemy =
+    buildEnemy();
+
+
+  /*
+   * 少し遠くから出現
+   */
+
+  enemy.position.set(
+    randomBetween(
+      -2.4,
+      2.4
+    ),
+
+    randomBetween(
+      -1.5,
+      1.8
+    ),
+
+    randomBetween(
+      -14,
+      -11.5
+    )
+  );
+
+
+  /*
+   * 正面をプレイヤー側へ向ける
+   *
+   * このモデルは +Z 側が機首
+   * カメラは +Z 側にあるため
+   * rotation.y = 0 が基本正面
+   */
+
+  enemy.rotation.set(
+    0,
+    0,
+    0
+  );
+
+
+  enemy.userData.health =
+    destroyed >= 4
+      ? 120
+      : 100;
+
+
+  /*
+   * COMBAT POSITION
+   *
+   * 最初はこちらへ近づき、
+   * -5〜-6付近で戦闘する
+   */
+
+  enemy.userData.combatZ =
+    randomBetween(
+      -6.2,
+      -5.0
+    );
+
+
+  enemy.userData.approachSpeed =
+    randomBetween(
+      1.2,
+      1.7
+    );
+
+
+  /*
+   * 横移動は今までよりかなり弱くする
+   */
+
+  enemy.userData.targetX =
+    randomBetween(
+      -2.4,
+      2.4
+    );
+
+
+  enemy.userData.targetY =
+    randomBetween(
+      -1.5,
+      1.5
+    );
+
+
+  enemy.userData.moveSpeed =
+    randomBetween(
+      1.35,
+      1.9
+    );
+
+
+  /*
+   * 方向転換もゆっくり
+   */
+
+  enemy.userData.decisionTimer =
+    randomBetween(
+      0.9,
+      1.5
+    );
+
+
+  /*
+   * 出現から4.5〜7秒ほどで逃走開始
+   */
+
+  enemy.userData.escapeTimer =
+    randomBetween(
+      4.5,
+      7
+    );
+
+
+  enemy.userData.isEscaping =
+    false;
+
+
+  enemy.userData.escapeSpeed =
+    randomBetween(
+      5.5,
+      7.0
+    );
+
+
+  enemy.userData.escapeTurn =
+    0;
+
+
+  world.scene.add(
+    enemy
+  );
+
+
+  showMessage(
+    "TARGET!"
+  );
+}
 
   /* ==========================================
   ENEMY MOVEMENT
@@ -904,224 +948,428 @@ export async function runSpace3D({
       }
 
 
-      enemy.userData.decisionTimer -=
-        delta;
-
-
-      enemy.userData.dashTimer -=
-        delta;
-
-
       /*
-       * 通常の大きな方向転換
-       */
+ * ESCAPE TIMER
+ */
 
-      if (
-        enemy.userData.decisionTimer <=
-        0
-      ) {
-        enemy.userData.targetX =
+enemy.userData.escapeTimer -=
+  delta;
+
+
+/* ======================================
+NORMAL COMBAT
+====================================== */
+
+if (
+  !enemy.userData.isEscaping
+) {
+
+  /*
+   * 敵艦は常にほぼこちらを向く
+   *
+   * 横移動に合わせて少しだけBANKするが
+   * 機体そのものは回転させない
+   */
+
+  enemy.rotation.y +=
+    (
+      0 -
+      enemy.rotation.y
+    ) *
+    Math.min(
+      1,
+      delta * 5
+    );
+
+
+  /*
+   * 一定距離までこちらへ近づく
+   */
+
+  if (
+    enemy.position.z <
+    enemy.userData.combatZ
+  ) {
+    enemy.position.z +=
+      enemy.userData.approachSpeed *
+      delta;
+  }
+
+
+  /*
+   * 横方向の行動変更
+   */
+
+  enemy.userData.decisionTimer -=
+    delta;
+
+
+  if (
+    enemy.userData.decisionTimer <=
+    0
+  ) {
+    const behavior =
+      Math.random();
+
+
+    /*
+     * 60%
+     * 左右へ小さく移動
+     */
+
+    if (
+      behavior <
+      0.60
+    ) {
+      enemy.userData.targetX =
+        clamp(
+          enemy.position.x +
           randomBetween(
-            -4.8,
-            4.8
-          );
+            -2.0,
+            2.0
+          ),
+
+          -3.0,
+
+          3.0
+        );
 
 
-        enemy.userData.targetY =
+      enemy.userData.targetY =
+        clamp(
+          enemy.position.y +
           randomBetween(
-            -3.1,
-            3.1
-          );
-
-
-        enemy.userData.moveSpeed =
-          randomBetween(
-            3.5,
-            5.7
-          ) +
-          destroyed *
-            0.25;
-
-
-        enemy.userData.decisionTimer =
-          randomBetween(
-            0.35,
-            0.75
-          );
-      }
-
-
-      /*
-       * 大きなDASH
-       */
-
-      if (
-        enemy.userData.dashTimer <=
-        0
-      ) {
-        enemy.userData.isDashing =
-          true;
-
-
-        enemy.userData.dashTime =
-          randomBetween(
-            0.25,
+            -0.45,
             0.45
-          );
+          ),
+
+          -1.8,
+
+          1.8
+        );
 
 
-        /*
-         * 今いる位置と逆側へ大きく逃げる
-         */
+      enemy.userData.moveSpeed =
+        randomBetween(
+          1.25,
+          1.7
+        );
 
-        enemy.userData.targetX =
+    /*
+     * 25%
+     * 上下へ小さく動く
+     */
+
+    } else if (
+      behavior <
+      0.85
+    ) {
+      enemy.userData.targetX =
+        clamp(
+          enemy.position.x +
+          randomBetween(
+            -0.65,
+            0.65
+          ),
+
+          -3.0,
+
+          3.0
+        );
+
+
+      enemy.userData.targetY =
+        clamp(
+          enemy.position.y +
+          randomBetween(
+            -1.2,
+            1.2
+          ),
+
+          -1.8,
+
+          1.8
+        );
+
+
+      enemy.userData.moveSpeed =
+        randomBetween(
+          1.25,
+          1.75
+        );
+
+    /*
+     * 15%
+     * 少しだけ大きい回避
+     */
+
+    } else {
+      enemy.userData.targetX =
+        enemy.position.x >= 0
+
+          ? randomBetween(
+              -2.8,
+              -1.2
+            )
+
+          : randomBetween(
+              1.2,
+              2.8
+            );
+
+
+      enemy.userData.targetY =
+        clamp(
+          enemy.position.y +
+          randomBetween(
+            -0.8,
+            0.8
+          ),
+
+          -1.8,
+
+          1.8
+        );
+
+
+      enemy.userData.moveSpeed =
+        randomBetween(
+          2.0,
+          2.5
+        );
+    }
+
+
+    enemy.userData.decisionTimer =
+      randomBetween(
+        0.9,
+        1.5
+      );
+  }
+
+
+  /*
+   * XY MOVE
+   */
+
+  const dx =
+    enemy.userData.targetX -
+    enemy.position.x;
+
+
+  const dy =
+    enemy.userData.targetY -
+    enemy.position.y;
+
+
+  const distance =
+    Math.hypot(
+      dx,
+      dy
+    );
+
+
+  if (
+    distance >
+    0.05
+  ) {
+    const step =
+      Math.min(
+        distance,
+
+        enemy.userData.moveSpeed *
+        delta
+      );
+
+
+    enemy.position.x +=
+      (
+        dx /
+        distance
+      ) *
+      step;
+
+
+    enemy.position.y +=
+      (
+        dy /
+        distance
+      ) *
+      step;
+  }
+
+
+  /*
+   * BANKだけ少しつける
+   */
+
+  enemy.rotation.z +=
+    (
+      clamp(
+        -dx * 0.08,
+        -0.18,
+        0.18
+      ) -
+      enemy.rotation.z
+    ) *
+    Math.min(
+      1,
+      delta * 6
+    );
+
+
+  enemy.rotation.x +=
+    (
+      clamp(
+        dy * 0.04,
+        -0.09,
+        0.09
+      ) -
+      enemy.rotation.x
+    ) *
+    Math.min(
+      1,
+      delta * 6
+    );
+
+
+  /*
+   * 一定時間経過で本当に逃走
+   */
+
+  if (
+    enemy.userData.escapeTimer <=
+    0
+  ) {
+    enemy.userData.isEscaping =
+      true;
+
+
+    /*
+     * 少し横へ逃げながら奥へ
+     */
+
+    enemy.userData.targetX =
+      clamp(
+        enemy.position.x +
+        (
           enemy.position.x >=
           0
-            ? randomBetween(
-                -4.8,
-                -2.2
-              )
-            : randomBetween(
-                2.2,
-                4.8
-              );
+            ? 1.8
+            : -1.8
+        ),
+
+        -4,
+
+        4
+      );
 
 
-        enemy.userData.targetY =
-          randomBetween(
-            -3,
-            3
-          );
+    showMessage(
+      "RETREAT!"
+    );
+  }
 
 
-        enemy.userData.moveSpeed =
-          randomBetween(
-            8,
-            11
-          );
+/* ======================================
+ESCAPING
+====================================== */
+
+} else {
+
+  /*
+   * 逃げるときだけ機首を反転
+   *
+   * 0 → PI
+   */
+
+  enemy.userData.escapeTurn +=
+    delta * 4.5;
 
 
-        enemy.userData.dashTimer =
-          randomBetween(
-            0.9,
-            1.6
-          );
+  const turnRatio =
+    clamp(
+      enemy.userData.escapeTurn,
+      0,
+      1
+    );
 
 
-        showEnemyDashEffect();
-      }
+  enemy.rotation.y =
+    Math.PI *
+    smoothStep(
+      turnRatio
+    );
 
 
-      if (
-        enemy.userData.isDashing
-      ) {
-        enemy.userData.dashTime -=
-          delta;
+  /*
+   * 徐々に奥へ加速
+   */
+
+  const acceleration =
+    1 +
+    turnRatio *
+    1.8;
 
 
-        if (
-          enemy.userData.dashTime <=
-          0
-        ) {
-          enemy.userData.isDashing =
-            false;
+  enemy.position.z -=
+    enemy.userData.escapeSpeed *
+    acceleration *
+    delta;
 
 
-          enemy.userData.moveSpeed =
-            randomBetween(
-              3.5,
-              5.5
-            );
-        }
-      }
+  /*
+   * 横にも少し逃げる
+   */
+
+  enemy.position.x +=
+    (
+      enemy.userData.targetX -
+      enemy.position.x
+    ) *
+    Math.min(
+      1,
+      delta * 1.6
+    );
 
 
-      const dx =
-        enemy.userData.targetX -
-        enemy.position.x;
+  /*
+   * BANKを戻す
+   */
+
+  enemy.rotation.z +=
+    (
+      0 -
+      enemy.rotation.z
+    ) *
+    Math.min(
+      1,
+      delta * 4
+    );
 
 
-      const dy =
-        enemy.userData.targetY -
-        enemy.position.y;
+  enemy.rotation.x +=
+    (
+      0 -
+      enemy.rotation.x
+    ) *
+    Math.min(
+      1,
+      delta * 4
+    );
 
 
-      const distance =
-        Math.hypot(
-          dx,
-          dy
-        );
+  /*
+   * 本当に画面奥まで逃げたらESCAPED
+   */
 
-
-      if (
-        distance >
-        0.05
-      ) {
-        enemy.position.x +=
-          (
-            dx /
-            distance
-          ) *
-          enemy.userData.moveSpeed *
-          delta;
-
-
-        enemy.position.y +=
-          (
-            dy /
-            distance
-          ) *
-          enemy.userData.moveSpeed *
-          delta;
-      }
-
-
-      /*
-       * プレイヤー側へ進行
-       */
-
-      enemy.position.z +=
-        enemy.userData.forwardSpeed *
-        delta;
-
-
-      /*
-       * バンク
-       */
-
-      enemy.rotation.z =
-        clamp(
-          -dx *
-          0.16,
-          -0.6,
-          0.6
-        );
-
-
-      enemy.rotation.x =
-        clamp(
-          dy *
-          0.1,
-          -0.35,
-          0.35
-        );
-
-
-      enemy.rotation.y +=
-        delta *
-        0.55;
-
-
-      /*
-       * プレイヤーまで来たらESCAPE
-       */
-
-      if (
-        enemy.position.z >
-        4.3
-      ) {
-        enemyEscaped();
-      }
+  if (
+    enemy.position.z <
+    -24
+  ) {
+    enemyEscaped();
+  }
+}
 
     }
   );
@@ -1330,42 +1578,65 @@ export async function runSpace3D({
 
 
       /*
-       * 撃たれたら敵が逆サイドへ急回避
-       */
+ * 被弾後は少しだけ回避する
+ *
+ * 以前のように画面反対側まで
+ * 一気に飛ばない
+ */
 
-      enemy.userData.targetX =
+if (
+  !enemy.userData.isEscaping
+) {
+  enemy.userData.targetX =
+    clamp(
+      enemy.position.x +
+      (
         enemy.position.x >=
         0
           ? randomBetween(
-              -4.8,
-              -2.5
+              -1.5,
+              -0.7
             )
+
           : randomBetween(
-              2.5,
-              4.8
-            );
+              0.7,
+              1.5
+            )
+      ),
+
+      -3,
+
+      3
+    );
 
 
-      enemy.userData.targetY =
-        randomBetween(
-          -3,
-          3
-        );
+  enemy.userData.targetY =
+    clamp(
+      enemy.position.y +
+      randomBetween(
+        -0.65,
+        0.65
+      ),
+
+      -1.8,
+
+      1.8
+    );
 
 
-      enemy.userData.moveSpeed =
-        randomBetween(
-          7,
-          10
-        );
+  enemy.userData.moveSpeed =
+    randomBetween(
+      1.8,
+      2.4
+    );
 
 
-      enemy.userData.decisionTimer =
-        0.3;
-
-
-      enemy.position.z -=
-        0.45;
+  enemy.userData.decisionTimer =
+    randomBetween(
+      0.7,
+      1.1
+    );
+}
 
 
       showCombo();
@@ -2801,6 +3072,27 @@ function clamp(
     Math.min(
       max,
       value
+    )
+  );
+}
+
+function smoothStep(
+  value
+) {
+  const t =
+    clamp(
+      value,
+      0,
+      1
+    );
+
+  return (
+    t *
+    t *
+    (
+      3 -
+      2 *
+      t
     )
   );
 }
