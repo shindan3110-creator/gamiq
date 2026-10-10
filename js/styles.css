@@ -6084,3 +6084,1279 @@ MOBILE
   }
 
 }
+
+
+/* =========================================================
+NINJA COUNTER - SWIPE VERSION
+========================================================= */
+
+.ninja-swipe-game{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:9px;
+}
+
+
+/* =============================
+HUD
+============================= */
+
+.ninja-swipe-hud{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:7px;
+}
+
+
+.ninja-swipe-hud-item{
+  padding:8px 9px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius:11px;
+
+  background:
+    rgba(4,10,7,.82);
+
+  text-align:center;
+}
+
+
+.ninja-swipe-hud-item span{
+  display:block;
+
+  margin-bottom:2px;
+
+  color:
+    rgba(255,255,255,.45);
+
+  font-size:7px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+}
+
+
+.ninja-swipe-hud-item strong{
+  color:#ffffff;
+
+  font-size:15px;
+  font-weight:1000;
+}
+
+
+.ninja-swipe-hud-item:nth-child(2)
+strong{
+  color:#7dffa6;
+}
+
+
+.ninja-swipe-life{
+  color:#ff5873 !important;
+
+  letter-spacing:.08em;
+}
+
+
+/* =============================
+STAGE
+============================= */
+
+.ninja-swipe-stage{
+  position:relative;
+
+  flex:1;
+
+  min-height:0;
+
+  overflow:hidden;
+
+  border-radius:19px;
+
+  background:
+    radial-gradient(
+      circle at 50% 52%,
+      rgba(67,180,95,.10),
+      transparent 27%
+    ),
+    linear-gradient(
+      180deg,
+      #08110c,
+      #020403
+    );
+
+  touch-action:none;
+
+  user-select:none;
+}
+
+
+.ninja-swipe-background{
+  position:absolute;
+
+  inset:0;
+
+  overflow:hidden;
+
+  pointer-events:none;
+}
+
+
+.ninja-swipe-moon{
+  position:absolute;
+
+  left:50%;
+  top:12%;
+
+  width:125px;
+  height:125px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      #dcebd7,
+      #8ba083
+    );
+
+  opacity:.12;
+
+  box-shadow:
+    0 0 80px
+    rgba(150,255,170,.13);
+}
+
+
+.ninja-swipe-ground{
+  position:absolute;
+
+  left:-15%;
+  right:-15%;
+  bottom:-14%;
+
+  height:43%;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,.025)
+      0 1px,
+
+      transparent
+      1px 72px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,.02)
+      0 1px,
+
+      transparent
+      1px 60px
+    ),
+    #050805;
+
+  transform:
+    perspective(320px)
+    rotateX(57deg);
+
+  transform-origin:
+    bottom;
+}
+
+
+/* =============================
+PLAYER
+============================= */
+
+.ninja-swipe-player{
+  position:absolute;
+
+  z-index:10;
+
+  left:50%;
+  bottom:14%;
+
+  width:88px;
+  height:132px;
+
+  transform:
+    translateX(-50%);
+
+  /*
+   * 本体自体は傾けない
+   */
+}
+
+
+.ninja-swipe-player-head{
+  position:absolute;
+
+  left:50%;
+  top:0;
+
+  width:43px;
+  height:39px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    46% 46% 38% 38%;
+
+  background:#111c15;
+
+  border:
+    2px solid
+    rgba(110,255,150,.17);
+}
+
+
+.ninja-swipe-player-head::after{
+  content:"";
+
+  position:absolute;
+
+  left:5px;
+  right:5px;
+  top:16px;
+
+  height:8px;
+
+  border-radius:4px;
+
+  background:#050806;
+}
+
+
+.ninja-swipe-player-head i{
+  position:absolute;
+
+  z-index:2;
+
+  left:10px;
+  top:19px;
+
+  width:5px;
+  height:2px;
+
+  background:#8cffaf;
+
+  box-shadow:
+    17px 0
+    #8cffaf;
+}
+
+
+.ninja-swipe-player-body{
+  position:absolute;
+
+  left:50%;
+  top:35px;
+
+  width:59px;
+  height:78px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    18px 18px 10px 10px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #1a2c20,
+      #09110d
+    );
+
+  border:
+    1px solid
+    rgba(100,255,145,.13);
+}
+
+
+/* =============================
+ARM
+============================= */
+
+.ninja-swipe-player-arm{
+  position:absolute;
+
+  z-index:3;
+
+  left:50px;
+  top:58px;
+
+  width:42px;
+  height:13px;
+
+  border-radius:10px;
+
+  background:#14231a;
+
+  transform:
+    rotate(-18deg);
+
+  transform-origin:
+    left center;
+
+  transition:
+    transform .07s ease;
+}
+
+
+/* =============================
+PLAYER SWORD
+============================= */
+
+.ninja-swipe-player-sword{
+  position:absolute;
+
+  z-index:4;
+
+  left:72px;
+  top:27px;
+
+  width:5px;
+  height:94px;
+
+  border-radius:5px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #8c9c96,
+      #ffffff 48%,
+      #6b7c75
+    );
+
+  transform:
+    rotate(31deg);
+
+  transform-origin:
+    50% 88%;
+
+  transition:
+    transform .07s ease;
+
+  box-shadow:
+    0 0 8px
+    rgba(210,255,230,.25);
+}
+
+
+.ninja-swipe-player-sword::after{
+  content:"";
+
+  position:absolute;
+
+  left:-7px;
+  bottom:12px;
+
+  width:19px;
+  height:5px;
+
+  border-radius:3px;
+
+  background:#876b31;
+}
+
+
+/* =============================
+PLAYER ATTACK
+Body remains upright
+============================= */
+
+.ninja-swipe-player.strike-left{
+  transform:
+    translateX(-50%)
+    translateY(-3px);
+}
+
+
+.ninja-swipe-player.strike-left
+.ninja-swipe-player-arm{
+  transform:
+    rotate(-95deg)
+    translateX(2px);
+}
+
+
+.ninja-swipe-player.strike-left
+.ninja-swipe-player-sword{
+  transform:
+    rotate(-66deg);
+}
+
+
+.ninja-swipe-player.strike-right{
+  transform:
+    translateX(-50%)
+    translateY(-3px);
+}
+
+
+.ninja-swipe-player.strike-right
+.ninja-swipe-player-arm{
+  transform:
+    rotate(20deg)
+    translateX(3px);
+}
+
+
+.ninja-swipe-player.strike-right
+.ninja-swipe-player-sword{
+  transform:
+    rotate(79deg);
+}
+
+
+.ninja-swipe-player.strike-up{
+  transform:
+    translateX(-50%)
+    translateY(-5px);
+}
+
+
+.ninja-swipe-player.strike-up
+.ninja-swipe-player-arm{
+  transform:
+    rotate(-64deg)
+    translateX(2px);
+}
+
+
+.ninja-swipe-player.strike-up
+.ninja-swipe-player-sword{
+  transform:
+    rotate(2deg);
+}
+
+
+/* =============================
+ENEMIES
+============================= */
+
+.ninja-swipe-enemy{
+  position:absolute;
+
+  z-index:8;
+
+  width:68px;
+  height:103px;
+
+  opacity:0;
+
+  pointer-events:none;
+}
+
+
+.ninja-swipe-enemy-head{
+  position:absolute;
+
+  left:50%;
+  top:0;
+
+  width:36px;
+  height:35px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    46% 46% 38% 38%;
+
+  background:#261419;
+
+  border:
+    1px solid
+    rgba(255,80,110,.3);
+}
+
+
+.ninja-swipe-enemy-head::after{
+  content:"";
+
+  position:absolute;
+
+  left:5px;
+  right:5px;
+  top:15px;
+
+  height:7px;
+
+  background:#070405;
+
+  border-radius:3px;
+}
+
+
+.ninja-swipe-enemy-head i{
+  position:absolute;
+
+  z-index:2;
+
+  left:9px;
+  top:18px;
+
+  width:4px;
+  height:2px;
+
+  background:#ff516d;
+
+  box-shadow:
+    14px 0
+    #ff516d;
+}
+
+
+.ninja-swipe-enemy-body{
+  position:absolute;
+
+  left:50%;
+  top:31px;
+
+  width:49px;
+  height:62px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    14px 14px 8px 8px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #371a23,
+      #10080b
+    );
+
+  border:
+    1px solid
+    rgba(255,70,105,.2);
+}
+
+
+.ninja-swipe-enemy-arm{
+  position:absolute;
+
+  left:43px;
+  top:46px;
+
+  width:37px;
+  height:11px;
+
+  border-radius:10px;
+
+  background:#271218;
+
+  transform:
+    rotate(-24deg);
+}
+
+
+.ninja-swipe-enemy-sword{
+  position:absolute;
+
+  left:59px;
+  top:11px;
+
+  width:4px;
+  height:78px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #81898c,
+      #ffffff,
+      #63696c
+    );
+
+  transform:
+    rotate(32deg);
+
+  transform-origin:
+    bottom center;
+}
+
+
+/* =============================
+POSITIONS
+============================= */
+
+.ninja-swipe-enemy-left{
+  left:-90px;
+  bottom:25%;
+}
+
+
+.ninja-swipe-enemy-right{
+  right:-90px;
+  bottom:25%;
+}
+
+
+.ninja-swipe-enemy-up{
+  left:50%;
+  top:-120px;
+
+  transform:
+    translateX(-50%);
+}
+
+
+/* =============================
+REAL ATTACK
+============================= */
+
+.ninja-swipe-enemy-left.attack{
+  animation:
+    ninja-swipe-left-attack
+    .68s
+    cubic-bezier(.17,.75,.3,1)
+    forwards;
+}
+
+
+@keyframes ninja-swipe-left-attack{
+
+  0%{
+    left:-90px;
+    opacity:0;
+  }
+
+  16%{
+    opacity:1;
+  }
+
+  100%{
+    left:
+      calc(
+        50% - 108px
+      );
+
+    opacity:1;
+  }
+
+}
+
+
+.ninja-swipe-enemy-right.attack{
+  animation:
+    ninja-swipe-right-attack
+    .68s
+    cubic-bezier(.17,.75,.3,1)
+    forwards;
+}
+
+
+@keyframes ninja-swipe-right-attack{
+
+  0%{
+    right:-90px;
+    opacity:0;
+  }
+
+  16%{
+    opacity:1;
+  }
+
+  100%{
+    right:
+      calc(
+        50% - 108px
+      );
+
+    opacity:1;
+  }
+
+}
+
+
+.ninja-swipe-enemy-up.attack{
+  animation:
+    ninja-swipe-up-attack
+    .68s
+    cubic-bezier(.17,.75,.3,1)
+    forwards;
+}
+
+
+@keyframes ninja-swipe-up-attack{
+
+  0%{
+    top:-120px;
+    opacity:0;
+  }
+
+  16%{
+    opacity:1;
+  }
+
+  100%{
+    top:17%;
+    opacity:1;
+  }
+
+}
+
+
+/* =============================
+FAKE ATTACK
+============================= */
+
+.ninja-swipe-enemy-left.fake{
+  animation:
+    ninja-swipe-left-fake
+    .3s ease
+    forwards;
+}
+
+
+@keyframes ninja-swipe-left-fake{
+
+  0%{
+    left:-90px;
+    opacity:0;
+  }
+
+  55%{
+    left:5%;
+    opacity:.85;
+  }
+
+  100%{
+    left:-90px;
+    opacity:0;
+  }
+
+}
+
+
+.ninja-swipe-enemy-right.fake{
+  animation:
+    ninja-swipe-right-fake
+    .3s ease
+    forwards;
+}
+
+
+@keyframes ninja-swipe-right-fake{
+
+  0%{
+    right:-90px;
+    opacity:0;
+  }
+
+  55%{
+    right:5%;
+    opacity:.85;
+  }
+
+  100%{
+    right:-90px;
+    opacity:0;
+  }
+
+}
+
+
+.ninja-swipe-enemy-up.fake{
+  animation:
+    ninja-swipe-up-fake
+    .3s ease
+    forwards;
+}
+
+
+@keyframes ninja-swipe-up-fake{
+
+  0%{
+    top:-120px;
+    opacity:0;
+  }
+
+  55%{
+    top:-25px;
+    opacity:.85;
+  }
+
+  100%{
+    top:-120px;
+    opacity:0;
+  }
+
+}
+
+
+/* =============================
+COUNTERED
+============================= */
+
+.ninja-swipe-enemy.countered{
+  filter:
+    brightness(2.4)
+    saturate(.25);
+}
+
+
+.ninja-swipe-enemy-left.retreat{
+  transform:
+    translate(-75px,-25px)
+    rotate(-20deg);
+
+  opacity:0;
+
+  transition:
+    transform .2s ease,
+    opacity .2s ease;
+}
+
+
+.ninja-swipe-enemy-right.retreat{
+  transform:
+    translate(75px,-25px)
+    rotate(20deg);
+
+  opacity:0;
+
+  transition:
+    transform .2s ease,
+    opacity .2s ease;
+}
+
+
+.ninja-swipe-enemy-up.retreat{
+  transform:
+    translate(-50%,-70px);
+
+  opacity:0;
+
+  transition:
+    transform .2s ease,
+    opacity .2s ease;
+}
+
+
+/* =============================
+SWIPE CANVAS
+============================= */
+
+.ninja-swipe-canvas{
+  position:absolute;
+
+  z-index:24;
+
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  cursor:crosshair;
+
+  touch-action:none;
+}
+
+
+/* =============================
+SPARKS
+============================= */
+
+.ninja-swipe-sparks{
+  position:absolute;
+
+  z-index:26;
+
+  left:50%;
+  top:49%;
+
+  width:1px;
+  height:1px;
+
+  pointer-events:none;
+}
+
+
+.ninja-swipe-sparks i{
+  position:absolute;
+
+  width:4px;
+  height:14px;
+
+  border-radius:5px;
+
+  background:
+    linear-gradient(
+      #ffffff,
+      #8cffad
+    );
+
+  opacity:0;
+
+  box-shadow:
+    0 0 8px
+    rgba(120,255,165,.7);
+}
+
+
+.ninja-swipe-sparks.show i{
+  animation:
+    ninja-swipe-spark
+    .28s ease-out
+    forwards;
+}
+
+
+@keyframes ninja-swipe-spark{
+
+  0%{
+    opacity:1;
+
+    transform:
+      translate(0,0)
+      scale(1);
+  }
+
+  100%{
+    opacity:0;
+
+    transform:
+      translate(
+        var(--x),
+        var(--y)
+      )
+      scale(.2);
+  }
+
+}
+
+
+/* =============================
+MESSAGE
+============================= */
+
+.ninja-swipe-message{
+  position:absolute;
+
+  z-index:35;
+
+  left:50%;
+  top:26%;
+
+  transform:
+    translate(-50%,-50%)
+    scale(.55);
+
+  color:#81ffaa;
+
+  font-size:
+    clamp(
+      28px,
+      6vw,
+      50px
+    );
+
+  font-weight:1000;
+
+  font-style:italic;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  text-shadow:
+    0 0 20px
+    rgba(90,255,140,.65);
+}
+
+
+.ninja-swipe-message.fail{
+  color:#ff5874;
+
+  text-shadow:
+    0 0 20px
+    rgba(255,60,95,.55);
+}
+
+
+.ninja-swipe-message.show{
+  animation:
+    ninja-swipe-message
+    .4s ease;
+}
+
+
+@keyframes ninja-swipe-message{
+
+  0%{
+    opacity:0;
+
+    transform:
+      translate(-50%,-50%)
+      scale(.5);
+  }
+
+  35%{
+    opacity:1;
+
+    transform:
+      translate(-50%,-50%)
+      scale(1.17);
+  }
+
+  100%{
+    opacity:0;
+
+    transform:
+      translate(-50%,-72%)
+      scale(.95);
+  }
+
+}
+
+
+/* =============================
+COMBO
+============================= */
+
+.ninja-swipe-combo-pop{
+  position:absolute;
+
+  z-index:35;
+
+  right:8%;
+  top:13%;
+
+  color:#83ffad;
+
+  font-size:
+    clamp(
+      25px,
+      5vw,
+      43px
+    );
+
+  font-weight:1000;
+
+  opacity:0;
+
+  pointer-events:none;
+}
+
+
+.ninja-swipe-combo-pop.show{
+  animation:
+    ninja-swipe-combo
+    .34s ease;
+}
+
+
+@keyframes ninja-swipe-combo{
+
+  0%{
+    opacity:0;
+    transform:scale(.5);
+  }
+
+  45%{
+    opacity:1;
+    transform:scale(1.3);
+  }
+
+  100%{
+    opacity:0;
+    transform:scale(1);
+  }
+
+}
+
+
+/* =============================
+SUCCESS FLASH
+============================= */
+
+.ninja-swipe-hit{
+  animation:
+    ninja-swipe-hit
+    .15s ease;
+}
+
+
+@keyframes ninja-swipe-hit{
+
+  0%{
+    filter:
+      brightness(1);
+  }
+
+  38%{
+    filter:
+      brightness(2.1)
+      saturate(.65);
+  }
+
+  100%{
+    filter:
+      brightness(1);
+  }
+
+}
+
+
+/* =============================
+DAMAGE
+============================= */
+
+.ninja-swipe-damage{
+  animation:
+    ninja-swipe-damage
+    .28s ease;
+}
+
+
+@keyframes ninja-swipe-damage{
+
+  0%,
+  100%{
+    transform:
+      translateX(0);
+
+    box-shadow:
+      inset 0 0 0
+      rgba(255,35,65,0);
+  }
+
+  20%{
+    transform:
+      translateX(-8px);
+
+    box-shadow:
+      inset 0 0 70px
+      rgba(255,35,65,.28);
+  }
+
+  40%{
+    transform:
+      translateX(8px);
+  }
+
+  60%{
+    transform:
+      translateX(-5px);
+  }
+
+  80%{
+    transform:
+      translateX(4px);
+  }
+
+}
+
+
+/* =============================
+HINT
+============================= */
+
+.ninja-swipe-hint{
+  position:absolute;
+
+  z-index:18;
+
+  left:50%;
+  bottom:13px;
+
+  transform:
+    translateX(-50%);
+
+  padding:
+    6px 11px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.09);
+
+  border-radius:999px;
+
+  background:
+    rgba(0,0,0,.4);
+
+  color:
+    rgba(255,255,255,.62);
+
+  font-size:8px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+
+  pointer-events:none;
+
+  animation:
+    ninja-swipe-hint
+    2.5s ease forwards;
+}
+
+
+@keyframes ninja-swipe-hint{
+
+  0%{
+    opacity:0;
+  }
+
+  15%,
+  65%{
+    opacity:1;
+  }
+
+  100%{
+    opacity:0;
+  }
+
+}
+
+
+/* =============================
+MOBILE
+============================= */
+
+@media(max-width:700px){
+
+  .ninja-swipe-hud{
+    gap:4px;
+  }
+
+
+  .ninja-swipe-hud-item{
+    padding:
+      6px 4px;
+  }
+
+
+  .ninja-swipe-hud-item strong{
+    font-size:13px;
+  }
+
+
+  .ninja-swipe-stage{
+    border-radius:14px;
+  }
+
+
+  .ninja-swipe-player{
+    bottom:12%;
+  }
+
+}
