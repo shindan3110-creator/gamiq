@@ -694,21 +694,21 @@ export async function runSpace3D({
    */
 
   enemy.position.set(
-    randomBetween(
-      -2.4,
-      2.4
-    ),
+  randomBetween(
+    -2.2,
+    2.2
+  ),
 
-    randomBetween(
-      -1.5,
-      1.8
-    ),
+  randomBetween(
+    -1.4,
+    1.6
+  ),
 
-    randomBetween(
-      -14,
-      -11.5
-    )
-  );
+  randomBetween(
+    -9.5,
+    -7.8
+  )
+);
 
 
   /*
@@ -740,17 +740,17 @@ export async function runSpace3D({
    */
 
   enemy.userData.combatZ =
-    randomBetween(
-      -6.2,
-      -5.0
-    );
+  randomBetween(
+    -5.3,
+    -4.4
+  );
 
 
   enemy.userData.approachSpeed =
-    randomBetween(
-      1.2,
-      1.7
-    );
+  randomBetween(
+    2.1,
+    2.7
+  );
 
 
   /*
@@ -952,8 +952,14 @@ export async function runSpace3D({
  * ESCAPE TIMER
  */
 
-enemy.userData.escapeTimer -=
-  delta;
+if (
+  enemy.position.z <
+  enemy.userData.combatZ
+) {
+  enemy.position.z +=
+    enemy.userData.approachSpeed *
+    delta;
+}
 
 
 /* ======================================
