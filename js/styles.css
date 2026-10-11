@@ -8657,3 +8657,230 @@ GAMIQ — RUSH RUN
   }
   .rush-instruction { font-size: 8px; }
 }
+
+
+
+
+
+/* ===== GAMIQ / ARMY GROW ===== */
+
+.army-grow {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  gap: 8px;
+  color: #f6ffff;
+}
+
+.army-hud {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.army-hud > div {
+  background: #0c1825;
+  border: 1px solid
+    rgba(119, 226, 255, .16);
+  border-radius: 10px;
+  text-align: center;
+  padding: 8px 3px;
+}
+
+.army-hud span {
+  display: block;
+  color: #8ca3b2;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .09em;
+  margin-bottom: 4px;
+}
+
+.army-hud strong {
+  color: white;
+  font-size: 21px;
+  line-height: 1.1;
+}
+
+.army-hud > div:first-child strong {
+  color: #64e3ff;
+}
+
+.army-hud > div:last-child strong {
+  color: #70ffbb;
+}
+
+.army-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  touch-action: none;
+  background: #0a1823;
+  user-select: none;
+}
+
+.army-world,
+.army-world canvas {
+  position: absolute;
+  width: 100% !important;
+  height: 100% !important;
+  inset: 0;
+  display: block;
+}
+
+.army-instruction {
+  position: absolute;
+  z-index: 3;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(2, 14, 25, .74);
+  border: 1px solid
+    rgba(255,255,255,.18);
+  border-radius: 30px;
+  color: #f6fcff;
+  font-weight: 900;
+  font-size: 10px;
+  letter-spacing: .1em;
+  padding: 7px 11px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation:
+    army-hint-fade 4.2s forwards;
+}
+
+@keyframes army-hint-fade {
+  0%, 70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.army-pop {
+  position: absolute;
+  z-index: 4;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  text-align: center;
+  font-size: clamp(22px,5vw,38px);
+  font-weight: 1000;
+  font-style: italic;
+  white-space: nowrap;
+  text-shadow: 0 4px 18px #00101a;
+  color: #66ffb8;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.army-pop.bad {
+  color: #ff6979;
+}
+
+.army-pop.battle {
+  color: #ffe87a;
+}
+
+.army-pop.show {
+  animation:
+    army-pop .74s ease-out;
+}
+
+@keyframes army-pop {
+  0% {
+    opacity: 0;
+    transform:
+      translate(-50%,-30%) scale(.7);
+  }
+
+  23% {
+    opacity: 1;
+    transform:
+      translate(-50%,-50%) scale(1.1);
+  }
+
+  74% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate(-50%,-75%) scale(1);
+  }
+}
+
+.army-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.army-controls button {
+  min-height: 60px;
+  border-radius: 12px;
+  border: 1px solid
+    rgba(255,255,255,.19);
+  background:
+    linear-gradient(
+      180deg,
+      #243c4d,
+      #101b29
+    );
+  color: #eaf9ff;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing: .08em;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+.army-controls button.active {
+  border-color: #55e5ff;
+  color: #72e9ff;
+  box-shadow:
+    inset 0 0 18px
+    rgba(48,206,255,.12);
+}
+
+.army-controls button:active {
+  transform: scale(.97);
+  background: #284d60;
+}
+
+@media (max-width:700px) {
+  .army-grow {
+    gap: 6px;
+  }
+
+  .army-hud > div {
+    padding: 6px 3px;
+  }
+
+  .army-hud span {
+    font-size: 8px;
+  }
+
+  .army-hud strong {
+    font-size: 17px;
+  }
+
+  .army-controls button {
+    min-height: 60px;
+    font-size: 15px;
+  }
+
+  .army-instruction {
+    font-size: 9px;
+  }
+}
