@@ -51,11 +51,12 @@ export function createThreeGames() {
     {
       id: "three_factory_rush",
       type: "factory_rush",
-      title: "FACTORY RUSH",
-      rule: "ラインを止めずに処理しろ",
-      skill: "SPEED",
+      title: "ARMY GROW",
+      rule: "Choose gates, grow your army, defeat the enemy!",
+      skill: "LOGIC",
       theme: "factory",
-      duration: 10000
+      duration: 25000
+
     }
   ];
 }
