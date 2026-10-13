@@ -381,21 +381,7 @@ RANDOM GAME
 ========================================== */
 
 
-let armyGrowTestFirst = true;
-
 function getNextGame() {
-  if (armyGrowTestFirst) {
-    armyGrowTestFirst = false;
-
-    const armyGrow = gamePool.find(
-      game => game.type === "factory_rush"
-    );
-
-    if (armyGrow) {
-      return armyGrow;
-    }
-  }
-
   return randomizer.pick(
     gamePool,
     scoreEngine.getAbilityCounts()
