@@ -143,14 +143,8 @@ export async function runFactory3D({ container, onComplete }) {
     background: 0x0b1723
   });
 
-  if (!(await world.init())) {
-    container.innerHTML = `
-      <div class="factory-3d-fallback">
-        3D unavailable
-      </div>
-    `;
-
-    return () => {};
+    if (!(await world.init())) {
+    throw new Error("3D unavailable");
   }
 
   const T = world.THREE;
