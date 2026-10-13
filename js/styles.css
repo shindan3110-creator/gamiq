@@ -7445,3 +7445,100 @@ ARMY GROW 窶� CINEMATIC BATTLE
 .army-battle-hud.victory { border-color:rgba(67,255,176,.65); box-shadow:0 0 25px rgba(35,255,142,.15); }
 .army-battle-hud.defeat { border-color:rgba(255,78,111,.65); box-shadow:0 0 25px rgba(255,53,78,.15); }
 @media(max-width:700px) { .army-battle-hud{top:44px;left:8px;right:8px;padding:9px 10px} .army-battle-numbers strong{font-size:13px} .army-battle-numbers span{font-size:10px} .army-battle-bars{height:11px} }
+
+
+
+/* ==========================================
+BLOCK ESCAPE — PC CLICK CONTROLS
+========================================== */
+
+/* Selected block */
+
+.block-escape-game .puzzle-block.selected {
+  z-index: 5;
+  outline: 3px solid #76edff;
+  outline-offset: -3px;
+
+  box-shadow:
+    0 0 0 2px rgba(45,207,255,.28),
+    0 0 22px rgba(45,207,255,.36);
+
+  filter: brightness(1.1);
+  cursor: pointer;
+}
+
+/* Movement arrows */
+
+.block-escape-game .puzzle-direction {
+  position: relative;
+  z-index: 9;
+
+  display: grid;
+  place-items: center;
+
+  width: 24px;
+  height: 24px;
+  min-width: 0;
+  min-height: 0;
+
+  padding: 0;
+  margin: 0 4px;
+
+  border: 2px solid rgba(255,255,255,.85);
+  border-radius: 11px;
+
+  background: #0d2633;
+  color: #e8faff;
+
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,.32);
+
+  touch-action: manipulation;
+}
+
+.block-escape-game .puzzle-direction:hover {
+  background: #147c9d;
+  border-color: #92f0ff;
+}
+
+.block-escape-game .puzzle-direction:active {
+  transform: scale(.92);
+}
+
+/* Place arrows inside selected block */
+
+.block-escape-game .puzzle-direction.left {
+  justify-self: start;
+  align-self: center;
+}
+
+.block-escape-game .puzzle-direction.right {
+  justify-self: end;
+  align-self: center;
+}
+
+.block-escape-game .puzzle-direction.up {
+  justify-self: center;
+  align-self: start;
+  margin: 4px 0;
+}
+
+.block-escape-game .puzzle-direction.down {
+  justify-self: center;
+  align-self: end;
+  margin: 4px 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .block-escape-game .puzzle-block {
+    cursor: pointer;
+  }
+}
+
+
