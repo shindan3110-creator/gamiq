@@ -2247,12 +2247,19 @@ function runFriendOrFoe({
   }
 
 
+    let roundLocked = false;
+
   function choose(
     index
   ) {
-    if (!active) {
+    if (
+      !active ||
+      roundLocked
+    ) {
       return;
     }
+
+    roundLocked = true;
 
     clearTimeout(timer);
 
