@@ -201,14 +201,8 @@ export async function runZombie3D({
     await world.init();
 
 
-  if (!initialized) {
-    container.innerHTML = `
-      <div class="zombie-3d-fallback">
-        3Dの読み込みに失敗しました
-      </div>
-    `;
-
-    return () => {};
+    if (!initialized) {
+    throw new Error("3D unavailable");
   }
 
 
