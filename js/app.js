@@ -481,8 +481,12 @@ function renderGameCard(
           )}
         </div>
 
-        <div class="gamiq-swipe-next">
-          ↑ SWIPE FOR NEXT GAME
+                <div class="gamiq-swipe-next">
+          ${
+            isDesktopPointer()
+              ? "🖱️ SCROLL FOR NEXT GAME"
+              : "↑ SWIPE FOR NEXT GAME"
+          }
         </div>
 
       </div>
@@ -1067,6 +1071,12 @@ function cleanupCurrentGame() {
 /* ==========================================
 UTIL
 ========================================== */
+
+function isDesktopPointer() {
+  return window.matchMedia(
+    "(hover: hover) and (pointer: fine)"
+  ).matches;
+}
 
 function safeScore(
   value,
