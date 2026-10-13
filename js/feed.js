@@ -150,14 +150,21 @@ export class GamiqFeed {
     );
   }
 
-  resetCards() {
-    this.currentCard.classList.remove(
-      "animating"
-    );
+    resetCards() {
+    const cards = [
+      this.currentCard,
+      this.nextCard
+    ];
 
-    this.nextCard.classList.remove(
-      "animating"
-    );
+    // Turn off animation so cards jump instantly.
+    cards.forEach(card => {
+      card.classList.remove(
+        "animating"
+      );
+
+      card.style.transition =
+        "none";
+    });
 
     this.currentCard.classList.add(
       "current"
@@ -183,6 +190,14 @@ export class GamiqFeed {
 
     this.currentCard.style.opacity = "1";
     this.nextCard.style.opacity = "1";
+
+    // Apply the jump now, then restore normal animation.
+    void this.currentCard.offsetHeight;
+
+    cards.forEach(card => {
+      card.style.transition =
+        "";
+    });
   }
 
   handlePointerDown(event) {
