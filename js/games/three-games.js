@@ -41,7 +41,7 @@ export function createThreeGames() {
     {
       id: "three_lane_dodge",
       type: "lane_dodge",
-      title: "HIGHWAY DODGE",
+      title: "RUSH RUN",
       rule: "障害物を避け続けろ",
       skill: "REFLEX",
       theme: "race",
