@@ -2190,10 +2190,12 @@ function runFriendOrFoe({
     );
 
 
-  function nextRound() {
+    function nextRound() {
     if (!active) {
       return;
     }
+
+    roundLocked = false;
 
     enemyIndex =
       Math.floor(
