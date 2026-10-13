@@ -262,14 +262,8 @@ export async function runSpace3D({
     await world.init();
 
 
-  if (!initialized) {
-    container.innerHTML = `
-      <div class="space-3d-fallback">
-        3Dの読み込みに失敗しました
-      </div>
-    `;
-
-    return () => {};
+    if (!initialized) {
+    throw new Error("3D unavailable");
   }
 
 
