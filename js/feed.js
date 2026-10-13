@@ -325,21 +325,53 @@ export class GamiqFeed {
     );
   }
 
-  handleWheel(event) {
+    handleWheel(event) {
     if (
       this.transitioning ||
       !this.canAdvance()
     ) {
+      this.wheelTotal = 0;
       return;
     }
 
-    if (event.deltaY < 45) {
+    if (event.deltaY <= 0) {
       return;
     }
 
     event.preventDefault();
 
-    this.advance();
+    const now =
+      performance.now();
+
+    // A short pause resets the accumulated scroll.
+    if (
+      now -
+        (this.lastWheelTime || 0) >
+      250
+    ) {
+      this.wheelTotal = 0;
+    }
+
+    this.lastWheelTime =
+      now;
+
+    const unit =
+      event.deltaMode === 1
+        ? 16
+        : event.deltaMode === 2
+          ? this.feed.clientHeight
+          : 1;
+
+    this.wheelTotal =
+      (this.wheelTotal || 0) +
+      event.deltaY * unit;
+
+    if (
+      this.wheelTotal >= 60
+    ) {
+      this.wheelTotal = 0;
+      this.advance();
+    }
   }
 
   handleKeyDown(event) {
