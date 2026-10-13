@@ -101,13 +101,8 @@ export async function runRace3D({ container, onComplete }) {
 
   const initialized = await world.init();
 
-  if (!initialized) {
-    container.innerHTML = `
-      <div class="race-3d-fallback">
-        3Dの読み込みに失敗しました
-      </div>
-    `;
-    return () => {};
+    if (!initialized) {
+    throw new Error("3D unavailable");
   }
 
   const T = world.THREE;
