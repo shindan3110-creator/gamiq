@@ -743,11 +743,8 @@ async function enterGame(
         });
 
             },
-      game.type === "lane_dodge"
-        ? 75000
-        : 45000
+            game.maxDuration ?? 90000
     );
-
 
   /*
    * GAME START
