@@ -231,6 +231,15 @@ function runSequenceMemory({
     }
 
 
+        // Ignore an accidental second tap on an already-correct cell.
+    if (
+      sequence
+        .slice(0, currentStep)
+        .includes(index)
+    ) {
+      return;
+    }
+
     const expected =
       sequence[
         currentStep
@@ -770,6 +779,18 @@ function runNumberMemory({
       return;
     }
 
+
+        // Ignore taps on cells that were already answered.
+    if (
+      cells[index].classList.contains(
+        "memory-correct"
+      ) ||
+      cells[index].classList.contains(
+        "memory-wrong"
+      )
+    ) {
+      return;
+    }
 
     const expectedIndex =
       positions[
