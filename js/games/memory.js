@@ -6,7 +6,7 @@ export function createMemoryGames() {
       id: "memory_sequence",
       type: "memory_sequence",
       title: "FLASH ORDER",
-      rule: "光った順番を覚えて、その順に押せ",
+      rule: "WATCH THE ORDER, THEN TAP IT BACK!",
       skill: "MEMORY",
       theme: "cyber",
       duration: 10000
@@ -16,7 +16,7 @@ export function createMemoryGames() {
       id: "memory_positions",
       type: "memory_positions",
       title: "GHOST GRID",
-      rule: "光った場所を覚えて、すべて選べ",
+      rule: "REMEMBER THE LIT TILES, THEN TAP THEM ALL!",
       skill: "MEMORY",
       theme: "space",
       duration: 9000
@@ -26,7 +26,7 @@ export function createMemoryGames() {
       id: "memory_numbers",
       type: "memory_numbers",
       title: "NUMBER TRACE",
-      rule: "数字の位置を覚えて、1から順番に押せ",
+      rule: "REMEMBER THE NUMBERS. TAP 1, 2, 3... IN ORDER!",
       skill: "MEMORY",
       theme: "logic",
       duration: 10000
