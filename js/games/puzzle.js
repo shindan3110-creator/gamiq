@@ -7,7 +7,7 @@ export function createPuzzleGames() {
       id: "puzzle_block_escape",
       type: "block_escape",
       title: "BLOCK ESCAPE",
-      rule: "赤いブロックを最短手数で出口へ出せ",
+      rule: "SLIDE THE BLOCKS. GET THE RED ONE OUT!",
       skill: "LOGIC",
       theme: "factory",
       duration: 12000
@@ -16,7 +16,7 @@ export function createPuzzleGames() {
       id: "puzzle_pipe_connect",
       type: "pipe_connect",
       title: "PIPE CONNECT",
-      rule: "3回以内にパイプをつなげ",
+      rule: "ROTATE THE PIPES TO CONNECT THEM!",
       skill: "LOGIC",
       theme: "factory",
       duration: 10000
@@ -25,7 +25,7 @@ export function createPuzzleGames() {
       id: "puzzle_laser_mirror",
       type: "laser_mirror",
       title: "LASER MIRROR",
-      rule: "鏡を動かしてレーザーを標的へ当てろ",
+      rule: "TURN THE MIRROR TO HIT THE TARGET!",
       skill: "LOGIC",
       theme: "cyber",
       duration: 10000
