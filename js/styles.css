@@ -7542,3 +7542,43 @@ BLOCK ESCAPE — PC CLICK CONTROLS
 }
 
 
+
+/* ==========================================
+MOBILE VIEWPORT FIX (Step 4-5)
+Use the visible screen height (dvh) so
+Safari's toolbar does not cover game buttons.
+========================================== */
+
+@supports (height: 100dvh) {
+  #gamiq-app {
+    min-height: 100dvh;
+  }
+
+  .gamiq-v2 {
+    height: 100dvh;
+  }
+
+  .gamiq-feed {
+    height: calc(100dvh - 72px);
+  }
+}
+
+@media (min-width: 701px) {
+  @supports (height: 100dvh) {
+    .gamiq-game-shell {
+      height: min(680px, calc(100dvh - 108px));
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  @supports (height: 100dvh) {
+    .gamiq-feed {
+      height: calc(100dvh - 60px);
+    }
+  }
+
+  .gamiq-game-host {
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+}
