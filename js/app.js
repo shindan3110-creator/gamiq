@@ -258,45 +258,20 @@ function createAppMarkup() {
       <header class="gamiq-live-header">
 
         <div class="gamiq-live-brand">
-
-          <strong>
-            GAMIQ
-          </strong>
-
-          <span>
-            GAME IQ
-          </span>
-
+          <strong>GAMIQ</strong>
+          <span>GAME IQ</span>
         </div>
 
         <div class="gamiq-live-data">
 
           <div class="gamiq-live-item">
-
-            <span>
-              GAMIQ
-            </span>
-
-            <strong
-              data-live-gamiq
-            >
-              ---
-            </strong>
-
+            <span>GAMIQ</span>
+            <strong data-live-gamiq>---</strong>
           </div>
 
           <div class="gamiq-live-item">
-
-            <span>
-              CONFIDENCE
-            </span>
-
-            <strong
-              data-live-confidence
-            >
-              0%
-            </strong>
-
+            <span>CONFIDENCE</span>
+            <strong data-live-confidence>0%</strong>
           </div>
 
           <button
@@ -304,7 +279,7 @@ function createAppMarkup() {
             class="gamiq-results-button"
             data-open-results
           >
-            GAMIQを確認
+            VIEW RESULTS
           </button>
 
         </div>
@@ -315,7 +290,6 @@ function createAppMarkup() {
         class="gamiq-feed"
         data-gamiq-feed
       >
-
         <section
           class="gamiq-feed-card current"
           data-feed-current
@@ -325,33 +299,27 @@ function createAppMarkup() {
           class="gamiq-feed-card next"
           data-feed-next
         ></section>
-
       </main>
 
       <div
         class="gamiq-start-screen"
         data-start-screen
       >
-
         <div class="gamiq-start-inner">
 
-          <div class="gamiq-start-logo">
-            GAMIQ
-          </div>
+          <div class="gamiq-start-logo">GAMIQ</div>
 
-          <div class="gamiq-start-sub">
-            GAME + IQ
-          </div>
+          <div class="gamiq-start-sub">GAME + IQ</div>
 
           <h1>
-            未知のゲームで、<br>
-            本当のゲーム力を測れ。
+            Unknown games.<br>
+            Real gaming skill.
           </h1>
 
           <p>
-            次々に現れるランダムゲームをプレイ。
+            Random mini-games, one after another.
             <br>
-            遊ぶほどGAMIQの測定精度が上がります。
+            The more you play, the more accurate your GAMIQ gets.
           </p>
 
           <button
@@ -359,16 +327,15 @@ function createAppMarkup() {
             class="gamiq-start-button"
             data-gamiq-start
           >
-            START
+            PLAY
           </button>
 
           <small>
-            ゲームは選べません。
-            何が出るかはランダムです。
+            You can't choose the game.
+            Every game is random.
           </small>
 
         </div>
-
       </div>
 
     </div>
@@ -833,8 +800,12 @@ async function enterGame(
           GAME ERROR
         </strong>
 
-        <span>
-          次のゲームへ進んでください
+                <span>
+          ${
+            isDesktopPointer()
+              ? "Scroll to the next game"
+              : "Swipe to the next game"
+          }
         </span>
 
       </div>
