@@ -22,7 +22,7 @@ export function createThreeGames() {
       id: "three_zombie_assault",
       type: "zombie_assault",
       title: "ZOMBIE ASSAULT",
-      rule: "迫ってくるゾンビを倒せ",
+      rule: "SLASH THE ZOMBIES BEFORE THEY REACH YOU!",
       skill: "SPEED",
       theme: "zombie",
       duration: 10000
@@ -32,7 +32,7 @@ export function createThreeGames() {
       id: "three_space_blaster",
       type: "space_blaster",
       title: "SPACE BLASTER",
-      rule: "敵艦を狙って撃ち落とせ",
+      rule: "AIM AND SHOOT DOWN 6 ENEMY SHIPS!",
       skill: "AIM",
       theme: "space",
       duration: 10000
@@ -42,7 +42,7 @@ export function createThreeGames() {
       id: "three_lane_dodge",
       type: "lane_dodge",
       title: "RUSH RUN",
-      rule: "障害物を避け続けろ",
+      rule: "DODGE AND JUMP FOR 60 SECONDS!",
       skill: "REFLEX",
       theme: "race",
       duration: 10000
