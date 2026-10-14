@@ -6,7 +6,7 @@ export function createReflexGames() {
       id: "reflex_ninja_counter",
       type: "ninja_counter",
       title: "NINJA COUNTER",
-      rule: "攻撃方向を見極めて瞬時に迎撃しろ",
+      rule: "HIT THE ENEMY NINJAS. DON'T HIT FRIENDS!",
       skill: "REFLEX",
       theme: "ninja",
       duration: 12000
@@ -16,7 +16,7 @@ export function createReflexGames() {
       id: "reflex_quick_draw",
       type: "quick_draw",
       title: "QUICK DRAW",
-      rule: "フェイントに騙されずDRAWの瞬間だけ撃て",
+      rule: "WAIT FOR \"DRAW!\" THEN SHOOT FAST!",
       skill: "REFLEX",
       theme: "western",
       duration: 12000
@@ -26,7 +26,7 @@ export function createReflexGames() {
       id: "reflex_lane_panic",
       type: "lane_panic",
       title: "LANE PANIC",
-      rule: "迫る障害物を見て安全なレーンへ逃げろ",
+      rule: "MOVE AWAY FROM THE ⚠ LANE!",
       skill: "REFLEX",
       theme: "cyber",
       duration: 12000
@@ -36,7 +36,7 @@ export function createReflexGames() {
       id: "reflex_friend_foe",
       type: "friend_foe",
       title: "FRIEND OR FOE",
-      rule: "3体の中から敵だけを瞬時に撃て",
+      rule: "TAP ONLY THE ENEMY 👾",
       skill: "REFLEX",
       theme: "space",
       duration: 12000
