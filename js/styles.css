@@ -7812,3 +7812,163 @@ PIPE CONNECT V2 (Step 10-2)
     gap: 4px;
   }
 }
+
+
+
+/* ==========================================
+FRIEND OR FOE V2 (Step 10-3)
+========================================== */
+
+.foe2-game {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.foe2-hud {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.foe2-hud > div {
+  padding: 7px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.03);
+  text-align: center;
+}
+
+.foe2-hud span {
+  display: block;
+  color: #7c8798;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.foe2-hud strong {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 1000;
+}
+
+.foe2-arena {
+  position: relative;
+  flex: 1;
+  min-height: 260px;
+  overflow: hidden;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(80, 110, 190, 0.18), transparent 60%),
+    #060a14;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.foe2-arena.foe2-damage {
+  animation: foe2-damage 0.35s ease;
+}
+
+@keyframes foe2-damage {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07); }
+  30% { box-shadow: inset 0 0 0 4px rgba(255, 70, 100, 0.85); }
+}
+
+.foe2-target {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  will-change: transform;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+}
+
+.foe2-target svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.foe2-target.leaving svg {
+  animation: foe2-blink 0.15s steps(2) infinite;
+}
+
+@keyframes foe2-blink {
+  50% { opacity: 0.35; }
+}
+
+.foe2-target.hit svg {
+  transform: scale(1.5);
+  opacity: 0;
+}
+
+.foe2-target.gone svg {
+  transform: scale(0.3);
+  opacity: 0;
+}
+
+.foe2-target.hit,
+.foe2-target.gone {
+  pointer-events: none;
+}
+
+.foe2-shot {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: foe2-shot 0.32s ease-out forwards;
+}
+
+.foe2-shot.hit {
+  border: 3px solid #ffe36b;
+}
+
+.foe2-shot.miss {
+  border: 2px solid rgba(255, 255, 255, 0.45);
+}
+
+@keyframes foe2-shot {
+  from { transform: scale(0.4); opacity: 1; }
+  to { transform: scale(1.6); opacity: 0; }
+}
+
+.foe2-message {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  color: #79f6ab;
+  font-size: 20px;
+  font-weight: 1000;
+  letter-spacing: 0.06em;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.foe2-message.bad {
+  color: #ff5a73;
+}
+
+.foe2-message.show {
+  animation: foe2-message 0.45s ease forwards;
+}
+
+@keyframes foe2-message {
+  0% { opacity: 0; transform: translate(-50%, 6px); }
+  20% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -6px); }
+}
