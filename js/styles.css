@@ -7622,3 +7622,40 @@ RESULTS STATS (Step 9)
     grid-template-columns: 1fr;
   }
 }
+
+
+
+/* ==========================================
+LANE PANIC V2 (Step 10-1)
+========================================== */
+
+.lane-panic-round {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #9aa5b5;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.lane-player.lane-safe {
+  color: #79f6ab;
+  transform: translateX(-50%) scale(1.18);
+  text-shadow: 0 0 18px rgba(121, 246, 171, 0.8);
+}
+
+.lane-player.lane-crash {
+  color: #ff4c67;
+  animation: lane-crash-shake 0.3s ease;
+}
+
+@keyframes lane-crash-shake {
+  0%, 100% { transform: translateX(-50%); }
+  25% { transform: translateX(calc(-50% - 8px)); }
+  75% { transform: translateX(calc(-50% + 8px)); }
+}
