@@ -1,7 +1,19 @@
 // GAMIQ（ゲーミック） v2 - Score Engine
 
+// Saved in this browser so GAMIQ continues after a reload.
+const STORAGE_KEY = "gamiq_v2_record";
+const STORAGE_VERSION = 1;
+
+// Keep the newest scores only, so storage never grows forever.
+const MAX_SCORES_PER_SKILL = 300;
+
 export class GamiqScore {
   constructor() {
+    this.resetState();
+    this.load();
+  }
+
+  resetState() {
     this.skills = {
       REFLEX: [],
       SPEED: [],
@@ -12,6 +24,82 @@ export class GamiqScore {
     };
 
     this.played = 0;
+
+    this.cleared = 0;
+    this.failed = 0;
+
+    this.currentStreak = 0;
+    this.bestStreak = 0;
+
+    this.totalPlayMs = 0;
+  }
+
+  /* ==========================================
+  SAVE / LOAD (localStorage)
+  ========================================== */
+
+  load() {
+    try {
+      const raw =
+        window.localStorage.getItem(STORAGE_KEY);
+
+      if (!raw) {
+        return;
+      }
+
+      const data = JSON.parse(raw);
+
+      if (
+        !data ||
+        data.version !== STORAGE_VERSION ||
+        typeof data.skills !== "object"
+      ) {
+        return;
+      }
+
+      for (const skill of Object.keys(this.skills)) {
+        const values = data.skills[skill];
+
+        if (Array.isArray(values)) {
+          this.skills[skill] = values
+            .map(Number)
+            .filter(Number.isFinite)
+            .slice(-MAX_SCORES_PER_SKILL);
+        }
+      }
+
+      this.played = safeCount(data.played);
+      this.cleared = safeCount(data.cleared);
+      this.failed = safeCount(data.failed);
+      this.currentStreak = safeCount(data.currentStreak);
+      this.bestStreak = safeCount(data.bestStreak);
+      this.totalPlayMs = safeCount(data.totalPlayMs);
+
+    } catch (error) {
+      // Broken or blocked storage: start fresh.
+      this.resetState();
+    }
+  }
+
+  save() {
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          version: STORAGE_VERSION,
+          skills: this.skills,
+          played: this.played,
+          cleared: this.cleared,
+          failed: this.failed,
+          currentStreak: this.currentStreak,
+          bestStreak: this.bestStreak,
+          totalPlayMs: this.totalPlayMs,
+          savedAt: Date.now()
+        })
+      );
+    } catch (error) {
+      // Private mode etc. The game keeps working without saving.
+    }
   }
 
   clamp(value, min = 0, max = 100) {
@@ -30,7 +118,9 @@ export class GamiqScore {
   addResult({
     skill,
     score,
-    adapt = 50
+    adapt = 50,
+    success = null,
+    durationMs = 0
   }) {
     if (!this.skills[skill]) {
       return;
@@ -47,7 +137,33 @@ export class GamiqScore {
     this.skills[skill].push(safeScore);
     this.skills.ADAPT.push(safeAdapt);
 
+    this.skills[skill] =
+      this.skills[skill].slice(-MAX_SCORES_PER_SKILL);
+
+    this.skills.ADAPT =
+      this.skills.ADAPT.slice(-MAX_SCORES_PER_SKILL);
+
     this.played++;
+
+    if (success === true) {
+      this.cleared++;
+      this.currentStreak++;
+
+      this.bestStreak = Math.max(
+        this.bestStreak,
+        this.currentStreak
+      );
+    } else if (success === false) {
+      this.failed++;
+      this.currentStreak = 0;
+    }
+
+    this.totalPlayMs += Math.max(
+      0,
+      Math.round(Number(durationMs) || 0)
+    );
+
+    this.save();
   }
 
   getSkillScore(skill) {
@@ -280,20 +396,49 @@ export class GamiqScore {
       },
 
       counts:
-        this.getAbilityCounts()
+        this.getAbilityCounts(),
+
+      cleared:
+        this.cleared,
+
+      failed:
+        this.failed,
+
+      clearRate:
+        this.cleared + this.failed > 0
+          ? Math.round(
+              100 * this.cleared /
+              (this.cleared + this.failed)
+            )
+          : null,
+
+      currentStreak:
+        this.currentStreak,
+
+      bestStreak:
+        this.bestStreak,
+
+      totalPlaySeconds:
+        Math.round(this.totalPlayMs / 1000)
     };
   }
 
   reset() {
-    this.skills = {
-      REFLEX: [],
-      SPEED: [],
-      AIM: [],
-      LOGIC: [],
-      MEMORY: [],
-      ADAPT: []
-    };
+    this.resetState();
 
-    this.played = 0;
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      // Ignore.
+    }
   }
+}
+
+
+function safeCount(value) {
+  const number = Number(value);
+
+  return Number.isFinite(number) && number > 0
+    ? Math.floor(number)
+    : 0;
 }
