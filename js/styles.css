@@ -7582,3 +7582,19 @@ Safari's toolbar does not cover game buttons.
     padding-bottom: calc(10px + env(safe-area-inset-bottom));
   }
 }
+
+
+/* ==========================================
+RESULTS BUTTON LOCK (Step 7)
+Dim the button while a game is being played.
+========================================== */
+
+.gamiq-results-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.gamiq-results-button:disabled:hover {
+  background: rgba(255, 255, 255, 0.045);
+}
