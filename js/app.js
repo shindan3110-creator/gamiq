@@ -208,6 +208,11 @@ function boot() {
   resultsButton.addEventListener(
     "click",
     () => {
+      // A案: results cannot be opened while a game is being played.
+      if (resultsButton.disabled) {
+        return;
+      }
+
       analytics.resultsOpen(
         scoreEngine.getSummary()
       );
@@ -506,6 +511,9 @@ async function enterGame(
   currentFinished =
     false;
 
+  // Rule screen: results can still be opened.
+  setResultsLocked(false);
+
 
   if (
     previousGame &&
@@ -572,6 +580,15 @@ async function enterGame(
 
   await wait(1800);
 
+  // If the results screen is open, wait until it is closed
+  // so the game does not start behind it.
+  while (
+    isResultsOpen() &&
+    runToken === activeRunToken
+  ) {
+    await wait(150);
+  }
+
 
   if (
     runToken !==
@@ -589,6 +606,9 @@ async function enterGame(
   analytics.miniGameStart(
     game
   );
+
+  // Playing: lock the results button.
+  setResultsLocked(true);
 
 
   let completed =
@@ -649,6 +669,8 @@ async function enterGame(
 
       currentFinished =
         true;
+
+      setResultsLocked(false);
 
 
       const summary =
@@ -795,6 +817,8 @@ async function enterGame(
 
     currentFinished =
       true;
+
+    setResultsLocked(false);
 
 
     host.innerHTML = `
@@ -1075,6 +1099,35 @@ function safeScore(
       Math.round(
         numeric
       )
+    )
+  );
+}
+
+
+function setResultsLocked(locked) {
+  const button =
+    document.querySelector(
+      "[data-open-results]"
+    );
+
+  if (!button) {
+    return;
+  }
+
+  button.disabled =
+    locked;
+
+  button.setAttribute(
+    "aria-disabled",
+    String(locked)
+  );
+}
+
+
+function isResultsOpen() {
+  return Boolean(
+    document.querySelector(
+      ".gamiq-results-overlay.show"
     )
   );
 }
