@@ -1800,7 +1800,11 @@ function runQuickDraw({
 
 
 /* ==========================================
-LANE PANIC
+LANE PANIC (v2: no free points for standing still)
+- Each round, 2 of the 3 lanes are dangerous.
+- YOUR lane is always one of them, so you must move.
+- The safe lane can be 2 lanes away (2 taps needed).
+- Rounds get faster as you go.
 ========================================== */
 
 function runLanePanic({
@@ -1815,12 +1819,17 @@ function runLanePanic({
 
   const rounds = 8;
 
-  let dangerLane = null;
+  let safeLane = null;
+  let reachedSafeAt = null;
 
   const reactions = [];
 
   let signalTime = 0;
   let timer = null;
+  let nextTimer = null;
+
+  const startedAt =
+    performance.now();
 
 
   container.innerHTML = `
@@ -1832,6 +1841,20 @@ function runLanePanic({
       >
 
         <div class="lane-panic-road">
+
+          <div
+            class="lane-panic-round"
+            data-lane-round
+          >
+            1 / ${rounds}
+          </div>
+
+          <div
+            class="lane-warning"
+            data-lane-warning
+          >
+            ⚠
+          </div>
 
           <div
             class="lane-warning"
@@ -1879,9 +1902,16 @@ function runLanePanic({
       "[data-lane-player]"
     );
 
-  const warning =
+  const warnings =
+    [
+      ...container.querySelectorAll(
+        "[data-lane-warning]"
+      )
+    ];
+
+  const roundLabel =
     container.querySelector(
-      "[data-lane-warning]"
+      "[data-lane-round]"
     );
 
   const leftButton =
@@ -1895,9 +1925,23 @@ function runLanePanic({
     );
 
 
+  function laneLeft(index) {
+    return `${16.5 + index * 33.5}%`;
+  }
+
+
   function updatePlayer() {
     player.style.left =
-      `${16.5 + lane * 33.5}%`;
+      laneLeft(lane);
+  }
+
+
+  function roundWindow() {
+    // 1.0s at the start -> 0.65s in the last round
+    return Math.round(
+      1000 -
+      (round / Math.max(1, rounds - 1)) * 350
+    );
   }
 
 
@@ -1906,34 +1950,60 @@ function runLanePanic({
       return;
     }
 
-    dangerLane =
-      Math.floor(
-        Math.random() * 3
+    roundLabel.textContent =
+      `${round + 1} / ${rounds}`;
+
+    // The safe lane is never the lane you are in now.
+    const options =
+      [0, 1, 2].filter(
+        index => index !== lane
       );
 
-    warning.style.left =
-      `${16.5 +
-        dangerLane *
-        33.5}%`;
+    safeLane =
+      options[
+        Math.floor(
+          Math.random() *
+          options.length
+        )
+      ];
 
-    warning.classList.remove(
-      "show"
-    );
+    reachedSafeAt = null;
 
-    void warning.offsetWidth;
+    const dangerLanes =
+      [0, 1, 2].filter(
+        index => index !== safeLane
+      );
 
-    warning.classList.add(
-      "show"
+    const windowMs =
+      roundWindow();
+
+    warnings.forEach(
+      (warning, i) => {
+        warning.style.left =
+          laneLeft(dangerLanes[i]);
+
+        warning.style.animationDuration =
+          `${windowMs}ms`;
+
+        warning.classList.remove(
+          "show"
+        );
+
+        void warning.offsetWidth;
+
+        warning.classList.add(
+          "show"
+        );
+      }
     );
 
     signalTime =
       performance.now();
 
-
     timer =
       setTimeout(
         resolveRound,
-        700
+        windowMs
       );
   }
 
@@ -1941,7 +2011,10 @@ function runLanePanic({
   function changeLane(
     direction
   ) {
-    if (!active) {
+    if (
+      !active ||
+      safeLane === null
+    ) {
       return;
     }
 
@@ -1954,10 +2027,14 @@ function runLanePanic({
 
     updatePlayer();
 
-    reactions.push(
-      performance.now() -
-      signalTime
-    );
+    // Reaction = time until you first reach the safe lane.
+    if (
+      lane === safeLane &&
+      reachedSafeAt === null
+    ) {
+      reachedSafeAt =
+        performance.now();
+    }
   }
 
 
@@ -1966,11 +2043,16 @@ function runLanePanic({
       return;
     }
 
-    if (
-      lane !==
-      dangerLane
-    ) {
+    const safe =
+      lane === safeLane;
+
+    if (safe) {
       survived++;
+
+      reactions.push(
+        (reachedSafeAt ?? performance.now()) -
+        signalTime
+      );
 
       player.classList.add(
         "lane-safe"
@@ -1981,25 +2063,28 @@ function runLanePanic({
       );
     }
 
+    safeLane = null;
+
     round++;
 
-    setTimeout(
-      () => {
-        player.classList.remove(
-          "lane-safe",
-          "lane-crash"
-        );
+    nextTimer =
+      setTimeout(
+        () => {
+          player.classList.remove(
+            "lane-safe",
+            "lane-crash"
+          );
 
-        if (
-          round >= rounds
-        ) {
-          finish();
-        } else {
-          nextRound();
-        }
-      },
-      250
-    );
+          if (
+            round >= rounds
+          ) {
+            finish();
+          } else {
+            nextRound();
+          }
+        },
+        320
+      );
   }
 
 
@@ -2019,6 +2104,7 @@ function runLanePanic({
       event.key ===
       "ArrowLeft"
     ) {
+      event.preventDefault();
       left();
     }
 
@@ -2026,6 +2112,7 @@ function runLanePanic({
       event.key ===
       "ArrowRight"
     ) {
+      event.preventDefault();
       right();
     }
   }
@@ -2048,65 +2135,101 @@ function runLanePanic({
 
 
   function finish() {
+    if (!active) {
+      return;
+    }
+
     active = false;
 
     clearTimeout(timer);
+    clearTimeout(nextTimer);
 
     const successRate =
       survived / rounds;
 
+    // Only successful rounds have a reaction time.
     const avgReaction =
       reactions.length
         ? average(
             reactions
           )
-        : 700;
+        : 1000;
 
+    // 200ms -> 100, 700ms -> 0
     const reactionScore =
       clamp(
         100 -
         (
           avgReaction -
-          150
-        ) / 7,
+          200
+        ) / 5,
         0,
         100
       );
 
+    // Reaction only counts as much as you actually survived.
     const score =
       successRate * 70 +
-      reactionScore * 0.30;
+      reactionScore * 0.30 * successRate;
 
     onComplete?.({
       score:
-        Math.round(score),
+        Math.round(
+          clamp(score, 0, 100)
+        ),
 
       adapt:
         Math.round(
           clamp(
-            45 +
-            successRate * 45,
+            40 +
+            successRate * 50,
             0,
             100
           )
         ),
 
       meta: {
+        success:
+          survived >= 6,
         survived,
-        rounds
+        rounds,
+        avgReaction:
+          Math.round(avgReaction),
+        elapsed:
+          Math.round(
+            performance.now() -
+            startedAt
+          )
       }
     });
   }
 
 
   updatePlayer();
-  nextRound();
+
+  // Short pause so the first round is not a surprise.
+  nextTimer =
+    setTimeout(
+      nextRound,
+      400
+    );
 
 
   return () => {
     active = false;
 
     clearTimeout(timer);
+    clearTimeout(nextTimer);
+
+    leftButton.removeEventListener(
+      "pointerdown",
+      left
+    );
+
+    rightButton.removeEventListener(
+      "pointerdown",
+      right
+    );
 
     window.removeEventListener(
       "keydown",
