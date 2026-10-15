@@ -82,6 +82,10 @@ let previousGame =
 let started =
   false;
 
+// Games finished in this visit (lifetime count is in scoreEngine).
+let sessionGames =
+  0;
+
 
 /* ==========================================
 GAME POOL
@@ -610,6 +614,9 @@ async function enterGame(
   // Playing: lock the results button.
   setResultsLocked(true);
 
+  const gameStartedAt =
+    performance.now();
+
 
   let completed =
     false;
@@ -657,14 +664,50 @@ async function enterGame(
         );
 
 
-      scoreEngine.addResult({
-        skill:
-          game.skill,
+      const playMs =
+        performance.now() -
+        gameStartedAt;
 
-        score,
 
-        adapt
-      });
+      const safetyTimeout =
+        result?.meta?.safetyTimeout === true;
+
+
+      /*
+       * CLEAR / FAIL
+       * Games that report meta.success use it.
+       * Other games count as a clear at 60 points or more.
+       */
+
+      const success =
+        typeof result?.meta?.success ===
+          "boolean"
+          ? result.meta.success
+          : score >= 60;
+
+
+      /*
+       * A safety timeout means a bug, not the player's skill.
+       * It is not added to GAMIQ.
+       */
+
+      if (!safetyTimeout) {
+        scoreEngine.addResult({
+          skill:
+            game.skill,
+
+          score,
+
+          adapt,
+
+          success,
+
+          durationMs:
+            playMs
+        });
+
+        sessionGames++;
+      }
 
 
       currentFinished =
@@ -684,7 +727,16 @@ async function enterGame(
 
         adapt,
 
-        summary
+        summary,
+
+        success,
+
+        playSeconds:
+          playMs / 1000,
+
+        sessionGames,
+
+        safetyTimeout
       });
 
 
@@ -693,7 +745,10 @@ async function enterGame(
 
       showCardComplete(
         card,
-        score
+        safetyTimeout
+          ? null
+          : score,
+        safetyTimeout
       );
     };
 
