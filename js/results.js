@@ -39,7 +39,7 @@ export class GamiqResults {
         class="gamiq-results-card"
         role="dialog"
         aria-modal="true"
-        aria-label="GAMIQ結果"
+        aria-label="GAMIQ results"
       >
 
         <div class="gamiq-results-label">
@@ -56,7 +56,7 @@ export class GamiqResults {
         <div class="gamiq-results-confidence">
 
           <span>
-            測定精度
+            CONFIDENCE
           </span>
 
           <strong
@@ -150,7 +150,7 @@ export class GamiqResults {
           class="gamiq-results-continue"
           data-results-continue
         >
-          ゲームを続ける
+          KEEP PLAYING
         </button>
 
       </div>
@@ -283,10 +283,10 @@ export class GamiqResults {
       summary.gamesToNextTarget !== null
     ) {
       nextElement.textContent =
-        `あと${summary.gamesToNextTarget}ゲームで測定精度${summary.nextConfidenceTarget}%目安`;
+          `About ${summary.gamesToNextTarget} more games to reach ${summary.nextConfidenceTarget}% confidence`;
     } else {
       nextElement.textContent =
-        "十分な測定データが集まっています";
+          "Your GAMIQ is well measured. Keep playing to improve it!";
     }
   }
 
