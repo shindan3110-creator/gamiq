@@ -48,6 +48,23 @@ const STRINGS = {
     "results.enough":
       "Your GAMIQ is well measured. Keep playing to improve it!",
 
+    /* ---------- IN-GAME: MEMORY ---------- */
+    "memory.watch": "WATCH",
+    "memory.yourTurn": "YOUR TURN",
+    "memory.remember": "REMEMBER",
+    "memory.select": "SELECT",
+    "memory.tapInOrder": "TAP 1 → 2 → 3...",
+
+    /* ---------- IN-GAME: BLOCK ESCAPE ---------- */
+    "block.hintClick": "Click a block, then click an arrow to move it",
+    "block.hintSwipe": "Swipe the blocks. Get the red one out to the right!",
+    "block.moveLeft": "Move left",
+    "block.moveRight": "Move right",
+    "block.moveUp": "Move up",
+    "block.moveDown": "Move down",
+    "block.targetLabel": "Red escape block",
+    "block.blockLabel": "Block {id}",
+
     /* ---------- GAME RULES (key = game id) ---------- */
     "rule.reflex_ninja_counter":
       "HIT THE ENEMY NINJAS. DON'T HIT FRIENDS!",
@@ -98,6 +115,23 @@ const STRINGS = {
       "あと約{games}ゲームで測定精度{target}%",
     "results.enough":
       "十分な測定データが集まっています。遊ぶほど更新されます！",
+
+    /* ---------- IN-GAME: MEMORY ---------- */
+    "memory.watch": "見て覚えろ",
+    "memory.yourTurn": "あなたの番",
+    "memory.remember": "覚えろ",
+    "memory.select": "押せ！",
+    "memory.tapInOrder": "1 → 2 → 3… の順に押せ",
+
+    /* ---------- IN-GAME: BLOCK ESCAPE ---------- */
+    "block.hintClick": "ブロックをクリック → 矢印をクリックして移動",
+    "block.hintSwipe": "ブロックをスワイプして、赤いブロックを右へ",
+    "block.moveLeft": "左へ移動",
+    "block.moveRight": "右へ移動",
+    "block.moveUp": "上へ移動",
+    "block.moveDown": "下へ移動",
+    "block.targetLabel": "赤い脱出ブロック",
+    "block.blockLabel": "ブロック {id}",
 
     /* ---------- GAME RULES (key = game id) ---------- */
     "rule.reflex_ninja_counter": "敵の忍者だけを叩け！味方は叩くな！",
