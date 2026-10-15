@@ -17,6 +17,12 @@ const SUPPORTED = ["en", "ja"];
 
 const STRINGS = {
   en: {
+    /* ---------- PAGE (browser tab / search results) ---------- */
+    "meta.title": "GAMIQ | Random Mini-Games That Measure Your Gaming Skill",
+    "meta.description":
+      "GAMIQ is a free browser game. Play random mini-games one after another " +
+      "and measure your gaming skill across REFLEX, SPEED, AIM, LOGIC, MEMORY and ADAPT.",
+
     /* ---------- HEADER ---------- */
     "header.viewResults": "VIEW RESULTS",
 
@@ -85,6 +91,12 @@ const STRINGS = {
   },
 
   ja: {
+    /* ---------- PAGE (browser tab / search results) ---------- */
+    "meta.title": "GAMIQ（ゲーミック）｜未知のゲームで本当のゲーム力を測る",
+    "meta.description":
+      "GAMIQ（ゲーミック）は、次々に現れるランダムなミニゲームをプレイして、" +
+      "REFLEX・SPEED・AIM・LOGIC・MEMORY・ADAPTからゲーム力を測る無料ゲームです。",
+
     /* ---------- HEADER ---------- */
     "header.viewResults": "結果を見る",
 
@@ -210,4 +222,20 @@ export function t(key, vars = null, fallback = null) {
   }
 
   return text;
+}
+
+
+/* ==========================================
+PAGE TITLE / DESCRIPTION
+(index.html has English by default; switch for other languages)
+========================================== */
+
+try {
+  document.title = t("meta.title");
+
+  document
+    .querySelector('meta[name="description"]')
+    ?.setAttribute("content", t("meta.description"));
+} catch (error) {
+  // Never stop the game because of the page title.
 }
