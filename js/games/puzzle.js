@@ -667,99 +667,555 @@ function createRandomEscapeBoard() {
 }
 
 /* ==========================================
-PIPE CONNECT — ORIGINAL
+PIPE CONNECT (v2: a real rotation puzzle)
+- 4x4 tiles. Water comes IN on the left, must go OUT on the right.
+- Tap / click a tile to rotate it 90°.
+- Connected pipes light up as water flows.
+- Every board is generated randomly and is always solvable.
 ========================================== */
+
+const PIPE_SIZE = 4;
+const PIPE_TIME_LIMIT = 40000;
+
+// Directions as bits
+const PIPE_N = 1;
+const PIPE_E = 2;
+const PIPE_S = 4;
+const PIPE_W = 8;
+
+const PIPE_DIRS = [
+  { bit: PIPE_N, dx: 0, dy: -1, opposite: PIPE_S },
+  { bit: PIPE_E, dx: 1, dy: 0, opposite: PIPE_W },
+  { bit: PIPE_S, dx: 0, dy: 1, opposite: PIPE_N },
+  { bit: PIPE_W, dx: -1, dy: 0, opposite: PIPE_E }
+];
+
+// Base shapes at rotation 0
+const PIPE_BASE = {
+  straight: PIPE_N | PIPE_S,
+  corner: PIPE_N | PIPE_E
+};
+
+function pipeRotateMask(mask, turns) {
+  let result = mask;
+
+  for (let i = 0; i < turns % 4; i++) {
+    result =
+      ((result << 1) | (result >> 3)) & 15;
+  }
+
+  return result;
+}
+
+function pipeMask(tile) {
+  return pipeRotateMask(
+    PIPE_BASE[tile.type],
+    tile.rotation
+  );
+}
+
+
+function createPipeBoard() {
+  // Random path from the left edge to the right edge.
+  for (let attempt = 0; attempt < 200; attempt++) {
+    const startY =
+      Math.floor(Math.random() * PIPE_SIZE);
+
+    const path = [{ x: 0, y: startY }];
+    const visited = new Set([`0,${startY}`]);
+
+    let ok = false;
+
+    while (path.length < 14) {
+      const last = path[path.length - 1];
+
+      if (
+        last.x === PIPE_SIZE - 1 &&
+        path.length >= 7
+      ) {
+        ok = true;
+        break;
+      }
+
+      const options = PIPE_DIRS
+        .map(dir => ({
+          x: last.x + dir.dx,
+          y: last.y + dir.dy
+        }))
+        .filter(cell =>
+          cell.x >= 0 &&
+          cell.y >= 0 &&
+          cell.x < PIPE_SIZE &&
+          cell.y < PIPE_SIZE &&
+          !visited.has(`${cell.x},${cell.y}`)
+        );
+
+      if (!options.length) {
+        break;
+      }
+
+      // Slight preference for moving right keeps paths reasonable.
+      const weighted = options.flatMap(cell =>
+        cell.x > last.x
+          ? [cell, cell]
+          : [cell]
+      );
+
+      const next =
+        weighted[
+          Math.floor(Math.random() * weighted.length)
+        ];
+
+      path.push(next);
+      visited.add(`${next.x},${next.y}`);
+    }
+
+    if (
+      !ok ||
+      path.length < 7 ||
+      path.length > 11
+    ) {
+      continue;
+    }
+
+    return buildPipeTiles(path);
+  }
+
+  // Fallback (practically never used): a simple fixed path.
+  return buildPipeTiles([
+    { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 1, y: 2 },
+    { x: 2, y: 2 }, { x: 2, y: 1 }, { x: 3, y: 1 }
+  ]);
+}
+
+
+function buildPipeTiles(path) {
+  const tiles = [];
+
+  for (let y = 0; y < PIPE_SIZE; y++) {
+    for (let x = 0; x < PIPE_SIZE; x++) {
+      tiles.push({
+        x,
+        y,
+        type:
+          Math.random() < 0.5
+            ? "straight"
+            : "corner",
+        rotation:
+          Math.floor(Math.random() * 4),
+        onPath: false,
+        targets: []
+      });
+    }
+  }
+
+  const tileAt = (x, y) =>
+    tiles[y * PIPE_SIZE + x];
+
+  const directionBit = (from, to) =>
+    PIPE_DIRS.find(dir =>
+      from.x + dir.dx === to.x &&
+      from.y + dir.dy === to.y
+    ).bit;
+
+  let idealRotations = 0;
+
+  path.forEach((cell, index) => {
+    const inBit =
+      index === 0
+        ? PIPE_W
+        : directionBit(cell, path[index - 1]);
+
+    const outBit =
+      index === path.length - 1
+        ? PIPE_E
+        : directionBit(cell, path[index + 1]);
+
+    const needed = inBit | outBit;
+
+    const type =
+      needed === (PIPE_N | PIPE_S) ||
+      needed === (PIPE_E | PIPE_W)
+        ? "straight"
+        : "corner";
+
+    const targets = [0, 1, 2, 3].filter(
+      turns =>
+        pipeRotateMask(PIPE_BASE[type], turns) === needed
+    );
+
+    const tile = tileAt(cell.x, cell.y);
+
+    tile.type = type;
+    tile.onPath = true;
+    tile.targets = targets;
+
+    // Scramble: start in a wrong rotation most of the time.
+    const wrong = [0, 1, 2, 3].filter(
+      turns => !targets.includes(turns)
+    );
+
+    tile.rotation =
+      Math.random() < 0.85
+        ? wrong[Math.floor(Math.random() * wrong.length)]
+        : targets[0];
+
+    idealRotations += Math.min(
+      ...targets.map(
+        turns => (turns - tile.rotation + 4) % 4
+      )
+    );
+  });
+
+  return {
+    tiles,
+    startY: path[0].y,
+    endY: path[path.length - 1].y,
+    pathLength: path.length,
+    idealRotations: Math.max(1, idealRotations)
+  };
+}
+
 
 function runPipeConnect({
   container,
   onComplete
 }) {
+  let board = createPipeBoard();
+
+  // Make sure the puzzle is not already solved.
+  while (tracePipeFlow(board).solved) {
+    board = createPipeBoard();
+  }
+
   let active = true;
   let moves = 0;
+  let finishTimer = null;
+  let clockTimer = null;
 
-  const tiles = [
-    0, 1, 0,
-    2, 3, 1,
-    0, 2, 0
-  ];
+  const startedAt = performance.now();
 
   container.innerHTML = `
-    <div class="puzzle-wrap">
-      <div class="puzzle-top">
-        <span>ROTATIONS</span>
-        <strong data-pipe-moves>0</strong>
+    <div class="puzzle-wrap pipe2-game">
+
+      <div class="pipe2-hud">
+        <div>
+          <span>ROTATIONS</span>
+          <strong data-pipe-moves>0</strong>
+        </div>
+
+        <div>
+          <span>TIME</span>
+          <strong data-pipe-time>${PIPE_TIME_LIMIT / 1000}</strong>
+        </div>
       </div>
 
-      <div class="pipe-grid" data-pipe-grid></div>
+      <div class="pipe2-board" data-pipe-board></div>
+
+      <div class="puzzle-message pipe2-message" data-pipe-message>
+        IN → OUT
+      </div>
+
     </div>
   `;
 
-  const grid = container.querySelector(
-    "[data-pipe-grid]"
-  );
+  const boardElement =
+    container.querySelector("[data-pipe-board]");
 
-  const display = container.querySelector(
-    "[data-pipe-moves]"
-  );
+  const movesDisplay =
+    container.querySelector("[data-pipe-moves]");
 
-  render();
+  const timeDisplay =
+    container.querySelector("[data-pipe-time]");
 
-  function render() {
-    grid.innerHTML = "";
+  const messageElement =
+    container.querySelector("[data-pipe-message]");
 
-    tiles.forEach((rotation, index) => {
+
+  /* ---------- BUILD BOARD ---------- */
+
+  const tileButtons = [];
+
+  for (let row = 0; row < PIPE_SIZE; row++) {
+    // Left edge: IN marker on the start row
+    const left = document.createElement("div");
+
+    left.className = "pipe2-edge";
+
+    if (row === board.startY) {
+      left.classList.add("in");
+      left.textContent = "IN";
+    }
+
+    boardElement.appendChild(left);
+
+    for (let col = 0; col < PIPE_SIZE; col++) {
+      const tile =
+        board.tiles[row * PIPE_SIZE + col];
+
       const button = document.createElement("button");
 
       button.type = "button";
-      button.className = "pipe-tile";
+      button.className = "pipe2-tile";
+      button.setAttribute(
+        "aria-label",
+        `Pipe ${col + 1}-${row + 1}`
+      );
 
-      button.style.transform =
-        `rotate(${rotation * 90}deg)`;
+      button.innerHTML = `
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          ${
+            tile.type === "straight"
+              ? `
+                <path class="pipe2-shell" d="M50 0 V100" />
+                <path class="pipe2-water" d="M50 0 V100" />
+              `
+              : `
+                <path class="pipe2-shell" d="M50 0 V50 H100" />
+                <path class="pipe2-water" d="M50 0 V50 H100" />
+              `
+          }
+        </svg>
+      `;
 
-      button.innerHTML = "└";
+      // Keep a running angle so the animation always turns clockwise.
+      tile.angle = tile.rotation * 90;
 
-      button.addEventListener("click", () => {
-        if (!active) return;
+      const svg = button.querySelector("svg");
+      svg.style.transform = `rotate(${tile.angle}deg)`;
 
-        tiles[index] =
-          (tiles[index] + 1) % 4;
-
-        moves++;
-        display.textContent = moves;
-
-        if (moves >= 3) {
-          finish();
-        }
-
-        render();
+      button.addEventListener("pointerdown", event => {
+        event.preventDefault();
+        rotateTile(tile, svg);
       });
 
-      grid.appendChild(button);
-    });
+      boardElement.appendChild(button);
+
+      tileButtons.push({ tile, button });
+    }
+
+    // Right edge: OUT marker on the end row
+    const right = document.createElement("div");
+
+    right.className = "pipe2-edge";
+
+    if (row === board.endY) {
+      right.classList.add("out");
+      right.textContent = "OUT";
+    }
+
+    boardElement.appendChild(right);
   }
 
-  function finish() {
-    if (!active) return;
+
+  /* ---------- PLAY ---------- */
+
+  function rotateTile(tile, svg) {
+    if (!active) {
+      return;
+    }
+
+    tile.rotation = (tile.rotation + 1) % 4;
+    tile.angle += 90;
+
+    svg.style.transform = `rotate(${tile.angle}deg)`;
+
+    moves++;
+    movesDisplay.textContent = String(moves);
+
+    const flow = tracePipeFlow(board);
+
+    paintFlow(flow);
+
+    if (flow.solved) {
+      finish(true);
+    }
+  }
+
+
+  function paintFlow(flow) {
+    tileButtons.forEach(({ tile, button }) => {
+      button.classList.toggle(
+        "flow",
+        flow.filled.has(tile)
+      );
+    });
+
+    boardElement
+      .querySelector(".pipe2-edge.out")
+      ?.classList.toggle("flow", flow.solved);
+  }
+
+
+  /* ---------- TIMER ---------- */
+
+  clockTimer = setInterval(() => {
+    if (!active) {
+      return;
+    }
+
+    const left = Math.max(
+      0,
+      PIPE_TIME_LIMIT -
+      (performance.now() - startedAt)
+    );
+
+    timeDisplay.textContent =
+      String(Math.ceil(left / 1000));
+
+    timeDisplay.classList.toggle(
+      "danger",
+      left <= 5000
+    );
+
+    if (left <= 0) {
+      finish(false);
+    }
+  }, 200);
+
+
+  /* ---------- FINISH ---------- */
+
+  function finish(success) {
+    if (!active) {
+      return;
+    }
 
     active = false;
 
-    const score = clamp(
-      100 - Math.max(0, moves - 3) * 15,
-      0,
-      100
-    );
+    clearInterval(clockTimer);
 
-    onComplete?.({
-      score,
-      adapt: 70,
-      meta: { moves }
-    });
+    const elapsed =
+      performance.now() - startedAt;
+
+    const ideal = board.idealRotations;
+
+    const flow = tracePipeFlow(board);
+
+    let score;
+
+    if (success) {
+      // Extra rotations and slow solving lower the score.
+      const extraMoves =
+        Math.max(0, moves - ideal);
+
+      const allowedMs =
+        3000 + ideal * 700;
+
+      const timePenalty =
+        Math.max(0, elapsed - allowedMs) / 400;
+
+      score = clamp(
+        100 - extraMoves * 4 - timePenalty,
+        25,
+        100
+      );
+
+      messageElement.textContent = "CONNECTED!";
+      boardElement.classList.add("solved");
+
+    } else {
+      // Partial credit: how far the water got along the way.
+      score = clamp(
+        (flow.filled.size / board.pathLength) * 40,
+        0,
+        40
+      );
+
+      messageElement.textContent = "TIME UP";
+      boardElement.classList.add("failed");
+    }
+
+    finishTimer = setTimeout(() => {
+      onComplete?.({
+        score: Math.round(score),
+
+        adapt: Math.round(
+          clamp(
+            success
+              ? 55 + (ideal / Math.max(ideal, moves)) * 45
+              : 30 + (flow.filled.size / board.pathLength) * 25,
+            0,
+            100
+          )
+        ),
+
+        meta: {
+          success,
+          moves,
+          idealRotations: ideal,
+          elapsed: Math.round(elapsed)
+        }
+      });
+    }, success ? 650 : 400);
   }
+
 
   return () => {
     active = false;
+
+    clearInterval(clockTimer);
+    clearTimeout(finishTimer);
   };
 }
+
+
+/*
+ * Follow the water from IN.
+ * Returns the filled tiles and whether it reaches OUT.
+ */
+function tracePipeFlow(board) {
+  const filled = new Set();
+
+  const tileAt = (x, y) =>
+    x >= 0 && y >= 0 && x < PIPE_SIZE && y < PIPE_SIZE
+      ? board.tiles[y * PIPE_SIZE + x]
+      : null;
+
+  let x = 0;
+  let y = board.startY;
+  let enteringFrom = PIPE_W;
+
+  for (let steps = 0; steps < PIPE_SIZE * PIPE_SIZE + 1; steps++) {
+    const tile = tileAt(x, y);
+
+    if (!tile || filled.has(tile)) {
+      return { filled, solved: false };
+    }
+
+    const mask = pipeMask(tile);
+
+    if (!(mask & enteringFrom)) {
+      return { filled, solved: false };
+    }
+
+    filled.add(tile);
+
+    const outBit = mask & ~enteringFrom;
+
+    // Reached the right edge on the OUT row.
+    if (
+      outBit === PIPE_E &&
+      x === PIPE_SIZE - 1 &&
+      y === board.endY
+    ) {
+      return { filled, solved: true };
+    }
+
+    const dir = PIPE_DIRS.find(d => d.bit === outBit);
+
+    if (!dir) {
+      return { filled, solved: false };
+    }
+
+    x += dir.dx;
+    y += dir.dy;
+    enteringFrom = dir.opposite;
+  }
+
+  return { filled, solved: false };
+}
+
 
 /* ==========================================
 LASER MIRROR — ORIGINAL
