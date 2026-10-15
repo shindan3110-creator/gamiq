@@ -7659,3 +7659,156 @@ LANE PANIC V2 (Step 10-1)
   25% { transform: translateX(calc(-50% - 8px)); }
   75% { transform: translateX(calc(-50% + 8px)); }
 }
+
+
+
+/* ==========================================
+PIPE CONNECT V2 (Step 10-2)
+========================================== */
+
+.pipe2-game {
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pipe2-hud {
+  width: min(100%, 420px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.pipe2-hud > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.pipe2-hud span {
+  color: #7c8798;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.pipe2-hud strong {
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 1000;
+}
+
+.pipe2-hud strong.danger {
+  color: #ff5a73;
+}
+
+.pipe2-board {
+  width: min(100%, 420px);
+  max-height: 100%;
+  display: grid;
+  grid-template-columns: 30px repeat(4, minmax(0, 1fr)) 34px;
+  gap: 5px;
+  align-items: center;
+}
+
+.pipe2-edge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 10px;
+  font-weight: 1000;
+  letter-spacing: 0.06em;
+  color: transparent;
+}
+
+.pipe2-edge.in,
+.pipe2-edge.out {
+  border-radius: 8px;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0;
+}
+
+.pipe2-edge.in {
+  background: rgba(88, 223, 243, 0.18);
+  color: #7beeff;
+  box-shadow: inset 0 0 0 1px rgba(88, 223, 243, 0.45);
+}
+
+.pipe2-edge.out {
+  background: rgba(255, 255, 255, 0.05);
+  color: #9aa5b5;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.pipe2-edge.out.flow {
+  background: rgba(121, 246, 171, 0.22);
+  color: #79f6ab;
+  box-shadow: inset 0 0 0 1px rgba(121, 246, 171, 0.6);
+}
+
+.pipe2-tile {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: #0d141d;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+
+.pipe2-tile:active {
+  background: #142030;
+}
+
+.pipe2-tile svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.16s ease;
+}
+
+.pipe2-shell {
+  fill: none;
+  stroke: #2b3a4b;
+  stroke-width: 30;
+}
+
+.pipe2-water {
+  fill: none;
+  stroke: #3f566e;
+  stroke-width: 12;
+  transition: stroke 0.15s ease;
+}
+
+.pipe2-tile.flow .pipe2-water {
+  stroke: #58dff3;
+}
+
+.pipe2-tile.flow .pipe2-shell {
+  stroke: #1f4f60;
+}
+
+.pipe2-board.solved .pipe2-tile.flow .pipe2-water {
+  stroke: #79f6ab;
+}
+
+.pipe2-board.failed {
+  opacity: 0.6;
+}
+
+@media (max-width: 700px) {
+  .pipe2-board {
+    grid-template-columns: 24px repeat(4, minmax(0, 1fr)) 28px;
+    gap: 4px;
+  }
+}
