@@ -94,7 +94,17 @@ const STRINGS = {
     "rule.three_space_blaster": "AIM AND SHOOT DOWN 6 ENEMY SHIPS!",
     "rule.three_lane_dodge": "DODGE AND JUMP FOR 60 SECONDS!",
     "rule.three_factory_rush":
-      "Choose gates, grow your army, defeat the enemy!"
+      "Choose gates, grow your army, defeat the enemy!",
+    "rule.speed_color_switch":
+      "MATCH THE COLOR OR THE WORD. WATCH FOR THE SWITCH!",
+
+    /* ---------- IN-GAME: COLOR SWITCH ---------- */
+    "cs.modeColor": "TAP THE INK COLOR",
+    "cs.modeWord": "TAP WHAT THE WORD SAYS",
+    "color.red": "RED",
+    "color.blue": "BLUE",
+    "color.green": "GREEN",
+    "color.yellow": "YELLOW"
   },
 
   ja: {
@@ -173,7 +183,16 @@ const STRINGS = {
     "rule.three_zombie_assault": "迫ってくるゾンビを斬れ！",
     "rule.three_space_blaster": "狙いを定めて敵艦を6機撃ち落とせ！",
     "rule.three_lane_dodge": "60秒間、障害物を避けて走り続けろ！",
-    "rule.three_factory_rush": "ゲートを選んで軍団を増やし、敵を倒せ！"
+    "rule.three_factory_rush": "ゲートを選んで軍団を増やし、敵を倒せ！",
+    "rule.speed_color_switch": "文字の「色」か「意味」に合わせて押せ！切り替えに注意！",
+
+    /* ---------- IN-GAME: COLOR SWITCH ---------- */
+    "cs.modeColor": "文字の「色」を押せ",
+    "cs.modeWord": "文字の「意味」を押せ",
+    "color.red": "あか",
+    "color.blue": "あお",
+    "color.green": "みどり",
+    "color.yellow": "きいろ"
   }
 };
 
