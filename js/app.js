@@ -41,6 +41,11 @@ import {
 } from "./games/three-games.js";
 
 import {
+  createSpeedGames,
+  runSpeedGame
+} from "./games/speed.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -95,7 +100,8 @@ const gamePool = [
   ...createReflexGames(),
   ...createPuzzleGames(),
   ...createMemoryGames(),
-  ...createThreeGames()
+  ...createThreeGames(),
+  ...createSpeedGames()
 ];
 
 
@@ -947,6 +953,12 @@ function runSelectedGame({
     ]);
 
 
+  const speedTypes =
+    new Set([
+      "color_switch"
+    ]);
+
+
   if (
     reflexTypes.has(
       game.type
@@ -992,6 +1004,19 @@ function runSelectedGame({
     )
   ) {
     return runThreeGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (
+    speedTypes.has(
+      game.type
+    )
+  ) {
+    return runSpeedGame({
       game,
       container,
       onComplete
