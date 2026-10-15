@@ -36,8 +36,8 @@ export function createReflexGames() {
       id: "reflex_friend_foe",
       type: "friend_foe",
       title: "FRIEND OR FOE",
-      rule: "TAP ONLY THE ENEMY 👾",
-      skill: "REFLEX",
+      rule: "SHOOT THE RED ENEMIES. DON'T HIT BLUE FRIENDS!",
+      skill: "AIM",
       theme: "space",
       duration: 12000
     }
@@ -2240,8 +2240,39 @@ function runLanePanic({
 
 
 /* ==========================================
-FRIEND OR FOE
+FRIEND OR FOE (v2: AIM game with moving targets)
+- Red enemies and blue friends fly around the arena.
+- Tap / click the red enemies before they escape.
+- Hitting a blue friend is a big penalty.
+- Missed shots lower your accuracy.
+- 10 enemies in total. Hit 7 or more to clear.
 ========================================== */
+
+const FOE_ENEMY_TOTAL = 10;
+const FOE_CLEAR_HITS = 7;
+
+const FOE_ENEMY_SVG = `
+  <svg viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="46" fill="#ff3b5c"/>
+    <circle cx="50" cy="50" r="46" fill="none" stroke="#ffd0d8" stroke-width="5"/>
+    <path d="M24 38 L44 46" stroke="#2a0710" stroke-width="8" stroke-linecap="round"/>
+    <path d="M76 38 L56 46" stroke="#2a0710" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="36" cy="55" r="6" fill="#2a0710"/>
+    <circle cx="64" cy="55" r="6" fill="#2a0710"/>
+    <path d="M36 74 Q50 64 64 74" stroke="#2a0710" stroke-width="7" fill="none" stroke-linecap="round"/>
+  </svg>
+`;
+
+const FOE_FRIEND_SVG = `
+  <svg viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="46" fill="#3fb8ff"/>
+    <circle cx="50" cy="50" r="46" fill="none" stroke="#d8f1ff" stroke-width="5"/>
+    <circle cx="36" cy="44" r="6" fill="#06263a"/>
+    <circle cx="64" cy="44" r="6" fill="#06263a"/>
+    <path d="M32 62 Q50 80 68 62" stroke="#06263a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  </svg>
+`;
+
 
 function runFriendOrFoe({
   container,
@@ -2249,215 +2280,369 @@ function runFriendOrFoe({
 }) {
   let active = true;
 
-  let round = 0;
-  let correct = 0;
-  let wrong = 0;
+  let enemiesSpawned = 0;
+  let enemiesResolved = 0;
 
-  const rounds = 7;
+  let hits = 0;
+  let escaped = 0;
+  let friendHits = 0;
 
-  let enemyIndex = 0;
+  let shots = 0;
+  let missedShots = 0;
 
   const reactions = [];
 
-  let signalTime = 0;
-  let timer = null;
+  const targets = [];
+
+  let spawnTimer = null;
+  let finishTimer = null;
+  let frameId = null;
+  let lastFrame = performance.now();
+
+  const startedAt = performance.now();
 
 
   container.innerHTML = `
-    <div class="reflex-game friend-foe-game">
+    <div class="reflex-game foe2-game">
 
-      <div
-        class="friend-foe-arena"
-        data-foe-arena
-      >
+      <div class="foe2-hud">
+        <div>
+          <span>HITS</span>
+          <strong data-foe-hits>0 / ${FOE_ENEMY_TOTAL}</strong>
+        </div>
 
-        <button
-          type="button"
-          class="foe-target"
-          data-foe-index="0"
-        ></button>
+        <div>
+          <span>ACCURACY</span>
+          <strong data-foe-accuracy>--</strong>
+        </div>
 
-        <button
-          type="button"
-          class="foe-target"
-          data-foe-index="1"
-        ></button>
-
-        <button
-          type="button"
-          class="foe-target"
-          data-foe-index="2"
-        ></button>
-
+        <div>
+          <span>FRIEND HIT</span>
+          <strong data-foe-friend>0</strong>
+        </div>
       </div>
 
-      <div
-        class="foe-status"
-        data-foe-status
-      >
-        FIND THE ENEMY
+      <div class="foe2-arena" data-foe-arena>
+        <div class="foe2-message" data-foe-message></div>
       </div>
 
     </div>
   `;
 
+  const arena =
+    container.querySelector("[data-foe-arena]");
 
-  const targets =
-    [...container.querySelectorAll(
-      "[data-foe-index]"
-    )];
+  const hitsElement =
+    container.querySelector("[data-foe-hits]");
 
-  const status =
-    container.querySelector(
-      "[data-foe-status]"
-    );
+  const accuracyElement =
+    container.querySelector("[data-foe-accuracy]");
+
+  const friendElement =
+    container.querySelector("[data-foe-friend]");
+
+  const messageElement =
+    container.querySelector("[data-foe-message]");
 
 
-    function nextRound() {
+  /* ---------- HELPERS ---------- */
+
+  function targetSize() {
+    // Smaller targets on small screens are still easy to tap.
+    return arena.clientWidth < 480 ? 54 : 62;
+  }
+
+  function progress() {
+    return enemiesSpawned / FOE_ENEMY_TOTAL;
+  }
+
+  function updateHud() {
+    hitsElement.textContent =
+      `${hits} / ${FOE_ENEMY_TOTAL}`;
+
+    accuracyElement.textContent =
+      shots > 0
+        ? `${Math.round(100 * (shots - missedShots - friendHits) / shots)}%`
+        : "--";
+
+    friendElement.textContent =
+      String(friendHits);
+  }
+
+  let messageTimer = null;
+
+  function showMessage(text, type = "good") {
+    clearTimeout(messageTimer);
+
+    messageElement.textContent = text;
+    messageElement.className = `foe2-message ${type}`;
+
+    void messageElement.offsetWidth;
+
+    messageElement.classList.add("show");
+
+    messageTimer = setTimeout(() => {
+      messageElement.classList.remove("show");
+    }, 450);
+  }
+
+
+  /* ---------- SPAWN ---------- */
+
+  function spawn(kind) {
+    const size = targetSize();
+    const width = arena.clientWidth;
+    const height = arena.clientHeight;
+
+    if (width < size * 2 || height < size * 2) {
+      return;
+    }
+
+    const element = document.createElement("div");
+
+    element.className = `foe2-target ${kind}`;
+    element.style.width = `${size}px`;
+    element.style.height = `${size}px`;
+    element.innerHTML =
+      kind === "enemy"
+        ? FOE_ENEMY_SVG
+        : FOE_FRIEND_SVG;
+
+    arena.appendChild(element);
+
+    // Speed rises as the game goes on (px per second).
+    const speed =
+      (kind === "enemy" ? 120 : 100) +
+      progress() * 110 +
+      Math.random() * 40;
+
+    const angle = Math.random() * Math.PI * 2;
+
+    const target = {
+      element,
+      kind,
+      size,
+      x: size / 2 + Math.random() * (width - size),
+      y: size / 2 + Math.random() * (height - size),
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      born: performance.now(),
+      life:
+        kind === "enemy"
+          ? 2500 - progress() * 800
+          : 2800,
+      done: false
+    };
+
+    placeTarget(target);
+
+    targets.push(target);
+
+    if (kind === "enemy") {
+      enemiesSpawned++;
+    }
+  }
+
+  function scheduleSpawn() {
     if (!active) {
       return;
     }
 
-    roundLocked = false;
+    const enemiesOnScreen =
+      targets.filter(t => t.kind === "enemy" && !t.done).length;
 
-    enemyIndex =
-      Math.floor(
-        Math.random() * 3
+    const friendsOnScreen =
+      targets.filter(t => t.kind === "friend" && !t.done).length;
+
+    if (
+      enemiesSpawned < FOE_ENEMY_TOTAL &&
+      enemiesOnScreen < 2 &&
+      (Math.random() < 0.72 || friendsOnScreen >= 2)
+    ) {
+      spawn("enemy");
+    } else if (friendsOnScreen < 2) {
+      spawn("friend");
+    }
+
+    if (enemiesSpawned < FOE_ENEMY_TOTAL) {
+      spawnTimer = setTimeout(
+        scheduleSpawn,
+        650 + Math.random() * 450 - progress() * 200
       );
-
-
-    targets.forEach(
-      (target, index) => {
-
-        const isEnemy =
-          index === enemyIndex;
-
-        target.textContent =
-          isEnemy
-            ? "👾"
-            : "🧑‍🚀";
-
-        target.classList.remove(
-          "foe-hit",
-          "foe-wrong"
-        );
-      }
-    );
-
-
-    signalTime =
-      performance.now();
-
-
-    timer =
-      setTimeout(
-        () => {
-          if (!active) {
-            return;
-          }
-
-          wrong++;
-
-          round++;
-
-          status.textContent =
-            "TOO SLOW";
-
-          nextOrFinish();
-        },
-        900
-      );
+    }
   }
 
 
-    let roundLocked = false;
+  /* ---------- MOVE ---------- */
 
-  function choose(
-    index
-  ) {
-    if (
-      !active ||
-      roundLocked
-    ) {
+  function placeTarget(target) {
+    target.element.style.transform =
+      `translate(${target.x - target.size / 2}px, ${target.y - target.size / 2}px)`;
+  }
+
+  function frame(now) {
+    if (!active) {
       return;
     }
 
-    roundLocked = true;
+    const dt = Math.min(0.05, (now - lastFrame) / 1000);
+    lastFrame = now;
 
-    clearTimeout(timer);
+    const width = arena.clientWidth;
+    const height = arena.clientHeight;
 
-    const reaction =
-      performance.now() -
-      signalTime;
+    for (const target of [...targets]) {
+      if (target.done) {
+        continue;
+      }
 
-    if (
-      index === enemyIndex
-    ) {
-      correct++;
+      target.x += target.vx * dt;
+      target.y += target.vy * dt;
 
-      reactions.push(
-        reaction
+      const half = target.size / 2;
+
+      // Bounce off the walls.
+      if (target.x < half) {
+        target.x = half;
+        target.vx = Math.abs(target.vx);
+      }
+
+      if (target.x > width - half) {
+        target.x = width - half;
+        target.vx = -Math.abs(target.vx);
+      }
+
+      if (target.y < half) {
+        target.y = half;
+        target.vy = Math.abs(target.vy);
+      }
+
+      if (target.y > height - half) {
+        target.y = height - half;
+        target.vy = -Math.abs(target.vy);
+      }
+
+      placeTarget(target);
+
+      const age = now - target.born;
+
+      // Warn just before an enemy escapes.
+      target.element.classList.toggle(
+        "leaving",
+        age > target.life - 450
       );
 
-      targets[index]
-        .classList.add(
-          "foe-hit"
-        );
+      if (age >= target.life) {
+        removeTarget(target, "escape");
 
-      status.textContent =
-        "TARGET DOWN";
-
-    } else {
-      wrong++;
-
-      targets[index]
-        .classList.add(
-          "foe-wrong"
-        );
-
-      status.textContent =
-        "FRIEND!";
-    }
-
-
-    round++;
-
-    setTimeout(
-      nextOrFinish,
-      260
-    );
-  }
-
-
-  function nextOrFinish() {
-    if (
-      round >= rounds
-    ) {
-      finish();
-    } else {
-      nextRound();
-    }
-  }
-
-
-  targets.forEach(
-    target => {
-
-      target.addEventListener(
-        "pointerdown",
-        () => {
-          choose(
-            Number(
-              target.dataset
-                .foeIndex
-            )
-          );
+        if (target.kind === "enemy") {
+          escaped++;
+          enemiesResolved++;
+          showMessage("ESCAPED", "bad");
+          checkEnd();
         }
-      );
-
+      }
     }
-  );
 
+    frameId = requestAnimationFrame(frame);
+  }
+
+  function removeTarget(target, reason) {
+    target.done = true;
+
+    target.element.classList.add(
+      reason === "hit" ? "hit" : "gone"
+    );
+
+    setTimeout(() => {
+      target.element.remove();
+
+      const index = targets.indexOf(target);
+
+      if (index !== -1) {
+        targets.splice(index, 1);
+      }
+    }, 260);
+  }
+
+
+  /* ---------- SHOOT ---------- */
+
+  function shoot(event) {
+    if (!active) {
+      return;
+    }
+
+    event.preventDefault();
+
+    shots++;
+
+    const element =
+      event.target.closest?.(".foe2-target");
+
+    const target =
+      element &&
+      targets.find(t => t.element === element && !t.done);
+
+    if (!target) {
+      missedShots++;
+
+      showShotMark(event, "miss");
+      updateHud();
+      return;
+    }
+
+    if (target.kind === "enemy") {
+      hits++;
+      enemiesResolved++;
+
+      reactions.push(performance.now() - target.born);
+
+      removeTarget(target, "hit");
+      showShotMark(event, "hit");
+      showMessage("HIT!");
+
+      updateHud();
+      checkEnd();
+      return;
+    }
+
+    // Friend hit
+    friendHits++;
+
+    removeTarget(target, "hit");
+    showShotMark(event, "miss");
+    showMessage("FRIEND!", "bad");
+
+    arena.classList.remove("foe2-damage");
+    void arena.offsetWidth;
+    arena.classList.add("foe2-damage");
+
+    updateHud();
+  }
+
+  function showShotMark(event, type) {
+    const rect = arena.getBoundingClientRect();
+
+    const mark = document.createElement("div");
+
+    mark.className = `foe2-shot ${type}`;
+    mark.style.left = `${event.clientX - rect.left}px`;
+    mark.style.top = `${event.clientY - rect.top}px`;
+
+    arena.appendChild(mark);
+
+    setTimeout(() => mark.remove(), 350);
+  }
+
+
+  /* ---------- FINISH ---------- */
+
+  function checkEnd() {
+    if (enemiesResolved >= FOE_ENEMY_TOTAL) {
+      finish();
+    }
+  }
 
   function finish() {
     if (!active) {
@@ -2466,66 +2651,92 @@ function runFriendOrFoe({
 
     active = false;
 
-    clearTimeout(timer);
+    clearTimeout(spawnTimer);
+    cancelAnimationFrame(frameId);
+
+    targets.forEach(t => {
+      if (!t.done) {
+        removeTarget(t, "escape");
+      }
+    });
+
+    const hitRate = hits / FOE_ENEMY_TOTAL;
 
     const accuracy =
-      correct / rounds;
+      shots > 0
+        ? Math.max(0, shots - missedShots - friendHits) / shots
+        : 0;
 
     const avgReaction =
       reactions.length
-        ? average(
-            reactions
-          )
-        : 900;
+        ? average(reactions)
+        : 2500;
 
+    // 500ms -> 100, 2000ms -> 0
     const reactionScore =
-      clamp(
-        100 -
-        (
-          avgReaction -
-          180
-        ) / 6,
-        0,
-        100
-      );
+      clamp(100 - (avgReaction - 500) / 15, 0, 100);
 
     const score =
-      accuracy * 70 +
-      reactionScore * 0.30;
+      hitRate * 55 +
+      accuracy * 25 * hitRate +
+      reactionScore * 0.2 * hitRate -
+      friendHits * 10;
 
-    onComplete?.({
-      score:
-        Math.round(score),
+    const success =
+      hits >= FOE_CLEAR_HITS &&
+      friendHits === 0;
 
-      adapt:
-        Math.round(
+    showMessage(
+      success ? "CLEAR!" : "FAILED",
+      success ? "good" : "bad"
+    );
+
+    finishTimer = setTimeout(() => {
+      onComplete?.({
+        score: Math.round(clamp(score, 0, 100)),
+
+        adapt: Math.round(
           clamp(
-            40 +
-            accuracy * 55,
+            35 + hitRate * 45 + accuracy * 20 - friendHits * 8,
             0,
             100
           )
         ),
 
-      meta: {
-        correct,
-        wrong,
-        avgReaction:
-          Math.round(
-            avgReaction
-          )
-      }
-    });
+        meta: {
+          success,
+          hits,
+          escaped,
+          friendHits,
+          shots,
+          missedShots,
+          avgReaction: Math.round(avgReaction),
+          elapsed: Math.round(performance.now() - startedAt)
+        }
+      });
+    }, 500);
   }
 
 
-  nextRound();
+  /* ---------- START ---------- */
+
+  arena.addEventListener("pointerdown", shoot);
+
+  updateHud();
+
+  spawnTimer = setTimeout(scheduleSpawn, 350);
+  frameId = requestAnimationFrame(frame);
 
 
   return () => {
     active = false;
 
-    clearTimeout(timer);
+    clearTimeout(spawnTimer);
+    clearTimeout(finishTimer);
+    clearTimeout(messageTimer);
+    cancelAnimationFrame(frameId);
+
+    arena.removeEventListener("pointerdown", shoot);
   };
 }
 
