@@ -1,5 +1,7 @@
 // GAMIQ（ゲーミック） v2 - Results Overlay
 
+import { t } from "./i18n.js";
+
 export class GamiqResults {
   constructor({
     scoreEngine,
@@ -39,11 +41,11 @@ export class GamiqResults {
         class="gamiq-results-card"
         role="dialog"
         aria-modal="true"
-        aria-label="GAMIQ results"
+        aria-label="${t("results.aria")}"
       >
 
         <div class="gamiq-results-label">
-          CURRENT GAMIQ
+          ${t("results.current")}
         </div>
 
         <div
@@ -56,7 +58,7 @@ export class GamiqResults {
         <div class="gamiq-results-confidence">
 
           <span>
-            CONFIDENCE
+            ${t("results.confidence")}
           </span>
 
           <strong
@@ -127,7 +129,7 @@ export class GamiqResults {
         <div class="gamiq-results-played">
 
           <span>
-            PLAYED
+            ${t("results.played")}
           </span>
 
           <strong
@@ -150,7 +152,7 @@ export class GamiqResults {
           class="gamiq-results-continue"
           data-results-continue
         >
-          KEEP PLAYING
+          ${t("results.continue")}
         </button>
 
       </div>
@@ -283,10 +285,13 @@ export class GamiqResults {
       summary.gamesToNextTarget !== null
     ) {
       nextElement.textContent =
-          `About ${summary.gamesToNextTarget} more games to reach ${summary.nextConfidenceTarget}% confidence`;
+          t("results.next", {
+            games: summary.gamesToNextTarget,
+            target: summary.nextConfidenceTarget
+          });
     } else {
       nextElement.textContent =
-          "Your GAMIQ is well measured. Keep playing to improve it!";
+          t("results.enough");
     }
   }
 
