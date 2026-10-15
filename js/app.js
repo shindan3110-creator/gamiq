@@ -40,6 +40,10 @@ import {
   runThreeGame
 } from "./games/three-games.js";
 
+import {
+  t
+} from "./i18n.js";
+
 
 /* ==========================================
 APP STATE
@@ -279,7 +283,7 @@ function createAppMarkup() {
             class="gamiq-results-button"
             data-open-results
           >
-            VIEW RESULTS
+            ${t("header.viewResults")}
           </button>
 
         </div>
@@ -312,14 +316,11 @@ function createAppMarkup() {
           <div class="gamiq-start-sub">GAME + IQ</div>
 
           <h1>
-            Unknown games.<br>
-            Real gaming skill.
+            ${t("start.title")}
           </h1>
 
           <p>
-            Random mini-games, one after another.
-            <br>
-            The more you play, the more accurate your GAMIQ gets.
+            ${t("start.text")}
           </p>
 
           <button
@@ -327,12 +328,11 @@ function createAppMarkup() {
             class="gamiq-start-button"
             data-gamiq-start
           >
-            PLAY
+            ${t("start.play")}
           </button>
 
           <small>
-            You can't choose the game.
-            Every game is random.
+            ${t("start.note")}
           </small>
 
         </div>
@@ -415,12 +415,16 @@ function renderGameCard(
       >
 
         <span>
-          RULE
+          ${t("card.rule")}
         </span>
 
         <strong>
           ${escapeHtml(
-            game.rule
+            t(
+              `rule.${game.id}`,
+              null,
+              game.rule
+            )
           )}
         </strong>
 
@@ -432,7 +436,7 @@ function renderGameCard(
       >
 
         <div class="gamiq-complete-label">
-          COMPLETE
+          ${t("card.complete")}
         </div>
 
         <div
@@ -451,8 +455,8 @@ function renderGameCard(
                 <div class="gamiq-swipe-next">
           ${
             isDesktopPointer()
-              ? "🖱️ SCROLL FOR NEXT GAME"
-              : "↑ SWIPE FOR NEXT GAME"
+              ? t("card.nextScroll")
+              : t("card.nextSwipe")
           }
         </div>
 
@@ -797,14 +801,14 @@ async function enterGame(
       <div class="gamiq-game-error">
 
         <strong>
-          GAME ERROR
+          ${t("card.error")}
         </strong>
 
                 <span>
           ${
             isDesktopPointer()
-              ? "Scroll to the next game"
-              : "Swipe to the next game"
+              ? t("card.errorScroll")
+              : t("card.errorSwipe")
           }
         </span>
 
