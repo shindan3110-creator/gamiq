@@ -66,7 +66,11 @@ export class GamiqAnalytics {
     game,
     score,
     adapt,
-    summary
+    summary,
+    success = null,
+    playSeconds = 0,
+    sessionGames = 0,
+    safetyTimeout = false
   }) {
     if (!game) {
       return;
@@ -103,7 +107,22 @@ export class GamiqAnalytics {
           summary?.gamiq ?? 0,
 
         measurement_confidence:
-          summary?.confidence ?? 0
+          summary?.confidence ?? 0,
+
+        // "clear" / "fail" / "timeout"
+        game_result:
+          safetyTimeout
+            ? "timeout"
+            : success === true
+              ? "clear"
+              : "fail",
+
+        play_seconds:
+          Math.round(playSeconds * 10) / 10,
+
+        // Games played in this visit (not lifetime)
+        session_games:
+          sessionGames ?? 0
       }
     );
   }
