@@ -82,7 +82,7 @@ const STRINGS = {
     "rule.reflex_ninja_counter":
       "HIT THE ENEMY NINJAS. DON'T HIT FRIENDS!",
     "rule.reflex_quick_draw": "WAIT FOR \"DRAW!\" THEN SHOOT FAST!",
-    "rule.reflex_lane_panic": "MOVE AWAY FROM THE ⚠ LANE!",
+    "rule.reflex_lane_panic": "GET TO THE ONLY LANE WITHOUT ⚠!",
     "rule.reflex_friend_foe": "TAP ONLY THE ENEMY 👾",
     "rule.puzzle_block_escape": "SLIDE THE BLOCKS. GET THE RED ONE OUT!",
     "rule.puzzle_pipe_connect": "ROTATE THE PIPES TO CONNECT THEM!",
@@ -162,7 +162,7 @@ const STRINGS = {
     /* ---------- GAME RULES (key = game id) ---------- */
     "rule.reflex_ninja_counter": "敵の忍者だけを叩け！味方は叩くな！",
     "rule.reflex_quick_draw": "「DRAW!」が出た瞬間に撃て！",
-    "rule.reflex_lane_panic": "⚠ のレーンから逃げろ！",
+    "rule.reflex_lane_panic": "⚠ のない、ただ1つの安全なレーンへ逃げろ！",
     "rule.reflex_friend_foe": "敵 👾 だけをタップしろ！",
     "rule.puzzle_block_escape": "ブロックを動かして、赤いブロックを出口へ！",
     "rule.puzzle_pipe_connect": "パイプを回してつなげろ！",
