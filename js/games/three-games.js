@@ -43,7 +43,7 @@ export function createThreeGames() {
       type: "lane_dodge",
       title: "RUSH RUN",
       rule: "DODGE AND JUMP FOR 60 SECONDS!",
-      skill: "REFLEX",
+      skill: "SPEED",
       theme: "race",
       duration: 10000
     },
