@@ -1,5 +1,7 @@
 // GAMIQ（ゲーミック） v2 - Memory Games
 
+import { t } from "../i18n.js";
+
 export function createMemoryGames() {
   return [
     {
@@ -119,7 +121,7 @@ function runSequenceMemory({
         class="memory-message"
         data-memory-message
       >
-        WATCH
+        ${t("memory.watch")}
       </div>
 
     </div>
@@ -174,6 +176,10 @@ function runSequenceMemory({
               .classList.add(
                 "memory-flash"
               );
+
+            // Show progress: WATCH 3 / 6
+            message.textContent =
+              `${t("memory.watch")} ${position + 1} / ${sequence.length}`;
           },
           delay
         );
@@ -190,11 +196,11 @@ function runSequenceMemory({
                 "memory-flash"
               );
           },
-          delay + 360
+          delay + 480
         );
 
 
-        delay += 560;
+        delay += 700;
 
 
         if (
@@ -210,7 +216,7 @@ function runSequenceMemory({
               inputEnabled = true;
 
               message.textContent =
-                "YOUR TURN";
+                t("memory.yourTurn");
             },
             delay + 120
           );
@@ -437,7 +443,7 @@ function runPositionMemory({
         class="memory-message"
         data-position-message
       >
-        REMEMBER
+        ${t("memory.remember")}
       </div>
 
     </div>
@@ -496,7 +502,7 @@ function runPositionMemory({
 
 
         message.textContent =
-          "SELECT";
+          t("memory.select");
 
       },
       1350
@@ -690,7 +696,7 @@ function runNumberMemory({
         class="memory-message"
         data-number-message
       >
-        REMEMBER
+        ${t("memory.remember")}
       </div>
 
     </div>
@@ -762,7 +768,7 @@ function runNumberMemory({
 
 
         message.textContent =
-          "1から順番に";
+          t("memory.tapInOrder");
 
       },
       1800
