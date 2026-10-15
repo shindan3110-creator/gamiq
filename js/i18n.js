@@ -49,6 +49,13 @@ const STRINGS = {
     "results.confidence": "CONFIDENCE",
     "results.played": "PLAYED",
     "results.continue": "KEEP PLAYING",
+    "results.clears": "CLEARS",
+    "results.clearRate": "CLEAR RATE",
+    "results.bestStreak": "BEST STREAK",
+    "results.playTime": "PLAY TIME",
+    "time.seconds": "{s}s",
+    "time.minutes": "{m}m",
+    "time.hours": "{h}h {m}m",
     "results.next":
       "About {games} more games to reach {target}% confidence",
     "results.enough":
@@ -123,6 +130,13 @@ const STRINGS = {
     "results.confidence": "測定精度",
     "results.played": "プレイ数",
     "results.continue": "ゲームを続ける",
+    "results.clears": "クリア数",
+    "results.clearRate": "クリア率",
+    "results.bestStreak": "最長連続クリア",
+    "results.playTime": "プレイ時間",
+    "time.seconds": "{s}秒",
+    "time.minutes": "{m}分",
+    "time.hours": "{h}時間{m}分",
     "results.next":
       "あと約{games}ゲームで測定精度{target}%",
     "results.enough":
