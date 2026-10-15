@@ -1,5 +1,6 @@
-
 // GAMIQ（ゲーミック） v2 - Puzzle Games
+
+import { t } from "../i18n.js";
 
 export function createPuzzleGames() {
   return [
@@ -116,8 +117,8 @@ function runBlockEscape({ container, onComplete }) {
     container.querySelector("[data-puzzle-hint]");
 
   hint.textContent = desktopControls
-    ? "ブロックをクリック → 矢印をクリックして移動"
-    : "ブロックをスワイプして赤いブロックを右へ";
+    ? t("block.hintClick")
+    : t("block.hintSwipe");
 
   function directionsFor(block) {
     return block.w > block.h
@@ -127,14 +128,14 @@ function runBlockEscape({ container, onComplete }) {
             dy: 0,
             text: "◀",
             side: "left",
-            label: "左へ移動"
+            label: t("block.moveLeft")
           },
           {
             dx: 1,
             dy: 0,
             text: "▶",
             side: "right",
-            label: "右へ移動"
+            label: t("block.moveRight")
           }
         ]
       : [
@@ -143,14 +144,14 @@ function runBlockEscape({ container, onComplete }) {
             dy: -1,
             text: "▲",
             side: "up",
-            label: "上へ移動"
+            label: t("block.moveUp")
           },
           {
             dx: 0,
             dy: 1,
             text: "▼",
             side: "down",
-            label: "下へ移動"
+            label: t("block.moveDown")
           }
         ];
   }
@@ -177,8 +178,8 @@ function runBlockEscape({ container, onComplete }) {
       element.setAttribute(
         "aria-label",
         block.target
-          ? "赤い脱出ブロック"
-          : `ブロック ${block.id}`
+          ? t("block.targetLabel")
+          : t("block.blockLabel", { id: block.id })
       );
 
       if (block.target) {
