@@ -7598,3 +7598,27 @@ Dim the button while a game is being played.
 .gamiq-results-button:disabled:hover {
   background: rgba(255, 255, 255, 0.045);
 }
+
+
+/* ==========================================
+RESULTS STATS (Step 9)
+========================================== */
+
+.gamiq-results-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 4px;
+}
+
+@supports (height: 100dvh) {
+  .gamiq-results-card {
+    max-height: calc(100dvh - 40px);
+  }
+}
+
+@media (max-width: 390px) {
+  .gamiq-results-stats {
+    grid-template-columns: 1fr;
+  }
+}
