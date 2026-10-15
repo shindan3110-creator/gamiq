@@ -141,6 +141,31 @@ export class GamiqResults {
         </div>
 
 
+        <div class="gamiq-results-stats">
+
+          <div class="gamiq-result-item">
+            <span>${t("results.clears")}</span>
+            <strong data-results-stat="clears">--</strong>
+          </div>
+
+          <div class="gamiq-result-item">
+            <span>${t("results.clearRate")}</span>
+            <strong data-results-stat="clearRate">--</strong>
+          </div>
+
+          <div class="gamiq-result-item">
+            <span>${t("results.bestStreak")}</span>
+            <strong data-results-stat="bestStreak">--</strong>
+          </div>
+
+          <div class="gamiq-result-item">
+            <span>${t("results.playTime")}</span>
+            <strong data-results-stat="playTime">--</strong>
+          </div>
+
+        </div>
+
+
         <div
           class="gamiq-results-next"
           data-results-next
@@ -253,6 +278,41 @@ export class GamiqResults {
 
     playedElement.textContent =
       summary.played;
+
+
+    const stats = {
+      clears:
+        summary.cleared ?? 0,
+
+      clearRate:
+        summary.clearRate === null ||
+        summary.clearRate === undefined
+          ? "--"
+          : `${summary.clearRate}%`,
+
+      bestStreak:
+        summary.bestStreak ?? 0,
+
+      playTime:
+        formatPlayTime(
+          summary.totalPlaySeconds ?? 0
+        )
+    };
+
+
+    Object.entries(stats).forEach(
+      ([name, value]) => {
+        const element =
+          overlay.querySelector(
+            `[data-results-stat="${name}"]`
+          );
+
+        if (element) {
+          element.textContent =
+            value;
+        }
+      }
+    );
 
 
     Object.entries(
@@ -399,4 +459,30 @@ export class GamiqResults {
       this.show();
     }
   }
+}
+
+
+/* ==========================================
+UTIL
+========================================== */
+
+function formatPlayTime(totalSeconds) {
+  const seconds =
+    Math.max(0, Math.floor(Number(totalSeconds) || 0));
+
+  if (seconds < 60) {
+    return t("time.seconds", { s: seconds });
+  }
+
+  const minutes =
+    Math.floor(seconds / 60);
+
+  if (minutes < 60) {
+    return t("time.minutes", { m: minutes });
+  }
+
+  return t("time.hours", {
+    h: Math.floor(minutes / 60),
+    m: minutes % 60
+  });
 }
