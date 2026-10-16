@@ -356,6 +356,12 @@ function createAppMarkup() {
             ${t("start.note")}
           </small>
 
+          <nav class="gamiq-start-links" aria-label="Site information">
+            <a href="./about.html">About</a>
+            <a href="./privacy.html">Privacy</a>
+            <a href="./contact.html">Contact</a>
+          </nav>
+
         </div>
       </div>
 
