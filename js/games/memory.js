@@ -81,6 +81,7 @@ function runSequenceMemory({
 }) {
   let active = true;
   let inputEnabled = false;
+  let stopClock = null;
 
   const timers = [];
 
@@ -215,8 +216,13 @@ function runSequenceMemory({
 
               inputEnabled = true;
 
-              message.textContent =
-                t("memory.yourTurn");
+              // Answer within the time limit or it is a fail.
+              stopClock = startInputClock({
+                message,
+                label: t("memory.yourTurn"),
+                limitMs: 3000 + sequence.length * 900,
+                onTimeout: () => finish(false)
+              });
             },
             delay + 120
           );
@@ -321,6 +327,8 @@ function runSequenceMemory({
     active = false;
     inputEnabled = false;
 
+    stopClock?.();
+
 
     const elapsed =
       performance.now() -
@@ -382,6 +390,8 @@ function runSequenceMemory({
   return () => {
     active = false;
 
+    stopClock?.();
+
     timers.forEach(
       clearTimeout
     );
@@ -399,6 +409,7 @@ function runPositionMemory({
 }) {
   let active = true;
   let inputEnabled = false;
+  let stopClock = null;
 
   const timers = [];
 
@@ -501,8 +512,12 @@ function runPositionMemory({
           true;
 
 
-        message.textContent =
-          t("memory.select");
+        stopClock = startInputClock({
+          message,
+          label: t("memory.select"),
+          limitMs: 3000 + targetCount * 1000,
+          onTimeout: () => finish()
+        });
 
       },
       1350
@@ -581,6 +596,8 @@ function runPositionMemory({
 
     active = false;
 
+    stopClock?.();
+
 
     const elapsed =
       performance.now() -
@@ -637,6 +654,8 @@ function runPositionMemory({
   return () => {
     active = false;
 
+    stopClock?.();
+
     timers.forEach(
       clearTimeout
     );
@@ -654,6 +673,7 @@ function runNumberMemory({
 }) {
   let active = true;
   let inputEnabled = false;
+  let stopClock = null;
 
   const gridSize = 16;
 
@@ -767,8 +787,12 @@ function runNumberMemory({
           true;
 
 
-        message.textContent =
-          t("memory.tapInOrder");
+        stopClock = startInputClock({
+          message,
+          label: t("memory.tapInOrder"),
+          limitMs: 3000 + numberCount * 1000,
+          onTimeout: () => finish(false)
+        });
 
       },
       1800
@@ -875,6 +899,8 @@ function runNumberMemory({
 
     active = false;
 
+    stopClock?.();
+
 
     clearTimeout(
       hideTimer
@@ -941,10 +967,69 @@ function runNumberMemory({
   return () => {
     active = false;
 
+    stopClock?.();
+
     clearTimeout(
       hideTimer
     );
   };
+}
+
+
+/* ==========================================
+INPUT TIME LIMIT (shared by the memory games)
+Shows "LABEL · 7" and calls onTimeout when time runs out.
+Returns a function that stops the clock.
+========================================== */
+
+function startInputClock({
+  message,
+  label,
+  limitMs,
+  onTimeout
+}) {
+  const endsAt =
+    performance.now() + limitMs;
+
+  let stopped = false;
+
+  function render() {
+    const left = Math.max(
+      0,
+      endsAt - performance.now()
+    );
+
+    message.textContent =
+      `${label} · ${Math.ceil(left / 1000)}`;
+
+    message.classList.toggle(
+      "memory-time-danger",
+      left <= 3000
+    );
+
+    return left;
+  }
+
+  render();
+
+  const interval = setInterval(() => {
+    if (stopped) {
+      return;
+    }
+
+    if (render() <= 0) {
+      stop();
+      onTimeout?.();
+    }
+  }, 200);
+
+  function stop() {
+    stopped = true;
+    clearInterval(interval);
+    message.classList.remove("memory-time-danger");
+  }
+
+  return stop;
 }
 
 
