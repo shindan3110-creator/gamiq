@@ -9340,3 +9340,107 @@ START SCREEN LINKS (Step 14)
 .gamiq-start-links a:hover {
   color: #61eaff;
 }
+
+
+/* ==========================================
+SHORT SCREENS (Step 16)
+For small windows such as 800 x 450
+(CrazyGames minimum frame, small laptop windows,
+phones held sideways).
+========================================== */
+
+@media (max-height: 620px) {
+
+  .gamiq-live-header {
+    height: 46px;
+  }
+
+  .gamiq-live-brand span {
+    display: none;
+  }
+
+  .gamiq-results-button {
+    min-height: 32px;
+  }
+
+  .gamiq-feed {
+    height: calc(100vh - 46px);
+  }
+
+  .gamiq-feed-card {
+    padding: 4px 12px 6px;
+  }
+
+  .gamiq-game-shell {
+    height: 100%;
+    min-height: 0;
+    border-radius: 16px;
+  }
+
+  .gamiq-game-top {
+    min-height: 0;
+    padding: 8px 14px 6px;
+  }
+
+  .gamiq-game-skill {
+    margin-bottom: 2px;
+  }
+
+  .gamiq-game-top h2 {
+    font-size: 20px;
+  }
+
+  .gamiq-game-host {
+    padding: 0 12px 8px;
+  }
+
+  .gamiq-rule-overlay {
+    inset: 48px 0 0;
+  }
+
+  /* Game areas may shrink instead of pushing buttons off screen */
+  .lane-panic-road,
+  .foe2-arena,
+  .be-range,
+  .cs-stage {
+    min-height: 0;
+  }
+
+  .cs-stage {
+    gap: 8px;
+  }
+
+  .cs-word {
+    font-size: 40px;
+  }
+
+  .cs-button {
+    height: 46px;
+  }
+
+  .rush-controls button,
+  .lane-panic-controls button {
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .pipe2-game {
+    gap: 6px;
+  }
+
+  .pipe2-board {
+    width: min(100%, 420px, calc((100vh - 220px) * 1.15));
+  }
+
+  .pipe2-message {
+    min-height: 20px;
+  }
+}
+
+@supports (height: 100dvh) {
+  @media (max-height: 620px) {
+    .gamiq-feed {
+      height: calc(100dvh - 46px);
+    }
+  }
+}
