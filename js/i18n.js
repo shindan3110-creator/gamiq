@@ -104,7 +104,12 @@ const STRINGS = {
     "color.red": "RED",
     "color.blue": "BLUE",
     "color.green": "GREEN",
-    "color.yellow": "YELLOW"
+    "color.yellow": "YELLOW",
+
+    /* ---------- BULLSEYE ---------- */
+    "rule.aim_bullseye":
+      "HIT THE CENTER BEFORE THE TARGET SHRINKS AWAY!",
+    "be.tooSlow": "TOO SLOW"
   },
 
   ja: {
@@ -192,7 +197,11 @@ const STRINGS = {
     "color.red": "あか",
     "color.blue": "あお",
     "color.green": "みどり",
-    "color.yellow": "きいろ"
+    "color.yellow": "きいろ",
+
+    /* ---------- BULLSEYE ---------- */
+    "rule.aim_bullseye": "的が小さくなって消える前に、ど真ん中を撃ち抜け！",
+    "be.tooSlow": "おそい！"
   }
 };
 
