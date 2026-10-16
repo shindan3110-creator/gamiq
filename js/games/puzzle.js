@@ -21,16 +21,10 @@ export function createPuzzleGames() {
       skill: "LOGIC",
       theme: "factory",
       duration: 10000
-    },
-    {
-      id: "puzzle_laser_mirror",
-      type: "laser_mirror",
-      title: "LASER MIRROR",
-      rule: "TURN THE MIRROR TO HIT THE TARGET!",
-      skill: "LOGIC",
-      theme: "cyber",
-      duration: 10000
     }
+
+    // LASER MIRROR is paused (not in the random pool) until it is rebuilt.
+    // Its game code (runLaserMirror) is kept below.
   ];
 }
 
