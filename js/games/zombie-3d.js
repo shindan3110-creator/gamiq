@@ -126,7 +126,11 @@ export async function runZombie3D({
 
 
         <div class="zombie-slash-hint">
-          SWIPE TO SLASH
+          ${
+            window.matchMedia("(hover: hover) and (pointer: fine)").matches
+              ? "DRAG TO SLASH"
+              : "SWIPE TO SLASH"
+          }
         </div>
 
       </div>
@@ -725,10 +729,10 @@ export async function runZombie3D({
      */
 
     zombieSpeed =
-      2.45 +
-      kills * 0.22 +
+      3.7 +
+      kills * 0.4 +
       Math.random() *
-        0.35;
+        0.5;
 
 
     spawning =
@@ -910,221 +914,112 @@ export async function runZombie3D({
 
 
   /* ==========================================
-  SWIPE INPUT
+  SLASH INPUT (katana)
+  - Press and move your finger / mouse a little.
+  - As soon as you move about 22px, ONE katana slash fires
+    in that direction. Its length is fixed.
+  - Lift and press again for the next slash.
   ========================================== */
 
-  let dragging = false;
+  const SLASH_TRIGGER = 22;
+  const SLASH_COOLDOWN = 200;
+
+  let pressing = false;
+  let slashedThisPress = false;
+  let lastSlashAt = 0;
 
   let startX = 0;
   let startY = 0;
 
-  let lastX = 0;
-  let lastY = 0;
+  function localPoint(event) {
+    const rect =
+      slashCanvas.getBoundingClientRect();
 
-  let startTime = 0;
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+  }
 
-  let slashPoints = [];
+  function slashLength() {
+    const rect =
+      slashCanvas.getBoundingClientRect();
 
+    // Fixed length: about 55% of the shorter side of the stage.
+    return Math.max(
+      140,
+      Math.min(rect.width, rect.height) * 0.55
+    );
+  }
 
-  function pointerDown(
-    event
-  ) {
+  function pointerDown(event) {
     if (!active) {
       return;
     }
 
+    pressing = true;
+    slashedThisPress = false;
 
-    dragging =
-      true;
+    const point = localPoint(event);
 
-
-    const rect =
-      slashCanvas
-        .getBoundingClientRect();
-
-
-    startX =
-      event.clientX -
-      rect.left;
-
-
-    startY =
-      event.clientY -
-      rect.top;
-
-
-    lastX =
-      startX;
-
-
-    lastY =
-      startY;
-
-
-    startTime =
-      performance.now();
-
-
-    slashPoints = [
-      {
-        x:
-          startX,
-
-        y:
-          startY
-      }
-    ];
-
+    startX = point.x;
+    startY = point.y;
 
     slashCanvas.setPointerCapture?.(
       event.pointerId
     );
   }
 
-
-  function pointerMove(
-    event
-  ) {
+  function pointerMove(event) {
     if (
       !active ||
-      !dragging
+      !pressing ||
+      slashedThisPress
     ) {
       return;
     }
 
+    const point = localPoint(event);
 
-    const rect =
-      slashCanvas
-        .getBoundingClientRect();
+    const dx = point.x - startX;
+    const dy = point.y - startY;
 
+    const distance = Math.hypot(dx, dy);
 
-    const x =
-      event.clientX -
-      rect.left;
-
-
-    const y =
-      event.clientY -
-      rect.top;
-
-
-    const dx =
-      x -
-      lastX;
-
-
-    const dy =
-      y -
-      lastY;
-
-
-    const distance =
-      Math.hypot(
-        dx,
-        dy
-      );
-
-
-    if (
-      distance <
-      2
-    ) {
+    if (distance < SLASH_TRIGGER) {
       return;
     }
 
+    const now = performance.now();
 
-    drawSlashSegment(
-      lastX,
-      lastY,
-      x,
-      y
-    );
-
-
-    slashPoints.push({
-      x,
-      y
-    });
-
-
-    /*
-     * 軌跡上を毎回ヒット判定
-     */
-
-    testSlashSegment(
-      lastX,
-      lastY,
-      x,
-      y
-    );
-
-
-    lastX =
-      x;
-
-
-    lastY =
-      y;
-  }
-
-
-  function pointerUp(
-    event
-  ) {
-    if (
-      !dragging
-    ) {
+    if (now - lastSlashAt < SLASH_COOLDOWN) {
       return;
     }
 
+    slashedThisPress = true;
+    lastSlashAt = now;
 
-    dragging =
-      false;
+    const ux = dx / distance;
+    const uy = dy / distance;
 
+    const length = slashLength();
+
+    // The slash starts a little behind where you pressed
+    // and cuts forward in the swipe direction.
+    const x1 = startX - ux * length * 0.25;
+    const y1 = startY - uy * length * 0.25;
+    const x2 = startX + ux * length * 0.75;
+    const y2 = startY + uy * length * 0.75;
 
     totalSlashes++;
 
+    drawKatanaSlash(x1, y1, x2, y2);
 
-    const elapsed =
-      Math.max(
-        1,
-        performance.now() -
-        startTime
-      );
+    testSlashSegment(x1, y1, x2, y2);
+  }
 
-
-    const distance =
-      Math.hypot(
-        lastX -
-          startX,
-
-        lastY -
-          startY
-      );
-
-
-    const speed =
-      distance /
-      elapsed;
-
-
-    /*
-     * タップだけは斬撃として扱わない
-     */
-
-    if (
-      distance <
-      35 ||
-      speed <
-      0.15
-    ) {
-      fadeSlashCanvas();
-      return;
-    }
-
-
-    fadeSlashCanvas();
-
+  function pointerUp(event) {
+    pressing = false;
 
     slashCanvas.releasePointerCapture?.(
       event.pointerId
@@ -1157,158 +1052,118 @@ export async function runZombie3D({
 
 
   /* ==========================================
-  SLASH DRAWING
+  KATANA SLASH DRAWING
+  A sharp, curved blade streak that fades quickly.
   ========================================== */
 
-  function drawSlashSegment(
-    x1,
-    y1,
-    x2,
-    y2
-  ) {
-    slashContext.save();
+  let slashFrame = null;
 
+  function drawKatanaSlash(x1, y1, x2, y2) {
+    cancelAnimationFrame(slashFrame);
 
-    slashContext.lineCap =
-      "round";
+    const rect =
+      slashCanvas.getBoundingClientRect();
 
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const length = Math.hypot(dx, dy) || 1;
 
-    slashContext.lineJoin =
-      "round";
+    // Normal vector: used to bend the slash into a slight arc.
+    const nx = -dy / length;
+    const ny = dx / length;
 
+    const bend = length * 0.08;
 
-    /*
-     * outer glow
-     */
+    const cx = (x1 + x2) / 2 + nx * bend;
+    const cy = (y1 + y2) / 2 + ny * bend;
 
-    slashContext.beginPath();
+    const startedAt = performance.now();
+    const duration = 220;
 
-    slashContext.moveTo(
-      x1,
-      y1
-    );
+    function pointOnCurve(t, offset) {
+      const mt = 1 - t;
 
-    slashContext.lineTo(
-      x2,
-      y2
-    );
+      const px = mt * mt * x1 + 2 * mt * t * cx + t * t * x2;
+      const py = mt * mt * y1 + 2 * mt * t * cy + t * t * y2;
 
+      return {
+        x: px + nx * offset,
+        y: py + ny * offset
+      };
+    }
 
-    slashContext.strokeStyle =
-      "rgba(85,255,150,.28)";
+    function frame(now) {
+      const age = (now - startedAt) / duration;
 
+      slashContext.clearRect(0, 0, rect.width, rect.height);
 
-    slashContext.lineWidth =
-      18;
-
-
-    slashContext.shadowColor =
-      "rgba(70,255,140,.95)";
-
-
-    slashContext.shadowBlur =
-      22;
-
-
-    slashContext.stroke();
-
-
-    /*
-     * sword core
-     */
-
-    slashContext.beginPath();
-
-    slashContext.moveTo(
-      x1,
-      y1
-    );
-
-    slashContext.lineTo(
-      x2,
-      y2
-    );
-
-
-    slashContext.strokeStyle =
-      "rgba(235,255,245,.98)";
-
-
-    slashContext.lineWidth =
-      4;
-
-
-    slashContext.shadowBlur =
-      9;
-
-
-    slashContext.stroke();
-
-
-    slashContext.restore();
-  }
-
-
-  function fadeSlashCanvas() {
-    let opacity =
-      1;
-
-
-    function fade() {
-      if (!slashContext) {
+      if (age >= 1) {
         return;
       }
 
+      // The blade appears fast, then fades.
+      const reveal = Math.min(1, age * 4);
+      const alpha = 1 - Math.max(0, (age - 0.25) / 0.75);
 
-      opacity -=
-        0.15;
+      const steps = 24;
+      const maxWidth = 11;
 
-
+      // Crescent shape: thin at both ends, thick in the middle.
       slashContext.save();
+      slashContext.beginPath();
 
+      for (let i = 0; i <= steps; i++) {
+        const t = (i / steps) * reveal;
+        const width = Math.sin((i / steps) * Math.PI) * maxWidth;
+        const p = pointOnCurve(t, width);
 
-      slashContext.globalCompositeOperation =
-        "destination-out";
+        if (i === 0) {
+          slashContext.moveTo(p.x, p.y);
+        } else {
+          slashContext.lineTo(p.x, p.y);
+        }
+      }
 
+      for (let i = steps; i >= 0; i--) {
+        const t = (i / steps) * reveal;
+        const width = Math.sin((i / steps) * Math.PI) * maxWidth * 0.25;
+        const p = pointOnCurve(t, -width);
+        slashContext.lineTo(p.x, p.y);
+      }
 
-      slashContext.fillStyle =
-        `rgba(0,0,0,${
-          1 - opacity
-        })`;
+      slashContext.closePath();
 
+      slashContext.shadowColor = `rgba(170, 220, 255, ${0.9 * alpha})`;
+      slashContext.shadowBlur = 18;
 
-      slashContext.fillRect(
-        0,
-        0,
-        slashCanvas.width,
-        slashCanvas.height
-      );
-
+      slashContext.fillStyle = `rgba(245, 250, 255, ${alpha})`;
+      slashContext.fill();
 
       slashContext.restore();
 
+      // Thin steel edge line along the blade
+      slashContext.save();
+      slashContext.beginPath();
 
-      if (
-        opacity >
-        0
-      ) {
-        requestAnimationFrame(
-          fade
-        );
-      } else {
-        slashContext.clearRect(
-          0,
-          0,
-          slashCanvas.width,
-          slashCanvas.height
-        );
+      for (let i = 0; i <= steps; i++) {
+        const p = pointOnCurve((i / steps) * reveal, 0);
+
+        if (i === 0) {
+          slashContext.moveTo(p.x, p.y);
+        } else {
+          slashContext.lineTo(p.x, p.y);
+        }
       }
+
+      slashContext.strokeStyle = `rgba(150, 190, 230, ${0.8 * alpha})`;
+      slashContext.lineWidth = 1.5;
+      slashContext.stroke();
+      slashContext.restore();
+
+      slashFrame = requestAnimationFrame(frame);
     }
 
-
-    requestAnimationFrame(
-      fade
-    );
+    slashFrame = requestAnimationFrame(frame);
   }
 
 
@@ -1583,10 +1438,10 @@ export async function runZombie3D({
 
 
         zombieSpeed =
-          2.45 +
-          kills * 0.22 +
+          3.7 +
+          kills * 0.4 +
           Math.random() *
-            0.35;
+            0.5;
 
 
         hitLocked =
@@ -2370,6 +2225,9 @@ export async function runZombie3D({
       "resize",
       resizeSlashCanvas
     );
+
+
+    cancelAnimationFrame(slashFrame);
 
 
     slashCanvas.removeEventListener(
