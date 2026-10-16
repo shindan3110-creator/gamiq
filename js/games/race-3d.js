@@ -1,4 +1,3 @@
-
 import { GamiqThreeScene } from "./three-renderer.js";
 
 export async function runRace3D({ container, onComplete }) {
@@ -24,8 +23,8 @@ export async function runRace3D({ container, onComplete }) {
   let boostLeft = 0;
   let slowLeft = 0;
   let invincibleLeft = 0;
-  let spawnLeft = 1.25;
-  let currentSpeed = 14;
+  let spawnLeft = 1.0;
+  let currentSpeed = 21;
   let startTime = 0;
   let endTimer = null;
   let messageTimer = null;
@@ -311,7 +310,7 @@ export async function runRace3D({ container, onComplete }) {
     });
   }
 
-  function spawn() {
+  function spawn(t = 0) {
     const idx = Math.floor(Math.random() * 3);
     const r = Math.random();
 
@@ -323,6 +322,20 @@ export async function runRace3D({ container, onComplete }) {
       "truck";
 
     makeObstacle(kind, idx);
+
+    // After the first few seconds, sometimes block a second lane too,
+    // so you must pick the one safe lane quickly.
+    if (
+      kind !== "boost" &&
+      t > 8 &&
+      Math.random() < Math.min(0.45, 0.15 + t / 120)
+    ) {
+      const other = [0, 1, 2].filter(lane => lane !== idx);
+      const second = other[Math.floor(Math.random() * other.length)];
+      const secondKind = Math.random() < 0.5 ? "rock" : "barrier";
+
+      makeObstacle(secondKind, second);
+    }
   }
 
   /* CONTROLS */
@@ -501,7 +514,7 @@ export async function runRace3D({ container, onComplete }) {
       avoided / Math.max(1, avoided + crashes);
 
     const distanceScore =
-      Math.min(1, distance / 1200);
+      Math.min(1, distance / 1900);
 
     const finalScore = Math.round(
       Math.min(
@@ -562,7 +575,8 @@ export async function runRace3D({ container, onComplete }) {
       invincibleLeft - delta
     );
 
-    const baseSpeed = 14 + Math.min(4, t / 15);
+    // Faster base speed: you have to stay focused from the start.
+    const baseSpeed = 21 + Math.min(9, t / 6);
 
     const factor =
       slowLeft > 0 ? 0.65 :
@@ -580,7 +594,7 @@ export async function runRace3D({ container, onComplete }) {
     distanceEl.textContent = Math.floor(distance);
 
     speedEl.textContent =
-      `${(currentSpeed / 14).toFixed(1)}×`;
+      `${(currentSpeed / 21).toFixed(1)}×`;
 
     avoidedEl.textContent = avoided;
     streakEl.textContent = streak;
@@ -643,11 +657,12 @@ export async function runRace3D({ container, onComplete }) {
     spawnLeft -= delta;
 
     if (spawnLeft <= 0) {
-      spawn();
+      spawn(t);
 
+      // Obstacles come more often as time goes on.
       spawnLeft =
-        Math.max(0.82, 1.25 - t / 250) +
-        Math.random() * 0.30;
+        Math.max(0.55, 1.0 - t / 90) +
+        Math.random() * 0.25;
     }
 
     /* OBSTACLES */
