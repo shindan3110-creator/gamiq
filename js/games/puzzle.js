@@ -68,6 +68,8 @@ export function runPuzzleGame({
 BLOCK ESCAPE
 ========================================== */
 
+const BLOCK_TIME_LIMIT = 45000;
+
 function runBlockEscape({ container, onComplete }) {
   const size = 6;
   const boardData = createRandomEscapeBoard();
@@ -81,14 +83,22 @@ function runBlockEscape({ container, onComplete }) {
   let active = true;
   let moves = 0;
   let selectedId = null;
+  let clockTimer = null;
 
   const startedAt = performance.now();
+
+  const targetBlock =
+    boardData.blocks.find(block => block.target);
+
+  const targetStartX = targetBlock.x;
 
   container.innerHTML = `
     <div class="puzzle-wrap block-escape-game">
       <div class="puzzle-top">
         <span>MOVES</span>
         <strong data-puzzle-moves>0</strong>
+        <span class="puzzle-top-gap">TIME</span>
+        <strong data-puzzle-time>${BLOCK_TIME_LIMIT / 1000}</strong>
       </div>
 
       <div
@@ -439,10 +449,62 @@ function runBlockEscape({ container, onComplete }) {
   SUCCESS / SCORING
   ========================================== */
 
+  /* ==========================================
+  TIME LIMIT
+  ========================================== */
+
+  const timeDisplay =
+    container.querySelector("[data-puzzle-time]");
+
+  clockTimer = setInterval(() => {
+    if (!active) return;
+
+    const left = Math.max(
+      0,
+      BLOCK_TIME_LIMIT - (performance.now() - startedAt)
+    );
+
+    timeDisplay.textContent = String(Math.ceil(left / 1000));
+    timeDisplay.classList.toggle("danger", left <= 10000);
+
+    if (left <= 0) {
+      finishTimeUp();
+    }
+  }, 200);
+
+  function finishTimeUp() {
+    if (!active) return;
+
+    active = false;
+    clearInterval(clockTimer);
+
+    // Partial credit: how far the red block got toward the exit.
+    const progress = clamp(
+      (targetBlock.x - targetStartX) /
+      Math.max(1, size - targetBlock.w - targetStartX + 1),
+      0,
+      1
+    );
+
+    hint.textContent = "TIME UP";
+
+    onComplete?.({
+      score: Math.round(progress * 30),
+      adapt: Math.round(30 + progress * 20),
+      meta: {
+        success: false,
+        moves,
+        idealMoves: boardData.idealMoves,
+        elapsed: BLOCK_TIME_LIMIT
+      }
+    });
+  }
+
   function finishSuccess() {
     if (!active) return;
 
     active = false;
+    clearInterval(clockTimer);
 
     const elapsed =
       performance.now() - startedAt;
@@ -451,10 +513,14 @@ function runBlockEscape({ container, onComplete }) {
       boardData.idealMoves;
 
     const movePenalty =
-      Math.max(0, moves - idealMoves) * 8;
+      Math.max(0, moves - idealMoves) * 6;
+
+    // Time allowance grows with the puzzle size.
+    const allowedMs =
+      4000 + idealMoves * 900;
 
     const timePenalty =
-      Math.max(0, elapsed - 4500) / 180;
+      Math.max(0, elapsed - allowedMs) / 400;
 
     const score = clamp(
       100 - movePenalty - timePenalty,
@@ -478,6 +544,7 @@ function runBlockEscape({ container, onComplete }) {
       ),
 
       meta: {
+        success: true,
         moves,
         idealMoves,
         elapsed: Math.round(elapsed),
@@ -500,6 +567,7 @@ function runBlockEscape({ container, onComplete }) {
 
   return () => {
     active = false;
+    clearInterval(clockTimer);
 
     if (desktopControls) {
       window.removeEventListener("keydown", onKey);
