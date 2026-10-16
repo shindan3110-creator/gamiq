@@ -2,8 +2,13 @@
 
 let THREE = null;
 
-const THREE_URL =
-  "https://cdn.jsdelivr.net/npm/three@0.169.0/+esm";
+// Three.js r169 is bundled next to this file (js/games/three.module.min.js),
+// so 3D games do not depend on an outside website.
+// The CDN copy is only a backup if the local file cannot be loaded.
+const THREE_SOURCES = [
+  "./three.module.min.js",
+  "https://cdn.jsdelivr.net/npm/three@0.169.0/+esm"
+];
 
 
 export async function loadThree() {
@@ -11,21 +16,28 @@ export async function loadThree() {
     return THREE;
   }
 
-  try {
-    THREE =
-      await import(
-        THREE_URL
+  for (const source of THREE_SOURCES) {
+    try {
+      THREE =
+        await import(
+          source
+        );
+
+      return THREE;
+    } catch (error) {
+      console.warn(
+        "Three.js load failed:",
+        source,
+        error
       );
-
-    return THREE;
-  } catch (error) {
-    console.error(
-      "Three.js load failed",
-      error
-    );
-
-    return null;
+    }
   }
+
+  console.error(
+    "Three.js could not be loaded"
+  );
+
+  return null;
 }
 
 
