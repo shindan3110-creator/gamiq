@@ -55,7 +55,9 @@ export function createThreeGames() {
       rule: "Choose gates, grow your army, defeat the enemy!",
       skill: "LOGIC",
       theme: "factory",
-      duration: 25000
+      duration: 60000,
+      // 3 stages take about a minute; give the safety timer room.
+      maxDuration: 150000
 
     }
   ];
