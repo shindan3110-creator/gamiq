@@ -1,16 +1,23 @@
-
 // GAMIQ V2 — ARMY GROW / CINEMATIC BATTLE
 import { GamiqThreeScene } from "./three-renderer.js";
 
 export async function runFactory3D({ container, onComplete }) {
   if (!container) return () => {};
 
-  const TURNS = 5;
+  // 3 stages: 3 gates, then 4 gates, then 5 gates.
+  // Each stage ends with a battle. Survivors move on.
+  const BLOCKS = [3, 4, 5];
+  const STAGES = BLOCKS.length;
+  const TOTAL_GATES = BLOCKS.reduce((sum, n) => sum + n, 0);
+
+  // Enemy size as a share of the best possible army at each battle.
+  const ENEMY_RATIO = [0.45, 0.5, 0.6];
   const LANES = [-2.4, 2.4];
   const MAX_VISIBLE = 110;
   const ROAD_SPEED = 13.5;
   const HIT_Z = 2;
-  const BATTLE_LENGTH = 5.6;
+  const BATTLE_LENGTH_NORMAL = 4.2;
+  const BATTLE_LENGTH_BOSS = 5.6;
   const startTime = performance.now();
 
   let active = true;
@@ -20,6 +27,12 @@ export async function runFactory3D({ container, onComplete }) {
   let peakArmy = army;
   let bestChoices = 0;
   let turns = 0;
+  let currentStage = 0;
+  let gateInStage = 0;
+  let stagesCleared = 0;
+  let battleLength = BATTLE_LENGTH_NORMAL;
+  let regroupAge = 0;
+  const armyBeforeBattle = [];
   let gateRow = null;
   let nextRowIn = 0;
   let enemy = null;
@@ -37,17 +50,48 @@ export async function runFactory3D({ container, onComplete }) {
   let downPointer = null;
   let delivered = false;
 
-  const rounds = [
-    [{ op: "+", n: 10 }, { op: "x", n: 2 }],
-    [{ op: "+", n: 35 }, { op: "x", n: 2 }],
-    [{ op: "+", n: 25 }, { op: "x", n: 3 }],
-    [{ op: "-", n: 20 }, { op: "+", n: 45 }],
-    [{ op: "x", n: 2 }, { op: "+", n: 75 }]
-  ].map(pair =>
-    Math.random() < 0.5
-      ? [...pair].reverse()
-      : pair
-  );
+  /*
+   * Gate pairs are generated randomly every game,
+   * so players cannot memorise the answers.
+   * Many pairs are "+N vs ×2": the better one depends on your army size.
+   */
+  function randInt(min, max) {
+    return min + Math.floor(Math.random() * (max - min + 1));
+  }
+
+  function makePair(stageIndex) {
+    const grow = 1 + stageIndex * 0.7;
+    const plus = () => ({ op: "+", n: Math.round(randInt(8, 40) * grow) });
+    const minus = () => ({ op: "-", n: Math.round(randInt(6, 25) * grow) });
+
+    const roll = Math.random();
+    let pair;
+
+    if (roll < 0.4) {
+      pair = [plus(), { op: "x", n: 2 }];
+    } else if (roll < 0.55) {
+      pair = [plus(), { op: "x", n: 3 }];
+    } else if (roll < 0.7) {
+      pair = [plus(), minus()];
+    } else if (roll < 0.85) {
+      const a = plus();
+      let b = plus();
+      while (b.n === a.n) b = plus();
+      pair = [a, b];
+    } else {
+      pair = [minus(), { op: "x", n: 2 }];
+    }
+
+    return Math.random() < 0.5 ? pair.reverse() : pair;
+  }
+
+  const rounds = [];
+
+  BLOCKS.forEach((count, stageIndex) => {
+    for (let i = 0; i < count; i++) {
+      rounds.push(makePair(stageIndex));
+    }
+  });
 
   /* ==========================================
   HTML
@@ -64,12 +108,12 @@ export async function runFactory3D({ container, onComplete }) {
 
         <div>
           <span>GATE</span>
-          <strong data-army-wave>1 / 5</strong>
+          <strong data-army-wave>1 / ${BLOCKS[0]}</strong>
         </div>
 
         <div>
-          <span>BEST CHOICES</span>
-          <strong data-army-best>0</strong>
+          <span>STAGE</span>
+          <strong data-army-best>1 / ${STAGES}</strong>
         </div>
       </div>
 
@@ -600,7 +644,7 @@ export async function runFactory3D({ container, onComplete }) {
     if (
       !active ||
       phase !== "gates" ||
-      turns >= TURNS
+      gateInStage >= BLOCKS[currentStage]
     ) {
       return;
     }
@@ -649,10 +693,10 @@ export async function runFactory3D({ container, onComplete }) {
 
     if (phase === "gates") {
       waveEl.textContent =
-        `${Math.min(turns + 1, TURNS)} / ${TURNS}`;
+        `${Math.min(gateInStage + 1, BLOCKS[currentStage])} / ${BLOCKS[currentStage]}`;
     }
 
-    bestEl.textContent = String(bestChoices);
+    bestEl.textContent = `${currentStage + 1} / ${STAGES}`;
   }
 
   function setLane(value) {
@@ -791,6 +835,7 @@ export async function runFactory3D({ container, onComplete }) {
 
     gateRow = null;
     turns++;
+    gateInStage++;
     nextRowIn = 0.55;
 
     updateHUD();
@@ -1038,12 +1083,66 @@ export async function runFactory3D({ container, onComplete }) {
   BATTLE START
   ========================================== */
 
+  /*
+   * Plan the whole game assuming perfect choices.
+   * All gate operations only grow with a bigger army,
+   * so picking the bigger result every time is optimal.
+   * Each enemy is sized from that best army, so
+   * good choices win and random choices usually lose.
+   */
+  const stageBest = [];
+  const stageEnemy = [];
+
+  (() => {
+    let count = 8;
+    let index = 0;
+
+    BLOCKS.forEach((gates, stageIndex) => {
+      for (let i = 0; i < gates; i++) {
+        const pair = rounds[index++];
+        count = Math.max(
+          ...pair.map(choice => resultOf(count, choice))
+        );
+      }
+
+      stageBest.push(count);
+
+      const enemySize = Math.max(
+        3,
+        Math.round(
+          count * (ENEMY_RATIO[stageIndex] + Math.random() * 0.04)
+        )
+      );
+
+      stageEnemy.push(enemySize);
+
+      count = Math.max(1, count - enemySize);
+    });
+  })();
+
+  function removeEnemy() {
+    if (!enemy) {
+      return;
+    }
+
+    // Geometry only: the materials are shared and reused.
+    enemy.root.traverse(child => {
+      child.geometry?.dispose?.();
+    });
+
+    world.scene.remove(enemy.root);
+    enemy = null;
+  }
+
   function startApproach() {
     phase = "approach";
     approachAge = 0;
 
-    enemyCount =
-      150 + Math.floor(Math.random() * 31);
+    removeEnemy();
+
+    enemyCount = stageEnemy[currentStage];
+
+    battleHUD.classList.remove("victory", "defeat");
 
     enemy = makeCrowd(
       mat.red,
@@ -1059,7 +1158,9 @@ export async function runFactory3D({ container, onComplete }) {
     waveEl.textContent = "BATTLE";
 
     showPop(
-      "ENEMY INCOMING!",
+      currentStage === STAGES - 1
+        ? "BOSS ARMY INCOMING!"
+        : "ENEMY INCOMING!",
       "battle",
       1100
     );
@@ -1077,6 +1178,13 @@ export async function runFactory3D({ container, onComplete }) {
     originalArmy = army;
     originalEnemy = enemyCount;
 
+    armyBeforeBattle[currentStage] = army;
+
+    battleLength =
+      currentStage === STAGES - 1
+        ? BATTLE_LENGTH_BOSS
+        : BATTLE_LENGTH_NORMAL;
+
     battleLine = -2.1;
 
     showPop(
@@ -1092,6 +1200,19 @@ export async function runFactory3D({ container, onComplete }) {
   VICTORY / DEFEAT
   ========================================== */
 
+  function startRegroup() {
+    phase = "regroup";
+    regroupAge = 0;
+
+    battleHUD.classList.add("victory");
+
+    showPop(
+      `STAGE ${currentStage + 1} CLEAR! ${army} LEFT`,
+      "good",
+      1400
+    );
+  }
+
   function startCelebration() {
     phase = "celebration";
     celebrationAge = 0;
@@ -1101,7 +1222,7 @@ export async function runFactory3D({ container, onComplete }) {
     showPop(
       success
         ? `VICTORY! ${army} LEFT`
-        : "DEFEAT!",
+        : `DEFEAT! (STAGE ${currentStage + 1})`,
 
       success ? "good" : "bad",
       1500
@@ -1120,26 +1241,28 @@ export async function runFactory3D({ container, onComplete }) {
     delivered = true;
     active = false;
 
-    const success = army > 0;
+    const success = stagesCleared === STAGES;
 
     const decisionRate =
-      bestChoices / TURNS;
+      bestChoices / Math.max(1, turns);
+
+    // Average of (your army / best possible army) at each battle.
+    const ratios = armyBeforeBattle.map(
+      (value, index) => Math.min(1, value / stageBest[index])
+    );
 
     const armyStrength =
-      Math.min(1, peakArmy / 350);
-
-    const remaining =
-      success
-        ? Math.min(1, army / 230)
+      ratios.length
+        ? ratios.reduce((sum, value) => sum + value, 0) / ratios.length
         : 0;
 
+    // Squared so that random choices score low.
     const score = Math.round(
       Math.min(
         100,
-        decisionRate * 25 +
-        armyStrength * 25 +
-        remaining * 35 +
-        (success ? 15 : 0)
+        (stagesCleared / STAGES) * 30 +
+        decisionRate * decisionRate * 35 +
+        armyStrength * armyStrength * 35
       )
     );
 
@@ -1164,6 +1287,7 @@ export async function runFactory3D({ container, onComplete }) {
           peakArmy,
           finalArmy: army,
           enemyArmy: originalEnemy,
+          stagesCleared,
           gatesChosen: turns,
           bestChoices,
           elapsed: Math.round(
@@ -1248,7 +1372,7 @@ export async function runFactory3D({ container, onComplete }) {
         nextRowIn -= dt;
 
         if (nextRowIn <= 0) {
-          if (turns < TURNS) {
+          if (gateInStage < BLOCKS[currentStage]) {
             spawnRow();
           } else {
             startApproach();
@@ -1282,12 +1406,12 @@ export async function runFactory3D({ container, onComplete }) {
 
     } else if (phase === "battle") {
       battleAge = Math.min(
-        BATTLE_LENGTH,
+        battleLength,
         battleAge + dt
       );
 
       const progress =
-        battleAge / BATTLE_LENGTH;
+        battleAge / battleLength;
 
       const easing =
         progress * progress *
@@ -1369,8 +1493,42 @@ export async function runFactory3D({ container, onComplete }) {
 
       setBattleHUD();
 
-      if (battleAge >= BATTLE_LENGTH) {
-        startCelebration();
+      if (battleAge >= battleLength) {
+        if (army > 0) {
+          stagesCleared++;
+        }
+
+        if (army > 0 && currentStage < STAGES - 1) {
+          startRegroup();
+        } else {
+          startCelebration();
+        }
+      }
+
+    /* STAGE CLEAR -> NEXT STAGE */
+
+    } else if (phase === "regroup") {
+      regroupAge += dt;
+
+      blue.root.position.z +=
+        (HIT_Z - blue.root.position.z) *
+        Math.min(1, dt * 2.5);
+
+      if (enemy) {
+        enemy.root.position.z -= 6 * dt;
+      }
+
+      if (regroupAge >= 1.5) {
+        removeEnemy();
+
+        battleHUD.classList.remove("active", "victory", "defeat");
+
+        currentStage++;
+        gateInStage = 0;
+        phase = "gates";
+        nextRowIn = 0.3;
+
+        updateHUD();
       }
 
     /* CELEBRATION */
@@ -1419,7 +1577,7 @@ export async function runFactory3D({ container, onComplete }) {
 
     /* CINEMATIC CAMERA */
 
-    if (phase === "gates") {
+    if (phase === "gates" || phase === "regroup") {
       cameraTarget.set(
         0,
         7.1,
