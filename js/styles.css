@@ -9299,3 +9299,20 @@ BULLSEYE (Step 10-6)
   20% { opacity: 1; transform: translate(-50%, 0) scale(1.05); }
   100% { opacity: 0; transform: translate(-50%, -6px) scale(1); }
 }
+
+
+/* ==========================================
+TIME LIMITS (Step 13)
+========================================== */
+
+.memory-message.memory-time-danger {
+  color: #ff5a73;
+}
+
+.puzzle-top .puzzle-top-gap {
+  margin-left: 14px;
+}
+
+.puzzle-top strong.danger {
+  color: #ff5a73;
+}
