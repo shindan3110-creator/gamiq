@@ -1,15 +1,22 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>GAMIQについて | GAMIQ</title>
+<title>About | GAMIQ</title>
 
 <meta
   name="description"
-  content="GAMIQは、ランダムに出題されるミニゲームを通じて、反射・スピード・AIM・判断・記憶・適応力などのゲーム地力を測るWebゲームです。"
+  content="GAMIQ is a free browser game that measures your gaming skill with random mini-games: REFLEX, SPEED, AIM, LOGIC, MEMORY and ADAPT."
 >
+
+<script>
+window.GAMIQ_PAGE = {
+  en: { title: "About | GAMIQ", description: "GAMIQ is a free browser game that measures your gaming skill with random mini-games: REFLEX, SPEED, AIM, LOGIC, MEMORY and ADAPT." },
+  ja: { title: "GAMIQについて | GAMIQ", description: "GAMIQは、ランダムに出題されるミニゲームで、REFLEX・SPEED・AIM・LOGIC・MEMORY・ADAPTのゲーム力を測る無料Webゲームです。" }
+};
+</script>
 
 <style>
 *{
@@ -87,27 +94,128 @@ footer{
   color:#667286;
   font-size:12px;
 }
+
+[hidden]{
+  display:none !important;
+}
+
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.lang-switch{
+  display:flex;
+  gap:12px;
+  font-size:13px;
+  font-weight:800;
+}
+
+.lang-switch a{
+  color:#8c97a8;
+  text-decoration:none;
+}
+
+.lang-switch a:hover{
+  color:#61eaff;
+}
+
+.site-links{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:16px;
+  margin-bottom:10px;
+}
+
+.site-links a{
+  color:#8c97a8;
+  text-decoration:none;
+}
+
+ul{
+  color:#b4bdcc;
+  line-height:1.9;
+  padding-left:22px;
+}
+
+.updated{
+  color:#667286;
+  font-size:13px;
+}
 </style>
 </head>
 
 <body>
 
 <header class="header">
-  <a class="logo" href="/">
+  <a class="logo" href="/" data-keep-lang="/">
     GAM<span>IQ</span>
   </a>
+
+  <nav class="lang-switch" aria-label="Language">
+    <a href="./about.html?lang=en">English</a>
+    <a href="./about.html?lang=ja">日本語</a>
+  </nav>
 </header>
 
 <main>
 
-<h1>
-GAMIQについて
-</h1>
+<div data-lang="en">
+<h1>About GAMIQ</h1>
+
+<p>
+<strong>GAMIQ</strong> is a free browser game that measures how good you are at games
+— not at one game, but across many different mini-games.
+</p>
+
+<p>
+You don't choose what to play. Each game is picked at random, so you never know what comes next.
+</p>
+
+<h2>What GAMIQ measures</h2>
+
+<p>
+While you play, GAMIQ looks at several skills:
+<strong>REFLEX</strong> (reaction), <strong>SPEED</strong> (fast decisions),
+<strong>AIM</strong> (precision), <strong>LOGIC</strong> (thinking),
+<strong>MEMORY</strong> and <strong>ADAPT</strong> (handling new rules).
+</p>
+
+<p>
+Every game you play adds to your record and updates your GAMIQ score and skill scores.
+The more you play, the more accurate your GAMIQ becomes.
+</p>
+
+<h2>The idea</h2>
+
+<p>
+Being good at games is not only about practicing one favorite title.
+Picking up new rules and controls quickly is a skill too.
+That is why GAMIQ keeps giving you games from different genres, rules and worlds — at random.
+</p>
+
+<h2>About the score</h2>
+
+<p>
+The GAMIQ score is an in-game number calculated by GAMIQ's own method.
+It is <strong>not</strong> a medical or psychological IQ test,
+and it is not an official certification of any ability.
+</p>
+<a class="back" href="/" data-keep-lang="/">
+← Play GAMIQ
+</a>
+</div>
+
+<div data-lang="ja" hidden>
+<h1>GAMIQについて</h1>
 
 <p>
 <strong>GAMIQ</strong>は、
 「ゲームが上手い」をひとつのゲームだけではなく、
-さまざまなミニゲームを通じて測るWebゲームです。
+さまざまなミニゲームを通じて測る無料のWebゲームです。
 </p>
 
 <p>
@@ -115,57 +223,97 @@ GAMIQについて
 次に何が出てくるか分からないランダム形式を採用しています。
 </p>
 
-<h2>
-測定する能力
-</h2>
+<h2>測定する能力</h2>
 
 <p>
 GAMIQでは、ゲームプレイを通じて、
-反射力・操作速度・AIM・判断力・記憶力・適応力など、
-複数の能力を測定します。
+REFLEX（反射）・SPEED（素早い判断）・AIM（正確さ）・
+LOGIC（思考）・MEMORY（記憶）・ADAPT（適応力）を測定します。
 </p>
 
 <p>
 ゲームをプレイするたびに結果が蓄積され、
 GAMIQスコアや各能力値が更新されていきます。
+遊ぶほど、測定の精度が上がります。
 </p>
 
-<h2>
-GAMIQの考え方
-</h2>
+<h2>GAMIQの考え方</h2>
 
 <p>
 得意なゲームだけを繰り返すのではなく、
 初めて見るルールや操作にも対応できることを
 「ゲーム地力」のひとつとして考えています。
-</p>
-
-<p>
 そのためGAMIQでは、
 さまざまなジャンル・ルール・世界観のゲームを
 ランダムに提供していきます。
 </p>
 
-<h2>
-スコアについて
-</h2>
+<h2>スコアについて</h2>
 
 <p>
-現在のGAMIQスコアは、
+GAMIQスコアは、
 GAMIQ独自の計算方式によるゲーム内指標です。
 医学的・心理学的なIQ検査や、
 公的な能力認定を目的とするものではありません。
 </p>
-
-<a class="back" href="/">
+<a class="back" href="/" data-keep-lang="/">
 ← GAMIQをプレイする
 </a>
+</div>
 
 </main>
 
 <footer>
-© GAMIQ
+  <div class="site-links">
+    <a href="./about.html">About</a>
+    <a href="./privacy.html">Privacy</a>
+    <a href="./contact.html">Contact</a>
+  </div>
+  © GAMIQ
 </footer>
+
+<script>
+/* Show English or Japanese. ?lang=ja / ?lang=en wins, then the browser language. */
+(function () {
+  var supported = ["en", "ja"];
+  var lang = "en";
+
+  try {
+    var fromUrl = new URLSearchParams(location.search).get("lang");
+    if (supported.indexOf(fromUrl) !== -1) {
+      lang = fromUrl;
+    } else {
+      var list = navigator.languages && navigator.languages.length
+        ? navigator.languages
+        : [navigator.language || "en"];
+      for (var i = 0; i < list.length; i++) {
+        var short = String(list[i]).toLowerCase().split("-")[0];
+        if (supported.indexOf(short) !== -1) { lang = short; break; }
+      }
+    }
+  } catch (e) {}
+
+  document.documentElement.lang = lang;
+
+  var blocks = document.querySelectorAll("[data-lang]");
+  for (var j = 0; j < blocks.length; j++) {
+    blocks[j].hidden = blocks[j].getAttribute("data-lang") !== lang;
+  }
+
+  var meta = document.querySelector('meta[name="description"]');
+  var page = window.GAMIQ_PAGE && window.GAMIQ_PAGE[lang];
+  if (page) {
+    document.title = page.title;
+    if (meta) meta.setAttribute("content", page.description);
+  }
+
+  // Keep the language when going back to the game.
+  var links = document.querySelectorAll("a[data-keep-lang]");
+  for (var k = 0; k < links.length; k++) {
+    links[k].setAttribute("href", links[k].getAttribute("data-keep-lang") + "?lang=" + lang);
+  }
+})();
+</script>
 
 </body>
 </html>
