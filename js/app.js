@@ -46,6 +46,11 @@ import {
 } from "./games/speed.js";
 
 import {
+  createAimGames,
+  runAimGame
+} from "./games/aim.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -101,7 +106,8 @@ const gamePool = [
   ...createPuzzleGames(),
   ...createMemoryGames(),
   ...createThreeGames(),
-  ...createSpeedGames()
+  ...createSpeedGames(),
+  ...createAimGames()
 ];
 
 
@@ -959,6 +965,12 @@ function runSelectedGame({
     ]);
 
 
+  const aimTypes =
+    new Set([
+      "bullseye"
+    ]);
+
+
   if (
     reflexTypes.has(
       game.type
@@ -1017,6 +1029,19 @@ function runSelectedGame({
     )
   ) {
     return runSpeedGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (
+    aimTypes.has(
+      game.type
+    )
+  ) {
+    return runAimGame({
       game,
       container,
       onComplete
