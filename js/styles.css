@@ -9944,3 +9944,650 @@ NINJA COUNTER - BAMBOO DEPTH (Step 18-2)
   65%  { transform:translateX(2px); }
   100% { transform:translateX(0); }
 }
+
+
+/* ==========================================
+QUICK DRAW - WESTERN DUEL 3D LOOK (Step 18-3)
+Street with perspective, a drawn gunslinger,
+gun recoil / muzzle flash / tracer / impact / hat flying.
+========================================== */
+
+.qd-arena{
+  display:block;
+
+  background:#1a0f12;
+
+  isolation:isolate;
+}
+
+/* ---------- SKY ---------- */
+
+.qd-sky{
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(
+      180deg,
+      #2a1736 0%,
+      #7a2f3d 26%,
+      #d2603d 42%,
+      #f4a95c 52%,
+      #f4a95c 53%
+    );
+}
+
+.qd-sun{
+  position:absolute;
+
+  left:50%;
+  top:28%;
+
+  width:86px;
+  height:86px;
+
+  transform:translateX(-50%);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle, #fff1c2 0 45%, #ffc773 70%, rgba(255,180,90,0) 72%);
+
+  box-shadow:
+    0 0 60px 24px rgba(255,170,90,.45);
+}
+
+.qd-mesa{
+  position:absolute;
+
+  left:0;
+  right:0;
+  top:38%;
+
+  height:15%;
+
+  background:
+    linear-gradient(180deg, #6b2c30, #3d1a22);
+
+  clip-path:
+    polygon(
+      0 70%, 8% 30%, 18% 30%, 22% 60%, 34% 62%,
+      38% 20%, 52% 20%, 56% 64%, 70% 64%, 74% 40%,
+      86% 40%, 90% 70%, 100% 60%, 100% 100%, 0 100%
+    );
+}
+
+/* ---------- STREET (perspective) ---------- */
+
+.qd-street{
+  position:absolute;
+  inset:0;
+}
+
+/* ground with lines that meet at the vanishing point */
+.qd-ground{
+  position:absolute;
+
+  left:0;
+  right:0;
+  top:52%;
+  bottom:0;
+
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><g stroke='%23000' stroke-opacity='.16' stroke-width='.35' fill='none'><path d='M50 0 L-60 100 M50 0 L-25 100 M50 0 L5 100 M50 0 L30 100 M50 0 L50 100 M50 0 L70 100 M50 0 L95 100 M50 0 L125 100 M50 0 L160 100'/><path d='M0 4 H100 M0 10 H100 M0 19 H100 M0 32 H100 M0 50 H100 M0 74 H100'/></g></svg>")
+      center / 100% 100% no-repeat,
+    linear-gradient(
+      180deg,
+      #b77443 0%,
+      #9a5a33 40%,
+      #6b3b22 100%
+    );
+}
+
+/* building walls on both sides, narrowing to the center */
+.qd-town{
+  position:absolute;
+  inset:0;
+
+  z-index:1;
+}
+
+.qd-town i{
+  display:none;
+}
+
+.qd-town-left{
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(0,0,0,.28) 0 2px,
+      transparent 2px 22px
+    ),
+    linear-gradient(
+      90deg,
+      #6e4128 0%,
+      #4c2c1d 60%,
+      #2f1b13 100%
+    );
+
+  clip-path:
+    polygon(0 4%, 36% 42%, 36% 53.5%, 0 92%);
+}
+
+.qd-town-right{
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 20px,
+      rgba(0,0,0,.28) 20px 22px
+    ),
+    linear-gradient(
+      270deg,
+      #6e4128 0%,
+      #4c2c1d 60%,
+      #2f1b13 100%
+    );
+
+  clip-path:
+    polygon(100% 4%, 64% 42%, 64% 53.5%, 100% 92%);
+}
+
+/* porch roofs / signs on the walls */
+.qd-town::after{
+  content:"";
+  position:absolute;
+  inset:0;
+}
+
+.qd-town-left::after{
+  background:
+    linear-gradient(180deg, transparent 0 30%, rgba(20,10,6,.7) 30% 34%, transparent 34% 62%, rgba(255,200,120,.25) 62% 66%, transparent 66%);
+  clip-path:
+    polygon(0 4%, 36% 42%, 36% 53.5%, 0 92%);
+}
+
+.qd-town-right::after{
+  background:
+    linear-gradient(180deg, transparent 0 34%, rgba(20,10,6,.7) 34% 38%, transparent 38% 58%, rgba(255,200,120,.25) 58% 62%, transparent 62%);
+  clip-path:
+    polygon(100% 4%, 64% 42%, 64% 53.5%, 100% 92%);
+}
+
+/* tumbleweed rolling across */
+.qd-tumbleweed{
+  position:absolute;
+
+  z-index:2;
+
+  left:-40px;
+  top:62%;
+
+  width:26px;
+  height:26px;
+
+  border-radius:50%;
+
+  border:3px dotted #7a5532;
+
+  box-shadow:
+    inset 0 0 0 4px rgba(122,85,50,.55);
+
+  animation:
+    qd-tumble 9s linear infinite;
+
+  opacity:.8;
+}
+
+@keyframes qd-tumble{
+  0%   { transform:translateX(0) rotate(0deg); }
+  100% { transform:translateX(1400px) rotate(1440deg); }
+}
+
+/* ---------- OPPONENT ---------- */
+
+.qd-opponent{
+  position:absolute;
+
+  z-index:4;
+
+  left:50%;
+  bottom:36%;
+
+  height:38%;
+  aspect-ratio:120 / 200;
+
+  transform:translateX(-50%);
+}
+
+.qd-shadow{
+  position:absolute;
+
+  left:10%;
+  right:10%;
+  bottom:-4%;
+
+  height:8%;
+
+  border-radius:50%;
+
+  background:rgba(0,0,0,.45);
+
+  filter:blur(2px);
+}
+
+.qd-body{
+  position:absolute;
+  inset:0;
+
+  transform-origin:50% 100%;
+
+  transition:
+    transform .45s cubic-bezier(.3,1.4,.5,1),
+    filter .2s ease;
+}
+
+.qd-body > svg{
+  width:100%;
+  height:100%;
+
+  display:block;
+
+  filter:drop-shadow(0 4px 6px rgba(0,0,0,.4));
+}
+
+/* gun arm: hangs by the holster, swings up on DRAW */
+.qd-arm{
+  position:absolute;
+
+  left:66%;
+  top:36%;
+
+  width:33%;
+  height:40%;
+
+  transform-origin:50% 6%;
+
+  transform:rotate(-8deg);
+
+  transition:transform .09s ease-out;
+}
+
+.qd-arm svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+.duel-fake .qd-arm{
+  transform:rotate(16deg);
+}
+
+.qd-draw .qd-arm{
+  transform:rotate(58deg) scaleY(.78);
+}
+
+/* enemy muzzle flash (when you are too slow) */
+.qd-enemy-flash{
+  position:absolute;
+
+  left:50%;
+  bottom:-14%;
+
+  width:150%;
+  aspect-ratio:1;
+
+  transform:translate(-50%, 0) scale(0);
+
+  background:
+    radial-gradient(circle, #ffffff 0 18%, #ffe27a 34%, rgba(255,140,40,.8) 52%, transparent 70%);
+
+  clip-path:
+    polygon(50% 0, 60% 35%, 100% 50%, 60% 65%, 50% 100%, 40% 65%, 0 50%, 40% 35%);
+
+  pointer-events:none;
+}
+
+.qd-shoot .qd-enemy-flash{
+  animation:qd-flash .22s ease-out;
+}
+
+/* hit: stagger back (flash), then fall backwards */
+.qd-hit .qd-body{
+  animation:
+    qd-fall .75s cubic-bezier(.4,0,.6,1) forwards;
+}
+
+@keyframes qd-fall{
+  0%   { transform:none; filter:brightness(2.2); }
+  12%  { transform:rotate(-7deg) translateX(4%); filter:brightness(1.6); }
+  35%  { transform:rotate(-10deg) translateX(6%); filter:brightness(1); }
+  100% { transform:perspective(420px) rotateX(74deg) translateY(4%); filter:brightness(.85); }
+}
+
+.qd-hit .qd-arm{
+  transform:rotate(130deg);
+}
+
+/* impact burst on the chest */
+.qd-impact{
+  position:absolute;
+
+  left:50%;
+  top:46%;
+
+  width:70%;
+  aspect-ratio:1;
+
+  transform:translate(-50%, -50%) scale(0);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle, #ffffff 0 14%, #fff2a6 26%, rgba(255,170,60,.85) 40%, rgba(255,120,40,0) 66%);
+
+  box-shadow:
+    0 0 30px 10px rgba(255,200,110,.6);
+
+  pointer-events:none;
+}
+
+.qd-hit .qd-impact{
+  animation:qd-impact .32s ease-out;
+}
+
+@keyframes qd-impact{
+  0%   { transform:translate(-50%,-50%) scale(.2); opacity:1; }
+  60%  { transform:translate(-50%,-50%) scale(1.25); opacity:1; }
+  100% { transform:translate(-50%,-50%) scale(1.6); opacity:0; }
+}
+
+/* hat */
+.qd-hat{
+  position:absolute;
+
+  z-index:2;
+
+  left:50%;
+  top:3%;
+
+  width:66%;
+
+  transform:translateX(-50%);
+}
+
+.qd-hat svg{
+  width:100%;
+  display:block;
+}
+
+.qd-hit .qd-hat{
+  animation:qd-hat-fly .8s cubic-bezier(.2,.7,.4,1) forwards;
+}
+
+@keyframes qd-hat-fly{
+  0%   { transform:translateX(-50%) translateY(0) rotate(0deg); opacity:1; }
+  100% { transform:translateX(-120%) translateY(-170%) rotate(-320deg); opacity:0; }
+}
+
+/* ---------- PLAYER GUN ---------- */
+
+.qd-gun{
+  position:absolute;
+
+  z-index:6;
+
+  right:-3%;
+  bottom:-5%;
+
+  width:min(44%, 250px);
+  aspect-ratio:160 / 120;
+
+  pointer-events:none;
+}
+
+.qd-gun svg{
+  width:100%;
+  height:100%;
+  display:block;
+
+  transform-origin:80% 85%;
+
+  filter:drop-shadow(-6px 8px 10px rgba(0,0,0,.55));
+}
+
+.qd-gun.qd-fire svg{
+  animation:qd-recoil .28s cubic-bezier(.2,.9,.3,1);
+}
+
+@keyframes qd-recoil{
+  0%   { transform:rotate(0deg) translate(0,0); }
+  18%  { transform:rotate(14deg) translate(8%,4%); }
+  100% { transform:rotate(0deg) translate(0,0); }
+}
+
+.qd-muzzle{
+  position:absolute;
+
+  left:-8%;
+  top:12%;
+
+  width:42%;
+  aspect-ratio:1;
+
+  transform:scale(0);
+
+  background:
+    radial-gradient(circle, #ffffff 0 16%, #fff0a0 30%, rgba(255,150,40,.9) 48%, transparent 68%);
+
+  clip-path:
+    polygon(50% 0, 58% 36%, 100% 50%, 58% 64%, 50% 100%, 42% 64%, 0 50%, 42% 36%);
+
+  filter:drop-shadow(0 0 12px #ffcf6b);
+}
+
+.qd-gun.qd-fire .qd-muzzle{
+  animation:qd-flash .16s ease-out;
+}
+
+@keyframes qd-flash{
+  0%   { transform:translate(-50%,0) scale(.3) rotate(0deg); opacity:1; }
+  40%  { transform:translate(-50%,0) scale(1.15) rotate(20deg); opacity:1; }
+  100% { transform:translate(-50%,0) scale(1.3) rotate(30deg); opacity:0; }
+}
+
+.qd-gun .qd-muzzle{
+  /* the flash keyframes use translate(-50%), undo it for the gun */
+  margin-left:21%;
+}
+
+.qd-smoke{
+  position:absolute;
+
+  left:2%;
+  top:20%;
+
+  width:22%;
+  aspect-ratio:1;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle, rgba(230,225,215,.7), rgba(230,225,215,0) 70%);
+
+  opacity:0;
+}
+
+.qd-gun.qd-fire .qd-smoke{
+  animation:qd-smoke .6s ease-out .05s;
+}
+
+@keyframes qd-smoke{
+  0%   { transform:translate(0,0) scale(.4); opacity:.9; }
+  100% { transform:translate(-30%,-120%) scale(2.2); opacity:0; }
+}
+
+/* bullet line */
+.qd-tracer{
+  position:absolute;
+
+  z-index:5;
+
+  height:3px;
+
+  transform-origin:0 50%;
+
+  border-radius:3px;
+
+  background:
+    linear-gradient(90deg, rgba(255,240,180,0), #fff3c4 55%, #ffffff);
+
+  box-shadow:
+    0 0 8px 2px rgba(255,220,140,.7);
+
+  opacity:0;
+
+  pointer-events:none;
+}
+
+.qd-tracer.show{
+  animation:qd-tracer .24s ease-out;
+}
+
+@keyframes qd-tracer{
+  0%   { opacity:1; clip-path:inset(0 100% 0 0); }
+  30%  { opacity:1; clip-path:inset(0 0 0 0); }
+  100% { opacity:0; clip-path:inset(0 0 0 60%); }
+}
+
+/* bullet hitting the ground (TOO EARLY) */
+.qd-ground-dust{
+  position:absolute;
+
+  z-index:5;
+
+  width:60px;
+  height:34px;
+
+  margin:-17px 0 0 -30px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(ellipse, rgba(214,170,120,.9), rgba(214,170,120,0) 70%);
+
+  opacity:0;
+
+  pointer-events:none;
+}
+
+.qd-ground-dust.show{
+  animation:qd-dust .5s ease-out;
+}
+
+@keyframes qd-dust{
+  0%   { transform:scale(.2); opacity:1; }
+  100% { transform:scale(1.8) translateY(-14px); opacity:0; }
+}
+
+/* you got shot (TOO SLOW) */
+.qd-hurt{
+  position:absolute;
+  inset:0;
+
+  z-index:8;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><g stroke='%23fff' stroke-opacity='.75' stroke-width='.5' fill='none'><path d='M62 40 L48 22 L44 6 M62 40 L80 30 L96 26 M62 40 L74 58 L88 80 M62 40 L46 52 L22 60 L4 66 M62 40 L60 64 L52 96'/><circle cx='62' cy='40' r='2.5'/></g></svg>")
+      center / 100% 100% no-repeat,
+    radial-gradient(ellipse at center, transparent 40%, rgba(200,0,30,.55) 100%);
+}
+
+.qd-hurt-on .qd-hurt{
+  animation:qd-hurt .65s ease-out;
+}
+
+@keyframes qd-hurt{
+  0%   { opacity:1; }
+  70%  { opacity:.8; }
+  100% { opacity:0; }
+}
+
+/* ---------- ROUND CHAMBERS ---------- */
+
+.qd-chambers{
+  position:absolute;
+
+  z-index:9;
+
+  left:50%;
+  top:10px;
+
+  display:flex;
+  gap:6px;
+
+  transform:translateX(-50%);
+}
+
+.qd-chambers i{
+  width:26px;
+  height:26px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:50%;
+
+  border:2px solid rgba(255,230,180,.45);
+
+  background:rgba(0,0,0,.35);
+
+  color:#1b0e06;
+
+  font-style:normal;
+  font-size:8px;
+  font-weight:1000;
+}
+
+.qd-chambers i.hit{
+  background:#ffd27a;
+  border-color:#ffd27a;
+}
+
+.qd-chambers i.fast{
+  background:#fff1b5;
+  border-color:#ffffff;
+  box-shadow:0 0 10px rgba(255,230,150,.9);
+}
+
+.qd-chambers i.slow{
+  background:#ff4d6a;
+  border-color:#ff4d6a;
+  color:#ffffff;
+  font-size:11px;
+}
+
+/* ---------- MESSAGE ---------- */
+
+.qd-message{
+  left:50%;
+  bottom:5%;
+
+  transform:translateX(-50%);
+
+  white-space:nowrap;
+}
+
+.duel-draw .qd-message{
+  animation:qd-draw-pop .25s ease-out;
+
+  font-size:20px;
+}
+
+@keyframes qd-draw-pop{
+  0%   { transform:translateX(-50%) scale(1.8); }
+  100% { transform:translateX(-50%) scale(1); }
+}
