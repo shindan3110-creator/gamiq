@@ -169,6 +169,11 @@ function runBlockEscape({ container, onComplete }) {
 
       element.type = "button";
       element.className = "puzzle-block";
+
+      // Wood grain runs along the long side of the block.
+      element.classList.add(
+        block.w > block.h ? "wood-h" : "wood-v"
+      );
       element.dataset.id = block.id;
 
       element.style.gridColumn =
@@ -954,6 +959,7 @@ function runPipeConnect({
   let moves = 0;
   let finishTimer = null;
   let clockTimer = null;
+  let waterDelay = 0;
 
   const startedAt = performance.now();
 
@@ -1026,17 +1032,21 @@ function runPipeConnect({
 
       button.innerHTML = `
         <svg viewBox="0 0 100 100" aria-hidden="true">
-          ${
-            tile.type === "straight"
-              ? `
-                <path class="pipe2-shell" d="M50 0 V100" />
-                <path class="pipe2-water" d="M50 0 V100" />
-              `
-              : `
-                <path class="pipe2-shell" d="M50 0 V50 H100" />
-                <path class="pipe2-water" d="M50 0 V50 H100" />
-              `
-          }
+          ${(() => {
+            const d =
+              tile.type === "straight"
+                ? "M50 0 V100"
+                : "M50 0 V50 H100";
+
+            // shell = pipe, water = channel,
+            // stream = moving water, fill = final water sweep
+            return `
+              <path class="pipe2-shell" d="${d}" />
+              <path class="pipe2-water" d="${d}" />
+              <path class="pipe2-stream" d="${d}" pathLength="100" />
+              <path class="pipe2-fill" d="${d}" pathLength="100" />
+            `;
+          })()}
         </svg>
       `;
 
@@ -1097,10 +1107,20 @@ function runPipeConnect({
 
   function paintFlow(flow) {
     tileButtons.forEach(({ tile, button }) => {
-      button.classList.toggle(
-        "flow",
-        flow.filled.has(tile)
-      );
+      const filled = flow.filled.has(tile);
+
+      button.classList.toggle("flow", filled);
+
+      // Water direction: does it enter where the drawn path starts?
+      if (filled) {
+        const startSide =
+          pipeRotateMask(PIPE_N, tile.rotation);
+
+        button.classList.toggle(
+          "rev",
+          flow.entries.get(tile) !== startSide
+        );
+      }
     });
 
     boardElement
@@ -1176,6 +1196,25 @@ function runPipeConnect({
       messageElement.textContent = "CONNECTED!";
       boardElement.classList.add("solved");
 
+      // Water rushes through the pipes from IN to OUT, one tile after another.
+      [...flow.filled].forEach((tile, order) => {
+        const item =
+          tileButtons.find(entry => entry.tile === tile);
+
+        setTimeout(() => {
+          item?.button.classList.add("filled");
+        }, order * 110);
+      });
+
+      setTimeout(() => {
+        boardElement
+          .querySelector(".pipe2-edge.out")
+          ?.classList.add("splash");
+      }, flow.filled.size * 110);
+
+      waterDelay =
+        flow.filled.size * 110 + 300;
+
     } else {
       // Partial credit: how far the water got along the way.
       score = clamp(
@@ -1209,7 +1248,7 @@ function runPipeConnect({
           elapsed: Math.round(elapsed)
         }
       });
-    }, success ? 650 : 400);
+    }, success ? 350 + waterDelay : 400);
   }
 
 
@@ -1229,6 +1268,9 @@ function runPipeConnect({
 function tracePipeFlow(board) {
   const filled = new Set();
 
+  // tile -> the side the water entered from
+  const entries = new Map();
+
   const tileAt = (x, y) =>
     x >= 0 && y >= 0 && x < PIPE_SIZE && y < PIPE_SIZE
       ? board.tiles[y * PIPE_SIZE + x]
@@ -1242,16 +1284,17 @@ function tracePipeFlow(board) {
     const tile = tileAt(x, y);
 
     if (!tile || filled.has(tile)) {
-      return { filled, solved: false };
+      return { filled, entries, solved: false };
     }
 
     const mask = pipeMask(tile);
 
     if (!(mask & enteringFrom)) {
-      return { filled, solved: false };
+      return { filled, entries, solved: false };
     }
 
     filled.add(tile);
+    entries.set(tile, enteringFrom);
 
     const outBit = mask & ~enteringFrom;
 
@@ -1261,13 +1304,13 @@ function tracePipeFlow(board) {
       x === PIPE_SIZE - 1 &&
       y === board.endY
     ) {
-      return { filled, solved: true };
+      return { filled, entries, solved: true };
     }
 
     const dir = PIPE_DIRS.find(d => d.bit === outBit);
 
     if (!dir) {
-      return { filled, solved: false };
+      return { filled, entries, solved: false };
     }
 
     x += dir.dx;
@@ -1275,7 +1318,7 @@ function tracePipeFlow(board) {
     enteringFrom = dir.opposite;
   }
 
-  return { filled, solved: false };
+  return { filled, entries, solved: false };
 }
 
 
