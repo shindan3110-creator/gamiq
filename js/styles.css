@@ -9814,3 +9814,133 @@ Ninjas rise up from the grass between two bamboo stalks.
     height:96px;
   }
 }
+
+
+/* ==========================================
+NINJA COUNTER - BAMBOO DEPTH (Step 18-2)
+- Moon -> small crescent in the top right (was the round thing in the middle)
+- Bamboo stalks now run from the top of the screen down to the grass
+- Back row smaller and darker, front row bigger = depth
+- Bamboo sways when a ninja pops out
+- FEINT: another gap rustles but nobody comes out
+========================================== */
+
+/* Small crescent moon, out of the way */
+.ninja-whack-moon{
+  left:auto;
+  right:7%;
+  top:5%;
+
+  width:44px;
+  height:44px;
+
+  transform:none;
+
+  background:none;
+
+  box-shadow:
+    inset -9px 5px 0 0 #e9f2dc;
+
+  opacity:.55;
+}
+
+/* Gap: no box. Stalks may grow upward, bottom stays clipped. */
+.ninja-whack-hole{
+  overflow:visible;
+
+  clip-path:
+    inset(-600px -14px 0 -14px);
+
+  border-radius:0;
+
+  /* soft mist between the stalks, fades out at the top */
+  background:
+    radial-gradient(
+      ellipse 62% 70% at 50% 68%,
+      rgba(215,235,205,.5),
+      rgba(130,170,130,.2) 58%,
+      transparent 76%
+    );
+}
+
+/* Tall bamboo stalks on both sides */
+.ninja-whack-hole::before{
+  top:-600px;
+
+  background:
+    /* joints */
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 74px,
+      rgba(0,0,0,.55) 74px 77px,
+      rgba(255,255,255,.18) 77px 78px
+    ) left / 18px 100% no-repeat,
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 52px,
+      rgba(0,0,0,.55) 52px 55px,
+      rgba(255,255,255,.18) 55px 56px
+    ) right / 18px 100% no-repeat,
+    /* round stalk shading */
+    linear-gradient(90deg, #163b1c, #4f9448 35%, #9bd27f 52%, #3b7a3a 75%, #163b1c) left / 18px 100% no-repeat,
+    linear-gradient(90deg, #163b1c, #3b7a3a 25%, #9bd27f 48%, #4f9448 65%, #163b1c) right / 18px 100% no-repeat;
+
+  filter:
+    drop-shadow(0 0 6px rgba(0,0,0,.55));
+
+  transform-origin:
+    50% 100%;
+}
+
+/* Back row (top 3): farther away */
+.ninja-whack-hole-1,
+.ninja-whack-hole-2,
+.ninja-whack-hole-3{
+  scale:.82;
+
+  filter:
+    brightness(.84)
+    saturate(.85);
+}
+
+/* Front row (bottom 2): closer */
+.ninja-whack-hole-4,
+.ninja-whack-hole-5{
+  z-index:9;
+
+  scale:1.08;
+}
+
+/* Sway when a ninja pops out */
+.ninja-whack-hole.show::before{
+  animation:
+    ninja-bamboo-sway .42s ease-out;
+}
+
+/* FEINT: rustle with nobody inside */
+.ninja-whack-hole.rustle-decoy::before{
+  animation:
+    ninja-bamboo-sway .42s ease-out;
+}
+
+@keyframes ninja-bamboo-sway{
+  0%   { transform:rotate(0deg); }
+  20%  { transform:rotate(-1.6deg); }
+  45%  { transform:rotate(1.2deg); }
+  70%  { transform:rotate(-.6deg); }
+  100% { transform:rotate(0deg); }
+}
+
+/* Grass also shakes a little */
+.ninja-whack-hole.show::after,
+.ninja-whack-hole.rustle-decoy::after{
+  animation:
+    ninja-grass-shake .3s ease-out;
+}
+
+@keyframes ninja-grass-shake{
+  0%   { transform:translateX(0); }
+  30%  { transform:translateX(-3px); }
+  65%  { transform:translateX(2px); }
+  100% { transform:translateX(0); }
+}
