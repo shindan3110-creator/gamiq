@@ -1,15 +1,22 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>お問い合わせ | GAMIQ</title>
+<title>Contact | GAMIQ</title>
 
 <meta
   name="description"
-  content="GAMIQへのお問い合わせページです。"
+  content="Contact GAMIQ: feedback, bug reports and questions."
 >
+
+<script>
+window.GAMIQ_PAGE = {
+  en: { title: "Contact | GAMIQ", description: "Contact GAMIQ: feedback, bug reports and questions." },
+  ja: { title: "お問い合わせ | GAMIQ", description: "GAMIQへのお問い合わせページです。" }
+};
+</script>
 
 <style>
 *{
@@ -106,57 +113,187 @@ footer{
   color:#667286;
   font-size:12px;
 }
+
+[hidden]{
+  display:none !important;
+}
+
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.lang-switch{
+  display:flex;
+  gap:12px;
+  font-size:13px;
+  font-weight:800;
+}
+
+.lang-switch a{
+  color:#8c97a8;
+  text-decoration:none;
+}
+
+.lang-switch a:hover{
+  color:#61eaff;
+}
+
+.site-links{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:16px;
+  margin-bottom:10px;
+}
+
+.site-links a{
+  color:#8c97a8;
+  text-decoration:none;
+}
+
+ul{
+  color:#b4bdcc;
+  line-height:1.9;
+  padding-left:22px;
+}
+
+.updated{
+  color:#667286;
+  font-size:13px;
+}
 </style>
 </head>
 
 <body>
 
 <header class="header">
-  <a class="logo" href="/">
+  <a class="logo" href="/" data-keep-lang="/">
     GAM<span>IQ</span>
   </a>
+
+  <nav class="lang-switch" aria-label="Language">
+    <a href="./contact.html?lang=en">English</a>
+    <a href="./contact.html?lang=ja">日本語</a>
+  </nav>
 </header>
 
 <main>
 
-<h1>
-お問い合わせ
-</h1>
+<div data-lang="en">
+<h1>Contact</h1>
 
 <p>
-GAMIQに関するご意見、
-不具合のご報告、
+Feedback, bug reports, or any other questions about GAMIQ are welcome.
+</p>
+
+<div class="contact-box">
+
+  <strong>Email</strong>
+
+  <p>
+    Use the button below to send us an email.
+    If you are reporting a bug, it helps to tell us the game name and your device / browser.
+  </p>
+
+  <a
+    class="contact-button"
+    href="mailto:shindan3110@gmail.com?subject=GAMIQ%20Contact"
+  >
+    Send an email
+  </a>
+
+</div>
+<a class="back" href="/" data-keep-lang="/">
+← Play GAMIQ
+</a>
+</div>
+
+<div data-lang="ja" hidden>
+<h1>お問い合わせ</h1>
+
+<p>
+GAMIQに関するご意見、不具合のご報告、
 その他のお問い合わせはこちらからお願いします。
 </p>
 
 <div class="contact-box">
 
-  <strong>
-    お問い合わせ
-  </strong>
+  <strong>メール</strong>
 
   <p>
     下のボタンからメールを送信できます。
+    不具合のご報告の際は、ゲーム名とお使いの端末・ブラウザを書いていただけると助かります。
   </p>
 
   <a
     class="contact-button"
-    href="mailto:shindan3110@gmail.com?subject=GAMIQへのお問い合わせ"
+    href="mailto:shindan3110@gmail.com?subject=GAMIQ%E3%81%B8%E3%81%AE%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B"
   >
     メールで問い合わせる
   </a>
 
 </div>
-
-<a class="back" href="/">
-← GAMIQに戻る
+<a class="back" href="/" data-keep-lang="/">
+← GAMIQをプレイする
 </a>
+</div>
 
 </main>
 
 <footer>
-© GAMIQ
+  <div class="site-links">
+    <a href="./about.html">About</a>
+    <a href="./privacy.html">Privacy</a>
+    <a href="./contact.html">Contact</a>
+  </div>
+  © GAMIQ
 </footer>
+
+<script>
+/* Show English or Japanese. ?lang=ja / ?lang=en wins, then the browser language. */
+(function () {
+  var supported = ["en", "ja"];
+  var lang = "en";
+
+  try {
+    var fromUrl = new URLSearchParams(location.search).get("lang");
+    if (supported.indexOf(fromUrl) !== -1) {
+      lang = fromUrl;
+    } else {
+      var list = navigator.languages && navigator.languages.length
+        ? navigator.languages
+        : [navigator.language || "en"];
+      for (var i = 0; i < list.length; i++) {
+        var short = String(list[i]).toLowerCase().split("-")[0];
+        if (supported.indexOf(short) !== -1) { lang = short; break; }
+      }
+    }
+  } catch (e) {}
+
+  document.documentElement.lang = lang;
+
+  var blocks = document.querySelectorAll("[data-lang]");
+  for (var j = 0; j < blocks.length; j++) {
+    blocks[j].hidden = blocks[j].getAttribute("data-lang") !== lang;
+  }
+
+  var meta = document.querySelector('meta[name="description"]');
+  var page = window.GAMIQ_PAGE && window.GAMIQ_PAGE[lang];
+  if (page) {
+    document.title = page.title;
+    if (meta) meta.setAttribute("content", page.description);
+  }
+
+  // Keep the language when going back to the game.
+  var links = document.querySelectorAll("a[data-keep-lang]");
+  for (var k = 0; k < links.length; k++) {
+    links[k].setAttribute("href", links[k].getAttribute("data-keep-lang") + "?lang=" + lang);
+  }
+})();
+</script>
 
 </body>
 </html>
