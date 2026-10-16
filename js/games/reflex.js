@@ -113,6 +113,8 @@ function runNinjaCounter({
   let spawnTimer = null;
   let hideTimer = null;
   let nextTimer = null;
+  let feintTimer = null;
+  let feintClearTimer = null;
 
   let signalTime = 0;
 
@@ -339,6 +341,14 @@ function runNinjaCounter({
     clearTimeout(
       nextTimer
     );
+
+    clearTimeout(
+      feintTimer
+    );
+
+    clearTimeout(
+      feintClearTimer
+    );
   }
 
 
@@ -493,6 +503,58 @@ function runNinjaCounter({
       setTimeout(
         spawnTarget,
         delay
+      );
+
+
+    /*
+     * FEINT: while you wait, the bamboo at another gap
+     * rustles, but nobody comes out.
+     * Tapping it breaks your combo.
+     */
+
+    if (
+      score >= 2 &&
+      Math.random() < 0.35
+    ) {
+      feintTimer =
+        setTimeout(
+          rustleDecoy,
+          delay * 0.45
+        );
+    }
+  }
+
+
+  function rustleDecoy() {
+    if (!active) {
+      return;
+    }
+
+    const free =
+      holes.filter(
+        hole => hole !== currentTarget
+      );
+
+    const decoy =
+      free[
+        Math.floor(
+          Math.random() *
+          free.length
+        )
+      ];
+
+    if (!decoy) {
+      return;
+    }
+
+    decoy.classList.remove("rustle-decoy");
+    void decoy.offsetWidth;
+    decoy.classList.add("rustle-decoy");
+
+    feintClearTimer =
+      setTimeout(
+        () => decoy.classList.remove("rustle-decoy"),
+        420
       );
   }
 
@@ -726,6 +788,27 @@ function runNinjaCounter({
       currentTarget ||
       !currentType
     ) {
+
+      // Tapped a rustling gap with nobody in it.
+      if (
+        hole.classList.contains(
+          "rustle-decoy"
+        )
+      ) {
+        hole.classList.remove(
+          "rustle-decoy"
+        );
+
+        combo = 0;
+
+        showMessage(
+          "FEINT!",
+          true
+        );
+
+        updateHud();
+      }
+
       return;
     }
 
@@ -1057,7 +1140,8 @@ function runNinjaCounter({
           "show",
           "enemy",
           "friend",
-          "fake"
+          "fake",
+          "rustle-decoy"
         );
 
 
