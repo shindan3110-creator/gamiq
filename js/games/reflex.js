@@ -1532,34 +1532,131 @@ function runQuickDraw({
   let hits = 0;
 
   const rounds = 5;
-
   const reactions = [];
 
   let timer = null;
   let signalTime = 0;
 
+  // Effect timers are kept separately so they never block the game flow.
+  const fxTimers = new Set();
+
+  function later(fn, ms) {
+    const id = setTimeout(() => {
+      fxTimers.delete(id);
+      fn();
+    }, ms);
+
+    fxTimers.add(id);
+  }
+
 
   container.innerHTML = `
-    <div class="reflex-game duel-game">
+    <div class="reflex-game duel-game qd-game">
 
-      <div
-        class="duel-arena"
-        data-duel-arena
-      >
+      <div class="duel-arena qd-arena" data-duel-arena>
 
-        <div class="duel-sun"></div>
+        <!-- SKY / FAR -->
+        <div class="qd-sky"></div>
+        <div class="qd-sun"></div>
+        <div class="qd-mesa"></div>
 
-        <div
-          class="duel-opponent"
-          data-duel-opponent
-        >
-          🤠
+        <!-- TOWN (perspective walls) -->
+        <div class="qd-street">
+          <div class="qd-town qd-town-left">
+            <i></i><i></i><i></i>
+          </div>
+          <div class="qd-town qd-town-right">
+            <i></i><i></i><i></i>
+          </div>
+          <div class="qd-ground"></div>
         </div>
 
-        <div
-          class="duel-message"
-          data-duel-message
-        >
+        <div class="qd-tumbleweed"></div>
+
+        <!-- OPPONENT -->
+        <div class="qd-opponent" data-duel-opponent>
+          <div class="qd-shadow"></div>
+
+          <div class="qd-body">
+            <svg viewBox="0 0 120 200" aria-hidden="true">
+              <!-- legs -->
+              <rect x="40" y="128" width="15" height="62" rx="5" fill="#2b2320"/>
+              <rect x="65" y="128" width="15" height="62" rx="5" fill="#2b2320"/>
+              <rect x="36" y="184" width="22" height="10" rx="4" fill="#120d0b"/>
+              <rect x="62" y="184" width="22" height="10" rx="4" fill="#120d0b"/>
+
+              <!-- body / poncho -->
+              <path d="M30 72 Q60 58 90 72 L98 136 Q60 146 22 136 Z" fill="#8a3b25"/>
+              <path d="M30 96 L90 96 M28 112 L92 112" stroke="#d9a35b" stroke-width="4" opacity=".75"/>
+              <rect x="34" y="124" width="52" height="7" rx="3" fill="#3a2a1f"/>
+              <rect x="77" y="122" width="10" height="20" rx="3" fill="#4a3424"/>
+
+              <!-- head + bandana -->
+              <circle cx="60" cy="46" r="17" fill="#d6a17a"/>
+              <path d="M43 50 Q60 66 77 50 L77 58 Q60 72 43 58 Z" fill="#b8323a"/>
+              <rect x="49" y="40" width="7" height="3" rx="1.5" fill="#1b1210"/>
+              <rect x="64" y="40" width="7" height="3" rx="1.5" fill="#1b1210"/>
+
+              <!-- left arm -->
+              <rect x="18" y="76" width="13" height="50" rx="6" fill="#7a3220" transform="rotate(8 24 78)"/>
+            </svg>
+
+            <!-- gun arm (rotates up on DRAW) -->
+            <div class="qd-arm">
+              <svg viewBox="0 0 40 80" aria-hidden="true">
+                <rect x="13" y="0" width="13" height="50" rx="6" fill="#7a3220"/>
+                <circle cx="19.5" cy="52" r="7" fill="#d6a17a"/>
+                <rect x="15" y="54" width="9" height="24" rx="2" fill="#2d2f33"/>
+                <rect x="17" y="54" width="5" height="10" fill="#6d4a2e"/>
+              </svg>
+              <div class="qd-enemy-flash"></div>
+            </div>
+
+          </div>
+
+          <div class="qd-impact" data-qd-impact></div>
+
+          <!-- hat (separate, flies off on hit) -->
+          <div class="qd-hat">
+            <svg viewBox="0 0 80 34" aria-hidden="true">
+              <ellipse cx="40" cy="27" rx="38" ry="6" fill="#3b2617"/>
+              <path d="M20 27 Q20 4 40 4 Q60 4 60 27 Z" fill="#5a3a22"/>
+              <rect x="20" y="20" width="40" height="5" fill="#1e140c"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="qd-ground-dust" data-qd-dust></div>
+
+        <!-- PLAYER GUN -->
+        <div class="qd-gun" data-qd-gun>
+          <svg viewBox="0 0 160 120" aria-hidden="true">
+            <!-- hand / sleeve -->
+            <path d="M118 120 L104 70 Q112 58 130 62 L160 92 L160 120 Z" fill="#5b3b28"/>
+            <ellipse cx="108" cy="74" rx="20" ry="16" fill="#d6a17a"/>
+            <!-- revolver -->
+            <rect x="18" y="38" width="80" height="13" rx="3" fill="#8d949c"/>
+            <rect x="18" y="38" width="80" height="4" rx="2" fill="#c9d0d6"/>
+            <rect x="74" y="34" width="36" height="28" rx="6" fill="#6c737b"/>
+            <circle cx="88" cy="48" r="9" fill="#4c5258"/>
+            <circle cx="88" cy="48" r="3" fill="#2b2f33"/>
+            <path d="M96 58 L112 58 L118 96 L100 98 Z" fill="#6d4a2e"/>
+            <rect x="12" y="40" width="8" height="9" rx="2" fill="#5d646b"/>
+          </svg>
+          <div class="qd-muzzle"></div>
+          <div class="qd-smoke"></div>
+        </div>
+
+        <div class="qd-tracer" data-qd-tracer></div>
+
+        <div class="qd-hurt"></div>
+
+        <!-- ROUNDS -->
+        <div class="qd-chambers" data-qd-chambers>
+          ${Array.from({ length: rounds }, () => "<i></i>").join("")}
+        </div>
+
+        <div class="duel-message qd-message" data-duel-message>
           WAIT...
         </div>
 
@@ -1577,96 +1674,106 @@ function runQuickDraw({
   `;
 
 
-  const arena =
-    container.querySelector(
-      "[data-duel-arena]"
-    );
+  const arena = container.querySelector("[data-duel-arena]");
+  const opponent = container.querySelector("[data-duel-opponent]");
+  const message = container.querySelector("[data-duel-message]");
+  const shootButton = container.querySelector("[data-duel-shoot]");
+  const gun = container.querySelector("[data-qd-gun]");
+  const tracer = container.querySelector("[data-qd-tracer]");
+  const dust = container.querySelector("[data-qd-dust]");
+  const chambers = [...container.querySelectorAll("[data-qd-chambers] i")];
 
-  const opponent =
-    container.querySelector(
-      "[data-duel-opponent]"
-    );
 
-  const message =
-    container.querySelector(
-      "[data-duel-message]"
-    );
+  /* ---------- EFFECT HELPERS ---------- */
 
-  const shootButton =
-    container.querySelector(
-      "[data-duel-shoot]"
-    );
+  function restartClass(element, className) {
+    element.classList.remove(className);
+    void element.offsetWidth;
+    element.classList.add(className);
+  }
 
+  function markChamber(type, text = "") {
+    const chamber = chambers[round];
+
+    if (!chamber) {
+      return;
+    }
+
+    chamber.className = type;
+    chamber.textContent = text;
+  }
+
+  // Player gun: recoil + muzzle flash + smoke
+  function fireGun() {
+    restartClass(gun, "qd-fire");
+    later(() => gun.classList.remove("qd-fire"), 600);
+  }
+
+  // A bullet line from the gun to a point in the arena
+  function shootTracer(toX, toY) {
+    const arenaRect = arena.getBoundingClientRect();
+    const gunRect = gun.getBoundingClientRect();
+
+    // muzzle = left end of the barrel
+    const fromX = gunRect.left - arenaRect.left + gunRect.width * 0.1;
+    const fromY = gunRect.top - arenaRect.top + gunRect.height * 0.37;
+
+    const dx = toX - fromX;
+    const dy = toY - fromY;
+
+    tracer.style.left = `${fromX}px`;
+    tracer.style.top = `${fromY}px`;
+    tracer.style.width = `${Math.hypot(dx, dy)}px`;
+    tracer.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
+
+    restartClass(tracer, "show");
+    later(() => tracer.classList.remove("show"), 260);
+  }
+
+  function chestPoint() {
+    const arenaRect = arena.getBoundingClientRect();
+    const rect = opponent.getBoundingClientRect();
+
+    return {
+      x: rect.left - arenaRect.left + rect.width * 0.5,
+      y: rect.top - arenaRect.top + rect.height * 0.5
+    };
+  }
+
+
+  /* ---------- ROUND ---------- */
 
   function startRound() {
     canShoot = false;
 
-    message.textContent =
-      "WAIT...";
+    message.textContent = "WAIT...";
 
-    opponent.classList.remove(
-      "duel-hit"
-    );
+    opponent.classList.remove("duel-hit", "qd-hit", "qd-draw", "qd-shoot", "duel-fake");
+    arena.classList.remove("duel-draw", "qd-hurt-on");
 
-    arena.classList.remove(
-      "duel-draw"
-    );
+    const fakeOut = Math.random() < 0.45;
 
+    const firstDelay = 700 + Math.random() * 900;
 
-    const fakeOut =
-      Math.random() <
-      0.45;
+    timer = setTimeout(() => {
+      if (!active) {
+        return;
+      }
 
+      if (fakeOut) {
+        message.textContent = "...";
 
-    const firstDelay =
-      700 +
-      Math.random() *
-      900;
+        opponent.classList.add("duel-fake");
 
-
-    timer =
-      setTimeout(
-        () => {
-
-          if (!active) {
-            return;
-          }
-
-
-          if (fakeOut) {
-            message.textContent =
-              "...";
-
-            opponent.classList.add(
-              "duel-fake"
-            );
-
-
-            timer =
-              setTimeout(
-                () => {
-
-                  opponent.classList.remove(
-                    "duel-fake"
-                  );
-
-                  showDraw();
-
-                },
-                500 +
-                Math.random() *
-                500
-              );
-
-          } else {
-            showDraw();
-          }
-
-        },
-        firstDelay
-      );
+        timer = setTimeout(() => {
+          opponent.classList.remove("duel-fake");
+          showDraw();
+        }, 500 + Math.random() * 500);
+      } else {
+        showDraw();
+      }
+    }, firstDelay);
   }
-
 
   function showDraw() {
     if (!active) {
@@ -1674,70 +1781,65 @@ function runQuickDraw({
     }
 
     canShoot = true;
+    signalTime = performance.now();
 
-    signalTime =
-      performance.now();
+    message.textContent = "DRAW!";
 
-    message.textContent =
-      "DRAW!";
+    arena.classList.add("duel-draw");
+    opponent.classList.add("qd-draw");
 
-    arena.classList.add(
-      "duel-draw"
-    );
+    timer = setTimeout(() => {
+      if (active && canShoot) {
+        canShoot = false;
 
+        // The opponent shoots you.
+        message.textContent = "TOO SLOW";
 
-    timer =
-      setTimeout(
-        () => {
+        opponent.classList.add("qd-shoot");
+        restartClass(arena, "qd-hurt-on");
+        restartClass(arena, "reflex-screen-fail");
 
-          if (
-            active &&
-            canShoot
-          ) {
-            canShoot = false;
+        markChamber("slow", "✕");
 
-            round++;
+        round++;
 
-            message.textContent =
-              "TOO SLOW";
-
-            nextOrFinish();
-          }
-
-        },
-        720
-      );
+        timer = setTimeout(() => {
+          arena.classList.remove("reflex-screen-fail");
+          nextOrFinish();
+        }, 650);
+      }
+    }, 720);
   }
-
 
   function shoot() {
     if (!active) {
       return;
     }
 
-
     if (!canShoot) {
+      // Fired too early: the bullet hits the ground.
       falseStarts++;
 
-      message.textContent =
-        "TOO EARLY";
+      message.textContent = "TOO EARLY";
 
-      arena.classList.add(
-        "reflex-screen-fail"
-      );
+      fireGun();
 
-      setTimeout(
-        () => {
-          arena.classList.remove(
-            "reflex-screen-fail"
-          );
-        },
-        220
-      );
+      const arenaRect = arena.getBoundingClientRect();
+      const x = arenaRect.width * (0.3 + Math.random() * 0.4);
+      const y = arenaRect.height * (0.74 + Math.random() * 0.08);
+
+      shootTracer(x, y);
+
+      dust.style.left = `${x}px`;
+      dust.style.top = `${y}px`;
+      restartClass(dust, "show");
+
+      restartClass(arena, "reflex-screen-fail");
+
+      later(() => arena.classList.remove("reflex-screen-fail"), 220);
 
       return;
     }
-
 
     clearTimeout(timer);
 
@@ -1745,53 +1847,39 @@ function runQuickDraw({
 
     hits++;
 
-    const reaction =
-      performance.now() -
-      signalTime;
+    const reaction = performance.now() - signalTime;
 
-    reactions.push(
-      reaction
-    );
+    reactions.push(reaction);
 
-    message.textContent =
-      `${Math.round(
-        reaction
-      )} ms`;
+    message.textContent = `${Math.round(reaction)} ms`;
 
-    opponent.classList.add(
-      "duel-hit"
-    );
+    fireGun();
 
-    arena.classList.add(
-      "reflex-screen-hit"
-    );
+    const chest = chestPoint();
+    shootTracer(chest.x, chest.y);
 
+    // Hit: impact flash, hat flies, opponent falls back
+    opponent.classList.add("duel-hit", "qd-hit");
+
+    restartClass(arena, "reflex-screen-hit");
+
+    markChamber(reaction <= 300 ? "fast" : "hit", String(Math.round(reaction)));
 
     round++;
 
-    setTimeout(
-      () => {
-        arena.classList.remove(
-          "reflex-screen-hit"
-        );
-
-        nextOrFinish();
-      },
-      350
-    );
+    timer = setTimeout(() => {
+      arena.classList.remove("reflex-screen-hit");
+      nextOrFinish();
+    }, 900);
   }
 
-
   function nextOrFinish() {
-    if (
-      round >= rounds
-    ) {
+    if (round >= rounds) {
       finish();
     } else {
       startRound();
     }
   }
-
 
   function finish() {
     if (!active) {
@@ -1804,21 +1892,11 @@ function runQuickDraw({
 
     const avgReaction =
       reactions.length
-        ? average(
-            reactions
-          )
+        ? average(reactions)
         : 900;
 
     const speed =
-      clamp(
-        100 -
-        (
-          avgReaction -
-          180
-        ) / 5,
-        0,
-        100
-      );
+      clamp(100 - (avgReaction - 180) / 5, 0, 100);
 
     const accuracy =
       hits / rounds;
@@ -1829,43 +1907,22 @@ function runQuickDraw({
       falseStarts * 8;
 
     onComplete?.({
-      score:
-        Math.round(
-          clamp(
-            score,
-            0,
-            100
-          )
-        ),
+      score: Math.round(clamp(score, 0, 100)),
 
-      adapt:
-        Math.round(
-          clamp(
-            50 +
-            accuracy * 35 -
-            falseStarts * 5,
-            0,
-            100
-          )
-        ),
+      adapt: Math.round(
+        clamp(50 + accuracy * 35 - falseStarts * 5, 0, 100)
+      ),
 
       meta: {
         hits,
         falseStarts,
-        avgReaction:
-          Math.round(
-            avgReaction
-          )
+        avgReaction: Math.round(avgReaction)
       }
     });
   }
 
 
-  shootButton.addEventListener(
-    "pointerdown",
-    shoot
-  );
-
+  shootButton.addEventListener("pointerdown", shoot);
 
   startRound();
 
@@ -1875,13 +1932,12 @@ function runQuickDraw({
 
     clearTimeout(timer);
 
-    shootButton.removeEventListener(
-      "pointerdown",
-      shoot
-    );
+    fxTimers.forEach(id => clearTimeout(id));
+    fxTimers.clear();
+
+    shootButton.removeEventListener("pointerdown", shoot);
   };
 }
-
 
 /* ==========================================
 LANE PANIC (v2: no free points for standing still)
