@@ -9316,3 +9316,27 @@ TIME LIMITS (Step 13)
 .puzzle-top strong.danger {
   color: #ff5a73;
 }
+
+
+
+/* ==========================================
+START SCREEN LINKS (Step 14)
+========================================== */
+
+.gamiq-start-links {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.gamiq-start-links a {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.gamiq-start-links a:hover {
+  color: #61eaff;
+}
