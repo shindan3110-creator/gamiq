@@ -9444,3 +9444,373 @@ phones held sideways).
     }
   }
 }
+
+
+
+/* ==========================================
+BLOCK ESCAPE - WOOD STYLE
+========================================== */
+
+.block-escape-game .block-board {
+  border: 2px solid #2a170b;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.18) 1px, transparent 1px),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.025) 0 3px,
+      rgba(0, 0, 0, 0.05) 3px 9px
+    ),
+    linear-gradient(180deg, #4a2e1a, #2f1c0f);
+  background-size:
+    calc(100% / 6) calc(100% / 6),
+    calc(100% / 6) calc(100% / 6),
+    auto,
+    auto;
+  box-shadow:
+    inset 0 4px 14px rgba(0, 0, 0, 0.55),
+    0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.block-escape-game .block-board::after {
+  background: #1d1008;
+  color: #ffb26b;
+  box-shadow: inset 0 0 0 1px rgba(255, 178, 107, 0.35);
+}
+
+.block-escape-game .puzzle-block {
+  border: 1px solid #6b4423;
+  border-radius: 7px;
+  color: #fff7ea;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 236, 200, 0.35),
+    inset 0 -3px 0 rgba(70, 38, 14, 0.45),
+    0 5px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Light pine wood */
+.block-escape-game .puzzle-block.wood-h {
+  background:
+    radial-gradient(ellipse 14% 30% at 28% 55%, rgba(110, 62, 25, 0.45) 0 40%, transparent 70%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(120, 70, 30, 0.22) 0 1px,
+      transparent 1px 5px,
+      rgba(120, 70, 30, 0.12) 5px 6px,
+      transparent 6px 11px
+    ),
+    linear-gradient(180deg, #e2b07a, #c48a50 55%, #b07a43);
+}
+
+.block-escape-game .puzzle-block.wood-v {
+  background:
+    radial-gradient(ellipse 30% 14% at 55% 30%, rgba(110, 62, 25, 0.45) 0 40%, transparent 70%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(120, 70, 30, 0.22) 0 1px,
+      transparent 1px 5px,
+      rgba(120, 70, 30, 0.12) 5px 6px,
+      transparent 6px 11px
+    ),
+    linear-gradient(90deg, #e2b07a, #c48a50 55%, #b07a43);
+}
+
+/* Red painted wood (the block you must get out) */
+.block-escape-game .puzzle-block.target.wood-h,
+.block-escape-game .puzzle-block.target.wood-v {
+  border-color: #7a1d1b;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(90, 10, 10, 0.25) 0 1px,
+      transparent 1px 5px,
+      rgba(90, 10, 10, 0.14) 5px 6px,
+      transparent 6px 11px
+    ),
+    linear-gradient(180deg, #ef5f55, #c9302f 60%, #a82424);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 210, 200, 0.35),
+    inset 0 -3px 0 rgba(80, 10, 10, 0.45),
+    0 0 18px rgba(255, 80, 70, 0.35),
+    0 5px 10px rgba(0, 0, 0, 0.4);
+}
+
+.block-escape-game .puzzle-block.selected {
+  outline-color: #ffe08a;
+  box-shadow:
+    0 0 0 2px rgba(255, 224, 138, 0.35),
+    0 0 20px rgba(255, 224, 138, 0.45);
+}
+/* ==========================================
+PIPE CONNECT - FLOWING WATER
+========================================== */
+
+/* Moving water inside connected pipes */
+.pipe2-stream {
+  fill: none;
+  stroke: #d9fbff;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 7 11;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.pipe2-tile.flow .pipe2-stream {
+  opacity: 0.85;
+  animation: pipe2-stream 0.55s linear infinite;
+}
+
+.pipe2-tile.flow.rev .pipe2-stream {
+  animation-direction: reverse;
+}
+
+@keyframes pipe2-stream {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -18; }
+}
+
+/* Final water sweep from IN to OUT when solved */
+.pipe2-fill {
+  fill: none;
+  stroke: #79f6ab;
+  stroke-width: 16;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  opacity: 0;
+}
+
+.pipe2-tile.rev .pipe2-fill {
+  stroke-dashoffset: -100;
+}
+
+.pipe2-tile.filled .pipe2-fill {
+  opacity: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.14s linear;
+}
+
+.pipe2-tile.filled {
+  box-shadow: inset 0 0 14px rgba(121, 246, 171, 0.35);
+}
+
+.pipe2-edge.out.splash {
+  animation: pipe2-splash 0.5s ease;
+}
+
+@keyframes pipe2-splash {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); box-shadow: 0 0 22px rgba(121, 246, 171, 0.9); }
+  100% { transform: scale(1); }
+}
+
+
+/* ==========================================
+NINJA COUNTER - BAMBOO GROVE (Step 18)
+Round holes -> gaps in a bamboo thicket.
+Ninjas rise up from the grass between two bamboo stalks.
+========================================== */
+
+/* Night bamboo forest background */
+.ninja-whack-stage{
+  background:
+    radial-gradient(
+      ellipse at 50% 18%,
+      rgba(190,230,170,.16),
+      transparent 45%
+    ),
+    linear-gradient(
+      180deg,
+      #0c1a10,
+      #050b07
+    );
+}
+
+/* Far bamboo (thin, dark) */
+.ninja-whack-bg::before{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 26px,
+      rgba(40,80,45,.55) 26px 33px,
+      transparent 33px 61px,
+      rgba(30,62,36,.5) 61px 66px,
+      transparent 66px 97px
+    );
+
+  opacity:.8;
+}
+
+/* Near bamboo (thicker, with joints) */
+.ninja-whack-bg::after{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 52px,
+      rgba(0,0,0,.45) 52px 55px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 70px,
+      #1f4a26 70px 74px,
+      #3d7a3f 74px 80px,
+      #24522a 80px 86px,
+      transparent 86px 151px
+    );
+
+  -webkit-mask:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 70px,
+      #000 70px 86px,
+      transparent 86px 151px
+    );
+  mask:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 70px,
+      #000 70px 86px,
+      transparent 86px 151px
+    );
+
+  opacity:.55;
+}
+
+.ninja-whack-moon{
+  top:6%;
+  opacity:.18;
+}
+
+/* The old roof becomes low grass / undergrowth */
+.ninja-whack-roof{
+  height:22%;
+
+  background:
+    linear-gradient(
+      180deg,
+      #10301a,
+      #050d07
+    );
+
+  clip-path:
+    polygon(
+      0 30%, 4% 10%, 8% 32%, 13% 6%, 18% 30%,
+      24% 12%, 30% 34%, 36% 8%, 42% 30%,
+      48% 14%, 54% 32%, 60% 6%, 66% 30%,
+      72% 12%, 78% 34%, 84% 8%, 90% 30%,
+      95% 12%, 100% 28%, 100% 100%, 0 100%
+    );
+}
+
+
+/* ---------- GAP BETWEEN BAMBOO ---------- */
+
+.ninja-whack-hole{
+  width:92px;
+  height:118px;
+
+  border-radius:6px;
+
+  /* misty moonlit gap, so the dark ninja stands out */
+  background:
+    radial-gradient(
+      ellipse at 50% 30%,
+      rgba(215,235,205,.55),
+      rgba(120,160,120,.28) 55%,
+      rgba(30,60,35,.6)
+    );
+
+  box-shadow:none;
+
+  overflow:hidden;
+}
+
+/* Two bamboo stalks: left and right side of the gap.
+   They sit IN FRONT of the ninja. */
+.ninja-whack-hole::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:3;
+
+  pointer-events:none;
+
+  background:
+    /* joints */
+    linear-gradient(180deg, transparent 0 30%, rgba(0,0,0,.55) 30% 33%, transparent 33% 68%, rgba(0,0,0,.55) 68% 71%, transparent 71%) left / 18px 100% no-repeat,
+    linear-gradient(180deg, transparent 0 18%, rgba(0,0,0,.55) 18% 21%, transparent 21% 58%, rgba(0,0,0,.55) 58% 61%, transparent 61%) right / 18px 100% no-repeat,
+    /* stalks */
+    linear-gradient(90deg, #1d4a24, #5fa556 40%, #8cc874 55%, #2e6a32) left / 18px 100% no-repeat,
+    linear-gradient(90deg, #2e6a32, #8cc874 45%, #5fa556 60%, #1d4a24) right / 18px 100% no-repeat;
+}
+
+/* Grass tuft in front, at the bottom of the gap */
+.ninja-whack-hole::after{
+  content:"";
+  position:absolute;
+  left:-4px;
+  right:-4px;
+  bottom:0;
+  z-index:4;
+
+  height:26px;
+
+  pointer-events:none;
+
+  background:
+    linear-gradient(180deg, #2f7a36, #123a19);
+
+  clip-path:
+    polygon(
+      0 100%, 0 40%, 8% 0, 14% 50%, 22% 10%,
+      30% 55%, 38% 5%, 46% 50%, 54% 0, 62% 48%,
+      70% 8%, 78% 52%, 86% 4%, 92% 45%, 100% 20%, 100% 100%
+    );
+}
+
+/* Ninja stays between the stalks, behind the grass */
+.ninja-whack-character{
+  z-index:2;
+
+  bottom:-80%;
+}
+
+.ninja-whack-hole.show
+.ninja-whack-character{
+  bottom:8px;
+}
+
+/* Bamboo shake when someone pops out */
+.ninja-whack-hole.show::before{
+  animation:ninja-bamboo-shake .28s ease-out;
+}
+
+@keyframes ninja-bamboo-shake{
+  0%   { transform:translateX(0); }
+  30%  { transform:translateX(-2px); }
+  60%  { transform:translateX(2px); }
+  100% { transform:translateX(0); }
+}
+
+@media(max-width:700px){
+  .ninja-whack-hole{
+    width:78px;
+    height:104px;
+  }
+}
+
+@media(max-height:620px){
+  .ninja-whack-hole{
+    width:76px;
+    height:96px;
+  }
+}
