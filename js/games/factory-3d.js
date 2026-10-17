@@ -1,7 +1,8 @@
 // GAMIQ V2 — ARMY GROW / CINEMATIC BATTLE
 import { GamiqThreeScene } from "./three-renderer.js";
+import { byLevel } from "../difficulty.js";
 
-export async function runFactory3D({ container, onComplete }) {
+export async function runFactory3D({ container, onComplete, level = 1 }) {
   if (!container) return () => {};
 
   // 3 stages: 3 gates, then 4 gates, then 5 gates.
@@ -11,10 +12,18 @@ export async function runFactory3D({ container, onComplete }) {
   const TOTAL_GATES = BLOCKS.reduce((sum, n) => sum + n, 0);
 
   // Enemy size as a share of the best possible army at each battle.
-  const ENEMY_RATIO = [0.45, 0.5, 0.6];
+  // DIFFICULTY BY LEVEL (Lv1 = same as before):
+  //   Lv1 [45%, 50%, 60%] -> Lv10 [60%, 68%, 78%]
+  //   = fewer wrong gates allowed.
+  const ENEMY_RATIO = [
+    byLevel(level, 0.45, 0.6),
+    byLevel(level, 0.5, 0.68),
+    byLevel(level, 0.6, 0.78)
+  ];
   const LANES = [-2.4, 2.4];
   const MAX_VISIBLE = 110;
-  const ROAD_SPEED = 13.5;
+  // Gates come faster at higher levels (less time to think).
+  const ROAD_SPEED = byLevel(level, 13.5, 18);
   const HIT_Z = 2;
   const BATTLE_LENGTH_NORMAL = 4.2;
   const BATTLE_LENGTH_BOSS = 5.6;
