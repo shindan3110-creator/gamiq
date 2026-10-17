@@ -2,6 +2,7 @@
 
 import { t } from "../i18n.js";
 import { byLevel } from "../difficulty.js";
+import { sfx } from "../sound.js";
 
 
 export function createAimGames() {
@@ -283,6 +284,8 @@ function runBullseye({
 
     showShotMark(px, py);
 
+    sfx("thunk");
+
     if (!target) {
       return;
     }
@@ -304,6 +307,7 @@ function runBullseye({
 
     if (ring.type === "perfect") {
       perfects++;
+      sfx("perfect");
     }
 
     showMessage(`${ring.label} +${ring.points}`, ring.type);
