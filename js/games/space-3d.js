@@ -7,6 +7,7 @@ import {
 } from "./three-renderer.js";
 
 import { byLevel } from "../difficulty.js";
+import { sfx } from "../sound.js";
 
 
 export async function runSpace3D({
@@ -1528,6 +1529,8 @@ export async function runSpace3D({
 
     shots++;
 
+    sfx("laser");
+
 
     createLaserEffect();
 
@@ -1587,6 +1590,8 @@ export async function runSpace3D({
 
       enemy.userData.health -=
         damage;
+
+      sfx("impact");
 
 
       combo++;
@@ -2374,6 +2379,8 @@ export async function runSpace3D({
       return;
     }
 
+    sfx("explosion");
+
 
     enemyDying =
       true;
@@ -2493,6 +2500,8 @@ export async function runSpace3D({
 
 
     escaped++;
+
+    sfx("bad");
 
     combo = 0;
 
