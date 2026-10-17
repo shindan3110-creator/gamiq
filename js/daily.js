@@ -227,6 +227,8 @@ export class GamiqDaily {
 
     this.closeButton.addEventListener("click", () => this.onCloseTap());
 
+    this.bindSwipe();
+
     this.overlay.classList.add("show");
 
     this.renderDots(-1);
@@ -259,6 +261,7 @@ export class GamiqDaily {
   close() {
     this.token++;
     this.stopGame();
+    this.unbindSwipe();
 
     clearInterval(this.countdownTimer);
     clearTimeout(this.confirmTimer);
@@ -270,6 +273,97 @@ export class GamiqDaily {
     }
 
     this.onClose?.();
+  }
+
+  /* ---------- SWIPE / SCROLL TO THE NEXT GAME ---------- */
+
+  bindSwipe() {
+    this.unbindSwipe();
+
+    let startY = null;
+    let pointerId = null;
+    let wheelTotal = 0;
+    let lastWheel = 0;
+
+    const down = event => {
+      if (!this.canAdvance) return;
+      startY = event.clientY;
+      pointerId = event.pointerId;
+    };
+
+    const up = event => {
+      if (startY === null || event.pointerId !== pointerId) return;
+
+      const delta = event.clientY - startY;
+      startY = null;
+
+      // Swipe up by 60px or more
+      if (delta <= -60) this.advance();
+    };
+
+    const wheel = event => {
+      if (!this.canAdvance || event.deltaY <= 0) return;
+
+      event.preventDefault();
+
+      const now = performance.now();
+      if (now - lastWheel > 250) wheelTotal = 0;
+      lastWheel = now;
+
+      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+      wheelTotal += event.deltaY * unit;
+
+      if (wheelTotal >= 60) {
+        wheelTotal = 0;
+        this.advance();
+      }
+    };
+
+    const key = event => {
+      if (!this.canAdvance) return;
+
+      if (event.key === "ArrowDown" || event.key === "PageDown") {
+        event.preventDefault();
+        this.advance();
+      }
+    };
+
+    this.overlay.addEventListener("pointerdown", down);
+    this.overlay.addEventListener("pointerup", up);
+    this.overlay.addEventListener("wheel", wheel, { passive: false });
+    document.addEventListener("keydown", key);
+
+    this.swipeHandlers = { down, up, wheel, key };
+  }
+
+  unbindSwipe() {
+    const h = this.swipeHandlers;
+
+    if (!h || !this.overlay) return;
+
+    this.overlay.removeEventListener("pointerdown", h.down);
+    this.overlay.removeEventListener("pointerup", h.up);
+    this.overlay.removeEventListener("wheel", h.wheel);
+    document.removeEventListener("keydown", h.key);
+
+    this.swipeHandlers = null;
+  }
+
+  advance() {
+    if (!this.canAdvance || !this.nextAction) return;
+
+    this.canAdvance = false;
+
+    const action = this.nextAction;
+    this.nextAction = null;
+
+    sfx("whoosh");
+
+    // Slide the finished card up, like the feed.
+    const card = this.stage.querySelector(".dl-card");
+    card?.classList.add("dl-leaving");
+
+    setTimeout(action, 300);
   }
 
   renderDots(current) {
@@ -333,6 +427,9 @@ export class GamiqDaily {
     const token = ++this.token;
     const game = this.games[index];
 
+    this.canAdvance = false;
+    this.nextAction = null;
+
     if (!game) {
       this.showFinal();
       return;
@@ -362,9 +459,17 @@ export class GamiqDaily {
     if (nextSlot) {
       const last = index === this.games.length - 1;
 
+      // Same as the normal feed: swipe up (or scroll) for the next game.
+      // The text itself can also be tapped.
+      const desktop = window.matchMedia?.("(hover: hover) and (pointer: fine)").matches;
+
+      const text = last
+        ? (desktop ? t("daily.finishScroll") : t("daily.finishSwipe"))
+        : (desktop ? t("card.nextScroll") : t("card.nextSwipe"));
+
       nextSlot.outerHTML = `
-        <button type="button" class="dl-next" data-dl-next disabled>
-          ${last ? t("daily.finish") : t("daily.next")}
+        <button type="button" class="gamiq-swipe-next dl-swipe" data-dl-next>
+          ${text}
         </button>
       `;
     }
@@ -416,30 +521,30 @@ export class GamiqDaily {
 
       requestAnimationFrame(() => overlay?.classList.add("show"));
 
-      const nextButton = card.querySelector("[data-dl-next]");
+      const goNext = () => {
+        this.stopGame();
 
-      if (nextButton) {
-        // Short delay so a tap meant for the game does not skip ahead.
-        setTimeout(() => {
-          nextButton.disabled = false;
-        }, 600);
+        if (index + 1 < this.games.length) {
+          this.playGame(index + 1);
+        } else {
+          this.analytics?.send?.("daily_complete", {
+            daily_no: this.number,
+            daily_total: this.record.results.reduce((s, r) => s + r.score, 0)
+          });
 
-        nextButton.addEventListener("click", () => {
-          sfx("click");
-          this.stopGame();
+          this.showFinal();
+        }
+      };
 
-          if (index + 1 < this.games.length) {
-            this.playGame(index + 1);
-          } else {
-            this.analytics?.send?.("daily_complete", {
-              daily_no: this.number,
-              daily_total: this.record.results.reduce((s, r) => s + r.score, 0)
-            });
+      this.nextAction = goNext;
 
-            this.showFinal();
-          }
-        });
-      }
+      // Short delay so a swipe/tap meant for the game does not skip ahead.
+      clearTimeout(this.readyTimer);
+      this.readyTimer = setTimeout(() => {
+        if (token === this.token) this.canAdvance = true;
+      }, 600);
+
+      card.querySelector("[data-dl-next]")?.addEventListener("click", () => this.advance());
     };
 
     // Safety: a game that never ends counts as 0.
