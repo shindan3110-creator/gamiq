@@ -25,6 +25,7 @@ const STRINGS = {
 
     /* ---------- HEADER ---------- */
     "header.viewResults": "VIEW RESULTS",
+    "header.level": "LV",
 
     /* ---------- START SCREEN ---------- */
     "start.title": "Unknown games.<br>Real gaming skill.",
@@ -56,10 +57,16 @@ const STRINGS = {
     "time.seconds": "{s}s",
     "time.minutes": "{m}m",
     "time.hours": "{h}h {m}m",
-    "results.next":
-      "About {games} more games to reach {target}% confidence",
-    "results.enough":
-      "Your GAMIQ is well measured. Keep playing to improve it!",
+    "results.level": "LEVEL",
+    "results.toLevelUp":
+      "{games} more games to fix your Lv {level} GAMIQ",
+    "results.history": "TODAY'S LEVELS",
+    "results.resetNote": "Records reset every day at 0:00 UTC.",
+
+    /* ---------- LEVEL UP ---------- */
+    "levelup.title": "LEVEL {level} CLEAR!",
+    "levelup.next": "NEXT: LV {level} — measuring starts again",
+    "levelup.max": "MAX LEVEL! Measuring again at Lv 10",
 
     /* ---------- IN-GAME: MEMORY ---------- */
     "memory.watch": "WATCH",
@@ -121,6 +128,7 @@ const STRINGS = {
 
     /* ---------- HEADER ---------- */
     "header.viewResults": "結果を見る",
+    "header.level": "LV",
 
     /* ---------- START SCREEN ---------- */
     "start.title": "未知のゲームで、<br>本当のゲーム力を測れ。",
@@ -152,10 +160,16 @@ const STRINGS = {
     "time.seconds": "{s}秒",
     "time.minutes": "{m}分",
     "time.hours": "{h}時間{m}分",
-    "results.next":
-      "あと約{games}ゲームで測定精度{target}%",
-    "results.enough":
-      "十分な測定データが集まっています。遊ぶほど更新されます！",
+    "results.level": "レベル",
+    "results.toLevelUp":
+      "あと{games}ゲームで Lv{level} のGAMIQが確定",
+    "results.history": "今日のレベル記録",
+    "results.resetNote": "記録は毎日 日本時間9:00（UTC 0:00）にリセットされます。",
+
+    /* ---------- LEVEL UP ---------- */
+    "levelup.title": "LEVEL {level} クリア！",
+    "levelup.next": "次は Lv{level}：測定精度0%から再スタート",
+    "levelup.max": "最高レベル到達！Lv10で再測定します",
 
     /* ---------- IN-GAME: MEMORY ---------- */
     "memory.watch": "見て覚えろ",
