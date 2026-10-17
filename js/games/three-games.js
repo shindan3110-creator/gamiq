@@ -25,7 +25,10 @@ export function createThreeGames() {
       rule: "SLASH THE ZOMBIES BEFORE THEY REACH YOU!",
       skill: "SPEED",
       theme: "zombie",
-      duration: 10000
+      duration: 10000,
+      // Safety timer only (for bugs). 3D games run slower on weak
+      // phones, so they get extra room before it fires.
+      maxDuration: 150000
     },
 
     {
@@ -35,7 +38,8 @@ export function createThreeGames() {
       rule: "AIM AND SHOOT DOWN 6 ENEMY SHIPS!",
       skill: "AIM",
       theme: "space",
-      duration: 10000
+      duration: 10000,
+      maxDuration: 150000
     },
 
     {
@@ -57,7 +61,7 @@ export function createThreeGames() {
       theme: "factory",
       duration: 50000,
       // 3 stages take about 50 seconds; give the safety timer room.
-      maxDuration: 120000
+      maxDuration: 180000
 
     }
   ];
