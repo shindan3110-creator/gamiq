@@ -53,6 +53,9 @@ export class GamiqRanking {
           <button type="button" role="tab" data-ranking-tab="alltime">
             ${t("rank.allTime")}
           </button>
+          <button type="button" role="tab" data-ranking-tab="challenge">
+            📅 ${t("rank.challenge")}
+          </button>
         </div>
 
         <div class="gamiq-ranking-note" data-ranking-note></div>
@@ -63,7 +66,7 @@ export class GamiqRanking {
 
         <div class="gamiq-ranking-me" data-ranking-me hidden></div>
 
-        <div class="gamiq-ranking-formula">
+        <div class="gamiq-ranking-formula" data-ranking-formula>
           ${t("rank.formula")}
         </div>
       </div>
@@ -112,7 +115,12 @@ export class GamiqRanking {
     note.textContent =
       this.type === "daily"
         ? t("rank.dailyNote", { time: formatResetIn(msUntilReset()) })
-        : t("rank.allTimeNote");
+        : this.type === "challenge"
+          ? t("rank.challengeNote", { time: formatResetIn(msUntilReset()) })
+          : t("rank.allTimeNote");
+
+    overlay.querySelector("[data-ranking-formula]").textContent =
+      this.type === "challenge" ? t("rank.challengeFormula") : t("rank.formula");
 
     status.textContent = t("rank.loading");
     status.hidden = false;
@@ -160,6 +168,9 @@ export class GamiqRanking {
     } else if (this.type === "daily") {
       meBox.hidden = false;
       meBox.textContent = t("rank.notYet");
+    } else if (this.type === "challenge") {
+      meBox.hidden = false;
+      meBox.textContent = t("rank.challengeNotYet");
     }
   }
 
@@ -230,7 +241,8 @@ function createRow(entry, mine = false) {
 
   const level = document.createElement("span");
   level.className = "gamiq-ranking-level";
-  level.textContent = `Lv${Number(entry.level) || "-"}`;
+  // Daily Challenge rows have no level (everyone plays Lv5).
+  level.textContent = entry.level == null ? "" : `Lv${Number(entry.level) || "-"}`;
 
   const score = document.createElement("strong");
   score.className = "gamiq-ranking-score";
