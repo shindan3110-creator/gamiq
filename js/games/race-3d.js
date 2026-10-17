@@ -1,6 +1,7 @@
 import { GamiqThreeScene } from "./three-renderer.js";
+import { byLevel } from "../difficulty.js";
 
-export async function runRace3D({ container, onComplete }) {
+export async function runRace3D({ container, onComplete, level = 1 }) {
   if (!container) return () => {};
 
   let active = true;
@@ -23,8 +24,21 @@ export async function runRace3D({ container, onComplete }) {
   let boostLeft = 0;
   let slowLeft = 0;
   let invincibleLeft = 0;
+  /*
+   * DIFFICULTY BY LEVEL (Lv1 = same as before)
+   * - Higher starting speed
+   * - Obstacles come more often
+   * - "Two lanes blocked" starts earlier and happens more
+   */
+  const startSpeed = byLevel(level, 21, 27);
+  const spawnBase = byLevel(level, 1.0, 0.8);
+  const spawnMin = byLevel(level, 0.55, 0.45);
+  const doubleFrom = byLevel(level, 8, 3);
+  const doubleRate = byLevel(level, 0.15, 0.25);
+  const doubleMax = byLevel(level, 0.45, 0.6);
+
   let spawnLeft = 1.0;
-  let currentSpeed = 21;
+  let currentSpeed = startSpeed;
   let startTime = 0;
   let endTimer = null;
   let messageTimer = null;
@@ -327,8 +341,8 @@ export async function runRace3D({ container, onComplete }) {
     // so you must pick the one safe lane quickly.
     if (
       kind !== "boost" &&
-      t > 8 &&
-      Math.random() < Math.min(0.45, 0.15 + t / 120)
+      t > doubleFrom &&
+      Math.random() < Math.min(doubleMax, doubleRate + t / 120)
     ) {
       const other = [0, 1, 2].filter(lane => lane !== idx);
       const second = other[Math.floor(Math.random() * other.length)];
@@ -514,7 +528,8 @@ export async function runRace3D({ container, onComplete }) {
       avoided / Math.max(1, avoided + crashes);
 
     const distanceScore =
-      Math.min(1, distance / 1900);
+      // Faster levels travel further, so the target distance grows too.
+      Math.min(1, distance / (1900 * startSpeed / 21));
 
     const finalScore = Math.round(
       Math.min(
@@ -576,7 +591,7 @@ export async function runRace3D({ container, onComplete }) {
     );
 
     // Faster base speed: you have to stay focused from the start.
-    const baseSpeed = 21 + Math.min(9, t / 6);
+    const baseSpeed = startSpeed + Math.min(9, t / 6);
 
     const factor =
       slowLeft > 0 ? 0.65 :
@@ -661,7 +676,7 @@ export async function runRace3D({ container, onComplete }) {
 
       // Obstacles come more often as time goes on.
       spawnLeft =
-        Math.max(0.55, 1.0 - t / 90) +
+        Math.max(spawnMin, spawnBase - t / 90) +
         Math.random() * 0.25;
     }
 
