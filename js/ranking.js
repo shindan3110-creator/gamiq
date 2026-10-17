@@ -6,6 +6,7 @@
 import { t } from "./i18n.js";
 import { fetchRanking } from "./api.js";
 import { msUntilReset } from "./score.js";
+import { rankText } from "./share.js";
 
 export class GamiqRanking {
   constructor({ onClose = null } = {}) {
@@ -147,7 +148,12 @@ export class GamiqRanking {
       meBox.innerHTML = "";
 
       const label = document.createElement("span");
-      label.textContent = t("rank.you");
+
+      // "YOU · TOP 8%" (or "#3 of 5 players" while few players)
+      const position = rankText(data.me, data.total);
+
+      label.textContent =
+        position ? `${t("rank.you")} · ${position}` : t("rank.you");
 
       meBox.appendChild(label);
       meBox.appendChild(createRow(data.me, true));
