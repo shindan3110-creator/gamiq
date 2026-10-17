@@ -2,6 +2,7 @@
 
 import { t } from "../i18n.js";
 import { byLevelInt } from "../difficulty.js";
+import { sfx } from "../sound.js";
 
 export function createMemoryGames() {
   return [
@@ -193,6 +194,9 @@ function runSequenceMemory({
                 "memory-flash"
               );
 
+            // Each tile has its own note
+            sfx("note", index);
+
             // Show progress: WATCH 3 / 6
             message.textContent =
               `${t("memory.watch")} ${position + 1} / ${sequence.length}`;
@@ -278,6 +282,7 @@ function runSequenceMemory({
       expected
     ) {
       correct++;
+      sfx("note", index);
 
       cells[index]
         .classList.add(
@@ -315,6 +320,7 @@ function runSequenceMemory({
         "memory-wrong"
       );
 
+    sfx("bad");
 
     finish(false);
   }
@@ -531,6 +537,8 @@ function runPositionMemory({
     }
   );
 
+  sfx("ghost");
+
 
   const hideTimer =
     setTimeout(
@@ -619,10 +627,12 @@ function runPositionMemory({
       correct++;
       cells[index].classList.add("gg-found");
       showGhost(cells[index], "gg-caught");
+      sfx("pop");
     } else {
       // Nobody here.
       wrong++;
       cells[index].classList.add("gg-empty");
+      sfx("bad");
     }
 
 
@@ -901,6 +911,7 @@ function runNumberMemory({
       expectedIndex
     ) {
       correct++;
+      sfx("note", nextNumber);
 
 
       cells[index]
@@ -929,6 +940,7 @@ function runNumberMemory({
 
 
     mistakes++;
+    sfx("bad");
 
 
     cells[index]
