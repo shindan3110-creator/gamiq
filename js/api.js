@@ -84,14 +84,50 @@ export async function submitBestScore(summary) {
 
 
 /**
- * @param {"daily"|"alltime"} type
+ * Send today's Daily Challenge result.
+ * The server keeps only the first one, so sending again is safe
+ * (it just returns your rank).
+ * @param {{day: string, scores: number[]}} result
+ * @returns {Promise<{ok: boolean, rank?: number, total?: number}>}
+ */
+export async function submitChallenge({ day, scores }) {
+  const profile = getProfile();
+
+  if (!profile.nickname) {
+    return { ok: false };
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/challenge`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        playerId: profile.playerId,
+        nickname: profile.nickname,
+        day,
+        scores
+      })
+    });
+
+    const data = await response.json().catch(() => null);
+
+    return response.ok && data?.ok ? data : { ok: false };
+
+  } catch (error) {
+    return { ok: false };
+  }
+}
+
+
+/**
+ * @param {"daily"|"alltime"|"challenge"} type
  * @returns {Promise<{ok: boolean, list: Array, me: object|null}>}
  */
 export async function fetchRanking(type = "daily") {
   const profile = getProfile();
 
   const params = new URLSearchParams({
-    type: type === "alltime" ? "alltime" : "daily",
+    type: ["alltime", "challenge"].includes(type) ? type : "daily",
     playerId: profile.playerId
   });
 
