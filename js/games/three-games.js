@@ -77,7 +77,8 @@ export function runThreeGame({
     case "zombie_assault":
   return runZombie3D({
     container,
-    onComplete
+    onComplete,
+    level: game.level
   });
 
     case "space_blaster":
@@ -89,7 +90,8 @@ export function runThreeGame({
     case "lane_dodge":
   return runRace3D({
     container,
-    onComplete
+    onComplete,
+    level: game.level
   });
 
     case "factory_rush":
