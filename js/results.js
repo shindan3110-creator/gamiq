@@ -3,7 +3,7 @@
 import { t } from "./i18n.js";
 import { getProfile } from "./profile.js";
 import { fetchRanking } from "./api.js";
-import { titleFor, rankText, shareResult } from "./share.js";
+import { titleFor, rankText, shareResult, createShareButtons, buildShareText, buildShareImage } from "./share.js";
 import { track } from "./analytics.js";
 
 export class GamiqResults {
@@ -223,6 +223,8 @@ export class GamiqResults {
           </button>
         </div>
 
+        <div data-results-share-row></div>
+
         <div class="gamiq-results-share-note" data-results-share-note></div>
 
         <button
@@ -265,6 +267,29 @@ export class GamiqResults {
 
     const shareNote =
       overlay.querySelector("[data-results-share-note]");
+
+    // LINE / X / COPY buttons (text + link)
+    overlay.querySelector("[data-results-share-row]").replaceWith(
+      createShareButtons({
+        getText: () =>
+          buildShareText({
+            summary: this.scoreEngine.getSummary(),
+            nickname: getProfile().nickname,
+            rank: this.lastRankText
+          }),
+        getImage: () =>
+          buildShareImage({
+            summary: this.scoreEngine.getSummary(),
+            nickname: getProfile().nickname,
+            rank: this.lastRankText
+          }),
+        onShare: method =>
+          track("share_result", {
+            share_method: method,
+            gamiq_score: this.scoreEngine.getSummary().gamiq ?? 0
+          })
+      })
+    );
 
     shareButton.addEventListener("click", async () => {
       shareButton.disabled = true;
