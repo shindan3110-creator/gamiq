@@ -71,6 +71,11 @@ import {
 } from "./games/tower.js";
 
 import {
+  GamiqDaily,
+  dailyStatus
+} from "./daily.js";
+
+import {
   createOddOneGames,
   runOddOneGame
 } from "./games/oddone.js";
@@ -313,6 +318,47 @@ function boot() {
     sfx("click");
   });
 
+  /*
+   * DAILY CHALLENGE (same 5 games for everyone, once a day)
+   * Opens on top of the start screen. Does not change GAMIQ / level.
+   */
+  const dailyButton =
+    mount.querySelector("[data-start-daily]");
+
+  const renderDailyButton = () => {
+    const status = dailyStatus();
+
+    dailyButton.classList.toggle("done", status.done);
+
+    dailyButton.innerHTML =
+      status.done
+        ? t("daily.buttonDone", { total: status.total })
+        : status.played > 0
+          ? t("daily.buttonResume", { i: status.played + 1, n: 5 })
+          : t("daily.button", { n: status.number });
+  };
+
+  renderDailyButton();
+
+  const daily =
+    new GamiqDaily({
+      mount: mount.querySelector(".gamiq-v2"),
+      pool: gamePool,
+      renderCard: renderGameCard,
+      runGame: runSelectedGame,
+      analytics,
+      onClose: renderDailyButton
+    });
+
+  dailyButton.addEventListener("click", () => {
+    if (started) {
+      return;
+    }
+
+    sfx("click");
+    daily.open();
+  });
+
   // Ranking from the start screen
   mount
     .querySelector("[data-start-ranking]")
@@ -535,6 +581,12 @@ function createAppMarkup() {
           >
             ${t("start.play")}
           </button>
+
+          <button
+            type="button"
+            class="gamiq-start-daily"
+            data-start-daily
+          ></button>
 
           <button
             type="button"
