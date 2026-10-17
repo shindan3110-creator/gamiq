@@ -10591,3 +10591,207 @@ gun recoil / muzzle flash / tracer / impact / hat flying.
   0%   { transform:translateX(-50%) scale(1.8); }
   100% { transform:translateX(-50%) scale(1); }
 }
+
+
+
+/* ==========================================
+LEVEL SYSTEM (Step 19)
+Header LV, level-up banner, results level + history
+========================================== */
+
+/* Header: LV */
+.gamiq-live-level strong{
+  color:#ffd76a;
+}
+
+@media(max-width:700px){
+  .gamiq-live-level{
+    min-width:28px;
+  }
+}
+
+/* Level-up banner on the COMPLETE screen */
+.gamiq-levelup{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  gap:6px;
+
+  margin-top:22px;
+  padding:14px 22px;
+
+  border:1px solid rgba(255,215,106,.45);
+  border-radius:16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,215,106,.16),
+      rgba(255,215,106,.04)
+    );
+
+  box-shadow:
+    0 0 40px rgba(255,215,106,.18);
+
+  text-align:center;
+
+  animation:
+    gamiq-levelup-pop .5s cubic-bezier(.2,1.5,.4,1);
+}
+
+.gamiq-levelup[hidden]{
+  display:none;
+}
+
+.gamiq-levelup-title{
+  color:#ffd76a;
+
+  font-size:16px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+}
+
+.gamiq-levelup-gamiq{
+  color:#ffffff;
+
+  font-size:26px;
+  font-weight:1000;
+
+  letter-spacing:.02em;
+}
+
+.gamiq-levelup-next{
+  color:#c9d1dc;
+
+  font-size:11px;
+  font-weight:900;
+
+  letter-spacing:.06em;
+}
+
+@keyframes gamiq-levelup-pop{
+  0%   { transform:scale(.6); opacity:0; }
+  100% { transform:scale(1); opacity:1; }
+}
+
+/* Smaller score when the banner is shown, so everything fits */
+.gamiq-card-complete.has-levelup
+.gamiq-complete-score{
+  font-size:clamp(54px, 8vw, 84px);
+}
+
+@media(max-height:620px){
+  .gamiq-levelup{
+    margin-top:10px;
+    padding:8px 16px;
+    gap:3px;
+  }
+
+  .gamiq-levelup-gamiq{
+    font-size:20px;
+  }
+}
+
+/* Results: level */
+.gamiq-results-level{
+  display:flex;
+  align-items:baseline;
+
+  gap:8px;
+
+  margin-bottom:12px;
+}
+
+.gamiq-results-level span{
+  color:#7c8798;
+
+  font-size:10px;
+  font-weight:1000;
+
+  letter-spacing:.16em;
+}
+
+.gamiq-results-level strong{
+  color:#ffd76a;
+
+  font-size:28px;
+  font-weight:1000;
+
+  line-height:1;
+}
+
+.gamiq-results-level em{
+  color:#5f6a7a;
+
+  font-size:12px;
+  font-style:normal;
+  font-weight:900;
+}
+
+/* Results: today's levels */
+.gamiq-results-history{
+  margin-top:12px;
+  padding:12px;
+
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.02);
+}
+
+.gamiq-results-history[hidden]{
+  display:none;
+}
+
+.gamiq-results-history-title{
+  margin-bottom:8px;
+
+  color:#7c8798;
+
+  font-size:9px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+}
+
+.gamiq-results-history ol{
+  margin:0;
+  padding:0;
+
+  list-style:none;
+}
+
+.gamiq-results-history li{
+  display:flex;
+  justify-content:space-between;
+
+  padding:5px 0;
+
+  border-top:1px solid rgba(255,255,255,.05);
+
+  font-size:13px;
+}
+
+.gamiq-results-history li:first-child{
+  border-top:0;
+}
+
+.gamiq-results-history li span{
+  color:#ffd76a;
+  font-weight:1000;
+}
+
+.gamiq-results-history li strong{
+  color:#ffffff;
+}
+
+.gamiq-results-reset{
+  margin-top:10px;
+
+  color:#5f6a7a;
+
+  font-size:10px;
+  line-height:1.5;
+}
