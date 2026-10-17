@@ -7,6 +7,7 @@ import { t } from "./i18n.js";
 import { fetchRanking } from "./api.js";
 import { msUntilReset } from "./score.js";
 import { rankText } from "./share.js";
+import { track } from "./analytics.js";
 
 export class GamiqRanking {
   constructor({ onClose = null } = {}) {
@@ -87,6 +88,7 @@ export class GamiqRanking {
     overlay.querySelectorAll("[data-ranking-tab]").forEach(button => {
       button.addEventListener("click", () => {
         this.type = button.dataset.rankingTab;
+        track("ranking_view", { ranking_type: this.type });
         this.load();
       });
     });
@@ -178,6 +180,8 @@ export class GamiqRanking {
     const overlay = this.create();
 
     this.type = type;
+
+    track("ranking_view", { ranking_type: type });
 
     overlay.classList.add("show");
     overlay.setAttribute("aria-hidden", "false");
