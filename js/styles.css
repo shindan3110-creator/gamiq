@@ -12319,3 +12319,238 @@ SPOT IT! - SPOT THE DIFFERENCE (Step 29)
 
   animation:gamiq-shake .2s ease;
 }
+
+
+
+/* ==========================================
+CUP SHUFFLE (Step 30-1)
+========================================== */
+
+.cup-game{
+  width:100%;
+  height:100%;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:10px;
+}
+
+.cup-hud{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.cup-hud > div{
+  padding:7px 4px;
+
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.03);
+
+  text-align:center;
+}
+
+.cup-hud span{
+  display:block;
+
+  margin-bottom:2px;
+
+  color:#7c8798;
+
+  font-size:9px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+}
+
+.cup-hud strong{
+  color:#ffffff;
+
+  font-size:18px;
+}
+
+.cup-stage{
+  position:relative;
+
+  flex:1;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+
+  overflow:hidden;
+
+  border-radius:20px;
+
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(255,220,150,.22), transparent 60%),
+    linear-gradient(180deg, #2a1d14 0%, #1a120c 100%);
+}
+
+.cup-message{
+  padding:16px 10px 0;
+
+  color:#f3e3c3;
+
+  font-size:20px;
+  font-weight:1000;
+
+  letter-spacing:.06em;
+
+  text-align:center;
+}
+
+.cup-message.ask   { color:#ffd76a; }
+.cup-message.right { color:#7cf7a8; }
+.cup-message.wrong { color:#ff6b84; }
+
+/* Green table cloth */
+.cup-table{
+  position:relative;
+
+  flex:1;
+  min-height:0;
+
+  margin:14px 12px 14px;
+
+  border-radius:50% / 22%;
+
+  background:
+    radial-gradient(ellipse at 50% 40%, #2f8f5b, #1d5f3a 70%, #164a2d);
+
+  box-shadow:
+    inset 0 -10px 30px rgba(0,0,0,.35),
+    0 10px 30px rgba(0,0,0,.4);
+}
+
+.cup-row{
+  --swap:400ms;
+  --cups:3;
+
+  position:absolute;
+
+  left:2%;
+  right:2%;
+  top:50%;
+
+  height:0;
+}
+
+/* One cup (moves left/right when shuffled) */
+.cup{
+  position:absolute;
+
+  top:0;
+
+  width:min(120px, calc(96% / var(--cups)));
+  aspect-ratio:100 / 140;
+
+  padding:0;
+
+  border:0;
+
+  background:none;
+
+  transform:translate(-50%, -62%);
+
+  transition:left var(--swap) ease-in-out;
+
+  cursor:pointer;
+
+  touch-action:manipulation;
+}
+
+/* Passing in front / behind while swapping */
+.cup.arc-front{
+  z-index:3;
+  animation:cup-front var(--swap) ease-in-out;
+}
+
+.cup.arc-back{
+  z-index:1;
+  animation:cup-back var(--swap) ease-in-out;
+}
+
+@keyframes cup-front{
+  0%, 100% { transform:translate(-50%, -62%) scale(1); }
+  50%      { transform:translate(-50%, -48%) scale(1.08); }
+}
+
+@keyframes cup-back{
+  0%, 100% { transform:translate(-50%, -62%) scale(1); }
+  50%      { transform:translate(-50%, -76%) scale(.92); }
+}
+
+.cup-body{
+  position:absolute;
+  z-index:2;
+
+  left:0;
+  right:0;
+  bottom:0;
+
+  aspect-ratio:100 / 110;
+
+  transition:transform .28s cubic-bezier(.3,1.4,.5,1);
+
+  filter:drop-shadow(0 8px 6px rgba(0,0,0,.45));
+}
+
+.cup-body svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+/* The ball stays on the table; the cup lifts up */
+.cup-ball{
+  position:absolute;
+  z-index:1;
+
+  left:50%;
+  bottom:4%;
+
+  width:34%;
+  aspect-ratio:1;
+
+  transform:translateX(-50%);
+
+  border-radius:50%;
+
+  background:radial-gradient(circle at 35% 30%, #fff6c2, #ffd23f 45%, #d99a00);
+
+  box-shadow:0 4px 6px rgba(0,0,0,.4);
+
+  opacity:0;
+}
+
+.cup.has-ball .cup-ball{
+  opacity:1;
+}
+
+.cup.lift .cup-body{
+  transform:translateY(-52%);
+}
+
+/* Result glow */
+.cup.right .cup-ball{
+  box-shadow:0 0 18px rgba(255,215,106,.95);
+}
+
+.cup.chosen.wrong .cup-body{
+  filter:drop-shadow(0 0 10px rgba(255,80,110,.9));
+}
+
+.cup.chosen.right .cup-body{
+  filter:drop-shadow(0 0 12px rgba(124,247,168,.9));
+}
+
+@media(max-height:620px){
+  .cup-message{ padding-top:8px; font-size:16px; }
+  .cup-table{ margin:8px 10px; }
+  .cup{ width:min(80px, calc(84% / var(--cups))); }
+}
