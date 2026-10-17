@@ -44,6 +44,12 @@ export class GamiqResults {
         aria-label="${t("results.aria")}"
       >
 
+        <div class="gamiq-results-level">
+          <span>${t("results.level")}</span>
+          <strong data-results-level>1</strong>
+          <em data-results-level-max></em>
+        </div>
+
         <div class="gamiq-results-label">
           ${t("results.current")}
         </div>
@@ -170,6 +176,17 @@ export class GamiqResults {
           class="gamiq-results-next"
           data-results-next
         ></div>
+
+        <div class="gamiq-results-history" data-results-history-box hidden>
+          <div class="gamiq-results-history-title">
+            ${t("results.history")}
+          </div>
+          <ol data-results-history></ol>
+        </div>
+
+        <div class="gamiq-results-reset">
+          ${t("results.resetNote")}
+        </div>
 
 
         <button
@@ -340,19 +357,42 @@ export class GamiqResults {
     );
 
 
-    if (
-      summary.nextConfidenceTarget &&
-      summary.gamesToNextTarget !== null
-    ) {
-      nextElement.textContent =
-          t("results.next", {
-            games: summary.gamesToNextTarget,
-            target: summary.nextConfidenceTarget
-          });
-    } else {
-      nextElement.textContent =
-          t("results.enough");
-    }
+    // LEVEL
+    overlay.querySelector("[data-results-level]").textContent =
+      summary.level;
+
+    overlay.querySelector("[data-results-level-max]").textContent =
+      `/ ${summary.maxLevel}`;
+
+    // "N more games to fix your Lv X GAMIQ"
+    nextElement.textContent =
+      t("results.toLevelUp", {
+        games: summary.gamesToLevelUp,
+        level: summary.level
+      });
+
+    // Today's finished levels
+    const historyBox =
+      overlay.querySelector("[data-results-history-box]");
+
+    const historyList =
+      overlay.querySelector("[data-results-history]");
+
+    historyList.innerHTML =
+      summary.levelHistory
+        .slice()
+        .reverse()
+        .slice(0, 10)
+        .map(item => `
+          <li>
+            <span>Lv ${Number(item.level) || "-"}</span>
+            <strong>GAMIQ ${Number(item.gamiq) || "---"}</strong>
+          </li>
+        `)
+        .join("");
+
+    historyBox.hidden =
+      summary.levelHistory.length === 0;
   }
 
 
