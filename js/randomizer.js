@@ -112,22 +112,8 @@ export class GamiqRandomizer {
 
 
     /* ==========================================
-    ABILITY BALANCING
+    WEIGHTS
     ========================================== */
-
-    const counts =
-      Object.values(
-        abilityCounts
-      );
-
-
-    const lowestAbilityCount =
-      counts.length
-        ? Math.min(
-            ...counts
-          )
-        : 0;
-
 
     const weightedPool = [];
 
@@ -135,23 +121,11 @@ export class GamiqRandomizer {
     candidates.forEach(
       game => {
 
-        const playedCount =
-          abilityCounts[
-            game.skill
-          ] ?? 0;
-
-
+        // Fully random: no genre gets extra weight
+        // (it does not matter if a genre is "missing").
+        // Only back-to-back repeats are made a little rarer below.
         let weight = 10;
 
-
-        // 測定回数が一番少ない能力を
-        // 少しだけ優先
-        if (
-          playedCount ===
-          lowestAbilityCount
-        ) {
-          weight += 5;
-        }
 
 
         const previous =
