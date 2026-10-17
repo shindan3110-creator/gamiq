@@ -66,6 +66,11 @@ import {
 } from "./games/cups.js";
 
 import {
+  createTowerGames,
+  runTowerGame
+} from "./games/tower.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -156,7 +161,8 @@ const gamePool = [
   ...createAimGames(),
   ...createRhythmGames(),
   ...createSpotGames(),
-  ...createCupGames()
+  ...createCupGames(),
+  ...createTowerGames()
 ];
 
 
@@ -1274,6 +1280,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "tower_stack") {
+    return runTowerGame({
       game,
       container,
       onComplete
