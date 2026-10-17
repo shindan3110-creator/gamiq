@@ -396,9 +396,11 @@ export function createShareButtons({ getText, onShare, withOther = false, getIma
    * INSTAGRAM
    * Instagram has no "share link" for websites. The only way is
    * to share an IMAGE: on phones the share sheet shows Instagram
-   * (Stories / Feed / DM). On PC the image is saved instead.
+   * (Stories / Feed / DM). Not shown on PC.
    */
-  if (getImage) {
+  // Phones only. On a PC there is no Instagram app to open,
+  // so the button is not shown at all.
+  if (getImage && isPhone()) {
     add("instagram", "Instagram", "insta", async button => {
       const original = button.textContent;
 
@@ -589,4 +591,15 @@ function roundRect(g, x, y, width, height, r) {
   g.arcTo(x, y + height, x, y, r);
   g.arcTo(x, y, x + width, y, r);
   g.closePath();
+}
+
+
+function isPhone() {
+  if (navigator.userAgentData && typeof navigator.userAgentData.mobile === "boolean") {
+    return navigator.userAgentData.mobile;
+  }
+
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    // iPadOS reports itself as a Mac
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 }
