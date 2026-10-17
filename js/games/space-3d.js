@@ -6,10 +6,13 @@ import {
   GamiqThreeScene
 } from "./three-renderer.js";
 
+import { byLevel } from "../difficulty.js";
+
 
 export async function runSpace3D({
   container,
-  onComplete
+  onComplete,
+  level = 1
 }) {
   if (!container) {
     return () => {};
@@ -32,6 +35,17 @@ export async function runSpace3D({
   let maxCombo = 0;
 
   const targetDestroyedGoal = 6;
+
+
+  /*
+   * DIFFICULTY BY LEVEL (Lv1 = same as before)
+   * - Enemy ships move faster and change direction more often.
+   * - They stay a shorter time before escaping.
+   */
+  const enemyMoveMul = byLevel(level, 1, 1.5);
+  const enemyDecisionMul = byLevel(level, 1, 0.65);
+  const escapeMin = byLevel(level, 4.5, 3.0);
+  const escapeMax = byLevel(level, 7, 4.5);
   const maxEscapes = 3;
 
   const startedAt =
@@ -798,7 +812,7 @@ export async function runSpace3D({
       randomBetween(
         0.9,
         1.5
-      );
+      ) * enemyDecisionMul;
 
 
     /*
@@ -807,8 +821,8 @@ export async function runSpace3D({
 
     enemy.userData.escapeTimer =
       randomBetween(
-        4.5,
-        7
+        escapeMin,
+        escapeMax
       );
 
 
@@ -1265,7 +1279,7 @@ export async function runSpace3D({
             randomBetween(
               0.9,
               1.5
-            );
+            ) * enemyDecisionMul;
         }
 
 
@@ -1300,6 +1314,7 @@ export async function runSpace3D({
 
               enemy.userData
                 .moveSpeed *
+              enemyMoveMul *
               delta
             );
 
