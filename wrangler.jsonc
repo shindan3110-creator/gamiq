@@ -1,0 +1,35 @@
+{
+  "name": "gamiq",
+
+  // Server code for /api/... (ranking). Everything else is a static file.
+  "main": "worker.js",
+
+  "compatibility_date": "2026-10-01",
+
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  },
+
+  // Ranking database (Cloudflare D1)
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "gamiq-db",
+      "database_id": "6adf7f3b-7516-4e89-baee-b5b7841fa131"
+    }
+  ],
+
+  // Branch previews (e.g. gamiq-v2) do NOT inherit the settings above,
+  // so the database is listed here again.
+  // For now previews and production share the same database.
+  "previews": {
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "gamiq-db",
+        "database_id": "6adf7f3b-7516-4e89-baee-b5b7841fa131"
+      }
+    ]
+  }
+}
