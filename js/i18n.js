@@ -156,6 +156,15 @@ const STRINGS = {
       "LISTEN TO THE MASTER, THEN DRUM THE SAME RHYTHM!",
     "rule.spot_difference":
       "FIND ALL THE DIFFERENCES BEFORE TIME RUNS OUT!",
+    "rule.memory_cup_shuffle": "FOLLOW THE CUP WITH THE BALL!",
+
+    /* ---------- IN-GAME: CUP SHUFFLE ---------- */
+    "cups.watch": "WATCH THE BALL...",
+    "cups.shuffle": "SHUFFLE!",
+    "cups.pick": "WHERE IS THE BALL?",
+    "cups.right": "FOUND IT!",
+    "cups.wrong": "WRONG CUP!",
+    "cups.tooSlow": "TOO SLOW!",
 
     /* ---------- IN-GAME: SPOT IT ---------- */
     "spot.hint": "Find {n} differences! Tap either picture.",
@@ -321,6 +330,15 @@ const STRINGS = {
     "rule.speed_color_switch": "文字の「色」か「意味」に合わせて押せ！切り替えに注意！",
     "rule.rhythm_drum_duo": "師匠のリズムを聴いて、同じリズムで叩け！",
     "rule.spot_difference": "時間内に、まちがいを全部見つけろ！",
+    "rule.memory_cup_shuffle": "ボールの入ったカップを目で追え！",
+
+    /* ---------- IN-GAME: CUP SHUFFLE ---------- */
+    "cups.watch": "ボールをよく見て…",
+    "cups.shuffle": "シャッフル！",
+    "cups.pick": "ボールはどこ？",
+    "cups.right": "正解！",
+    "cups.wrong": "ハズレ！",
+    "cups.tooSlow": "時間切れ！",
 
     /* ---------- IN-GAME: SPOT IT ---------- */
     "spot.hint": "まちがいは{n}個！どちらの絵をタップしてもOK",
