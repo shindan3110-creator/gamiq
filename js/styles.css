@@ -11283,3 +11283,287 @@ BLOCK ESCAPE - EXIT marker follows the exit row (Step 23-4)
   z-index:20;
   pointer-events:none;
 }
+
+
+
+/* ==========================================
+LANE PANIC - FALLING SPIKES & CAT (Step 24)
+========================================== */
+
+/* Spiked iron ball */
+.lane-spike{
+  width:clamp(48px, 15vw, 66px);
+  aspect-ratio:1;
+
+  font-size:0;
+  line-height:0;
+
+  filter:drop-shadow(0 6px 6px rgba(0,0,0,.55));
+}
+
+.lane-spike svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+/* Falls faster and faster (like gravity) and spins.
+   It reaches the cat's height exactly when the round ends. */
+.lane-spike.show{
+  animation:lane-spike-fall .7s cubic-bezier(.55,0,1,.45) forwards;
+}
+
+@keyframes lane-spike-fall{
+  0%{
+    top:-18%;
+    opacity:1;
+    transform:translateX(-50%) rotate(0deg);
+  }
+  100%{
+    top:calc(92% - clamp(48px, 15vw, 66px));
+    opacity:1;
+    transform:translateX(-50%) rotate(200deg);
+  }
+}
+
+/* Hits the ground: small bounce, then fades */
+.lane-spike.landed{
+  animation:lane-spike-land .32s ease-out forwards;
+  top:calc(92% - clamp(48px, 15vw, 66px));
+}
+
+@keyframes lane-spike-land{
+  0%  { transform:translateX(-50%) rotate(200deg) scale(1.1, .85); opacity:1; }
+  60% { transform:translateX(-50%) rotate(205deg) scale(1); opacity:1; }
+  100%{ transform:translateX(-50%) rotate(205deg) scale(.9); opacity:0; }
+}
+
+/* Shadow on the ground: shows where the spike will land */
+.lane-shadow{
+  position:absolute;
+
+  bottom:6%;
+
+  width:clamp(48px, 15vw, 66px);
+  height:14px;
+
+  transform:translateX(-50%) scale(.3);
+
+  border-radius:50%;
+
+  background:radial-gradient(ellipse, rgba(255,70,100,.55), rgba(255,70,100,0) 70%);
+
+  opacity:0;
+}
+
+.lane-shadow.show{
+  animation:lane-shadow-grow .7s ease-in forwards;
+}
+
+@keyframes lane-shadow-grow{
+  0%   { transform:translateX(-50%) scale(.3); opacity:.25; }
+  100% { transform:translateX(-50%) scale(1.15); opacity:.9; }
+}
+
+/* The cat */
+.lane-cat{
+  width:clamp(52px, 16vw, 70px);
+  aspect-ratio:1;
+
+  font-size:0;
+  line-height:0;
+
+  filter:drop-shadow(0 6px 8px rgba(0,0,0,.5));
+}
+
+.lane-cat svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+.lane-cat .cat-eyes-hurt{
+  display:none;
+}
+
+/* Safe: happy little hop */
+.lane-cat.lane-safe{
+  transform:translateX(-50%) translateY(-10px) scale(1.12);
+  text-shadow:none;
+  filter:
+    drop-shadow(0 0 14px rgba(121,246,171,.75))
+    drop-shadow(0 6px 8px rgba(0,0,0,.5));
+}
+
+/* Hit: X eyes, red glow, shake */
+.lane-cat.lane-crash{
+  filter:
+    drop-shadow(0 0 16px rgba(255,60,90,.9))
+    drop-shadow(0 6px 8px rgba(0,0,0,.5));
+}
+
+.lane-cat.lane-crash .cat-eyes-open{
+  display:none;
+}
+
+.lane-cat.lane-crash .cat-eyes-hurt{
+  display:inline;
+}
+
+
+/* ==========================================
+GHOST GRID - GRAVEYARD & GHOSTS (Step 24)
+========================================== */
+
+/* Night graveyard */
+.ghost-grid .memory-grid{
+  background:
+    radial-gradient(circle at 82% 10%, rgba(255,246,210,.22), transparent 18%),
+    linear-gradient(180deg, #1b1430 0%, #120d22 55%, #0b0a14 100%);
+
+  border-color:rgba(190,170,255,.14);
+}
+
+/* Each tile = a spot with a gravestone */
+.ghost-grid .memory-cell.gg-grave{
+  position:relative;
+
+  overflow:hidden;
+
+  border:1px solid rgba(190,170,255,.10);
+
+  background:
+    linear-gradient(180deg, rgba(40,30,70,.35), rgba(20,16,34,.6));
+}
+
+/* Gravestone (in front of a hiding ghost) */
+.ghost-grid .memory-cell.gg-grave::before{
+  content:"";
+  position:absolute;
+  z-index:2;
+
+  left:50%;
+  bottom:12%;
+
+  width:52%;
+  height:52%;
+
+  transform:translateX(-50%);
+
+  border-radius:45% 45% 8% 8% / 38% 38% 8% 8%;
+
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.12), transparent 40%),
+    linear-gradient(180deg, #8d8aa3, #5c5973);
+
+  box-shadow:
+    inset 0 -6px 0 rgba(0,0,0,.18),
+    0 4px 6px rgba(0,0,0,.4);
+
+  pointer-events:none;
+}
+
+/* Little dirt mound */
+.ghost-grid .memory-cell.gg-grave::after{
+  content:"";
+  position:absolute;
+  z-index:3;
+
+  left:18%;
+  right:18%;
+  bottom:6%;
+
+  height:12%;
+
+  border-radius:50% 50% 30% 30%;
+
+  background:linear-gradient(180deg, #3d3350, #241d33);
+
+  pointer-events:none;
+}
+
+/* The ghost */
+.gg-ghost{
+  position:absolute;
+  z-index:1; /* behind the gravestone while hiding */
+
+  left:50%;
+  top:0;
+
+  /* sized by height so it fits wide-and-short tiles (PC) too */
+  height:64%;
+  width:auto;
+  aspect-ratio:1;
+
+  transform:translateX(-50%);
+
+  pointer-events:none;
+
+  filter:drop-shadow(0 0 10px rgba(200,190,255,.6));
+}
+
+.gg-ghost svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+/* Peeks out from behind the stone, bobbing */
+.gg-ghost.gg-peek{
+  animation:
+    gg-rise .28s ease-out forwards,
+    gg-bob 1s ease-in-out .28s infinite;
+}
+
+@keyframes gg-rise{
+  0%   { transform:translateX(-50%) translateY(55%); opacity:0; }
+  100% { transform:translateX(-50%) translateY(-6%); opacity:1; }
+}
+
+@keyframes gg-bob{
+  0%, 100% { transform:translateX(-50%) translateY(-6%); }
+  50%      { transform:translateX(-50%) translateY(-12%); }
+}
+
+/* Hides again */
+.gg-ghost.gg-sink{
+  animation:gg-sink .25s ease-in forwards;
+}
+
+@keyframes gg-sink{
+  0%   { transform:translateX(-50%) translateY(0); opacity:1; }
+  100% { transform:translateX(-50%) translateY(60%); opacity:0; }
+}
+
+/* Found! Pops out in front of the stone */
+.gg-ghost.gg-caught{
+  z-index:4;
+
+  top:2%;
+
+  height:76%;
+  width:auto;
+
+  animation:gg-pop .35s cubic-bezier(.2,1.6,.4,1) forwards;
+
+  filter:drop-shadow(0 0 14px rgba(150,255,190,.85));
+}
+
+@keyframes gg-pop{
+  0%   { transform:translateX(-50%) translateY(40%) scale(.4); opacity:0; }
+  100% { transform:translateX(-50%) translateY(0) scale(1); opacity:1; }
+}
+
+.ghost-grid .memory-cell.gg-found{
+  box-shadow:inset 0 0 0 2px rgba(120,255,170,.55), 0 0 18px rgba(120,255,170,.25);
+}
+
+/* Nobody here */
+.ghost-grid .memory-cell.gg-empty{
+  box-shadow:inset 0 0 0 2px rgba(255,80,110,.6);
+  animation:gamiq-shake .18s ease;
+}
+
+.ghost-grid .memory-cell.gg-empty::before{
+  filter:sepia(1) hue-rotate(-40deg) saturate(2.5) brightness(.8);
+}
