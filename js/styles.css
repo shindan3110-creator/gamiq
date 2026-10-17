@@ -13440,3 +13440,52 @@ STEP 35: DAILY CHALLENGE RANKING
 .gamiq-ranking-tabs{
   grid-template-columns:repeat(3, 1fr);
 }
+
+
+/* ==========================================
+STEP 37: DAILY — SWIPE TO THE NEXT GAME
+========================================== */
+
+/* The "swipe for next" text is a button here (it can also be tapped). */
+.dl-swipe{
+  padding:10px 18px;
+
+  border:0;
+  background:transparent;
+
+  font:inherit;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.16em;
+
+  color:rgba(255,255,255,.75);
+
+  cursor:pointer;
+
+  animation:dlSwipeHint 1.4s ease-in-out infinite;
+}
+
+@keyframes dlSwipeHint{
+  0%,100%{ transform:translateY(0); opacity:.75; }
+  50%{ transform:translateY(-6px); opacity:1; }
+}
+
+/* Finished card slides up and away */
+.dl-card{
+  transition:transform .3s cubic-bezier(.2,.8,.2,1), opacity .3s ease;
+}
+
+.dl-card.dl-leaving{
+  transform:translateY(-100%);
+  opacity:0;
+}
+
+/* Swipes on a daily game card should not scroll the page
+   (the result screen can still scroll normally). */
+.dl-card{
+  touch-action:none;
+}
+
+.dl-overlay{
+  overscroll-behavior:contain;
+}
