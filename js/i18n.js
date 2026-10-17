@@ -71,6 +71,22 @@ const STRINGS = {
     "results.history": "TODAY'S LEVELS",
     "results.resetNote": "Records reset every day at 0:00 UTC.",
 
+    /* ---------- RANKING ---------- */
+    "rank.title": "RANKING",
+    "rank.close": "Close",
+    "rank.today": "TODAY",
+    "rank.allTime": "ALL-TIME",
+    "rank.dailyNote": "Today's best scores. Resets in {time} (0:00 UTC).",
+    "rank.allTimeNote": "Each player's best single day.",
+    "rank.loading": "Loading...",
+    "rank.error": "Couldn't load the ranking. Please try again later.",
+    "rank.empty": "No scores yet. Be the first!",
+    "rank.you": "YOU",
+    "rank.notYet": "Play 5 games to get on today's ranking.",
+    "rank.formula": "SCORE = GAMIQ × (1 + 0.15 × (Lv − 1))",
+    "rank.hoursMinutes": "{h}h {m}m",
+    "rank.minutes": "{m}m",
+
     /* ---------- LEVEL UP ---------- */
     "levelup.title": "LEVEL {level} CLEAR!",
     "levelup.next": "NEXT: LV {level} — measuring starts again",
@@ -181,6 +197,22 @@ const STRINGS = {
       "あと{games}ゲームで Lv{level} のGAMIQが確定",
     "results.history": "今日のレベル記録",
     "results.resetNote": "記録は毎日 日本時間9:00（UTC 0:00）にリセットされます。",
+
+    /* ---------- RANKING ---------- */
+    "rank.title": "ランキング",
+    "rank.close": "閉じる",
+    "rank.today": "今日",
+    "rank.allTime": "全期間",
+    "rank.dailyNote": "今日の最高スコア。あと{time}でリセット（日本時間9:00）。",
+    "rank.allTimeNote": "各プレイヤーの「1日の最高スコア」で比べています。",
+    "rank.loading": "読み込み中…",
+    "rank.error": "ランキングを読み込めませんでした。時間をおいて試してください。",
+    "rank.empty": "まだ記録がありません。一番乗りを目指そう！",
+    "rank.you": "あなた",
+    "rank.notYet": "5ゲーム遊ぶと今日のランキングに載ります。",
+    "rank.formula": "スコア = GAMIQ ×（1 + 0.15 ×（Lv − 1））",
+    "rank.hoursMinutes": "{h}時間{m}分",
+    "rank.minutes": "{m}分",
 
     /* ---------- LEVEL UP ---------- */
     "levelup.title": "LEVEL {level} クリア！",
