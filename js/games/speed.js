@@ -2,6 +2,7 @@
 
 import { t } from "../i18n.js";
 import { byLevel, byLevelInt } from "../difficulty.js";
+import { sfx } from "../sound.js";
 
 
 export function createSpeedGames() {
@@ -245,12 +246,14 @@ function runColorSwitch({
       reactions.push(performance.now() - shownAt);
 
       showFeedback("✓", "good");
+      sfx("good");
 
     } else {
       wrong++;
       streak = 0;
 
       showFeedback("✕", "bad");
+      sfx("bad");
 
       // Short lock: random mashing is not worth it.
       locked = true;
