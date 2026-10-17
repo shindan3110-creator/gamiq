@@ -12,6 +12,7 @@ import { byLevel } from "../difficulty.js";
 import {
   GamiqThreeScene
 } from "./three-renderer.js";
+import { sfx } from "../sound.js";
 
 
 export async function runZombie3D({
@@ -1024,6 +1025,9 @@ export async function runZombie3D({
 
     drawKatanaSlash(x1, y1, x2, y2);
 
+    // Katana swing "shaKIIN"
+    sfx("slash");
+
     testSlashSegment(x1, y1, x2, y2);
   }
 
@@ -1705,6 +1709,8 @@ export async function runZombie3D({
       return;
     }
 
+    sfx("slashHit");
+
 
     zombieIsDying =
       true;
@@ -1848,6 +1854,8 @@ export async function runZombie3D({
     ) {
       return;
     }
+
+    sfx("hurt");
 
 
     zombieIsDying =
