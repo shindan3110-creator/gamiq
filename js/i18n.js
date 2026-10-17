@@ -158,6 +158,13 @@ const STRINGS = {
       "FIND ALL THE DIFFERENCES BEFORE TIME RUNS OUT!",
     "rule.memory_cup_shuffle": "FOLLOW THE CUP WITH THE BALL!",
     "rule.aim_tower_stack": "TAP TO DROP THE BLOCK. STACK 12 WITHOUT MISSING!",
+    "rule.logic_odd_one_out": "ONE IS DIFFERENT. FIND IT FAST!",
+
+    /* ---------- IN-GAME: ODD ONE OUT ---------- */
+    "odd.hint": "TAP THE ONE THAT IS DIFFERENT",
+    "odd.found": "FOUND IT!",
+    "odd.wrong": "WRONG! -1.5s",
+    "odd.timeUp": "TIME UP! {n} FOUND",
 
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "TAP ANYWHERE (or SPACE) TO DROP",
@@ -341,6 +348,13 @@ const STRINGS = {
     "rule.spot_difference": "時間内に、まちがいを全部見つけろ！",
     "rule.memory_cup_shuffle": "ボールの入ったカップを目で追え！",
     "rule.aim_tower_stack": "タップでブロックを落とせ！ズレずに12段積み上げろ！",
+    "rule.logic_odd_one_out": "1つだけ違うものがある。すばやく見つけろ！",
+
+    /* ---------- IN-GAME: ODD ONE OUT ---------- */
+    "odd.hint": "1つだけ違うものをタップ！",
+    "odd.found": "見つけた！",
+    "odd.wrong": "ちがう！ -1.5秒",
+    "odd.timeUp": "タイムアップ！ {n}個 見つけた",
 
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "どこでもタップ（スペースキーでもOK）で落とす",
