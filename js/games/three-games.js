@@ -42,7 +42,7 @@ export function createThreeGames() {
       id: "three_lane_dodge",
       type: "lane_dodge",
       title: "RUSH RUN",
-      rule: "DODGE AND JUMP FOR 60 SECONDS!",
+      rule: "DODGE AND JUMP FOR 40 SECONDS!",
       skill: "SPEED",
       theme: "race",
       duration: 10000
@@ -55,9 +55,9 @@ export function createThreeGames() {
       rule: "Choose gates, grow your army, defeat the enemy!",
       skill: "LOGIC",
       theme: "factory",
-      duration: 60000,
-      // 3 stages take about a minute; give the safety timer room.
-      maxDuration: 150000
+      duration: 50000,
+      // 3 stages take about 50 seconds; give the safety timer room.
+      maxDuration: 120000
 
     }
   ];
