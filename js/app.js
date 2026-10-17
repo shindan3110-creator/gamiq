@@ -51,6 +51,11 @@ import {
 } from "./games/aim.js";
 
 import {
+  createRhythmGames,
+  runRhythmGame
+} from "./games/rhythm.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -138,7 +143,8 @@ const gamePool = [
   ...createMemoryGames(),
   ...createThreeGames(),
   ...createSpeedGames(),
-  ...createAimGames()
+  ...createAimGames(),
+  ...createRhythmGames()
 ];
 
 
@@ -1256,6 +1262,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "drum_duo") {
+    return runRhythmGame({
       game,
       container,
       onComplete
