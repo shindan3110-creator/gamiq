@@ -112,17 +112,23 @@ const STRINGS = {
     "title.legend": "LEGEND",
 
     /* ---------- SHARE ---------- */
-    "share.button": "SHARE",
+    "share.button": "SHARE IMAGE",
     "share.today": "TODAY",
     "share.topPercent": "TOP {p}%",
     "share.rankOf": "#{rank} of {total} players",
     "share.noRank": "not ranked yet",
     "share.line1": "My GAMIQ is {gamiq} — {title} 🎮",
+    "share.line1NoTitle": "My GAMIQ is {gamiq} 🎮",
     "share.line2": "Lv {level} · Today: {rank}",
     "share.line3": "Can you beat me? Random mini-games measure your real gaming skill.",
     "share.footer": "Random mini-games. Real gaming skill.",
     "share.downloaded": "Image saved and text copied. Paste it anywhere!",
     "share.failed": "Couldn't share. Please try again.",
+    "share.copy": "COPY",
+    "share.copied": "COPIED!",
+    "share.other": "OTHER",
+    "share.imageSaved": "IMAGE SAVED",
+    "share.dailyImageCta": "Same 5 games for everyone. Can you beat me?",
 
     /* ---------- RANKING ---------- */
     "rank.title": "RANKING",
@@ -342,17 +348,23 @@ const STRINGS = {
     "title.legend": "LEGEND",
 
     /* ---------- SHARE ---------- */
-    "share.button": "シェア",
+    "share.button": "画像でシェア",
     "share.today": "今日",
     "share.topPercent": "上位{p}%",
     "share.rankOf": "{total}人中 {rank}位",
     "share.noRank": "ランキング外",
     "share.line1": "私のGAMIQは {gamiq}（{title}）🎮",
+    "share.line1NoTitle": "私のGAMIQは {gamiq} 🎮",
     "share.line2": "Lv{level}・今日のランキング：{rank}",
     "share.line3": "ランダムなミニゲームで本当のゲーム力を測定。君は超えられる？",
     "share.footer": "未知のゲームで、本当のゲーム力を測れ。",
     "share.downloaded": "画像を保存し、文章をコピーしました。好きな場所に貼り付けてください！",
     "share.failed": "シェアできませんでした。もう一度お試しください。",
+    "share.copy": "コピー",
+    "share.copied": "コピーしました！",
+    "share.other": "その他",
+    "share.imageSaved": "画像を保存しました",
+    "share.dailyImageCta": "今日の5ゲームは全員同じ。君は超えられる？",
 
     /* ---------- RANKING ---------- */
     "rank.title": "ランキング",
