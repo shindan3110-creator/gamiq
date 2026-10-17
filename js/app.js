@@ -64,6 +64,13 @@ import {
 } from "./api.js";
 
 import {
+  initSound,
+  sfx,
+  isMuted,
+  toggleMuted
+} from "./sound.js";
+
+import {
   GamiqRanking
 } from "./ranking.js";
 
@@ -246,6 +253,32 @@ function boot() {
     nicknameForm.classList.remove("invalid");
   });
 
+  /*
+   * SOUND
+   * Starts after the first tap (browser rule).
+   * The speaker button turns it ON / OFF.
+   */
+  initSound();
+
+  const soundButton =
+    mount.querySelector("[data-sound-toggle]");
+
+  const renderSoundButton = () => {
+    const off = isMuted();
+
+    soundButton.textContent = off ? "🔇" : "🔊";
+    soundButton.classList.toggle("off", off);
+    soundButton.setAttribute("aria-pressed", String(!off));
+  };
+
+  renderSoundButton();
+
+  soundButton.addEventListener("click", () => {
+    toggleMuted();
+    renderSoundButton();
+    sfx("click");
+  });
+
   // Ranking from the start screen
   mount
     .querySelector("[data-start-ranking]")
@@ -380,6 +413,13 @@ function createAppMarkup() {
             <span>CONFIDENCE</span>
             <strong data-live-confidence>0%</strong>
           </div>
+
+          <button
+            type="button"
+            class="gamiq-sound-button"
+            data-sound-toggle
+            aria-label="Sound"
+          ></button>
 
           <button
             type="button"
@@ -902,6 +942,11 @@ async function enterGame(
         levelUp
       );
 
+
+      // Jingle: level up > clear > fail
+      if (!safetyTimeout) {
+        sfx(levelUp ? "levelUp" : success ? "clear" : "fail");
+      }
 
       if (levelUp) {
         analytics.levelUp({
