@@ -154,6 +154,14 @@ const STRINGS = {
       "MATCH THE COLOR OR THE WORD. WATCH FOR THE SWITCH!",
     "rule.rhythm_drum_duo":
       "LISTEN TO THE MASTER, THEN DRUM THE SAME RHYTHM!",
+    "rule.spot_difference":
+      "FIND ALL THE DIFFERENCES BEFORE TIME RUNS OUT!",
+
+    /* ---------- IN-GAME: SPOT IT ---------- */
+    "spot.hint": "Find {n} differences! Tap either picture.",
+    "spot.wrong": "WRONG! -2s",
+    "spot.clear": "ALL FOUND!",
+    "spot.timeUp": "TIME UP",
 
     /* ---------- IN-GAME: DRUM DUO ---------- */
     "rhythm.ready": "READY...",
@@ -312,6 +320,13 @@ const STRINGS = {
     "rule.three_factory_rush": "良いゲートを選んで軍団を増やし、3回の戦いに勝ち抜け！",
     "rule.speed_color_switch": "文字の「色」か「意味」に合わせて押せ！切り替えに注意！",
     "rule.rhythm_drum_duo": "師匠のリズムを聴いて、同じリズムで叩け！",
+    "rule.spot_difference": "時間内に、まちがいを全部見つけろ！",
+
+    /* ---------- IN-GAME: SPOT IT ---------- */
+    "spot.hint": "まちがいは{n}個！どちらの絵をタップしてもOK",
+    "spot.wrong": "ちがう！ -2秒",
+    "spot.clear": "ぜんぶ発見！",
+    "spot.timeUp": "タイムアップ",
 
     /* ---------- IN-GAME: DRUM DUO ---------- */
     "rhythm.ready": "よーい…",
