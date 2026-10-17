@@ -60,6 +60,14 @@ import {
 } from "./ads.js";
 
 import {
+  submitBestScore
+} from "./api.js";
+
+import {
+  GamiqRanking
+} from "./ranking.js";
+
+import {
   getProfile,
   saveNickname,
   suggestNickname,
@@ -172,9 +180,15 @@ function boot() {
     );
 
 
+  const ranking =
+    new GamiqRanking();
+
   const results =
     new GamiqResults({
       scoreEngine,
+      onRanking: () => {
+        ranking.show("daily");
+      },
 
       onContinue: () => {
         analytics.resultsContinue(
@@ -231,6 +245,13 @@ function boot() {
     nicknameError.textContent = "";
     nicknameForm.classList.remove("invalid");
   });
+
+  // Ranking from the start screen
+  mount
+    .querySelector("[data-start-ranking]")
+    .addEventListener("click", () => {
+      ranking.show("daily");
+    });
 
   // Enter key = PLAY
   nicknameForm.addEventListener("submit", event => {
@@ -439,6 +460,14 @@ function createAppMarkup() {
             data-gamiq-start
           >
             ${t("start.play")}
+          </button>
+
+          <button
+            type="button"
+            class="gamiq-start-ranking"
+            data-start-ranking
+          >
+            🏆 ${t("rank.title")}
           </button>
 
           <small>
@@ -856,6 +885,12 @@ async function enterGame(
 
 
       updateLiveStatus();
+
+
+      // Send today's best score to the ranking (only if it improved).
+      if (!safetyTimeout) {
+        submitBestScore(summary);
+      }
 
 
       showCardComplete(
@@ -1401,9 +1436,10 @@ function setResultsLocked(locked) {
 
 
 function isResultsOpen() {
+  // Results or ranking open = don't start the game behind it.
   return Boolean(
     document.querySelector(
-      ".gamiq-results-overlay.show"
+      ".gamiq-results-overlay.show, .gamiq-ranking-overlay.show"
     )
   );
 }
