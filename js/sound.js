@@ -205,6 +205,100 @@ function noise(audio, {
 }
 
 
+
+// Crisp noise burst with exact shape: rises in "attack", stays for
+// "hold", then drops to silence in "release" (straight line = clean cut).
+// The filter frequency moves from "freq" to "to" over the whole sound.
+function cut(audio, {
+  filter = "bandpass", freq = 3000, to = null, q = 1,
+  start = 0, attack = 0.004, hold = 0.02, release = 0.05, volume = 0.4
+}) {
+  const t0 = audio.currentTime + start;
+  const total = attack + hold + release;
+
+  const source = audio.createBufferSource();
+  source.buffer = noiseBuffer;
+
+  const biquad = audio.createBiquadFilter();
+  biquad.type = filter;
+  biquad.frequency.setValueAtTime(freq, t0);
+  biquad.Q.value = q;
+
+  if (to) {
+    biquad.frequency.exponentialRampToValueAtTime(Math.max(20, to), t0 + total);
+  }
+
+  const gain = audio.createGain();
+
+  gain.gain.setValueAtTime(0, t0);
+  gain.gain.linearRampToValueAtTime(volume, t0 + attack);
+  gain.gain.setValueAtTime(volume, t0 + attack + hold);
+  gain.gain.linearRampToValueAtTime(0, t0 + total);
+
+  source.connect(biquad);
+  biquad.connect(gain);
+  gain.connect(master);
+
+  source.start(t0, nativeRandom() * 0.5);
+  source.stop(t0 + total + 0.02);
+}
+
+
+// Pitches of a real katana blade (measured from a sample sound).
+// [frequency Hz, loudness]
+const SHAKIN_PARTIALS = [
+  [2773, 0.32], [3263, 0.83], [3396, 0.34], [4393, 0.27], [4650, 0.32],
+  [4923, 1], [5296, 0.97], [5473, 0.22], [6643, 0.62], [6776, 0.33],
+  [7613, 0.65], [8743, 0.61], [9730, 0.25], [10870, 0.27], [11940, 0.44], [13283, 0.43]
+];
+
+// The pitches that keep ringing after the cut ("kiiin").
+const RING_PARTIALS = [
+  [2778, 0.86], [3268, 1], [3397, 0.43], [4658, 0.3], [4926, 0.25],
+  [5473, 0.31], [6779, 0.4], [7317, 0.15], [9255, 0.12], [11397, 0.15]
+];
+
+// Noise whose loudness flutters quickly (metal rubbing on metal).
+function roughNoise(audio, { freq = 3000, start = 0, attack = 0.02, hold = 0.2, release = 0.05, volume = 0.2, rate = 45 }) {
+  const t0 = audio.currentTime + start;
+  const total = attack + hold + release;
+
+  const source = audio.createBufferSource();
+  source.buffer = noiseBuffer;
+
+  const hp = audio.createBiquadFilter();
+  hp.type = "highpass";
+  hp.frequency.value = freq;
+
+  const flutter = audio.createGain();
+  flutter.gain.value = 0.55;
+
+  const lfo = audio.createOscillator();
+  lfo.type = "sawtooth";
+  lfo.frequency.value = rate;
+
+  const depth = audio.createGain();
+  depth.gain.value = 0.45;
+
+  lfo.connect(depth);
+  depth.connect(flutter.gain);
+
+  const gain = audio.createGain();
+  gain.gain.setValueAtTime(0, t0);
+  gain.gain.linearRampToValueAtTime(volume, t0 + attack);
+  gain.gain.setValueAtTime(volume, t0 + attack + hold);
+  gain.gain.linearRampToValueAtTime(0, t0 + total);
+
+  source.connect(hp);
+  hp.connect(flutter);
+  flutter.connect(gain);
+  gain.connect(master);
+
+  source.start(t0, nativeRandom() * 0.5);
+  source.stop(t0 + total + 0.02);
+  lfo.start(t0);
+  lfo.stop(t0 + total + 0.02);
+}
 /* ==========================================
 SOUND LIBRARY
 ========================================== */
@@ -212,18 +306,31 @@ SOUND LIBRARY
 const SOUNDS = {
   /* ---------- WEAPONS ---------- */
 
-  // Katana: "shaKIIIN" — fast air cut + bright metal ring
+  // Katana swing: "BWO" — the blade moving through the air.
+  // (Short, so it can be played on every swing.)
   slash(audio) {
-    noise(audio, { filter: "highpass", freq: 1800, to: 6000, length: 0.12, volume: 0.35 });
-    tone(audio, { type: "sine", freq: 2600, start: 0.03, length: 0.45, volume: 0.12 });
-    tone(audio, { type: "sine", freq: 3900, start: 0.03, length: 0.35, volume: 0.07 });
-    tone(audio, { type: "triangle", freq: 1300, start: 0.03, length: 0.3, volume: 0.06 });
+    cut(audio, { freq: 600, to: 1600, q: 1.2, attack: 0.07, hold: 0.01, release: 0.07, volume: 0.32 });
+    cut(audio, { filter: "lowpass", freq: 900, start: 0.02, attack: 0.06, hold: 0.03, release: 0.08, volume: 0.25 });
   },
 
-  // Katana hit on an enemy: slash + heavy "zan"
+  // Katana hit: "BWO — SHAAA — KIIIN"
+  // 1) whoosh with body
+  // 2) steel scraping: noise through very narrow filters at the blade's
+  //    own pitches + a fluttering "shaaa" (metal rubbing on metal)
+  // 3) the ring that stays after the cut
   slashHit(audio) {
-    SOUNDS.slash(audio);
-    noise(audio, { filter: "lowpass", freq: 900, to: 200, length: 0.18, volume: 0.35 });
+    cut(audio, { freq: 600, to: 1600, q: 1.2, attack: 0.08, hold: 0.02, release: 0.08, volume: 0.4 });
+    cut(audio, { filter: "lowpass", freq: 900, start: 0.03, attack: 0.07, hold: 0.08, release: 0.12, volume: 0.35 });
+
+    SHAKIN_PARTIALS.forEach(([f, lv]) => {
+      cut(audio, { freq: f, q: 45, start: 0.08, attack: 0.06, hold: 0.22, release: 0.2, volume: 2.4 * lv });
+    });
+    roughNoise(audio, { freq: 3500, start: 0.08, attack: 0.06, hold: 0.2, release: 0.18, volume: 0.15, rate: 47 });
+
+    RING_PARTIALS.forEach(([f, lv], i) => {
+      tone(audio, { type: "sine", freq: f, start: 0.2, length: 1.0 - i * 0.04, volume: 0.24 * lv, attack: 0.15 });
+      tone(audio, { type: "sine", freq: f * 1.003, start: 0.2, length: 0.9 - i * 0.04, volume: 0.13 * lv, attack: 0.15 });
+    });
   },
 
   // Revolver: "BANG" — crack + low boom + short echo
