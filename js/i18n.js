@@ -58,6 +58,10 @@ const STRINGS = {
     "daily.back": "BACK",
     "daily.nextIn": "Next daily in {time}",
     "daily.newReady": "A new daily is ready! Close and open again.",
+    "daily.rank": "Daily ranking: {rank}",
+    "daily.rankSending": "Sending your result to the ranking...",
+    "daily.rankFailed": "Couldn't reach the ranking. It will be sent next time you open this.",
+    "daily.rankButton": "🏆 DAILY RANKING",
     "daily.shareText": "GAMIQ Daily #{n}\n{total}/{max}\n{squares}\n{url}",
 
     /* ---------- NICKNAME ---------- */
@@ -131,6 +135,10 @@ const STRINGS = {
     "rank.you": "YOU",
     "rank.notYet": "Play 5 games to get on today's ranking.",
     "rank.formula": "SCORE = GAMIQ × (1 + 0.15 × (Lv − 1))",
+    "rank.challenge": "DAILY",
+    "rank.challengeNote": "Today's Daily Challenge (first try only). Resets in {time}.",
+    "rank.challengeFormula": "SCORE = total of the 5 games (max 500)",
+    "rank.challengeNotYet": "Finish today's Daily Challenge to get on this ranking.",
     "rank.hoursMinutes": "{h}h {m}m",
     "rank.minutes": "{m}m",
 
@@ -278,6 +286,10 @@ const STRINGS = {
     "daily.back": "もどる",
     "daily.nextIn": "次のデイリーまで {time}",
     "daily.newReady": "新しいデイリーが始まりました！閉じて開き直してね",
+    "daily.rank": "デイリーランキング：{rank}",
+    "daily.rankSending": "ランキングに結果を送っています…",
+    "daily.rankFailed": "ランキングに送れませんでした。次に開いたときにもう一度送ります。",
+    "daily.rankButton": "🏆 デイリーランキング",
     "daily.shareText": "GAMIQ デイリー #{n}\n{total}/{max}\n{squares}\n{url}",
 
     /* ---------- NICKNAME ---------- */
@@ -351,6 +363,10 @@ const STRINGS = {
     "rank.you": "あなた",
     "rank.notYet": "5ゲーム遊ぶと今日のランキングに載ります。",
     "rank.formula": "スコア = GAMIQ ×（1 + 0.15 ×（Lv − 1））",
+    "rank.challenge": "デイリー",
+    "rank.challengeNote": "今日のデイリーチャレンジ（1回目の結果のみ）。あと{time}でリセット。",
+    "rank.challengeFormula": "スコア = 5ゲームの合計（500点満点）",
+    "rank.challengeNotYet": "今日のデイリーチャレンジを最後まで遊ぶと載ります。",
     "rank.hoursMinutes": "{h}時間{m}分",
     "rank.minutes": "{m}分",
 
