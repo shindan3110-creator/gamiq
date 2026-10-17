@@ -8,6 +8,7 @@
 // 5体撃破 → CLEAR
 // 3回突破される → GAME OVER
 
+import { byLevel } from "../difficulty.js";
 import {
   GamiqThreeScene
 } from "./three-renderer.js";
@@ -15,7 +16,8 @@ import {
 
 export async function runZombie3D({
   container,
-  onComplete
+  onComplete,
+  level = 1
 }) {
   if (!container) {
     return () => {};
@@ -47,6 +49,13 @@ export async function runZombie3D({
   let currentZombieHP = 0;
 
   let zombieSpeed = 0;
+
+  /*
+   * DIFFICULTY BY LEVEL (Lv1 = same as before)
+   * Zombies come faster, and speed up more after each kill.
+   */
+  const zombieBaseSpeed = byLevel(level, 3.7, 5.4);
+  const zombieSpeedStep = byLevel(level, 0.4, 0.55);
 
   let spawning = false;
 
@@ -729,8 +738,8 @@ export async function runZombie3D({
      */
 
     zombieSpeed =
-      3.7 +
-      kills * 0.4 +
+      zombieBaseSpeed +
+      kills * zombieSpeedStep +
       Math.random() *
         0.5;
 
@@ -1438,8 +1447,8 @@ export async function runZombie3D({
 
 
         zombieSpeed =
-          3.7 +
-          kills * 0.4 +
+          zombieBaseSpeed +
+          kills * zombieSpeedStep +
           Math.random() *
             0.5;
 
