@@ -12,6 +12,7 @@
 //   GET  /api/ranking?type=daily[&day=YYYY-MM-DD][&playerId=...]
 //   GET  /api/ranking?type=alltime[&playerId=...]
 //     -> top 50 (+ your own rank if playerId is given)
+//        + total = number of players on that ranking
 //
 // Days are UTC (reset at 0:00 UTC = 9:00 Japan).
 // RANKING SCORE = GAMIQ x (1 + 0.15 x (level - 1))
@@ -352,8 +353,21 @@ async function getRanking(url, db) {
     me = await myEntry(db, type, playerId, day);
   }
 
+  // How many players are on this ranking (for "TOP x%").
+  const totalRow =
+    type === "daily"
+      ? await db
+          .prepare(`SELECT COUNT(*) AS total FROM daily_scores WHERE day = ?`)
+          .bind(day)
+          .first()
+      : await db
+          .prepare(`SELECT COUNT(*) AS total FROM player_best`)
+          .first();
+
+  const total = totalRow ? totalRow.total : 0;
+
   return json(
-    { ok: true, type, day, list, me },
+    { ok: true, type, day, list, me, total },
     200,
     { "Cache-Control": "no-store" }
   );
