@@ -2,6 +2,7 @@
 
 import { t } from "../i18n.js";
 import { byLevel, byLevelInt } from "../difficulty.js";
+import { sfx } from "../sound.js";
 
 export function createPuzzleGames() {
   return [
@@ -404,6 +405,9 @@ function runBlockEscape({ game, container, onComplete }) {
     block.y = newY;
 
     moves++;
+
+    // Wooden block slides: "koto"
+    sfx("wood");
     movesDisplay.textContent = String(moves);
 
     if (
@@ -1178,6 +1182,8 @@ function runPipeConnect({
     }
 
     tile.rotation = (tile.rotation + 1) % 4;
+
+    sfx("click");
     tile.angle += 90;
 
     svg.style.transform = `rotate(${tile.angle}deg)`;
@@ -1285,6 +1291,9 @@ function runPipeConnect({
 
       messageElement.textContent = "CONNECTED!";
       boardElement.classList.add("solved");
+
+      // Water rushes through the pipes
+      sfx("water");
 
       // Water rushes through the pipes from IN to OUT, one tile after another.
       [...flow.filled].forEach((tile, order) => {
