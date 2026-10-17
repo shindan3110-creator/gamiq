@@ -11609,3 +11609,116 @@ SOUND BUTTON (Step 26)
     border-radius:10px;
   }
 }
+
+
+
+/* ==========================================
+TITLE / TOP x% / SHARE (Step 27)
+========================================== */
+
+.gamiq-results-badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+
+  margin:-6px 0 16px;
+}
+
+.gamiq-results-title,
+.gamiq-results-rank{
+  padding:6px 12px;
+
+  border-radius:999px;
+
+  font-size:12px;
+  font-weight:1000;
+
+  letter-spacing:.1em;
+}
+
+.gamiq-results-title{
+  --title-color:#5fefff;
+
+  border:1px solid var(--title-color);
+
+  background:color-mix(in srgb, var(--title-color) 14%, transparent);
+
+  color:var(--title-color);
+}
+
+.gamiq-results-rank{
+  border:1px solid rgba(255,215,106,.45);
+
+  background:rgba(255,215,106,.10);
+
+  color:#ffd76a;
+}
+
+.gamiq-results-title[hidden],
+.gamiq-results-rank[hidden]{
+  display:none;
+}
+
+/* SHARE + RANKING side by side */
+.gamiq-results-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+
+  margin-top:14px;
+}
+
+.gamiq-results-actions .gamiq-results-ranking{
+  margin-top:0;
+}
+
+.gamiq-results-share{
+  width:100%;
+  min-height:46px;
+
+  border:1px solid rgba(95,239,255,.45);
+  border-radius:14px;
+
+  background:rgba(95,239,255,.10);
+
+  color:#5fefff;
+
+  font:inherit;
+  font-size:14px;
+  font-weight:1000;
+
+  cursor:pointer;
+}
+
+.gamiq-results-share:disabled{
+  opacity:.5;
+}
+
+.gamiq-results-share-note{
+  min-height:0;
+
+  margin-top:6px;
+
+  color:#9aa5b5;
+
+  font-size:11px;
+
+  text-align:center;
+}
+
+.gamiq-results-share-note:empty{
+  display:none;
+}
+
+.gamiq-results-actions + .gamiq-results-share-note + .gamiq-results-continue,
+.gamiq-results-actions + .gamiq-results-continue{
+  margin-top:10px;
+}
+
+/* Title on the level-up banner */
+.gamiq-levelup-rankname{
+  font-size:14px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+}
