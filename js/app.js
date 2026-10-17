@@ -978,7 +978,11 @@ async function enterGame(
   try {
     const runnerResult =
       runSelectedGame({
-        game,
+        // The current level is passed to the game for its difficulty.
+        game: {
+          ...game,
+          level: scoreEngine.level
+        },
         container:
           host,
         onComplete
