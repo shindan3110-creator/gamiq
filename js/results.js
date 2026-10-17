@@ -1,6 +1,7 @@
 // GAMIQ（ゲーミック） v2 - Results Overlay
 
 import { t } from "./i18n.js";
+import { getProfile } from "./profile.js";
 
 export class GamiqResults {
   constructor({
@@ -43,6 +44,11 @@ export class GamiqResults {
         aria-modal="true"
         aria-label="${t("results.aria")}"
       >
+
+        <div
+          class="gamiq-results-player"
+          data-results-player
+        ></div>
 
         <div class="gamiq-results-level">
           <span>${t("results.level")}</span>
@@ -356,6 +362,18 @@ export class GamiqResults {
       }
     );
 
+
+    // PLAYER
+    const playerElement =
+      overlay.querySelector("[data-results-player]");
+
+    const nickname =
+      getProfile().nickname;
+
+    playerElement.textContent =
+      nickname ? `PLAYER  ${nickname}` : "";
+
+    playerElement.hidden = !nickname;
 
     // LEVEL
     overlay.querySelector("[data-results-level]").textContent =
