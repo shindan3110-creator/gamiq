@@ -330,6 +330,30 @@ const SOUNDS = {
     tone(audio, { type: "triangle", freq, length: 0.28, volume: 0.22 });
   },
 
+  /* ---------- RHYTHM ---------- */
+
+  // Big drum "DON" (the master)
+  drum(audio) {
+    tone(audio, { type: "sine", freq: 150, to: 62, length: 0.32, volume: 0.6, attack: 0.002 });
+    noise(audio, { filter: "lowpass", freq: 900, to: 200, length: 0.08, volume: 0.25, attack: 0.001 });
+  },
+
+  // Your drum: a little higher, so you can hear the difference
+  drumYou(audio) {
+    tone(audio, { type: "sine", freq: 210, to: 90, length: 0.28, volume: 0.55, attack: 0.002 });
+    noise(audio, { filter: "bandpass", freq: 1600, q: 1.2, length: 0.06, volume: 0.22, attack: 0.001 });
+  },
+
+  // Metronome (quiet hi-hat)
+  hat(audio, accent = false) {
+    noise(audio, { filter: "highpass", freq: 7000, length: accent ? 0.06 : 0.035, volume: accent ? 0.12 : 0.06, attack: 0.001 });
+  },
+
+  // Count-in "1, 2, 3, 4"
+  count(audio, last = false) {
+    tone(audio, { type: "square", freq: last ? 1320 : 880, length: 0.07, volume: 0.08 });
+  },
+
   /* ---------- FEEDBACK ---------- */
 
   good(audio) {
