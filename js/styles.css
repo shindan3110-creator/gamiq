@@ -11722,3 +11722,450 @@ TITLE / TOP x% / SHARE (Step 27)
 
   letter-spacing:.14em;
 }
+
+
+
+/* ==========================================
+DRUM DUO - RHYTHM GAME (Step 28)
+========================================== */
+
+.rh-game{
+  width:100%;
+  height:100%;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:10px;
+}
+
+.rh-hud{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:8px;
+}
+
+.rh-hud > div{
+  padding:8px 4px;
+
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.03);
+
+  text-align:center;
+}
+
+.rh-hud span{
+  display:block;
+
+  margin-bottom:3px;
+
+  color:#7c8798;
+
+  font-size:9px;
+  font-weight:1000;
+
+  letter-spacing:.14em;
+}
+
+.rh-hud strong{
+  color:#ffffff;
+
+  font-size:18px;
+}
+
+/* Stage: a little concert stage */
+.rh-stage{
+  --beat:600ms;
+
+  position:relative;
+
+  flex:1;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:12px 12px 14px;
+
+  overflow:hidden;
+
+  border-radius:20px;
+
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255,200,110,.22), transparent 55%),
+    linear-gradient(180deg, #2a1838 0%, #170f24 60%, #0d0915 100%);
+
+  touch-action:manipulation;
+
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+/* Every beat the stage "breathes" a little */
+.rh-stage.pulse{
+  animation:rh-pulse var(--beat) ease-out;
+}
+
+@keyframes rh-pulse{
+  0%   { box-shadow:inset 0 0 0 2px rgba(255,215,106,.35); }
+  100% { box-shadow:inset 0 0 0 0 rgba(255,215,106,0); }
+}
+
+/* Beat lamps 1-2-3-4 */
+.rh-lights{
+  display:flex;
+  gap:10px;
+}
+
+.rh-lights i{
+  width:16px;
+  height:16px;
+
+  border-radius:50%;
+
+  background:rgba(255,255,255,.12);
+
+  transition:background .06s ease, box-shadow .06s ease;
+}
+
+.rh-lights i:first-child{
+  width:20px;
+  height:20px;
+  margin-top:-2px;
+}
+
+.rh-lights i.on{
+  background:#ffd76a;
+
+  box-shadow:0 0 16px rgba(255,215,106,.9);
+}
+
+/* LISTEN / YOUR TURN */
+.rh-call{
+  min-height:30px;
+
+  color:#c9d1dc;
+
+  font-size:20px;
+  font-weight:1000;
+
+  letter-spacing:.08em;
+
+  text-align:center;
+}
+
+.rh-call.listen{ color:#7fb2ff; }
+.rh-call.yours { color:#ffb15c; }
+
+.rh-call.count{
+  color:#ffffff;
+
+  font-size:30px;
+}
+
+/* The two drummers */
+.rh-duo{
+  width:100%;
+
+  flex:1;
+  min-height:0;
+
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:end;
+
+  gap:8px;
+}
+
+.rh-player{
+  position:relative;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  min-height:0;
+
+  opacity:.55;
+
+  transition:opacity .2s ease;
+}
+
+.rh-player.active{
+  opacity:1;
+}
+
+.rh-figure{
+  width:min(120px, 70%);
+  aspect-ratio:120 / 140;
+
+  margin-bottom:-14%;
+
+  transform-origin:50% 100%;
+
+  animation:rh-bob var(--beat) ease-in-out infinite;
+}
+
+.rh-figure svg,
+.rh-drum svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+@keyframes rh-bob{
+  0%, 100% { transform:translateY(0) scaleY(1); }
+  50%      { transform:translateY(3%) scaleY(.97); }
+}
+
+.rh-drum{
+  position:relative;
+  z-index:2;
+
+  width:min(130px, 78%);
+  aspect-ratio:120 / 70;
+
+  transform-origin:50% 30%;
+}
+
+.rh-arm{
+  transform-box:fill-box;
+  transform-origin:20% 90%;
+}
+
+/* Hit! drum squash + arm swing + DON! */
+.rh-player.hit .rh-drum{
+  animation:rh-drum-hit .16s ease-out;
+}
+
+.rh-player.hit .rh-arm{
+  animation:rh-arm-hit .16s ease-out;
+}
+
+@keyframes rh-drum-hit{
+  0%   { transform:scale(1.08, .86); }
+  100% { transform:scale(1); }
+}
+
+@keyframes rh-arm-hit{
+  0%   { transform:rotate(38deg); }
+  100% { transform:rotate(0deg); }
+}
+
+.rh-don{
+  position:absolute;
+  z-index:3;
+
+  top:8%;
+  right:4%;
+
+  color:#ffffff;
+
+  font-size:18px;
+  font-weight:1000;
+
+  opacity:0;
+
+  pointer-events:none;
+}
+
+.rh-master .rh-don{ color:#9fc4ff; }
+.rh-you .rh-don   { color:#ffc27a; }
+
+.rh-player.hit .rh-don{
+  animation:rh-don .35s ease-out;
+}
+
+@keyframes rh-don{
+  0%   { transform:translateY(6px) scale(.7); opacity:1; }
+  100% { transform:translateY(-14px) scale(1.15); opacity:0; }
+}
+
+.rh-name{
+  margin-top:6px;
+
+  color:#7c8798;
+
+  font-size:10px;
+  font-weight:1000;
+
+  letter-spacing:.16em;
+}
+
+.rh-player.active .rh-name{
+  color:#ffffff;
+}
+
+/* Rhythm bar */
+.rh-bar{
+  width:100%;
+
+  margin-top:12px;
+  padding:0 14px;
+}
+
+.rh-track{
+  position:relative;
+
+  height:34px;
+
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;
+
+  background:rgba(0,0,0,.3);
+}
+
+.rh-track.yours{
+  border-color:rgba(255,177,92,.45);
+}
+
+.rh-beat-mark{
+  position:absolute;
+
+  top:6px;
+  bottom:6px;
+
+  width:2px;
+
+  margin-left:-1px;
+
+  background:rgba(255,255,255,.14);
+}
+
+.rh-playhead{
+  position:absolute;
+
+  top:-5px;
+  bottom:-5px;
+
+  width:3px;
+
+  margin-left:-1.5px;
+
+  border-radius:2px;
+
+  background:#ffffff;
+
+  box-shadow:0 0 10px rgba(255,255,255,.8);
+}
+
+/* Notes on the bar */
+.rh-note{
+  position:absolute;
+
+  top:50%;
+
+  width:20px;
+  height:20px;
+
+  margin:-10px 0 0 -10px;
+
+  border-radius:50%;
+}
+
+.rh-note.call{
+  background:#7fb2ff;
+  opacity:.5;
+}
+
+.rh-note.call.played{
+  opacity:1;
+
+  box-shadow:0 0 12px rgba(127,178,255,.9);
+}
+
+.rh-note.target{
+  border:3px solid #ffb15c;
+
+  background:transparent;
+}
+
+.rh-note.target.perfect{
+  border-color:#7cf7a8;
+  background:#7cf7a8;
+  box-shadow:0 0 12px rgba(124,247,168,.9);
+}
+
+.rh-note.target.good{
+  border-color:#ffd76a;
+  background:#ffd76a;
+}
+
+.rh-note.target.miss{
+  border-color:#ff4d6a;
+  opacity:.6;
+}
+
+/* PERFECT / GOOD / MISS */
+.rh-judge{
+  position:absolute;
+
+  left:50%;
+  top:34%;
+
+  transform:translateX(-50%);
+
+  font-size:26px;
+  font-weight:1000;
+
+  letter-spacing:.06em;
+
+  opacity:0;
+
+  pointer-events:none;
+}
+
+.rh-judge.perfect{ color:#7cf7a8; }
+.rh-judge.good   { color:#ffd76a; }
+.rh-judge.miss   { color:#ff6b84; }
+
+.rh-judge.show{
+  animation:rh-judge .45s ease-out;
+}
+
+@keyframes rh-judge{
+  0%   { transform:translateX(-50%) scale(1.4); opacity:1; }
+  100% { transform:translateX(-50%) translateY(-12px) scale(1); opacity:0; }
+}
+
+/* Big tap button */
+.rh-tap{
+  min-height:64px;
+
+  border:0;
+  border-radius:16px;
+
+  background:linear-gradient(180deg, #ffcb82, #ff8f3d);
+
+  color:#2a1404;
+
+  font:inherit;
+  font-size:17px;
+  font-weight:1000;
+
+  letter-spacing:.08em;
+
+  cursor:pointer;
+
+  touch-action:manipulation;
+}
+
+.rh-tap:active{
+  transform:scale(.98);
+}
+
+@media(max-height:620px){
+  .rh-hud > div{ padding:4px; }
+  .rh-hud strong{ font-size:15px; }
+  .rh-call{ font-size:16px; min-height:22px; }
+  .rh-figure{ width:min(80px, 55%); }
+  .rh-drum{ width:min(90px, 60%); }
+  .rh-tap{ min-height:46px; }
+  .rh-bar{ margin-top:6px; }
+  .rh-track{ height:28px; }
+}
