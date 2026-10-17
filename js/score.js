@@ -324,6 +324,14 @@ export class GamiqScore {
       level: finishedLevel,
       gamiq,
       rankScore,
+      // Skill scores of this level (for the share image after a level up)
+      abilities: {
+        REFLEX: this.getSkillScore("REFLEX"),
+        SPEED: this.getSkillScore("SPEED"),
+        AIM: this.getSkillScore("AIM"),
+        LOGIC: this.getSkillScore("LOGIC"),
+        MEMORY: this.getSkillScore("MEMORY")
+      },
       at: Date.now()
     });
 
