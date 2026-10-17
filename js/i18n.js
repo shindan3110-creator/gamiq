@@ -71,6 +71,28 @@ const STRINGS = {
     "results.history": "TODAY'S LEVELS",
     "results.resetNote": "Records reset every day at 0:00 UTC.",
 
+    /* ---------- TITLES ---------- */
+    "title.rookie": "ROOKIE",
+    "title.player": "PLAYER",
+    "title.skilled": "SKILLED",
+    "title.pro": "PRO GAMER",
+    "title.elite": "ELITE",
+    "title.master": "MASTER",
+    "title.legend": "LEGEND",
+
+    /* ---------- SHARE ---------- */
+    "share.button": "SHARE",
+    "share.today": "TODAY",
+    "share.topPercent": "TOP {p}%",
+    "share.rankOf": "#{rank} of {total} players",
+    "share.noRank": "not ranked yet",
+    "share.line1": "My GAMIQ is {gamiq} — {title} 🎮",
+    "share.line2": "Lv {level} · Today: {rank}",
+    "share.line3": "Can you beat me? Random mini-games measure your real gaming skill.",
+    "share.footer": "Random mini-games. Real gaming skill.",
+    "share.downloaded": "Image saved and text copied. Paste it anywhere!",
+    "share.failed": "Couldn't share. Please try again.",
+
     /* ---------- RANKING ---------- */
     "rank.title": "RANKING",
     "rank.close": "Close",
@@ -199,6 +221,28 @@ const STRINGS = {
       "あと{games}ゲームで Lv{level} のGAMIQが確定",
     "results.history": "今日のレベル記録",
     "results.resetNote": "記録は毎日 日本時間9:00（UTC 0:00）にリセットされます。",
+
+    /* ---------- TITLES ---------- */
+    "title.rookie": "ROOKIE",
+    "title.player": "PLAYER",
+    "title.skilled": "SKILLED",
+    "title.pro": "PRO GAMER",
+    "title.elite": "ELITE",
+    "title.master": "MASTER",
+    "title.legend": "LEGEND",
+
+    /* ---------- SHARE ---------- */
+    "share.button": "シェア",
+    "share.today": "今日",
+    "share.topPercent": "上位{p}%",
+    "share.rankOf": "{total}人中 {rank}位",
+    "share.noRank": "ランキング外",
+    "share.line1": "私のGAMIQは {gamiq}（{title}）🎮",
+    "share.line2": "Lv{level}・今日のランキング：{rank}",
+    "share.line3": "ランダムなミニゲームで本当のゲーム力を測定。君は超えられる？",
+    "share.footer": "未知のゲームで、本当のゲーム力を測れ。",
+    "share.downloaded": "画像を保存し、文章をコピーしました。好きな場所に貼り付けてください！",
+    "share.failed": "シェアできませんでした。もう一度お試しください。",
 
     /* ---------- RANKING ---------- */
     "rank.title": "ランキング",
