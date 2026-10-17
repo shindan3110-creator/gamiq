@@ -1,0 +1,7 @@
+# Files that must NOT be served to visitors as web files
+worker.js
+wrangler.jsonc
+.assetsignore
+.git
+.github
+README.md
