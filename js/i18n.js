@@ -157,6 +157,15 @@ const STRINGS = {
     "rule.spot_difference":
       "FIND ALL THE DIFFERENCES BEFORE TIME RUNS OUT!",
     "rule.memory_cup_shuffle": "FOLLOW THE CUP WITH THE BALL!",
+    "rule.aim_tower_stack": "TAP TO DROP THE BLOCK. STACK 12 WITHOUT MISSING!",
+
+    /* ---------- IN-GAME: TOWER STACK ---------- */
+    "tower.hint": "TAP ANYWHERE (or SPACE) TO DROP",
+    "tower.great": "GREAT!",
+    "tower.ok": "OK",
+    "tower.miss": "MISSED!",
+    "tower.tooSlow": "TOO SLOW!",
+    "tower.clear": "TOWER COMPLETE!",
 
     /* ---------- IN-GAME: CUP SHUFFLE ---------- */
     "cups.watch": "WATCH THE BALL...",
@@ -331,6 +340,15 @@ const STRINGS = {
     "rule.rhythm_drum_duo": "師匠のリズムを聴いて、同じリズムで叩け！",
     "rule.spot_difference": "時間内に、まちがいを全部見つけろ！",
     "rule.memory_cup_shuffle": "ボールの入ったカップを目で追え！",
+    "rule.aim_tower_stack": "タップでブロックを落とせ！ズレずに12段積み上げろ！",
+
+    /* ---------- IN-GAME: TOWER STACK ---------- */
+    "tower.hint": "どこでもタップ（スペースキーでもOK）で落とす",
+    "tower.great": "GREAT!",
+    "tower.ok": "OK",
+    "tower.miss": "落ちた！",
+    "tower.tooSlow": "時間切れ！",
+    "tower.clear": "タワー完成！",
 
     /* ---------- IN-GAME: CUP SHUFFLE ---------- */
     "cups.watch": "ボールをよく見て…",
