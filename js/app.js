@@ -347,13 +347,28 @@ function boot() {
       renderCard: renderGameCard,
       runGame: runSelectedGame,
       analytics,
-      onClose: renderDailyButton
+      onClose: renderDailyButton,
+      onRanking: () => ranking.show("challenge")
     });
 
   dailyButton.addEventListener("click", () => {
     if (started) {
       return;
     }
+
+    // The nickname is needed for the Daily Challenge ranking too.
+    const savedName =
+      saveNickname(nicknameInput.value);
+
+    if (!savedName.ok) {
+      nicknameError.textContent = t(savedName.error);
+      nicknameForm.classList.add("invalid");
+      nicknameInput.focus();
+      return;
+    }
+
+    nicknameInput.value = savedName.value;
+    nicknameInput.blur();
 
     sfx("click");
     daily.open();
