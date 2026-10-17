@@ -6,10 +6,12 @@ import { getProfile } from "./profile.js";
 export class GamiqResults {
   constructor({
     scoreEngine,
-    onContinue = null
+    onContinue = null,
+    onRanking = null
   }) {
     this.scoreEngine = scoreEngine;
     this.onContinue = onContinue;
+    this.onRanking = onRanking;
     this.overlay = null;
 
     this.handleEscape =
@@ -197,6 +199,14 @@ export class GamiqResults {
 
         <button
           type="button"
+          class="gamiq-results-ranking"
+          data-results-ranking
+        >
+          🏆 ${t("rank.title")}
+        </button>
+
+        <button
+          type="button"
           class="gamiq-results-continue"
           data-results-continue
         >
@@ -217,6 +227,17 @@ export class GamiqResults {
         "[data-results-continue]"
       );
 
+
+    overlay
+      .querySelector("[data-results-ranking]")
+      .addEventListener("click", () => {
+        // Close results (without "continue") and open the ranking.
+        this.hide();
+
+        if (typeof this.onRanking === "function") {
+          this.onRanking();
+        }
+      });
 
     continueButton.addEventListener(
       "click",
