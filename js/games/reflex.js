@@ -1,5 +1,7 @@
 // GAMIQ（ゲーミック） v2 - Advanced Reflex Games
 
+import { byLevel, byLevelInt } from "../difficulty.js";
+
 export function createReflexGames() {
   return [
     {
@@ -58,19 +60,22 @@ export function runReflexGame({
     case "ninja_counter":
       return runNinjaCounter({
         container,
-        onComplete
+        onComplete,
+        level: game.level
       });
 
     case "quick_draw":
       return runQuickDraw({
         container,
-        onComplete
+        onComplete,
+        level: game.level
       });
 
     case "lane_panic":
       return runLanePanic({
         container,
-        onComplete
+        onComplete,
+        level: game.level
       });
 
     case "friend_foe":
@@ -91,7 +96,8 @@ NINJA COUNTER
 
 function runNinjaCounter({
   container,
-  onComplete
+  onComplete,
+  level = 1
 }) {
   let active = true;
 
@@ -104,6 +110,25 @@ function runNinjaCounter({
   let lives = 3;
 
   const goal = 12;
+
+
+  /*
+   * DIFFICULTY BY LEVEL (Lv1 = same as before)
+   * - Ninjas pop out faster and stay a shorter time.
+   * - Friends / fakes / bamboo feints come earlier and more often.
+   */
+  const waitBase = byLevel(level, 650, 430);
+  const showBase = byLevel(level, 850, 560);
+  const showMin = byLevel(level, 460, 340);
+
+  const friendFrom = byLevelInt(level, 3, 1);
+  const friendRate = byLevel(level, 0.18, 0.26);
+
+  const fakeFrom = byLevelInt(level, 6, 3);
+  const fakeRate = byLevel(level, 0.11, 0.17);
+
+  const feintFrom = byLevelInt(level, 2, 0);
+  const feintRate = byLevel(level, 0.35, 0.55);
 
   let round = 0;
 
@@ -491,7 +516,7 @@ function runNinjaCounter({
       Math.max(
         280,
 
-        650 -
+        waitBase -
         score *
         22
       ) +
@@ -513,8 +538,8 @@ function runNinjaCounter({
      */
 
     if (
-      score >= 2 &&
-      Math.random() < 0.35
+      score >= feintFrom &&
+      Math.random() < feintRate
     ) {
       feintTimer =
         setTimeout(
@@ -591,9 +616,9 @@ function runNinjaCounter({
 
 
     if (
-      score >= 3 &&
+      score >= friendFrom &&
       roll <
-      0.18
+      friendRate
     ) {
       type =
         "friend";
@@ -601,11 +626,11 @@ function runNinjaCounter({
 
 
     if (
-      score >= 6 &&
+      score >= fakeFrom &&
       roll >=
-        0.18 &&
+        friendRate &&
       roll <
-        0.29
+        friendRate + fakeRate
     ) {
       type =
         "fake";
@@ -665,9 +690,9 @@ function runNinjaCounter({
 
     const visibilityTime =
       Math.max(
-        460,
+        showMin,
 
-        850 -
+        showBase -
         score *
         28
       );
@@ -1522,7 +1547,8 @@ QUICK DRAW
 
 function runQuickDraw({
   container,
-  onComplete
+  onComplete,
+  level = 1
 }) {
   let active = true;
   let round = 0;
@@ -1533,6 +1559,15 @@ function runQuickDraw({
 
   const rounds = 5;
   const reactions = [];
+
+
+  /*
+   * DIFFICULTY BY LEVEL (Lv1 = same as before)
+   * - Less time to shoot after DRAW!
+   * - More fake-outs (the opponent twitches before drawing).
+   */
+  const shootWindow = byLevelInt(level, 720, 520);
+  const fakeOutRate = byLevel(level, 0.45, 0.7);
 
   let timer = null;
   let signalTime = 0;
@@ -1751,7 +1786,7 @@ function runQuickDraw({
     opponent.classList.remove("duel-hit", "qd-hit", "qd-draw", "qd-shoot", "duel-fake");
     arena.classList.remove("duel-draw", "qd-hurt-on");
 
-    const fakeOut = Math.random() < 0.45;
+    const fakeOut = Math.random() < fakeOutRate;
 
     const firstDelay = 700 + Math.random() * 900;
 
@@ -1808,7 +1843,7 @@ function runQuickDraw({
           nextOrFinish();
         }, 650);
       }
-    }, 720);
+    }, shootWindow);
   }
 
   function shoot() {
@@ -1949,7 +1984,8 @@ LANE PANIC (v2: no free points for standing still)
 
 function runLanePanic({
   container,
-  onComplete
+  onComplete,
+  level = 1
 }) {
   let active = true;
 
@@ -1958,6 +1994,16 @@ function runLanePanic({
   let survived = 0;
 
   const rounds = 8;
+
+
+  /*
+   * DIFFICULTY BY LEVEL (Lv1 = same as before)
+   * Less time to reach the safe lane.
+   *   Lv1 : 1.00s -> 0.65s
+   *   Lv10: 0.75s -> 0.45s
+   */
+  const windowStart = byLevel(level, 1000, 750);
+  const windowEnd = byLevel(level, 650, 450);
 
   let safeLane = null;
   let reachedSafeAt = null;
@@ -2077,10 +2123,10 @@ function runLanePanic({
 
 
   function roundWindow() {
-    // 1.0s at the start -> 0.65s in the last round
+    // windowStart at the first round -> windowEnd in the last round
     return Math.round(
-      1000 -
-      (round / Math.max(1, rounds - 1)) * 350
+      windowStart -
+      (round / Math.max(1, rounds - 1)) * (windowStart - windowEnd)
     );
   }
 
