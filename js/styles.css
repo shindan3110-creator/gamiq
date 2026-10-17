@@ -12949,3 +12949,445 @@ STEP 30-3: ODD ONE OUT
 
 .odd-message.good{ color:#3fb950; }
 .odd-message.bad{ color:#ff5a5f; }
+
+
+
+
+/* ==========================================
+STEP 31-2: DAILY CHALLENGE
+========================================== */
+
+/* Start screen button */
+.gamiq-start-daily{
+  display:block;
+
+  margin:0 auto 10px;
+  padding:10px 22px;
+
+  border:1px solid rgba(124,255,178,.45);
+  border-radius:12px;
+
+  background:rgba(124,255,178,.08);
+
+  color:#7cffb2;
+
+  font:inherit;
+  font-size:13px;
+  font-weight:1000;
+
+  letter-spacing:.06em;
+
+  cursor:pointer;
+}
+
+.gamiq-start-daily.done{
+  border-color:rgba(255,255,255,.18);
+  background:rgba(255,255,255,.04);
+  color:#cfd6e2;
+}
+
+@media(max-height:620px){
+  .gamiq-start-daily{
+    margin-bottom:6px;
+    padding:6px 18px;
+    font-size:12px;
+  }
+}
+
+/* Overlay */
+.dl-overlay{
+  position:fixed;
+  inset:0;
+  z-index:500;
+
+  display:none;
+  flex-direction:column;
+
+  background:#05080e;
+}
+
+.dl-overlay.show{
+  display:flex;
+}
+
+.dl-bar{
+  flex:0 0 auto;
+
+  height:56px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+
+  padding:0 14px;
+
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.dl-bar > strong{
+  color:#7cffb2;
+
+  font-size:14px;
+  font-weight:1000;
+  letter-spacing:.06em;
+
+  white-space:nowrap;
+}
+
+.dl-dots{
+  display:flex;
+  gap:6px;
+}
+
+.dl-dots span{
+  width:12px;
+  height:12px;
+
+  border-radius:50%;
+
+  background:rgba(255,255,255,.14);
+}
+
+.dl-dots span.now{ background:#ffffff; box-shadow:0 0 0 3px rgba(255,255,255,.2); }
+.dl-dots span.g{ background:#3fb950; }
+.dl-dots span.y{ background:#e3b341; }
+.dl-dots span.r{ background:#f85149; }
+
+.dl-close{
+  min-width:40px;
+  height:36px;
+
+  padding:0 10px;
+
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:10px;
+
+  background:rgba(255,255,255,.04);
+
+  color:#ffffff;
+
+  font:inherit;
+  font-size:14px;
+  font-weight:1000;
+
+  cursor:pointer;
+}
+
+.dl-close.confirm{
+  border-color:#f85149;
+  background:rgba(248,81,73,.15);
+  color:#ff9b95;
+  font-size:12px;
+}
+
+.dl-stage{
+  position:relative;
+
+  flex:1 1 auto;
+  min-height:0;
+
+  overflow:hidden;
+}
+
+/* Game card inside the daily (same look as the feed) */
+.dl-card .gamiq-game-shell{
+  height:min(680px, calc(100vh - 80px));
+}
+
+
+/* The result card in the daily has a button, so it must take taps. */
+.dl-card .gamiq-card-complete.show{
+  pointer-events:auto;
+}
+
+.dl-next{
+  position:absolute;
+  bottom:30px;
+
+  min-width:200px;
+  min-height:50px;
+
+  border:0;
+  border-radius:14px;
+
+  background:linear-gradient(180deg, #b6ffd4, #4fe08f);
+
+  color:#03140a;
+
+  font:inherit;
+  font-size:15px;
+  font-weight:1000;
+  letter-spacing:.06em;
+
+  cursor:pointer;
+}
+
+.dl-next:disabled{
+  opacity:.4;
+  cursor:default;
+}
+
+/* Intro / final panel */
+.dl-panel{
+  width:min(520px, 100%);
+  height:100%;
+
+  margin:0 auto;
+  padding:22px 18px 28px;
+
+  overflow-y:auto;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  text-align:center;
+
+  color:#e6edf3;
+}
+
+.dl-kicker{
+  color:#7cffb2;
+
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.2em;
+}
+
+.dl-panel h2{
+  margin:8px 0 10px;
+
+  color:#ffffff;
+
+  font-size:34px;
+  font-weight:1000;
+}
+
+.dl-panel p{
+  margin:0 0 18px;
+
+  color:#b7c0cc;
+
+  font-size:14px;
+  line-height:1.6;
+}
+
+.dl-genres{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+
+  margin-bottom:18px;
+}
+
+.dl-genres span{
+  width:58px;
+
+  padding:10px 0 8px;
+
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.04);
+
+  font-size:24px;
+}
+
+.dl-genres small{
+  display:block;
+
+  margin-top:4px;
+
+  color:#7c8798;
+
+  font-size:8px;
+  font-weight:1000;
+  letter-spacing:.08em;
+}
+
+.dl-rules{
+  margin:0 0 22px;
+  padding:0;
+
+  list-style:none;
+
+  color:#cfd6e2;
+
+  font-size:13px;
+  line-height:1.9;
+}
+
+.dl-rules li::before{
+  content:"・";
+  color:#7cffb2;
+}
+
+.dl-go{
+  min-width:220px;
+  min-height:54px;
+
+  margin-bottom:12px;
+
+  border:0;
+  border-radius:16px;
+
+  background:linear-gradient(180deg, #b6ffd4, #4fe08f);
+
+  color:#03140a;
+
+  font:inherit;
+  font-size:16px;
+  font-weight:1000;
+  letter-spacing:.06em;
+
+  cursor:pointer;
+}
+
+.dl-back{
+  min-width:160px;
+  min-height:42px;
+
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:12px;
+
+  background:transparent;
+
+  color:#cfd6e2;
+
+  font:inherit;
+  font-size:13px;
+  font-weight:1000;
+
+  cursor:pointer;
+}
+
+.dl-total{
+  margin:10px 0 14px;
+}
+
+.dl-total span{
+  display:block;
+
+  color:#7c8798;
+
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:.18em;
+}
+
+.dl-total strong{
+  color:#ffffff;
+
+  font-size:52px;
+  font-weight:1000;
+  line-height:1.1;
+}
+
+.dl-total small{
+  color:#7c8798;
+  font-size:18px;
+}
+
+.dl-rows{
+  width:100%;
+
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+
+  margin-bottom:14px;
+}
+
+.dl-row{
+  display:grid;
+  grid-template-columns:28px minmax(0, 1fr) 80px 34px;
+  align-items:center;
+  gap:8px;
+
+  padding:8px 10px;
+
+  border-radius:10px;
+
+  background:rgba(255,255,255,.04);
+
+  text-align:left;
+}
+
+.dl-row-icon{ font-size:18px; }
+
+.dl-row-name{
+  overflow:hidden;
+
+  color:#e6edf3;
+
+  font-size:12px;
+  font-weight:900;
+
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.dl-row-bar{
+  height:8px;
+
+  border-radius:99px;
+
+  background:rgba(255,255,255,.08);
+
+  overflow:hidden;
+}
+
+.dl-row-bar i{
+  display:block;
+  height:100%;
+  border-radius:99px;
+}
+
+.dl-row-bar i.g{ background:#3fb950; }
+.dl-row-bar i.y{ background:#e3b341; }
+.dl-row-bar i.r{ background:#f85149; }
+
+.dl-row strong{
+  color:#ffffff;
+  font-size:15px;
+  text-align:right;
+}
+
+.dl-share-preview{
+  width:100%;
+
+  margin:0 0 14px;
+  padding:12px;
+
+  border:1px dashed rgba(255,255,255,.16);
+  border-radius:12px;
+
+  color:#cfd6e2;
+
+  font-family:inherit;
+  font-size:13px;
+  line-height:1.6;
+
+  white-space:pre-wrap;
+  word-break:break-all;
+}
+
+.dl-countdown{
+  margin-bottom:14px;
+
+  color:#7c8798;
+
+  font-size:12px;
+  font-weight:900;
+
+  font-variant-numeric:tabular-nums;
+}
+
+@media(max-height:620px){
+  .dl-panel h2{ font-size:26px; margin:4px 0 6px; }
+  .dl-panel p{ margin-bottom:10px; }
+  .dl-genres{ margin-bottom:10px; }
+  .dl-rules{ margin-bottom:12px; line-height:1.6; }
+  .dl-total strong{ font-size:40px; }
+}
