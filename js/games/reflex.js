@@ -2305,6 +2305,8 @@ function runLanePanic({
         2
       );
 
+    sfx("click");
+
     updatePlayer();
 
     // Reaction = time until you first reach the safe lane.
@@ -2334,6 +2336,9 @@ function runLanePanic({
       }
     );
 
+    // Spikes hit the ground: "dosun"
+    sfx("thud");
+
     if (safe) {
       survived++;
 
@@ -2345,10 +2350,15 @@ function runLanePanic({
       player.classList.add(
         "lane-safe"
       );
+
+      sfx("good");
     } else {
       player.classList.add(
         "lane-crash"
       );
+
+      // Ouch!
+      sfx("bonk");
     }
 
     safeLane = null;
