@@ -35,6 +35,14 @@ const STRINGS = {
     "start.play": "PLAY",
     "start.note": "You can't choose the game. Every game is random.",
 
+    /* ---------- NICKNAME ---------- */
+    "nick.label": "NICKNAME",
+    "nick.placeholder": "Your name for the ranking",
+    "nick.errorShort": "Use at least 2 characters.",
+    "nick.errorLong": "Use 12 characters or less.",
+    "nick.errorChars": "Only letters, numbers, space, _ - . can be used.",
+    "nick.errorBlocked": "This nickname can't be used. Try another one.",
+
     /* ---------- GAME CARD ---------- */
     "card.rule": "RULE",
     "card.complete": "COMPLETE",
@@ -137,6 +145,14 @@ const STRINGS = {
       "遊ぶほどGAMIQの測定精度が上がります。",
     "start.play": "PLAY",
     "start.note": "ゲームは選べません。何が出るかはランダムです。",
+
+    /* ---------- NICKNAME ---------- */
+    "nick.label": "ニックネーム",
+    "nick.placeholder": "ランキングに表示される名前",
+    "nick.errorShort": "2文字以上で入力してください。",
+    "nick.errorLong": "12文字以内で入力してください。",
+    "nick.errorChars": "文字・数字・スペース・_ - . のみ使えます。",
+    "nick.errorBlocked": "このニックネームは使えません。別の名前にしてください。",
 
     /* ---------- GAME CARD ---------- */
     "card.rule": "RULE",
