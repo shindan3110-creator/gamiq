@@ -127,6 +127,30 @@ export class GamiqAnalytics {
     );
   }
 
+  levelUp({
+    level,
+    gamiq,
+    rankScore,
+    played
+  }) {
+    this.send(
+      "level_up",
+      {
+        level_cleared:
+          level ?? 0,
+
+        gamiq_score:
+          gamiq ?? 0,
+
+        rank_score:
+          rankScore ?? 0,
+
+        games_played:
+          played ?? 0
+      }
+    );
+  }
+
   resultsOpen(summary) {
     this.send(
       "results_open",
