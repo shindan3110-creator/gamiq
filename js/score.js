@@ -1,11 +1,66 @@
 // GAMIQ（ゲーミック） v2 - Score Engine
+//
+// LEVEL SYSTEM (Step 19)
+// - Every level measures your GAMIQ from 25 games
+//   (5 genres x 5 games as the baseline; games are fully random,
+//   so some genres may come more often - that is fine).
+// - CONFIDENCE goes up evenly: 25 games = 100%.
+// - At 100%: the level's GAMIQ is fixed, you level up,
+//   and measuring starts again from 0% at the next level.
+// - Max level is 10. After Lv10 you keep re-measuring at Lv10.
+// - Records last ONE DAY. Everything resets at 0:00 UTC
+//   (9:00 in Japan).
+//
+// RANKING SCORE = GAMIQ x (1 + 0.15 x (level - 1))
 
-// Saved in this browser so GAMIQ continues after a reload.
 const STORAGE_KEY = "gamiq_v2_record";
-const STORAGE_VERSION = 1;
+const STORAGE_VERSION = 2;
 
-// Keep the newest scores only, so storage never grows forever.
-const MAX_SCORES_PER_SKILL = 300;
+export const GAMES_PER_LEVEL = 25;
+export const MAX_LEVEL = 10;
+
+const LEVEL_BONUS = 0.15;
+
+// The ranking score is only counted after this many games
+// in a level (too few games = too much luck).
+const MIN_GAMES_FOR_RANK = 5;
+
+const SKILLS = [
+  "REFLEX",
+  "SPEED",
+  "AIM",
+  "LOGIC",
+  "MEMORY"
+];
+
+
+/* ==========================================
+DAY (UTC)
+========================================== */
+
+export function todayKey(now = new Date()) {
+  // "2026-10-17" in UTC
+  return now.toISOString().slice(0, 10);
+}
+
+export function msUntilReset(now = new Date()) {
+  const next = new Date(now);
+
+  next.setUTCHours(24, 0, 0, 0);
+
+  return next.getTime() - now.getTime();
+}
+
+export function rankScoreFor(gamiq, level) {
+  if (!Number.isFinite(gamiq)) {
+    return null;
+  }
+
+  return Math.round(
+    gamiq * (1 + LEVEL_BONUS * (level - 1))
+  );
+}
+
 
 export class GamiqScore {
   constructor() {
@@ -14,6 +69,9 @@ export class GamiqScore {
   }
 
   resetState() {
+    this.day = todayKey();
+
+    // Scores of the CURRENT level only (reset on level up).
     this.skills = {
       REFLEX: [],
       SPEED: [],
@@ -23,6 +81,13 @@ export class GamiqScore {
       ADAPT: []
     };
 
+    this.level = 1;
+    this.levelPlayed = 0;
+
+    // Finished levels today: { level, gamiq, rankScore, at }
+    this.levelHistory = [];
+
+    // Today's totals (all levels)
     this.played = 0;
 
     this.cleared = 0;
@@ -32,7 +97,36 @@ export class GamiqScore {
     this.bestStreak = 0;
 
     this.totalPlayMs = 0;
+
+    // Best ranking score today
+    this.bestRankScore = null;
   }
+
+  resetLevelMeasurement() {
+    for (const skill of Object.keys(this.skills)) {
+      this.skills[skill] = [];
+    }
+
+    this.levelPlayed = 0;
+  }
+
+
+  /* ==========================================
+  NEW DAY CHECK
+  Returns true if the record was reset.
+  ========================================== */
+
+  checkDay() {
+    if (this.day === todayKey()) {
+      return false;
+    }
+
+    this.resetState();
+    this.save();
+
+    return true;
+  }
+
 
   /* ==========================================
   SAVE / LOAD (localStorage)
@@ -49,9 +143,11 @@ export class GamiqScore {
 
       const data = JSON.parse(raw);
 
+      // Old format or another day: start fresh.
       if (
         !data ||
         data.version !== STORAGE_VERSION ||
+        data.day !== todayKey() ||
         typeof data.skills !== "object"
       ) {
         return;
@@ -64,9 +160,22 @@ export class GamiqScore {
           this.skills[skill] = values
             .map(Number)
             .filter(Number.isFinite)
-            .slice(-MAX_SCORES_PER_SKILL);
+            .slice(-GAMES_PER_LEVEL);
         }
       }
+
+      this.level =
+        clampInt(data.level, 1, MAX_LEVEL, 1);
+
+      this.levelPlayed =
+        clampInt(data.levelPlayed, 0, GAMES_PER_LEVEL - 1, 0);
+
+      this.levelHistory =
+        Array.isArray(data.levelHistory)
+          ? data.levelHistory
+              .filter(item => item && Number.isFinite(item.gamiq))
+              .slice(-50)
+          : [];
 
       this.played = safeCount(data.played);
       this.cleared = safeCount(data.cleared);
@@ -74,6 +183,11 @@ export class GamiqScore {
       this.currentStreak = safeCount(data.currentStreak);
       this.bestStreak = safeCount(data.bestStreak);
       this.totalPlayMs = safeCount(data.totalPlayMs);
+
+      this.bestRankScore =
+        Number.isFinite(data.bestRankScore)
+          ? data.bestRankScore
+          : null;
 
     } catch (error) {
       // Broken or blocked storage: start fresh.
@@ -87,13 +201,18 @@ export class GamiqScore {
         STORAGE_KEY,
         JSON.stringify({
           version: STORAGE_VERSION,
+          day: this.day,
           skills: this.skills,
+          level: this.level,
+          levelPlayed: this.levelPlayed,
+          levelHistory: this.levelHistory,
           played: this.played,
           cleared: this.cleared,
           failed: this.failed,
           currentStreak: this.currentStreak,
           bestStreak: this.bestStreak,
           totalPlayMs: this.totalPlayMs,
+          bestRankScore: this.bestRankScore,
           savedAt: Date.now()
         })
       );
@@ -115,6 +234,13 @@ export class GamiqScore {
     );
   }
 
+
+  /* ==========================================
+  ADD RESULT
+  Returns level-up info when a level was just finished,
+  otherwise null.
+  ========================================== */
+
   addResult({
     skill,
     score,
@@ -123,8 +249,11 @@ export class GamiqScore {
     durationMs = 0
   }) {
     if (!this.skills[skill]) {
-      return;
+      return null;
     }
+
+    // Played past 0:00 UTC: today's record starts fresh.
+    this.checkDay();
 
     const safeScore = this.clamp(
       Math.round(score)
@@ -137,13 +266,8 @@ export class GamiqScore {
     this.skills[skill].push(safeScore);
     this.skills.ADAPT.push(safeAdapt);
 
-    this.skills[skill] =
-      this.skills[skill].slice(-MAX_SCORES_PER_SKILL);
-
-    this.skills.ADAPT =
-      this.skills.ADAPT.slice(-MAX_SCORES_PER_SKILL);
-
     this.played++;
+    this.levelPlayed++;
 
     if (success === true) {
       this.cleared++;
@@ -163,8 +287,68 @@ export class GamiqScore {
       Math.round(Number(durationMs) || 0)
     );
 
+    // Live ranking score (after a few games in this level)
+    this.updateBestRankScore(this.getLiveRankScore());
+
+    let levelUp = null;
+
+    if (this.levelPlayed >= GAMES_PER_LEVEL) {
+      levelUp = this.finishLevel();
+    }
+
     this.save();
+
+    return levelUp;
   }
+
+  finishLevel() {
+    const gamiq = this.getLevelGamiq();
+    const finishedLevel = this.level;
+    const rankScore = rankScoreFor(gamiq, finishedLevel);
+
+    this.levelHistory.push({
+      level: finishedLevel,
+      gamiq,
+      rankScore,
+      at: Date.now()
+    });
+
+    this.updateBestRankScore(rankScore);
+
+    const maxed = finishedLevel >= MAX_LEVEL;
+
+    if (!maxed) {
+      this.level++;
+    }
+
+    this.resetLevelMeasurement();
+
+    return {
+      level: finishedLevel,
+      gamiq,
+      rankScore,
+      nextLevel: this.level,
+      maxed
+    };
+  }
+
+  updateBestRankScore(value) {
+    if (!Number.isFinite(value)) {
+      return;
+    }
+
+    if (
+      this.bestRankScore === null ||
+      value > this.bestRankScore
+    ) {
+      this.bestRankScore = value;
+    }
+  }
+
+
+  /* ==========================================
+  NUMBERS
+  ========================================== */
 
   getSkillScore(skill) {
     const value =
@@ -185,17 +369,10 @@ export class GamiqScore {
     };
   }
 
-  getGamiq() {
-    const mainSkills = [
-      "REFLEX",
-      "SPEED",
-      "AIM",
-      "LOGIC",
-      "MEMORY"
-    ];
-
+  // GAMIQ of the level being measured now.
+  getLevelGamiq() {
     const measuredScores =
-      mainSkills
+      SKILLS
         .map(skill =>
           this.average(this.skills[skill])
         )
@@ -221,159 +398,68 @@ export class GamiqScore {
     );
   }
 
-  getCoverage() {
-    const counts =
-      Object.values(
-        this.getAbilityCounts()
-      );
-
-    const measured =
-      counts.filter(
-        count => count > 0
-      ).length;
-
-    return measured / 5;
+  getLastFinishedLevel() {
+    return this.levelHistory.at(-1) ?? null;
   }
 
-  getSampleStrength() {
-    const counts =
-      Object.values(
-        this.getAbilityCounts()
-      );
-
-    const normalized =
-      counts.map(count =>
-        Math.min(1, count / 5)
-      );
-
+  // What the header shows: the level being measured,
+  // or the last fixed GAMIQ right after a level up.
+  getGamiq() {
     return (
-      normalized.reduce(
-        (sum, value) => sum + value,
-        0
-      ) / 5
+      this.getLevelGamiq() ??
+      this.getLastFinishedLevel()?.gamiq ??
+      null
     );
   }
 
+  getLiveRankScore() {
+    if (this.levelPlayed < MIN_GAMES_FOR_RANK) {
+      return null;
+    }
+
+    return rankScoreFor(
+      this.getLevelGamiq(),
+      this.level
+    );
+  }
+
+  // Even steps: 25 games = 100%.
   getConfidence() {
-    if (this.played === 0) {
-      return 0;
-    }
-
-    const volume =
-      1 - Math.exp(
-        -this.played / 18
-      );
-
-    const coverage =
-      this.getCoverage();
-
-    const sampleStrength =
-      this.getSampleStrength();
-
-    const confidence =
-      100 * (
-        volume * 0.4 +
-        coverage * 0.35 +
-        sampleStrength * 0.25
-      );
-
     return Math.min(
-      99,
-      Math.round(confidence)
+      100,
+      Math.round(
+        (this.levelPlayed / GAMES_PER_LEVEL) * 100
+      )
     );
-  }
-
-  getNextConfidenceTarget() {
-    const current =
-      this.getConfidence();
-
-    const targets = [
-      50,
-      60,
-      70,
-      75,
-      80,
-      85,
-      90,
-      95
-    ];
-
-    const nextTarget =
-      targets.find(
-        target => target > current
-      );
-
-    if (!nextTarget) {
-      return null;
-    }
-
-    return nextTarget;
-  }
-
-  estimateGamesToTarget(target) {
-    if (!target) {
-      return null;
-    }
-
-    const currentPlayed =
-      this.played;
-
-    const originalSkills =
-      JSON.parse(
-        JSON.stringify(this.skills)
-      );
-
-    const originalPlayed =
-      this.played;
-
-    let simulatedGames = 0;
-
-    while (
-      this.getConfidence() < target &&
-      simulatedGames < 100
-    ) {
-      const counts =
-        this.getAbilityCounts();
-
-      const nextSkill =
-        Object.entries(counts)
-          .sort(
-            (a, b) => a[1] - b[1]
-          )[0][0];
-
-      this.skills[nextSkill].push(70);
-      this.skills.ADAPT.push(70);
-
-      this.played++;
-      simulatedGames++;
-    }
-
-    this.skills = originalSkills;
-    this.played = originalPlayed;
-
-    return simulatedGames;
   }
 
   getSummary() {
-    const target =
-      this.getNextConfidenceTarget();
+    this.checkDay();
 
     return {
+      day: this.day,
+
       played: this.played,
+
+      level: this.level,
+      maxLevel: MAX_LEVEL,
+      levelPlayed: this.levelPlayed,
+      gamesPerLevel: GAMES_PER_LEVEL,
+      gamesToLevelUp: GAMES_PER_LEVEL - this.levelPlayed,
+
+      levelHistory: [...this.levelHistory],
 
       gamiq:
         this.getGamiq(),
 
+      levelGamiq:
+        this.getLevelGamiq(),
+
       confidence:
         this.getConfidence(),
 
-      nextConfidenceTarget:
-        target,
-
-      gamesToNextTarget:
-        this.estimateGamesToTarget(
-          target
-        ),
+      bestRankScore:
+        this.bestRankScore,
 
       abilities: {
         REFLEX:
@@ -441,4 +527,14 @@ function safeCount(value) {
   return Number.isFinite(number) && number > 0
     ? Math.floor(number)
     : 0;
+}
+
+function clampInt(value, min, max, fallback) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    return fallback;
+  }
+
+  return Math.max(min, Math.min(max, Math.floor(number)));
 }
