@@ -81,7 +81,8 @@ export function runReflexGame({
     case "friend_foe":
       return runFriendOrFoe({
         container,
-        onComplete
+        onComplete,
+        level: game.level
       });
 
     default:
@@ -2462,8 +2463,21 @@ const FOE_FRIEND_SVG = `
 
 function runFriendOrFoe({
   container,
-  onComplete
+  onComplete,
+  level = 1
 }) {
+  /*
+   * DIFFICULTY BY LEVEL (Lv1 = same as before)
+   * - Targets move faster and are a bit smaller.
+   * - Enemies escape sooner.
+   * - More blue friends get in the way.
+   */
+  const foeSpeedMul = byLevel(level, 1, 1.6);
+  const foeSizeMul = byLevel(level, 1, 0.8);
+  const foeLifeMul = byLevel(level, 1, 0.75);
+  const foeEnemyRate = byLevel(level, 0.72, 0.6);
+  const foeMaxFriends = byLevelInt(level, 2, 3);
+
   let active = true;
 
   let enemiesSpawned = 0;
@@ -2535,7 +2549,9 @@ function runFriendOrFoe({
 
   function targetSize() {
     // Smaller targets on small screens are still easy to tap.
-    return arena.clientWidth < 480 ? 54 : 62;
+    return Math.round(
+      (arena.clientWidth < 480 ? 54 : 62) * foeSizeMul
+    );
   }
 
   function progress() {
@@ -2598,9 +2614,11 @@ function runFriendOrFoe({
 
     // Speed rises as the game goes on (px per second).
     const speed =
-      (kind === "enemy" ? 120 : 100) +
-      progress() * 110 +
-      Math.random() * 40;
+      (
+        (kind === "enemy" ? 120 : 100) +
+        progress() * 110 +
+        Math.random() * 40
+      ) * foeSpeedMul;
 
     const angle = Math.random() * Math.PI * 2;
 
@@ -2615,7 +2633,7 @@ function runFriendOrFoe({
       born: performance.now(),
       life:
         kind === "enemy"
-          ? 2500 - progress() * 800
+          ? (2500 - progress() * 800) * foeLifeMul
           : 2800,
       done: false
     };
@@ -2643,10 +2661,10 @@ function runFriendOrFoe({
     if (
       enemiesSpawned < FOE_ENEMY_TOTAL &&
       enemiesOnScreen < 2 &&
-      (Math.random() < 0.72 || friendsOnScreen >= 2)
+      (Math.random() < foeEnemyRate || friendsOnScreen >= foeMaxFriends)
     ) {
       spawn("enemy");
-    } else if (friendsOnScreen < 2) {
+    } else if (friendsOnScreen < foeMaxFriends) {
       spawn("friend");
     }
 
