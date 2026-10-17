@@ -10795,3 +10795,135 @@ Header LV, level-up banner, results level + history
   font-size:10px;
   line-height:1.5;
 }
+
+/* ==========================================
+NICKNAME (Step 20)
+========================================== */
+
+.gamiq-nickname{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  gap:7px;
+
+  width:min(300px, 100%);
+
+  margin:24px auto 0;
+}
+
+.gamiq-nickname label{
+  color:#7c8798;
+
+  font-size:10px;
+  font-weight:1000;
+
+  letter-spacing:.18em;
+}
+
+.gamiq-nickname input{
+  width:100%;
+  min-height:48px;
+
+  padding:0 16px;
+
+  border:1px solid rgba(95,239,255,.28);
+  border-radius:14px;
+
+  background:rgba(255,255,255,.04);
+
+  color:#ffffff;
+
+  font:inherit;
+  font-size:17px;     /* 16px+ stops iPhone from zooming in */
+  font-weight:900;
+
+  text-align:center;
+
+  outline:none;
+
+  transition:
+    border-color .15s ease,
+    box-shadow .15s ease;
+}
+
+.gamiq-nickname input::placeholder{
+  color:#4f5a6a;
+  font-weight:700;
+}
+
+.gamiq-nickname input:focus{
+  border-color:#5fefff;
+
+  box-shadow:0 0 0 3px rgba(95,239,255,.15);
+}
+
+.gamiq-nickname.invalid input{
+  border-color:#ff5573;
+
+  box-shadow:0 0 0 3px rgba(255,85,115,.15);
+}
+
+.gamiq-nickname-error{
+  min-height:14px;
+
+  color:#ff7a90;
+
+  font-size:11px;
+  font-weight:800;
+}
+
+/* PLAY sits closer to the name box */
+.gamiq-nickname + .gamiq-start-button{
+  margin-top:10px;
+}
+
+/* Results: player name */
+.gamiq-results-player{
+  margin-bottom:8px;
+
+  color:#5fefff;
+
+  font-size:11px;
+  font-weight:1000;
+
+  letter-spacing:.12em;
+
+  white-space:pre;
+}
+
+.gamiq-results-player[hidden]{
+  display:none;
+}
+
+/* Short screens (e.g. 800x450, phones in landscape) */
+@media(max-height:620px){
+  .gamiq-start-inner h1{
+    margin:12px 0 8px;
+    font-size:24px;
+  }
+
+  .gamiq-start-inner p{
+    font-size:12px;
+    line-height:1.6;
+  }
+
+  .gamiq-start-logo{
+    font-size:40px;
+  }
+
+  .gamiq-nickname{
+    margin-top:10px;
+    gap:4px;
+  }
+
+  .gamiq-nickname input{
+    min-height:40px;
+  }
+
+  .gamiq-nickname + .gamiq-start-button{
+    min-height:46px;
+    margin-top:4px;
+    margin-bottom:8px;
+  }
+}
