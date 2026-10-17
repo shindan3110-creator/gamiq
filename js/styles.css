@@ -11253,3 +11253,19 @@ RANKING (Step 22)
     padding:6px 10px;
   }
 }
+
+
+
+
+/* ==========================================
+COLOR SWITCH - button shuffle flash (Step 23-2)
+========================================== */
+
+.cs-buttons.cs-shuffled .cs-button{
+  animation:cs-shuffle-pop .22s ease-out;
+}
+
+@keyframes cs-shuffle-pop{
+  0%   { transform:scale(.86); opacity:.6; }
+  100% { transform:scale(1); opacity:1; }
+}
