@@ -1,6 +1,7 @@
 // GAMIQ（ゲーミック） v2 - Puzzle Games
 
 import { t } from "../i18n.js";
+import { byLevel, byLevelInt } from "../difficulty.js";
 
 export function createPuzzleGames() {
   return [
@@ -68,11 +69,17 @@ export function runPuzzleGame({
 BLOCK ESCAPE
 ========================================== */
 
-const BLOCK_TIME_LIMIT = 45000;
-
-function runBlockEscape({ container, onComplete }) {
+function runBlockEscape({ game, container, onComplete }) {
   const size = 6;
-  const boardData = createRandomEscapeBoard();
+
+  // A new random board every time (always solvable).
+  // Higher levels need more moves to solve.
+  const boardData = createRandomEscapeBoard(game?.level ?? 1);
+
+  // Bigger puzzles get more time (45s - 80s).
+  const BLOCK_TIME_LIMIT = Math.round(
+    clamp(20000 + boardData.idealMoves * 2200, 45000, 80000)
+  );
 
   // PC: click a block and then click arrows.
   // Mobile: swipe blocks directly.
@@ -163,6 +170,7 @@ function runBlockEscape({ container, onComplete }) {
   function renderBlocks() {
     board.innerHTML = "";
     board.style.setProperty("--grid-size", size);
+    board.style.setProperty("--exit-row", boardData.exitRow);
 
     for (const block of boardData.blocks) {
       const element = document.createElement("button");
@@ -584,153 +592,219 @@ function runBlockEscape({ container, onComplete }) {
 BOARD GENERATION
 ========================================== */
 
-function createRandomEscapeBoard() {
-  const presets = [
-    {
-      exitRow: 2,
-      idealMoves: 8,
+/* ==========================================
+BLOCK ESCAPE - RANDOM BOARD GENERATOR
+- Places blocks at random on a 6x6 board.
+- Finds the shortest solution (BFS, 1 cell = 1 move).
+- Keeps the board only if the shortest solution length
+  is inside the range for the level.
+- Every board is solvable, and idealMoves is the real minimum.
+========================================== */
 
-      blocks: [
-        {
-          id: "target",
-          x: 1,
-          y: 2,
-          w: 2,
-          h: 1,
-          target: true
-        },
-        {
-          id: "a",
-          x: 3,
-          y: 0,
-          w: 1,
-          h: 3
-        },
-        {
-          id: "b",
-          x: 4,
-          y: 1,
-          w: 1,
-          h: 2
-        },
-        {
-          id: "c",
-          x: 0,
-          y: 0,
-          w: 2,
-          h: 1
-        },
-        {
-          id: "d",
-          x: 0,
-          y: 4,
-          w: 3,
-          h: 1
-        }
-      ]
-    },
+const ESCAPE_SIZE = 6;
 
-    {
-      exitRow: 2,
-      idealMoves: 12,
+function createRandomEscapeBoard(level = 1) {
+  // Shortest solution: Lv1 6-12 moves (5 blocks) -> Lv10 11-22 moves (10 blocks)
+  const minMoves = byLevelInt(level, 6, 11);
+  const maxMoves = byLevelInt(level, 12, 22);
+  const blockCount = byLevelInt(level, 5, 10);
 
-      blocks: [
-        {
-          id: "target",
-          x: 0,
-          y: 2,
-          w: 2,
-          h: 1,
-          target: true
-        },
-        {
-          id: "a",
-          x: 2,
-          y: 1,
-          w: 1,
-          h: 2
-        },
-        {
-          id: "b",
-          x: 3,
-          y: 0,
-          w: 1,
-          h: 3
-        },
-        {
-          id: "c",
-          x: 4,
-          y: 2,
-          w: 1,
-          h: 2
-        },
-        {
-          id: "d",
-          x: 0,
-          y: 4,
-          w: 3,
-          h: 1
-        },
-        {
-          id: "e",
-          x: 3,
-          y: 4,
-          w: 2,
-          h: 1
-        }
-      ]
-    },
+  // Never freeze the game for long: stop after 300ms
+  // and use the closest board found.
+  const deadline = performance.now() + 300;
 
-    {
-      exitRow: 3,
-      idealMoves: 6,
+  let best = null;
 
-      blocks: [
-        {
-          id: "target",
-          x: 1,
-          y: 3,
-          w: 2,
-          h: 1,
-          target: true
-        },
-        {
-          id: "a",
-          x: 3,
-          y: 2,
-          w: 1,
-          h: 2
-        },
-        {
-          id: "b",
-          x: 4,
-          y: 1,
-          w: 1,
-          h: 3
-        },
-        {
-          id: "c",
-          x: 0,
-          y: 0,
-          w: 3,
-          h: 1
-        },
-        {
-          id: "d",
-          x: 0,
-          y: 5,
-          w: 2,
-          h: 1
-        }
-      ]
+  let attempts = 0;
+
+  while ((performance.now() < deadline || !best) && attempts < 3000) {
+    attempts++;
+
+    const board = randomEscapeLayout(blockCount);
+
+    if (!board) {
+      continue;
     }
-  ];
 
-  const selected = presets[
-    Math.floor(Math.random() * presets.length)
-  ];
+    const solution = solveEscapeBoard(board);
 
-  return JSON.parse(JSON.stringify(selected));
+    if (solution === null) {
+      continue;
+    }
+
+    board.idealMoves = solution;
+
+    if (solution >= minMoves && solution <= maxMoves) {
+      return board;
+    }
+
+    const distance =
+      solution < minMoves ? minMoves - solution : solution - maxMoves;
+
+    if (!best || distance < best.distance) {
+      best = { board, distance };
+    }
+  }
+
+  return best ? best.board : escapeFallbackBoard();
+}
+
+function randomEscapeLayout(blockCount) {
+  const size = ESCAPE_SIZE;
+  const exitRow = 1 + Math.floor(Math.random() * 4); // rows 1-4
+  const grid = Array.from({ length: size }, () => Array(size).fill(false));
+
+  const blocks = [];
+
+  const place = block => {
+    for (let y = block.y; y < block.y + block.h; y++) {
+      for (let x = block.x; x < block.x + block.w; x++) {
+        if (x >= size || y >= size || grid[y][x]) return false;
+      }
+    }
+    for (let y = block.y; y < block.y + block.h; y++) {
+      for (let x = block.x; x < block.x + block.w; x++) grid[y][x] = true;
+    }
+    blocks.push(block);
+    return true;
+  };
+
+  // Red target: 2 wide, on the exit row, on the left half.
+  place({
+    id: "target",
+    x: Math.floor(Math.random() * 3),
+    y: exitRow,
+    w: 2,
+    h: 1,
+    target: true
+  });
+
+  const ids = "abcdefghijk";
+  let tries = 0;
+
+  while (blocks.length < blockCount + 1 && tries < 200) {
+    tries++;
+
+    const vertical = Math.random() < 0.6;
+    const length = Math.random() < 0.3 ? 3 : 2;
+
+    const block = {
+      id: ids[blocks.length - 1],
+      x: Math.floor(Math.random() * (vertical ? size : size - length + 1)),
+      y: Math.floor(Math.random() * (vertical ? size - length + 1 : size)),
+      w: vertical ? 1 : length,
+      h: vertical ? length : 1
+    };
+
+    // A horizontal block on the exit row would block it forever.
+    if (!vertical && block.y === exitRow) continue;
+
+    place(block);
+  }
+
+  if (blocks.length < blockCount + 1) {
+    return null;
+  }
+
+  return { exitRow, blocks };
+}
+
+// Shortest number of 1-cell moves until the red block leaves.
+// Returns null if impossible (or too big to search).
+function solveEscapeBoard(board) {
+  const size = ESCAPE_SIZE;
+  const blocks = board.blocks;
+  const n = blocks.length;
+  const horizontal = blocks.map(b => b.w > b.h);
+  const length = blocks.map(b => Math.max(b.w, b.h));
+  const fixed = blocks.map(b => (horizontal[blocks.indexOf(b)] ? b.y : b.x));
+  const targetIndex = blocks.findIndex(b => b.target);
+
+  const start = blocks.map((b, i) => (horizontal[i] ? b.x : b.y));
+
+  const key = state => state.join(",");
+
+  const occupied = state => {
+    const grid = Array.from({ length: size }, () => Array(size).fill(-1));
+    for (let i = 0; i < n; i++) {
+      for (let k = 0; k < length[i]; k++) {
+        const x = horizontal[i] ? state[i] + k : fixed[i];
+        const y = horizontal[i] ? fixed[i] : state[i] + k;
+        if (x < size) grid[y][x] = i;
+      }
+    }
+    return grid;
+  };
+
+  const seen = new Set([key(start)]);
+  let frontier = [start];
+  let depth = 0;
+  const MAX_STATES = 20000;
+
+  while (frontier.length) {
+    const next = [];
+
+    for (const state of frontier) {
+      // Goal: the red block has moved one cell past the right edge.
+      if (state[targetIndex] + length[targetIndex] > size) {
+        return depth;
+      }
+
+      const grid = occupied(state);
+
+      for (let i = 0; i < n; i++) {
+        for (const step of [-1, 1]) {
+          const pos = state[i] + step;
+          const lead = step < 0 ? pos : pos + length[i] - 1;
+
+          let ok;
+
+          if (horizontal[i]) {
+            const isExit =
+              i === targetIndex && fixed[i] === board.exitRow && lead === size;
+            ok = pos >= 0 && (isExit || (lead < size && grid[fixed[i]][lead] === -1));
+          } else {
+            ok = pos >= 0 && lead < size && grid[lead][fixed[i]] === -1;
+          }
+
+          if (!ok) continue;
+
+          const moved = state.slice();
+          moved[i] = pos;
+
+          const k = key(moved);
+
+          if (!seen.has(k)) {
+            seen.add(k);
+            next.push(moved);
+          }
+        }
+      }
+
+      if (seen.size > MAX_STATES) {
+        return null;
+      }
+    }
+
+    frontier = next;
+    depth++;
+  }
+
+  return null;
+}
+
+function escapeFallbackBoard() {
+  return {
+    exitRow: 2,
+    idealMoves: 8,
+    blocks: [
+      { id: "target", x: 1, y: 2, w: 2, h: 1, target: true },
+      { id: "a", x: 3, y: 0, w: 1, h: 3 },
+      { id: "b", x: 4, y: 1, w: 1, h: 2 },
+      { id: "c", x: 0, y: 0, w: 2, h: 1 },
+      { id: "d", x: 0, y: 4, w: 3, h: 1 }
+    ]
+  };
 }
 
 /* ==========================================
@@ -742,7 +816,8 @@ PIPE CONNECT (v2: a real rotation puzzle)
 ========================================== */
 
 const PIPE_SIZE = 4;
-const PIPE_TIME_LIMIT = 40000;
+// Lv1: 40s (Lv10: 34s, see runPipeConnect)
+const PIPE_TIME_LIMIT_LV1 = 40000;
 
 // Directions as bits
 const PIPE_N = 1;
@@ -782,7 +857,12 @@ function pipeMask(tile) {
 }
 
 
-function createPipeBoard() {
+function createPipeBoard(level = 1) {
+  // Longer pipe paths at higher levels.
+  //   Lv1: 7-11 tiles   Lv10: 10-14 tiles
+  const minPath = byLevelInt(level, 7, 10);
+  const maxPath = byLevelInt(level, 11, 14);
+
   // Random path from the left edge to the right edge.
   for (let attempt = 0; attempt < 200; attempt++) {
     const startY =
@@ -793,12 +873,12 @@ function createPipeBoard() {
 
     let ok = false;
 
-    while (path.length < 14) {
+    while (path.length < maxPath + 3) {
       const last = path[path.length - 1];
 
       if (
         last.x === PIPE_SIZE - 1 &&
-        path.length >= 7
+        path.length >= minPath
       ) {
         ok = true;
         break;
@@ -839,13 +919,13 @@ function createPipeBoard() {
 
     if (
       !ok ||
-      path.length < 7 ||
-      path.length > 11
+      path.length < minPath ||
+      path.length > maxPath
     ) {
       continue;
     }
 
-    return buildPipeTiles(path);
+    return buildPipeTiles(path, level);
   }
 
   // Fallback (practically never used): a simple fixed path.
@@ -856,7 +936,11 @@ function createPipeBoard() {
 }
 
 
-function buildPipeTiles(path) {
+function buildPipeTiles(path, level = 1) {
+  // Chance that a path tile starts in a WRONG rotation:
+  // Lv1 85% -> Lv10 100%
+  const scrambleRate = byLevel(level, 0.85, 1);
+
   const tiles = [];
 
   for (let y = 0; y < PIPE_SIZE; y++) {
@@ -923,7 +1007,7 @@ function buildPipeTiles(path) {
     );
 
     tile.rotation =
-      Math.random() < 0.85
+      Math.random() < scrambleRate
         ? wrong[Math.floor(Math.random() * wrong.length)]
         : targets[0];
 
@@ -945,14 +1029,20 @@ function buildPipeTiles(path) {
 
 
 function runPipeConnect({
+  game,
   container,
   onComplete
 }) {
-  let board = createPipeBoard();
+  const level = game?.level ?? 1;
+
+  // DIFFICULTY BY LEVEL: longer paths, all tiles scrambled, less time.
+  const PIPE_TIME_LIMIT = Math.round(byLevel(level, PIPE_TIME_LIMIT_LV1, 34000));
+
+  let board = createPipeBoard(level);
 
   // Make sure the puzzle is not already solved.
   while (tracePipeFlow(board).solved) {
-    board = createPipeBoard();
+    board = createPipeBoard(level);
   }
 
   let active = true;
