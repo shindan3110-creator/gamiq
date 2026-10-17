@@ -11,6 +11,11 @@
 //     -> saves today's best score for that player
 //   GET  /api/ranking?type=daily[&day=YYYY-MM-DD][&playerId=...]
 //   GET  /api/ranking?type=alltime[&playerId=...]
+//   POST /api/challenge
+//     { playerId, nickname, day, scores: [5 numbers 0-100] }
+//     -> saves today's Daily Challenge result (FIRST try only)
+//   GET  /api/ranking?type=challenge[&playerId=...]
+//     -> today's Daily Challenge ranking
 //     -> top 50 (+ your own rank if playerId is given)
 //        + total = number of players on that ranking
 //
@@ -29,6 +34,8 @@ const MIN_SECONDS_PER_GAME = 15;
 
 // One player can send at most one score every few seconds.
 const MIN_SUBMIT_INTERVAL_MS = 4000;
+
+const CHALLENGE_GAMES = 5;
 
 const NICKNAME_MIN = 2;
 const NICKNAME_MAX = 12;
@@ -65,7 +72,18 @@ const SCHEMA = [
      updated_at INTEGER NOT NULL
    )`,
   `CREATE INDEX IF NOT EXISTS idx_best_rank
-     ON player_best (best_score DESC)`
+     ON player_best (best_score DESC)`,
+  `CREATE TABLE IF NOT EXISTS challenge_scores (
+     day TEXT NOT NULL,
+     player_id TEXT NOT NULL,
+     nickname TEXT NOT NULL,
+     total INTEGER NOT NULL,
+     scores TEXT NOT NULL,
+     created_at INTEGER NOT NULL,
+     PRIMARY KEY (day, player_id)
+   )`,
+  `CREATE INDEX IF NOT EXISTS idx_challenge_rank
+     ON challenge_scores (day, total DESC)`
 ];
 
 let schemaReady = false;
@@ -103,6 +121,10 @@ async function handleApi(request, env, url) {
 
     if (url.pathname === "/api/score" && request.method === "POST") {
       return await postScore(request, env.DB);
+    }
+
+    if (url.pathname === "/api/challenge" && request.method === "POST") {
+      return await postChallenge(request, env.DB);
     }
 
     if (url.pathname === "/api/ranking" && request.method === "GET") {
@@ -297,12 +319,87 @@ function validateScore(body) {
 
 
 /* ==========================================
+POST /api/challenge  (Daily Challenge)
+Only the FIRST result of the day counts (like Wordle).
+Sending again just returns your rank.
+========================================== */
+
+async function postChallenge(request, db) {
+  let body;
+
+  try {
+    body = await request.json();
+  } catch (error) {
+    return json({ ok: false, error: "bad_json" }, 400);
+  }
+
+  const playerId = String(body?.playerId ?? "");
+
+  if (!/^[A-Za-z0-9-]{8,64}$/.test(playerId)) {
+    return json({ ok: false, error: "bad_player" }, 400);
+  }
+
+  const nick = validateNickname(body?.nickname);
+
+  if (!nick.ok) {
+    return json({ ok: false, error: nick.error }, 400);
+  }
+
+  const day = String(body?.day ?? "");
+
+  if (day !== todayKey()) {
+    return json({ ok: false, error: "wrong_day" }, 400);
+  }
+
+  const scores = Array.isArray(body?.scores) ? body.scores.map(toInt) : [];
+
+  if (
+    scores.length !== CHALLENGE_GAMES ||
+    scores.some(v => v === null || v < 0 || v > 100)
+  ) {
+    return json({ ok: false, error: "bad_numbers" }, 400);
+  }
+
+  const total = scores.reduce((sum, v) => sum + v, 0);
+
+  await db
+    .prepare(
+      `INSERT INTO challenge_scores
+         (day, player_id, nickname, total, scores, created_at)
+       VALUES (?, ?, ?, ?, ?, ?)
+       ON CONFLICT (day, player_id) DO UPDATE SET
+         nickname = excluded.nickname`
+    )
+    .bind(day, playerId, nick.value, total, JSON.stringify(scores), Date.now())
+    .run();
+
+  const rank = await rankOf(db, "challenge", playerId, day);
+
+  const totalRow = await db
+    .prepare(`SELECT COUNT(*) AS total FROM challenge_scores WHERE day = ?`)
+    .bind(day)
+    .first();
+
+  return json({
+    ok: true,
+    day,
+    rank,
+    total: totalRow ? totalRow.total : 0
+  });
+}
+
+
+/* ==========================================
 GET /api/ranking
 ========================================== */
 
 async function getRanking(url, db) {
+  const requested = url.searchParams.get("type");
+
   const type =
-    url.searchParams.get("type") === "alltime" ? "alltime" : "daily";
+    requested === "alltime" || requested === "challenge"
+      ? requested
+      : "daily";
 
   const day =
     /^\d{4}-\d{2}-\d{2}$/.test(url.searchParams.get("day") || "")
@@ -320,6 +417,17 @@ async function getRanking(url, db) {
          FROM daily_scores
          WHERE day = ?
          ORDER BY rank_score DESC, updated_at ASC
+         LIMIT ?`
+      )
+      .bind(day, TOP_LIMIT)
+      .all();
+  } else if (type === "challenge") {
+    rows = await db
+      .prepare(
+        `SELECT player_id, nickname, total AS rank_score, NULL AS gamiq, NULL AS level
+         FROM challenge_scores
+         WHERE day = ?
+         ORDER BY total DESC, created_at ASC
          LIMIT ?`
       )
       .bind(day, TOP_LIMIT)
@@ -360,6 +468,11 @@ async function getRanking(url, db) {
           .prepare(`SELECT COUNT(*) AS total FROM daily_scores WHERE day = ?`)
           .bind(day)
           .first()
+      : type === "challenge"
+      ? await db
+          .prepare(`SELECT COUNT(*) AS total FROM challenge_scores WHERE day = ?`)
+          .bind(day)
+          .first()
       : await db
           .prepare(`SELECT COUNT(*) AS total FROM player_best`)
           .first();
@@ -375,7 +488,15 @@ async function getRanking(url, db) {
 
 async function myEntry(db, type, playerId, day) {
   const row =
-    type === "daily"
+    type === "challenge"
+      ? await db
+          .prepare(
+            `SELECT nickname, total AS rank_score, NULL AS gamiq, NULL AS level
+             FROM challenge_scores WHERE day = ? AND player_id = ?`
+          )
+          .bind(day, playerId)
+          .first()
+      : type === "daily"
       ? await db
           .prepare(
             `SELECT nickname, rank_score, gamiq, level
@@ -407,7 +528,18 @@ async function myEntry(db, type, playerId, day) {
 
 async function rankOf(db, type, playerId, day = todayKey()) {
   const row =
-    type === "daily"
+    type === "challenge"
+      ? await db
+          .prepare(
+            `SELECT 1 + COUNT(*) AS rank FROM challenge_scores
+             WHERE day = ?1 AND total > (
+               SELECT total FROM challenge_scores
+               WHERE day = ?1 AND player_id = ?2
+             )`
+          )
+          .bind(day, playerId)
+          .first()
+      : type === "daily"
       ? await db
           .prepare(
             `SELECT 1 + COUNT(*) AS rank FROM daily_scores
