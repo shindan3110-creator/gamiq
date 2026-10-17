@@ -1,6 +1,7 @@
 // GAMIQ V2 — ARMY GROW / CINEMATIC BATTLE
 import { GamiqThreeScene } from "./three-renderer.js";
 import { byLevel } from "../difficulty.js";
+import { sfx } from "../sound.js";
 
 export async function runFactory3D({ container, onComplete, level = 1 }) {
   if (!container) return () => {};
@@ -53,6 +54,7 @@ export async function runFactory3D({ container, onComplete, level = 1 }) {
   let celebrationAge = 0;
   let combatTick = 0;
   let lastLoss = 0;
+  let impactSoundCount = 0;
   let battleLine = -2.1;
   let finishTimeout = null;
   let popTimeout = null;
@@ -838,6 +840,9 @@ export async function runFactory3D({ container, onComplete, level = 1 }) {
 
     army = resultOf(army, selected);
 
+    // Gate sound: power up or power down
+    sfx(army >= before ? "good" : "bad");
+
     peakArmy = Math.max(
       peakArmy,
       army
@@ -990,6 +995,13 @@ export async function runFactory3D({ container, onComplete, level = 1 }) {
   let sparkCursor = 0;
 
   function impact() {
+    // Battle clash sound (not on every hit, so it is not too noisy)
+    impactSoundCount++;
+
+    if (impactSoundCount % 3 === 1) {
+      sfx("impact");
+    }
+
     for (let i = 0; i < 9; i++) {
       const particle =
         sparks[sparkCursor++ % sparks.length];
