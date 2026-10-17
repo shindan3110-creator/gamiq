@@ -508,16 +508,28 @@ export async function runFactory3D({ container, onComplete, level = 1 }) {
   GATES
   ========================================== */
 
+  // No upper limit on the army size (the old 999 cap was removed).
   function resultOf(count, choice) {
     if (choice.op === "+") {
-      return Math.min(999, count + choice.n);
+      return count + choice.n;
     }
 
     if (choice.op === "-") {
       return Math.max(1, count - choice.n);
     }
 
-    return Math.min(999, count * choice.n);
+    return count * choice.n;
+  }
+
+  // 12,345 / 1.2M — big armies stay readable.
+  function formatArmy(value) {
+    const n = Math.max(0, Math.round(Number(value) || 0));
+
+    if (n >= 1000000) {
+      return `${(n / 1000000).toFixed(n >= 10000000 ? 0 : 1)}M`;
+    }
+
+    return n.toLocaleString("en-US");
   }
 
   const gateText = choice =>
@@ -698,7 +710,7 @@ export async function runFactory3D({ container, onComplete, level = 1 }) {
   }
 
   function updateHUD() {
-    countEl.textContent = String(army);
+    countEl.textContent = formatArmy(army);
 
     if (phase === "gates") {
       waveEl.textContent =
@@ -836,7 +848,7 @@ export async function runFactory3D({ container, onComplete, level = 1 }) {
     }
 
     showPop(
-      `${gateText(selected)} → ${army}`,
+      `${gateText(selected)} → ${formatArmy(army)}`,
       army >= before ? "good" : "bad"
     );
 
@@ -1073,8 +1085,8 @@ export async function runFactory3D({ container, onComplete, level = 1 }) {
   ========================================== */
 
   function setBattleHUD() {
-    blueEl.textContent = `BLUE ${army}`;
-    redEl.textContent = `RED ${enemyCount}`;
+    blueEl.textContent = `BLUE ${formatArmy(army)}`;
+    redEl.textContent = `RED ${formatArmy(enemyCount)}`;
 
     const total = Math.max(
       1,
@@ -1216,7 +1228,7 @@ export async function runFactory3D({ container, onComplete, level = 1 }) {
     battleHUD.classList.add("victory");
 
     showPop(
-      `STAGE ${currentStage + 1} CLEAR! ${army} LEFT`,
+      `STAGE ${currentStage + 1} CLEAR! ${formatArmy(army)} LEFT`,
       "good",
       1400
     );
@@ -1230,7 +1242,7 @@ export async function runFactory3D({ container, onComplete, level = 1 }) {
 
     showPop(
       success
-        ? `VICTORY! ${army} LEFT`
+        ? `VICTORY! ${formatArmy(army)} LEFT`
         : `DEFEAT! (STAGE ${currentStage + 1})`,
 
       success ? "good" : "bad",
@@ -1633,7 +1645,7 @@ export async function runFactory3D({ container, onComplete, level = 1 }) {
     );
 
     countEl.textContent =
-      String(army);
+      formatArmy(army);
   });
 
   /* ==========================================
