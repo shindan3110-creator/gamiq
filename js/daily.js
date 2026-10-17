@@ -14,7 +14,8 @@ import { t } from "./i18n.js";
 import { todayKey, msUntilReset } from "./score.js";
 import { sfx } from "./sound.js";
 import { submitChallenge } from "./api.js";
-import { rankText } from "./share.js";
+import { rankText, createShareButtons, buildDailyImage } from "./share.js";
+import { getProfile } from "./profile.js";
 
 const STORAGE_KEY = "gamiq_v2_daily";
 
@@ -645,7 +646,8 @@ export class GamiqDaily {
 
         <div class="dl-rank" data-dl-rank>${t("daily.rankSending")}</div>
 
-        <button type="button" class="dl-go" data-dl-share>${t("daily.share")}</button>
+        <div class="dl-share-label">${t("daily.share")}</div>
+        <div data-dl-share-row></div>
 
         <button type="button" class="dl-rank-button" data-dl-ranking>${t("daily.rankButton")}</button>
 
@@ -655,33 +657,25 @@ export class GamiqDaily {
       </div>
     `;
 
-    const shareButton = this.stage.querySelector("[data-dl-share]");
-
-    shareButton.addEventListener("click", async () => {
-      const text = dailyShareText(this.record);
-
-      this.analytics?.send?.("daily_share", { daily_no: this.number });
-
-      if (navigator.share) {
-        try {
-          await navigator.share({ text });
-          return;
-        } catch (error) {
-          if (error?.name === "AbortError") return;
-        }
-      }
-
-      try {
-        await navigator.clipboard.writeText(text);
-        shareButton.textContent = t("daily.copied");
-      } catch (error) {
-        shareButton.textContent = t("daily.copyFailed");
-      }
-
-      setTimeout(() => {
-        shareButton.textContent = t("daily.share");
-      }, 2000);
-    });
+    this.stage.querySelector("[data-dl-share-row]").replaceWith(
+      createShareButtons({
+        getText: () => dailyShareText(this.record),
+        withOther: true,
+        getImage: () =>
+          buildDailyImage({
+            number: this.number,
+            total,
+            max: DAILY_GAMES * 100,
+            nickname: getProfile().nickname,
+            rows: results.map(r => ({ icon: SKILL_ICON[r.skill] || "", score: r.score || 0 }))
+          }),
+        onShare: method =>
+          this.analytics?.send?.("daily_share", {
+            daily_no: this.number,
+            share_method: method
+          })
+      })
+    );
 
     this.stage.querySelector("[data-dl-back]").addEventListener("click", () => this.close());
 
