@@ -13,6 +13,12 @@
 
 const MUTE_KEY = "gamiq_v2_muted";
 
+
+// Kept at load time: the daily challenge replaces Math.random with a
+// seeded one while a game is played. Sounds must not use those numbers,
+// or the layouts would change depending on how the player plays.
+const nativeRandom = Math.random.bind(Math);
+
 let ctx = null;
 let master = null;
 let noiseBuffer = null;
@@ -51,7 +57,7 @@ function getContext() {
     const data = noiseBuffer.getChannelData(0);
 
     for (let i = 0; i < data.length; i++) {
-      data[i] = Math.random() * 2 - 1;
+      data[i] = nativeRandom() * 2 - 1;
     }
   } catch (error) {
     ctx = null;
@@ -194,7 +200,7 @@ function noise(audio, {
   biquad.connect(gain);
   gain.connect(master);
 
-  source.start(t0, Math.random() * 0.5);
+  source.start(t0, nativeRandom() * 0.5);
   source.stop(t0 + length + 0.02);
 }
 
@@ -307,7 +313,7 @@ const SOUNDS = {
   water(audio) {
     noise(audio, { filter: "bandpass", freq: 500, to: 1400, q: 0.8, length: 0.9, volume: 0.2, attack: 0.15 });
     for (let i = 0; i < 4; i++) {
-      tone(audio, { type: "sine", freq: 500 + Math.random() * 500, to: 900 + Math.random() * 600, start: 0.1 + i * 0.13, length: 0.08, volume: 0.08 });
+      tone(audio, { type: "sine", freq: 500 + nativeRandom() * 500, to: 900 + nativeRandom() * 600, start: 0.1 + i * 0.13, length: 0.08, volume: 0.08 });
     }
   },
 
