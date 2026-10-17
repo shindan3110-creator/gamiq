@@ -54,6 +54,11 @@ import {
   t
 } from "./i18n.js";
 
+import {
+  requestBreakAd,
+  isAdRunning
+} from "./ads.js";
+
 
 /* ==========================================
 APP STATE
@@ -190,9 +195,11 @@ function boot() {
       onGameEnter:
         enterGame,
 
+      // No swiping while a game is playing or an ad is running.
       canAdvance:
         () =>
-          currentFinished
+          currentFinished &&
+          !isAdRunning()
     });
 
 
@@ -288,6 +295,11 @@ function createAppMarkup() {
         </div>
 
         <div class="gamiq-live-data">
+
+          <div class="gamiq-live-item gamiq-live-level">
+            <span>${t("header.level")}</span>
+            <strong data-live-level>1</strong>
+          </div>
 
           <div class="gamiq-live-item">
             <span>GAMIQ</span>
@@ -478,6 +490,12 @@ function renderGameCard(
             game.skill
           )}
         </div>
+
+        <div
+          class="gamiq-levelup"
+          data-levelup
+          hidden
+        ></div>
 
                 <div class="gamiq-swipe-next">
           ${
@@ -709,8 +727,10 @@ async function enterGame(
        * It is not added to GAMIQ.
        */
 
+      let levelUp = null;
+
       if (!safetyTimeout) {
-        scoreEngine.addResult({
+        levelUp = scoreEngine.addResult({
           skill:
             game.skill,
 
@@ -766,8 +786,31 @@ async function enterGame(
         safetyTimeout
           ? null
           : score,
-        safetyTimeout
+        safetyTimeout,
+        levelUp
       );
+
+
+      if (levelUp) {
+        analytics.levelUp({
+          ...levelUp,
+          played: summary.played
+        });
+      }
+
+
+      /*
+       * AD BREAK (does nothing yet, see ads.js)
+       * - Level up: always ask.
+       * - Normal game end: only after Lv1 is cleared today,
+       *   so new players are never interrupted early.
+       *   The ad SDK itself limits how often ads really show.
+       */
+      if (levelUp) {
+        requestBreakAd("level_up");
+      } else if (summary.levelHistory.length > 0) {
+        requestBreakAd("game_end");
+      }
     };
 
 
@@ -1068,7 +1111,8 @@ COMPLETE DISPLAY
 function showCardComplete(
   card,
   score,
-  error = false
+  error = false,
+  levelUp = null
 ) {
   const overlay =
     card.querySelector(
@@ -1095,6 +1139,40 @@ function showCardComplete(
     "error",
     error
   );
+
+
+  // LEVEL UP banner
+  const levelUpElement =
+    card.querySelector(
+      "[data-levelup]"
+    );
+
+  if (levelUpElement) {
+    if (levelUp) {
+      levelUpElement.innerHTML = `
+        <span class="gamiq-levelup-title">
+          ${escapeHtml(t("levelup.title", { level: levelUp.level }))}
+        </span>
+        <strong class="gamiq-levelup-gamiq">
+          GAMIQ ${escapeHtml(levelUp.gamiq ?? "---")}
+        </strong>
+        <span class="gamiq-levelup-next">
+          ${escapeHtml(
+            levelUp.maxed
+              ? t("levelup.max")
+              : t("levelup.next", { level: levelUp.nextLevel })
+          )}
+        </span>
+      `;
+
+      levelUpElement.hidden = false;
+      overlay.classList.add("has-levelup");
+
+    } else {
+      levelUpElement.hidden = true;
+      overlay.classList.remove("has-levelup");
+    }
+  }
 
   requestAnimationFrame(
     () => {
@@ -1123,6 +1201,16 @@ function updateLiveStatus() {
     document.querySelector(
       "[data-live-confidence]"
     );
+
+  const levelElement =
+    document.querySelector(
+      "[data-live-level]"
+    );
+
+  if (levelElement) {
+    levelElement.textContent =
+      summary.level;
+  }
 
   if (gamiqElement) {
     gamiqElement.textContent =
