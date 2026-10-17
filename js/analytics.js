@@ -218,3 +218,20 @@ export class GamiqAnalytics {
     );
   }
 }
+
+
+/* ==========================================
+SMALL HELPER for other files (share, ranking)
+========================================== */
+
+export function track(eventName, params = {}) {
+  if (typeof window.gtag !== "function") {
+    return;
+  }
+
+  try {
+    window.gtag("event", eventName, params);
+  } catch (error) {
+    // Analytics failures should never stop the game.
+  }
+}
