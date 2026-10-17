@@ -98,7 +98,8 @@ export function runThreeGame({
     case "factory_rush":
   return runFactory3D({
     container,
-    onComplete
+    onComplete,
+    level: game.level
   });
 
     default:
