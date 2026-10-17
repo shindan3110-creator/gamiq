@@ -152,6 +152,17 @@ const STRINGS = {
       "PICK THE BETTER GATES AND WIN ALL 3 BATTLES!",
     "rule.speed_color_switch":
       "MATCH THE COLOR OR THE WORD. WATCH FOR THE SWITCH!",
+    "rule.rhythm_drum_duo":
+      "LISTEN TO THE MASTER, THEN DRUM THE SAME RHYTHM!",
+
+    /* ---------- IN-GAME: DRUM DUO ---------- */
+    "rhythm.ready": "READY...",
+    "rhythm.listen": "LISTEN...",
+    "rhythm.yourTurn": "YOUR TURN!",
+    "rhythm.tap": "TAP! (or SPACE)",
+    "rhythm.early": "EARLY",
+    "rhythm.late": "LATE",
+    "rhythm.extra": "WAIT!",
 
     /* ---------- IN-GAME: COLOR SWITCH ---------- */
     "cs.modeColor": "TAP THE INK COLOR",
@@ -300,6 +311,16 @@ const STRINGS = {
     "rule.three_lane_dodge": "60秒間、障害物を避けて走り続けろ！",
     "rule.three_factory_rush": "良いゲートを選んで軍団を増やし、3回の戦いに勝ち抜け！",
     "rule.speed_color_switch": "文字の「色」か「意味」に合わせて押せ！切り替えに注意！",
+    "rule.rhythm_drum_duo": "師匠のリズムを聴いて、同じリズムで叩け！",
+
+    /* ---------- IN-GAME: DRUM DUO ---------- */
+    "rhythm.ready": "よーい…",
+    "rhythm.listen": "よく聴いて…",
+    "rhythm.yourTurn": "まねして叩け！",
+    "rhythm.tap": "タップ！（スペースキーでもOK）",
+    "rhythm.early": "はやい",
+    "rhythm.late": "おそい",
+    "rhythm.extra": "まだ！",
 
     /* ---------- IN-GAME: COLOR SWITCH ---------- */
     "cs.modeColor": "文字の「色」を押せ",
