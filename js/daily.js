@@ -13,6 +13,8 @@
 import { t } from "./i18n.js";
 import { todayKey, msUntilReset } from "./score.js";
 import { sfx } from "./sound.js";
+import { submitChallenge } from "./api.js";
+import { rankText } from "./share.js";
 
 const STORAGE_KEY = "gamiq_v2_daily";
 
@@ -178,14 +180,16 @@ export class GamiqDaily {
    * @param {Function} options.runGame    runSelectedGame({game, container, onComplete})
    * @param {object} options.analytics
    * @param {Function} options.onClose
+   * @param {Function} options.onRanking  opens the Daily Challenge ranking
    */
-  constructor({ mount, pool, renderCard, runGame, analytics, onClose }) {
+  constructor({ mount, pool, renderCard, runGame, analytics, onClose, onRanking }) {
     this.mount = mount;
     this.pool = pool;
     this.renderCard = renderCard;
     this.runGame = runGame;
     this.analytics = analytics;
     this.onClose = onClose;
+    this.onRanking = onRanking;
 
     this.overlay = null;
     this.token = 0;
@@ -534,7 +538,11 @@ export class GamiqDaily {
 
         <pre class="dl-share-preview">${escapeHtml(dailyShareText(this.record))}</pre>
 
+        <div class="dl-rank" data-dl-rank>${t("daily.rankSending")}</div>
+
         <button type="button" class="dl-go" data-dl-share>${t("daily.share")}</button>
+
+        <button type="button" class="dl-rank-button" data-dl-ranking>${t("daily.rankButton")}</button>
 
         <div class="dl-countdown" data-dl-countdown></div>
 
@@ -572,6 +580,13 @@ export class GamiqDaily {
 
     this.stage.querySelector("[data-dl-back]").addEventListener("click", () => this.close());
 
+    this.stage.querySelector("[data-dl-ranking]").addEventListener("click", () => {
+      sfx("click");
+      this.onRanking?.();
+    });
+
+    this.sendToRanking();
+
     const countdownEl = this.stage.querySelector("[data-dl-countdown]");
 
     const tick = () => {
@@ -597,6 +612,30 @@ export class GamiqDaily {
     this.countdownTimer = setInterval(tick, 1000);
   }
 }
+
+
+/* Send the result (the server keeps only the first one of the day). */
+GamiqDaily.prototype.sendToRanking = async function () {
+  const token = this.token;
+  const rankEl = this.stage.querySelector("[data-dl-rank]");
+
+  const reply = await submitChallenge({
+    day: this.record.day,
+    scores: this.record.results.map(r => r.score || 0)
+  });
+
+  // The screen changed while sending.
+  if (token !== this.token || !rankEl.isConnected) return;
+
+  if (reply.ok && reply.rank) {
+    rankEl.textContent = t("daily.rank", {
+      rank: rankText({ rank: reply.rank }, reply.total) || `#${reply.rank}`
+    });
+    rankEl.classList.add("ok");
+  } else {
+    rankEl.textContent = t("daily.rankFailed");
+  }
+};
 
 
 function clampScore(value) {
