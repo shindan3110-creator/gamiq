@@ -4,6 +4,7 @@ import { t } from "./i18n.js";
 import { getProfile } from "./profile.js";
 import { fetchRanking } from "./api.js";
 import { titleFor, rankText, shareResult } from "./share.js";
+import { track } from "./analytics.js";
 
 export class GamiqResults {
   constructor({
@@ -273,6 +274,11 @@ export class GamiqResults {
         summary: this.scoreEngine.getSummary(),
         nickname: getProfile().nickname,
         rank: this.lastRankText
+      });
+
+      track("share_result", {
+        share_method: result,
+        gamiq_score: this.scoreEngine.getSummary().gamiq ?? 0
       });
 
       if (result === "downloaded") {
