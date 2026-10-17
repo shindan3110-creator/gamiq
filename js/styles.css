@@ -13391,3 +13391,52 @@ STEP 31-2: DAILY CHALLENGE
   .dl-rules{ margin-bottom:12px; line-height:1.6; }
   .dl-total strong{ font-size:40px; }
 }
+
+
+/* ==========================================
+STEP 35: DAILY CHALLENGE RANKING
+========================================== */
+
+.dl-rank{
+  margin:-4px 0 14px;
+
+  color:#7c8798;
+
+  font-size:13px;
+  font-weight:900;
+}
+
+.dl-rank.ok{
+  color:#ffd76a;
+  font-size:16px;
+}
+
+.dl-rank-button{
+  min-width:220px;
+  min-height:44px;
+
+  margin-bottom:14px;
+
+  border:1px solid rgba(255,215,106,.4);
+  border-radius:12px;
+
+  background:rgba(255,215,106,.08);
+
+  color:#ffd76a;
+
+  font:inherit;
+  font-size:14px;
+  font-weight:1000;
+
+  cursor:pointer;
+}
+
+/* Three ranking tabs: keep them on one line on phones */
+.gamiq-ranking-tabs button{
+  min-width:0;
+  white-space:nowrap;
+}
+
+.gamiq-ranking-tabs{
+  grid-template-columns:repeat(3, 1fr);
+}
