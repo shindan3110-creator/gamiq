@@ -75,6 +75,10 @@ import {
 } from "./ranking.js";
 
 import {
+  titleFor
+} from "./share.js";
+
+import {
   getProfile,
   saveNickname,
   suggestNickname,
@@ -1317,6 +1321,11 @@ function showCardComplete(
         <strong class="gamiq-levelup-gamiq">
           GAMIQ ${escapeHtml(levelUp.gamiq ?? "---")}
         </strong>
+        ${
+          titleFor(levelUp.gamiq)
+            ? `<span class="gamiq-levelup-rankname" style="color:${titleFor(levelUp.gamiq).color}">${escapeHtml(titleFor(levelUp.gamiq).name)}</span>`
+            : ""
+        }
         <span class="gamiq-levelup-next">
           ${escapeHtml(
             levelUp.maxed
