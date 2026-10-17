@@ -1,6 +1,7 @@
 // GAMIQ（ゲーミック） v2 - Speed Games
 
 import { t } from "../i18n.js";
+import { byLevel, byLevelInt } from "../difficulty.js";
 
 
 export function createSpeedGames() {
@@ -31,7 +32,8 @@ export function runSpeedGame({
     case "color_switch":
       return runColorSwitch({
         container,
-        onComplete
+        onComplete,
+        level: game.level
       });
 
     default:
@@ -64,12 +66,22 @@ const CS_COLORS = [
 
 function runColorSwitch({
   container,
-  onComplete
+  onComplete,
+  level = 1
 }) {
   let active = true;
 
+  /*
+   * DIFFICULTY BY LEVEL (Lv1 = same as before)
+   * - COLOR / WORD switches more often (Lv1: every 3-5, Lv10: every 1-3)
+   * - The 4 buttons sometimes change places (Lv1: never, Lv10: 60%)
+   */
+  const switchMin = byLevelInt(level, 3, 1);
+  const switchMax = byLevelInt(level, 5, 3);
+  const shuffleRate = byLevel(level, 0, 0.6);
+
   let mode = "color";
-  let answersUntilSwitch = randomInt(3, 5);
+  let answersUntilSwitch = randomInt(switchMin, switchMax);
 
   let correct = 0;
   let wrong = 0;
@@ -183,7 +195,33 @@ function runColorSwitch({
     void wordElement.offsetWidth;
     wordElement.classList.add("pop");
 
+    // Higher levels: the buttons sometimes change places.
+    if (Math.random() < shuffleRate) {
+      shuffleButtons();
+    }
+
     shownAt = performance.now();
+  }
+
+  function shuffleButtons() {
+    const box = container.querySelector("[data-cs-buttons]");
+
+    if (!box) {
+      return;
+    }
+
+    const order = [...buttons];
+
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+
+    order.forEach(button => box.appendChild(button));
+
+    box.classList.remove("cs-shuffled");
+    void box.offsetWidth;
+    box.classList.add("cs-shuffled");
   }
 
 
@@ -231,7 +269,7 @@ function runColorSwitch({
 
     if (answersUntilSwitch <= 0) {
       mode = mode === "color" ? "word" : "color";
-      answersUntilSwitch = randomInt(3, 5);
+      answersUntilSwitch = randomInt(switchMin, switchMax);
       renderMode(true);
     }
 
@@ -259,7 +297,15 @@ function runColorSwitch({
 
     if (index !== -1) {
       event.preventDefault();
-      answer(CS_COLORS[index].id);
+
+      // Key 1-4 = the button at that position on screen
+      // (buttons may have been shuffled).
+      const onScreen =
+        container.querySelectorAll("[data-cs-buttons] [data-cs-color]")[index];
+
+      if (onScreen) {
+        answer(onScreen.dataset.csColor);
+      }
     }
   }
 
