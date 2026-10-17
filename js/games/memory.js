@@ -19,9 +19,9 @@ export function createMemoryGames() {
       id: "memory_positions",
       type: "memory_positions",
       title: "GHOST GRID",
-      rule: "REMEMBER THE LIT TILES, THEN TAP THEM ALL!",
+      rule: "REMEMBER WHERE THE GHOSTS HIDE, THEN FIND THEM ALL!",
       skill: "MEMORY",
-      theme: "space",
+      theme: "haunted",
       duration: 9000
     },
 
@@ -414,6 +414,24 @@ function runSequenceMemory({
 }
 
 
+
+/* ---------- GHOST GRID art ---------- */
+
+const GHOST_SVG = `
+  <svg viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M20 92 L20 46 Q20 12 50 12 Q80 12 80 46 L80 92
+             L70 84 L60 92 L50 84 L40 92 L30 84 Z"
+          fill="#f4f1ff" stroke="#c9c2ff" stroke-width="2"/>
+    <ellipse cx="39" cy="44" rx="6" ry="8" fill="#2a2140"/>
+    <ellipse cx="61" cy="44" rx="6" ry="8" fill="#2a2140"/>
+    <circle cx="41" cy="41" r="2" fill="#fff"/>
+    <circle cx="63" cy="41" r="2" fill="#fff"/>
+    <ellipse cx="50" cy="62" rx="6" ry="7" fill="#2a2140"/>
+    <ellipse cx="30" cy="56" rx="5" ry="3" fill="#ffb3c8" opacity=".7"/>
+    <ellipse cx="70" cy="56" rx="5" ry="3" fill="#ffb3c8" opacity=".7"/>
+  </svg>
+`;
+
 /* ==========================================
 GHOST GRID
 ========================================== */
@@ -460,10 +478,10 @@ function runPositionMemory({
 
 
   container.innerHTML = `
-    <div class="memory-wrap">
+    <div class="memory-wrap ghost-grid">
 
       <div class="memory-top">
-        <span>TARGETS</span>
+        <span>GHOSTS</span>
 
         <strong>
           ${targetCount}
@@ -479,7 +497,7 @@ function runPositionMemory({
         class="memory-message"
         data-position-message
       >
-        ${t("memory.remember")}
+        ${t("ghost.watch")}
       </div>
 
     </div>
@@ -504,12 +522,12 @@ function runPositionMemory({
     );
 
 
+  // Every tile is a gravestone. Ghosts peek out from some of them...
+  cells.forEach(cell => cell.classList.add("gg-grave"));
+
   targets.forEach(
     index => {
-      cells[index]
-        .classList.add(
-          "memory-target"
-        );
+      showGhost(cells[index], "gg-peek");
     }
   );
 
@@ -523,12 +541,10 @@ function runPositionMemory({
         }
 
 
+        // ...then hide behind them again.
         targets.forEach(
           index => {
-            cells[index]
-              .classList.remove(
-                "memory-target"
-              );
+            hideGhost(cells[index]);
           }
         );
 
@@ -539,7 +555,7 @@ function runPositionMemory({
 
         stopClock = startInputClock({
           message,
-          label: t("memory.select"),
+          label: t("ghost.find"),
           limitMs: 3000 + targetCount * msPerTile,
           onTimeout: () => finish()
         });
@@ -553,6 +569,29 @@ function runPositionMemory({
     hideTimer
   );
 
+
+  function showGhost(cell, mode) {
+    cell.querySelector(".gg-ghost")?.remove();
+
+    const ghost = document.createElement("span");
+    ghost.className = `gg-ghost ${mode}`;
+    ghost.innerHTML = GHOST_SVG;
+
+    cell.appendChild(ghost);
+  }
+
+  function hideGhost(cell) {
+    const ghost = cell.querySelector(".gg-ghost");
+
+    if (!ghost) {
+      return;
+    }
+
+    ghost.classList.add("gg-sink");
+
+    const timer = setTimeout(() => ghost.remove(), 260);
+    timers.push(timer);
+  }
 
   function pressCell(
     index
@@ -576,20 +615,14 @@ function runPositionMemory({
         index
       )
     ) {
+      // Found one! The ghost pops out.
       correct++;
-
-      cells[index]
-        .classList.add(
-          "memory-correct"
-        );
-
+      cells[index].classList.add("gg-found");
+      showGhost(cells[index], "gg-caught");
     } else {
+      // Nobody here.
       wrong++;
-
-      cells[index]
-        .classList.add(
-          "memory-wrong"
-        );
+      cells[index].classList.add("gg-empty");
     }
 
 
