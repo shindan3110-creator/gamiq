@@ -2,6 +2,8 @@
 
 import { t } from "./i18n.js";
 import { getProfile } from "./profile.js";
+import { fetchRanking } from "./api.js";
+import { titleFor, rankText, shareResult } from "./share.js";
 
 export class GamiqResults {
   constructor({
@@ -67,6 +69,11 @@ export class GamiqResults {
           data-results-gamiq
         >
           ---
+        </div>
+
+        <div class="gamiq-results-badges">
+          <span class="gamiq-results-title" data-results-title hidden></span>
+          <span class="gamiq-results-rank" data-results-rank hidden></span>
         </div>
 
         <div class="gamiq-results-confidence">
@@ -197,13 +204,25 @@ export class GamiqResults {
         </div>
 
 
-        <button
-          type="button"
-          class="gamiq-results-ranking"
-          data-results-ranking
-        >
-          🏆 ${t("rank.title")}
-        </button>
+        <div class="gamiq-results-actions">
+          <button
+            type="button"
+            class="gamiq-results-share"
+            data-results-share
+          >
+            📤 ${t("share.button")}
+          </button>
+
+          <button
+            type="button"
+            class="gamiq-results-ranking"
+            data-results-ranking
+          >
+            🏆 ${t("rank.title")}
+          </button>
+        </div>
+
+        <div class="gamiq-results-share-note" data-results-share-note></div>
 
         <button
           type="button"
@@ -238,6 +257,32 @@ export class GamiqResults {
           this.onRanking();
         }
       });
+
+    // SHARE
+    const shareButton =
+      overlay.querySelector("[data-results-share]");
+
+    const shareNote =
+      overlay.querySelector("[data-results-share-note]");
+
+    shareButton.addEventListener("click", async () => {
+      shareButton.disabled = true;
+      shareNote.textContent = "";
+
+      const result = await shareResult({
+        summary: this.scoreEngine.getSummary(),
+        nickname: getProfile().nickname,
+        rank: this.lastRankText
+      });
+
+      if (result === "downloaded") {
+        shareNote.textContent = t("share.downloaded");
+      } else if (result === "failed") {
+        shareNote.textContent = t("share.failed");
+      }
+
+      shareButton.disabled = false;
+    });
 
     continueButton.addEventListener(
       "click",
@@ -310,6 +355,22 @@ export class GamiqResults {
 
     gamiqElement.textContent =
       summary.gamiq ?? "---";
+
+    // TITLE (from GAMIQ)
+    const titleElement =
+      overlay.querySelector("[data-results-title]");
+
+    const title = titleFor(summary.gamiq);
+
+    titleElement.hidden = !title;
+
+    if (title) {
+      titleElement.textContent = title.name;
+      titleElement.style.setProperty("--title-color", title.color);
+    }
+
+    // TODAY'S RANK (loaded from the server)
+    this.loadRank();
 
 
     confidenceElement.textContent =
@@ -434,6 +495,30 @@ export class GamiqResults {
       summary.levelHistory.length === 0;
   }
 
+
+  async loadRank() {
+    const rankElement =
+      this.overlay?.querySelector("[data-results-rank]");
+
+    if (!rankElement) {
+      return;
+    }
+
+    const requestId = (this.rankRequestId = (this.rankRequestId || 0) + 1);
+
+    const data = await fetchRanking("daily");
+
+    if (requestId !== this.rankRequestId) {
+      return;
+    }
+
+    const text = data.ok ? rankText(data.me, data.total) : null;
+
+    this.lastRankText = text;
+
+    rankElement.hidden = !text;
+    rankElement.textContent = text ? `${t("share.today")} ${text}` : "";
+  }
 
   show() {
     const overlay =
