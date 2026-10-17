@@ -1,5 +1,6 @@
 import { GamiqThreeScene } from "./three-renderer.js";
 import { byLevel } from "../difficulty.js";
+import { sfx } from "../sound.js";
 
 export async function runRace3D({ container, onComplete, level = 1 }) {
   if (!container) return () => {};
@@ -369,6 +370,8 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
       return;
     }
 
+    sfx("jump");
+
     jumpVelocity = 8.7;
     flash("JUMP!", "good");
   }
@@ -484,6 +487,8 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
   }
 
   function hit() {
+    sfx("crash");
+
     crashes++;
     streak = 0;
     slowLeft = 2.2;
@@ -494,6 +499,8 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
   }
 
   function collectBoost() {
+    sfx("boost");
+
     boosts++;
     boostLeft = Math.max(boostLeft, 3.4);
 
