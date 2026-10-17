@@ -84,7 +84,8 @@ export function runThreeGame({
     case "space_blaster":
   return runSpace3D({
     container,
-    onComplete
+    onComplete,
+    level: game.level
   });
 
     case "lane_dodge":
