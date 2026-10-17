@@ -98,6 +98,8 @@ const STRINGS = {
     "memory.remember": "REMEMBER",
     "memory.select": "SELECT",
     "memory.tapInOrder": "TAP 1 → 2 → 3...",
+    "ghost.watch": "WHERE ARE THE GHOSTS?",
+    "ghost.find": "FIND THE GHOSTS!",
 
     /* ---------- IN-GAME: BLOCK ESCAPE ---------- */
     "block.hintClick": "Click a block, then click an arrow to move it",
@@ -113,13 +115,13 @@ const STRINGS = {
     "rule.reflex_ninja_counter":
       "HIT THE ENEMY NINJAS. DON'T HIT FRIENDS!",
     "rule.reflex_quick_draw": "WAIT FOR \"DRAW!\" THEN SHOOT FAST!",
-    "rule.reflex_lane_panic": "GET TO THE ONLY LANE WITHOUT ⚠!",
+    "rule.reflex_lane_panic": "SPIKES ARE FALLING! MOVE THE CAT TO THE SAFE LANE!",
     "rule.reflex_friend_foe": "SHOOT THE RED ENEMIES. DON'T HIT BLUE FRIENDS!",
     "rule.puzzle_block_escape": "SLIDE THE BLOCKS. GET THE RED ONE OUT!",
     "rule.puzzle_pipe_connect": "TAP TO ROTATE. CONNECT IN → OUT!",
     "rule.puzzle_laser_mirror": "TURN THE MIRROR TO HIT THE TARGET!",
     "rule.memory_sequence": "WATCH THE ORDER, THEN TAP IT BACK!",
-    "rule.memory_positions": "REMEMBER THE LIT TILES, THEN TAP THEM ALL!",
+    "rule.memory_positions": "REMEMBER WHERE THE GHOSTS HIDE, THEN FIND THEM ALL!",
     "rule.memory_numbers": "REMEMBER THE NUMBERS. TAP 1, 2, 3... IN ORDER!",
     "rule.three_zombie_assault": "SLASH THE ZOMBIES BEFORE THEY REACH YOU!",
     "rule.three_space_blaster": "AIM AND SHOOT DOWN 6 ENEMY SHIPS!",
@@ -225,6 +227,8 @@ const STRINGS = {
     "memory.remember": "覚えろ",
     "memory.select": "押せ！",
     "memory.tapInOrder": "1 → 2 → 3… の順に押せ",
+    "ghost.watch": "おばけはどこ？",
+    "ghost.find": "おばけを見つけろ！",
 
     /* ---------- IN-GAME: BLOCK ESCAPE ---------- */
     "block.hintClick": "ブロックをクリック → 矢印をクリックして移動",
@@ -239,13 +243,13 @@ const STRINGS = {
     /* ---------- GAME RULES (key = game id) ---------- */
     "rule.reflex_ninja_counter": "敵の忍者だけを叩け！味方は叩くな！",
     "rule.reflex_quick_draw": "「DRAW!」が出た瞬間に撃て！",
-    "rule.reflex_lane_panic": "⚠ のない、ただ1つの安全なレーンへ逃げろ！",
+    "rule.reflex_lane_panic": "トゲが落ちてくる！ネコを安全なレーンへ逃がせ！",
     "rule.reflex_friend_foe": "赤い敵だけを撃て！青い味方は撃つな！",
     "rule.puzzle_block_escape": "ブロックを動かして、赤いブロックを出口へ！",
     "rule.puzzle_pipe_connect": "タップで回転。IN から OUT までつなげ！",
     "rule.puzzle_laser_mirror": "鏡を回してレーザーを標的に当てろ！",
     "rule.memory_sequence": "光った順番を覚えて、同じ順に押せ！",
-    "rule.memory_positions": "光った場所を覚えて、すべて押せ！",
+    "rule.memory_positions": "おばけが隠れた場所を覚えて、全部見つけろ！",
     "rule.memory_numbers": "数字の位置を覚えて、1から順番に押せ！",
     "rule.three_zombie_assault": "迫ってくるゾンビを斬れ！",
     "rule.three_space_blaster": "狙いを定めて敵艦を6機撃ち落とせ！",
