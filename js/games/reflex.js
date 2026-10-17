@@ -28,7 +28,7 @@ export function createReflexGames() {
       id: "reflex_lane_panic",
       type: "lane_panic",
       title: "LANE PANIC",
-      rule: "MOVE AWAY FROM THE ⚠ LANE!",
+      rule: "SPIKES ARE FALLING! MOVE THE CAT TO THE SAFE LANE!",
       skill: "REFLEX",
       theme: "cyber",
       duration: 12000
@@ -1975,6 +1975,48 @@ function runQuickDraw({
   };
 }
 
+/* ---------- LANE PANIC art ---------- */
+
+// A spiked iron ball (looks like it really hurts)
+const LANE_SPIKE_SVG = `
+  <svg viewBox="0 0 100 100" aria-hidden="true">
+    <polygon fill="#9aa3ad" stroke="#3b4048" stroke-width="2"
+      points="50,2 58,30 80,12 70,38 98,36 74,52 96,70 68,64 74,94 54,72 42,98 40,70 14,86 28,60 2,58 28,44 8,22 36,32 30,6"/>
+    <circle cx="50" cy="50" r="24" fill="#4a5059" stroke="#24282e" stroke-width="3"/>
+    <circle cx="42" cy="42" r="8" fill="#8d96a1" opacity=".75"/>
+    <circle cx="58" cy="58" r="3" fill="#2a2e34"/>
+  </svg>
+`;
+
+// The cat you have to protect
+const LANE_CAT_SVG = `
+  <svg viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M24 92 Q20 62 34 52 L66 52 Q80 62 76 92 Z" fill="#f2a24a"/>
+    <path d="M76 84 Q96 80 90 60" stroke="#f2a24a" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <path d="M40 66 Q50 72 60 66" stroke="#d07a24" stroke-width="4" fill="none"/>
+    <path d="M22 22 L30 46 L44 32 Z" fill="#f2a24a"/>
+    <path d="M78 22 L70 46 L56 32 Z" fill="#f2a24a"/>
+    <path d="M27 29 L32 42 L39 34 Z" fill="#ffc9c9"/>
+    <path d="M73 29 L68 42 L61 34 Z" fill="#ffc9c9"/>
+    <ellipse cx="50" cy="44" rx="27" ry="22" fill="#f6b25e"/>
+    <path d="M50 22 L50 30 M42 24 L44 31 M58 24 L56 31" stroke="#d07a24" stroke-width="3" stroke-linecap="round"/>
+    <g class="cat-eyes-open">
+      <ellipse cx="40" cy="44" rx="4" ry="5.5" fill="#1d1a16"/>
+      <ellipse cx="60" cy="44" rx="4" ry="5.5" fill="#1d1a16"/>
+      <circle cx="41.5" cy="42" r="1.5" fill="#fff"/>
+      <circle cx="61.5" cy="42" r="1.5" fill="#fff"/>
+    </g>
+    <g class="cat-eyes-hurt" stroke="#1d1a16" stroke-width="3" stroke-linecap="round">
+      <path d="M36 40 L44 48 M44 40 L36 48"/>
+      <path d="M56 40 L64 48 M64 40 L56 48"/>
+    </g>
+    <path d="M47 52 L53 52 L50 55 Z" fill="#e0708a"/>
+    <path d="M50 55 Q46 59 43 57 M50 55 Q54 59 57 57" stroke="#1d1a16" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M30 50 L16 47 M30 54 L16 56 M70 50 L84 47 M70 54 L84 56" stroke="#7a5a3a" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+`;
+
+
 /* ==========================================
 LANE PANIC (v2: no free points for standing still)
 - Each round, 2 of the 3 lanes are dangerous.
@@ -2036,25 +2078,22 @@ function runLanePanic({
             1 / ${rounds}
           </div>
 
-          <div
-            class="lane-warning"
-            data-lane-warning
-          >
-            ⚠
+          <div class="lane-shadow" data-lane-shadow></div>
+          <div class="lane-shadow" data-lane-shadow></div>
+
+          <div class="lane-warning lane-spike" data-lane-warning>
+            ${LANE_SPIKE_SVG}
+          </div>
+
+          <div class="lane-warning lane-spike" data-lane-warning>
+            ${LANE_SPIKE_SVG}
           </div>
 
           <div
-            class="lane-warning"
-            data-lane-warning
-          >
-            ⚠
-          </div>
-
-          <div
-            class="lane-player"
+            class="lane-player lane-cat"
             data-lane-player
           >
-            ◆
+            ${LANE_CAT_SVG}
           </div>
 
         </div>
@@ -2093,6 +2132,13 @@ function runLanePanic({
     [
       ...container.querySelectorAll(
         "[data-lane-warning]"
+      )
+    ];
+
+  const shadows =
+    [
+      ...container.querySelectorAll(
+        "[data-lane-shadow]"
       )
     ];
 
@@ -2164,6 +2210,25 @@ function runLanePanic({
     const windowMs =
       roundWindow();
 
+    // Shadows on the ground show where the spikes will land.
+    shadows.forEach(
+      (shadow, i) => {
+        shadow.style.left =
+          laneLeft(dangerLanes[i]);
+
+        shadow.style.animationDuration =
+          `${windowMs}ms`;
+
+        shadow.classList.remove("show");
+        void shadow.offsetWidth;
+        shadow.classList.add("show");
+      }
+    );
+
+    warnings.forEach(
+      warning => warning.classList.remove("landed")
+    );
+
     warnings.forEach(
       (warning, i) => {
         warning.style.left =
@@ -2232,6 +2297,14 @@ function runLanePanic({
 
     const safe =
       lane === safeLane;
+
+    // The spikes hit the ground.
+    warnings.forEach(
+      warning => {
+        warning.style.animationDuration = "320ms";
+        warning.classList.add("landed");
+      }
+    );
 
     if (safe) {
       survived++;
