@@ -1,6 +1,7 @@
 // GAMIQ（ゲーミック） v2 - Memory Games
 
 import { t } from "../i18n.js";
+import { byLevelInt } from "../difficulty.js";
 
 export function createMemoryGames() {
   return [
@@ -50,19 +51,22 @@ export function runMemoryGame({
     case "memory_sequence":
       return runSequenceMemory({
         container,
-        onComplete
+        onComplete,
+        level: game.level
       });
 
     case "memory_positions":
       return runPositionMemory({
         container,
-        onComplete
+        onComplete,
+        level: game.level
       });
 
     case "memory_numbers":
       return runNumberMemory({
         container,
-        onComplete
+        onComplete,
+        level: game.level
       });
 
     default:
@@ -77,7 +81,8 @@ FLASH ORDER
 
 function runSequenceMemory({
   container,
-  onComplete
+  onComplete,
+  level = 1
 }) {
   let active = true;
   let inputEnabled = false;
@@ -87,8 +92,18 @@ function runSequenceMemory({
 
   const gridSize = 16;
 
+  /*
+   * DIFFICULTY BY LEVEL (Lv1 = same as before)
+   * - Longer sequence (Lv1: 4-7, Lv10: 7-10)
+   * - Faster flashes
+   * - Less time per tile to answer
+   */
+  const flashOn = byLevelInt(level, 480, 330);
+  const flashStep = byLevelInt(level, 700, 500);
+  const msPerTile = byLevelInt(level, 900, 700);
+
   const sequenceLength =
-    randomInt(4, 7);
+    randomInt(byLevelInt(level, 4, 7), byLevelInt(level, 7, 10));
 
   const sequence =
     createUniqueRandomIndexes(
@@ -197,11 +212,11 @@ function runSequenceMemory({
                 "memory-flash"
               );
           },
-          delay + 480
+          delay + flashOn
         );
 
 
-        delay += 700;
+        delay += flashStep;
 
 
         if (
@@ -220,7 +235,7 @@ function runSequenceMemory({
               stopClock = startInputClock({
                 message,
                 label: t("memory.yourTurn"),
-                limitMs: 3000 + sequence.length * 900,
+                limitMs: 3000 + sequence.length * msPerTile,
                 onTimeout: () => finish(false)
               });
             },
@@ -405,7 +420,8 @@ GHOST GRID
 
 function runPositionMemory({
   container,
-  onComplete
+  onComplete,
+  level = 1
 }) {
   let active = true;
   let inputEnabled = false;
@@ -415,8 +431,17 @@ function runPositionMemory({
 
   const gridSize = 16;
 
+  /*
+   * DIFFICULTY BY LEVEL (Lv1 = same as before)
+   * - More lit tiles (Lv1: 4-7, Lv10: 7-9)
+   * - Shorter look time
+   * - Less time per tile to answer
+   */
+  const showMs = byLevelInt(level, 1350, 900);
+  const msPerTile = byLevelInt(level, 1000, 800);
+
   const targetCount =
-    randomInt(4, 7);
+    randomInt(byLevelInt(level, 4, 7), byLevelInt(level, 7, 9));
 
   const targets =
     createUniqueRandomIndexes(
@@ -515,12 +540,12 @@ function runPositionMemory({
         stopClock = startInputClock({
           message,
           label: t("memory.select"),
-          limitMs: 3000 + targetCount * 1000,
+          limitMs: 3000 + targetCount * msPerTile,
           onTimeout: () => finish()
         });
 
       },
-      1350
+      showMs
     );
 
 
@@ -669,7 +694,8 @@ NUMBER TRACE
 
 function runNumberMemory({
   container,
-  onComplete
+  onComplete,
+  level = 1
 }) {
   let active = true;
   let inputEnabled = false;
@@ -677,8 +703,17 @@ function runNumberMemory({
 
   const gridSize = 16;
 
+  /*
+   * DIFFICULTY BY LEVEL (Lv1 = same as before)
+   * - More numbers (Lv1: 4-6, Lv10: 7-9)
+   * - Shorter look time
+   * - Less time per number to answer
+   */
+  const showMs = byLevelInt(level, 1800, 1300);
+  const msPerNumber = byLevelInt(level, 1000, 800);
+
   const numberCount =
-    randomInt(4, 6);
+    randomInt(byLevelInt(level, 4, 7), byLevelInt(level, 6, 9));
 
   const positions =
     createUniqueRandomIndexes(
@@ -790,12 +825,12 @@ function runNumberMemory({
         stopClock = startInputClock({
           message,
           label: t("memory.tapInOrder"),
-          limitMs: 3000 + numberCount * 1000,
+          limitMs: 3000 + numberCount * msPerNumber,
           onTimeout: () => finish(false)
         });
 
       },
-      1800
+      showMs
     );
 
 
