@@ -56,6 +56,11 @@ import {
 } from "./games/rhythm.js";
 
 import {
+  createSpotGames,
+  runSpotGame
+} from "./games/spot.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -144,7 +149,8 @@ const gamePool = [
   ...createThreeGames(),
   ...createSpeedGames(),
   ...createAimGames(),
-  ...createRhythmGames()
+  ...createRhythmGames(),
+  ...createSpotGames()
 ];
 
 
@@ -1262,6 +1268,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "spot_difference") {
+    return runSpotGame({
       game,
       container,
       onComplete
