@@ -98,8 +98,9 @@ export class GamiqScore {
 
     this.totalPlayMs = 0;
 
-    // Best ranking score today
-    this.bestRankScore = null;
+    // Best ranking score today: { score, gamiq, level }
+    // (gamiq + level are kept so the server can check the score)
+    this.bestRank = null;
   }
 
   resetLevelMeasurement() {
@@ -184,9 +185,16 @@ export class GamiqScore {
       this.bestStreak = safeCount(data.bestStreak);
       this.totalPlayMs = safeCount(data.totalPlayMs);
 
-      this.bestRankScore =
-        Number.isFinite(data.bestRankScore)
-          ? data.bestRankScore
+      this.bestRank =
+        data.bestRank &&
+        Number.isFinite(data.bestRank.score) &&
+        Number.isFinite(data.bestRank.gamiq) &&
+        Number.isFinite(data.bestRank.level)
+          ? {
+              score: data.bestRank.score,
+              gamiq: data.bestRank.gamiq,
+              level: data.bestRank.level
+            }
           : null;
 
     } catch (error) {
@@ -212,7 +220,7 @@ export class GamiqScore {
           currentStreak: this.currentStreak,
           bestStreak: this.bestStreak,
           totalPlayMs: this.totalPlayMs,
-          bestRankScore: this.bestRankScore,
+          bestRank: this.bestRank,
           savedAt: Date.now()
         })
       );
@@ -288,7 +296,13 @@ export class GamiqScore {
     );
 
     // Live ranking score (after a few games in this level)
-    this.updateBestRankScore(this.getLiveRankScore());
+    if (this.levelPlayed >= MIN_GAMES_FOR_RANK) {
+      this.updateBestRank(
+        this.getLiveRankScore(),
+        this.getLevelGamiq(),
+        this.level
+      );
+    }
 
     let levelUp = null;
 
@@ -313,7 +327,7 @@ export class GamiqScore {
       at: Date.now()
     });
 
-    this.updateBestRankScore(rankScore);
+    this.updateBestRank(rankScore, gamiq, finishedLevel);
 
     const maxed = finishedLevel >= MAX_LEVEL;
 
@@ -332,16 +346,19 @@ export class GamiqScore {
     };
   }
 
-  updateBestRankScore(value) {
-    if (!Number.isFinite(value)) {
+  updateBestRank(score, gamiq, level) {
+    if (
+      !Number.isFinite(score) ||
+      !Number.isFinite(gamiq)
+    ) {
       return;
     }
 
     if (
-      this.bestRankScore === null ||
-      value > this.bestRankScore
+      this.bestRank === null ||
+      score > this.bestRank.score
     ) {
-      this.bestRankScore = value;
+      this.bestRank = { score, gamiq, level };
     }
   }
 
@@ -458,8 +475,11 @@ export class GamiqScore {
       confidence:
         this.getConfidence(),
 
+      bestRank:
+        this.bestRank ? { ...this.bestRank } : null,
+
       bestRankScore:
-        this.bestRankScore,
+        this.bestRank?.score ?? null,
 
       abilities: {
         REFLEX:
