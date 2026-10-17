@@ -1,6 +1,7 @@
 // GAMIQ（ゲーミック） v2 - Advanced Reflex Games
 
 import { byLevel, byLevelInt } from "../difficulty.js";
+import { sfx } from "../sound.js";
 
 export function createReflexGames() {
   return [
@@ -577,6 +578,9 @@ function runNinjaCounter({
     void decoy.offsetWidth;
     decoy.classList.add("rustle-decoy");
 
+    // Same rustle sound as a real ninja, so the feint also fools your ears.
+    sfx("whoosh");
+
     feintClearTimer =
       setTimeout(
         () => decoy.classList.remove("rustle-decoy"),
@@ -684,6 +688,8 @@ function runNinjaCounter({
       "show"
     );
 
+    sfx("whoosh");
+
 
     signalTime =
       performance.now();
@@ -768,6 +774,10 @@ function runNinjaCounter({
               );
 
 
+            sfx("good");
+
+
+
             showMessage(
               "GOOD!"
             );
@@ -826,6 +836,9 @@ function runNinjaCounter({
         );
 
         combo = 0;
+
+        sfx("bad");
+
 
         showMessage(
           "FEINT!",
@@ -966,6 +979,9 @@ function runNinjaCounter({
   function attackTarget(
     hole
   ) {
+    // Katana "shaKIIN"
+    sfx("slashHit");
+
     const stageRect =
       stage.getBoundingClientRect();
 
@@ -1085,6 +1101,8 @@ function runNinjaCounter({
   function registerMiss(
     text
   ) {
+    sfx("hurt");
+
     clearTimeout(
       hideTimer
     );
@@ -1741,6 +1759,9 @@ function runQuickDraw({
 
   // Player gun: recoil + muzzle flash + smoke
   function fireGun() {
+    // Revolver "BANG"
+    sfx("gunshot");
+
     restartClass(gun, "qd-fire");
     later(() => gun.classList.remove("qd-fire"), 600);
   }
@@ -1821,6 +1842,8 @@ function runQuickDraw({
 
     message.textContent = "DRAW!";
 
+    sfx("tick");
+
     arena.classList.add("duel-draw");
     opponent.classList.add("qd-draw");
 
@@ -1832,6 +1855,9 @@ function runQuickDraw({
         message.textContent = "TOO SLOW";
 
         opponent.classList.add("qd-shoot");
+
+        sfx("gunshotFar");
+        sfx("hurt");
         restartClass(arena, "qd-hurt-on");
         restartClass(arena, "reflex-screen-fail");
 
@@ -1896,6 +1922,8 @@ function runQuickDraw({
 
     // Hit: impact flash, hat flies, opponent falls back
     opponent.classList.add("duel-hit", "qd-hit");
+
+    later(() => sfx("impact"), 40);
 
     restartClass(arena, "reflex-screen-hit");
 
@@ -2854,6 +2882,8 @@ function runFriendOrFoe({
 
     shots++;
 
+    sfx("laser");
+
     const element =
       event.target.closest?.(".foe2-target");
 
@@ -2871,6 +2901,7 @@ function runFriendOrFoe({
 
     if (target.kind === "enemy") {
       hits++;
+      sfx("pop");
       enemiesResolved++;
 
       reactions.push(performance.now() - target.born);
@@ -2886,6 +2917,7 @@ function runFriendOrFoe({
 
     // Friend hit
     friendHits++;
+    sfx("bad");
 
     removeTarget(target, "hit");
     showShotMark(event, "miss");
