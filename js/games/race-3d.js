@@ -8,7 +8,11 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
   let active = true;
   let finished = false;
 
-  const TOTAL_SECONDS = 60;
+  // Step 31-1: 60s -> 40s (shorter = easier to replay).
+  // The game gets harder at the same pace as before, just compressed:
+  // "ramp time" runs 1.5x faster than the real clock.
+  const TOTAL_SECONDS = 40;
+  const RAMP = 60 / TOTAL_SECONDS;
   const PLAYER_Z = 3;
   const LANES = [-2.65, 0, 2.65];
 
@@ -54,7 +58,7 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
       <div class="rush-hud">
         <div>
           <span>TIME</span>
-          <strong data-rush-time>60</strong>
+          <strong data-rush-time>${TOTAL_SECONDS}</strong>
         </div>
         <div>
           <span>DISTANCE</span>
@@ -536,14 +540,14 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
 
     const distanceScore =
       // Faster levels travel further, so the target distance grows too.
-      Math.min(1, distance / (1900 * startSpeed / 21));
+      Math.min(1, distance / (1900 * (TOTAL_SECONDS / 60) * startSpeed / 21));
 
     const finalScore = Math.round(
       Math.min(
         100,
         distanceScore * 80 +
         accuracy * 12 +
-        Math.min(1, boostSeconds / 20) * 5 +
+        Math.min(1, boostSeconds / (20 * TOTAL_SECONDS / 60)) * 5 +
         Math.min(1, bestStreak / 12) * 3
       )
     );
@@ -570,7 +574,7 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
           crashes,
           boosts,
           bestStreak,
-          durationSeconds: 60
+          durationSeconds: TOTAL_SECONDS
         }
       });
     }, 460);
@@ -583,6 +587,9 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
 
     const t = (performance.now() - startTime) / 1000;
     const remaining = Math.max(0, TOTAL_SECONDS - t);
+
+    // Difficulty clock (see RAMP above).
+    const rt = t * RAMP;
 
     if (remaining <= 0) {
       finish();
@@ -598,7 +605,7 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
     );
 
     // Faster base speed: you have to stay focused from the start.
-    const baseSpeed = startSpeed + Math.min(9, t / 6);
+    const baseSpeed = startSpeed + Math.min(9, rt / 6);
 
     const factor =
       slowLeft > 0 ? 0.65 :
@@ -679,11 +686,11 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
     spawnLeft -= delta;
 
     if (spawnLeft <= 0) {
-      spawn(t);
+      spawn(rt);
 
       // Obstacles come more often as time goes on.
       spawnLeft =
-        Math.max(spawnMin, spawnBase - t / 90) +
+        Math.max(spawnMin, spawnBase - rt / 90) +
         Math.random() * 0.25;
     }
 
