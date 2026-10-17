@@ -61,6 +61,11 @@ import {
 } from "./games/spot.js";
 
 import {
+  createCupGames,
+  runCupGame
+} from "./games/cups.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -150,7 +155,8 @@ const gamePool = [
   ...createSpeedGames(),
   ...createAimGames(),
   ...createRhythmGames(),
-  ...createSpotGames()
+  ...createSpotGames(),
+  ...createCupGames()
 ];
 
 
@@ -1268,6 +1274,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "cup_shuffle") {
+    return runCupGame({
       game,
       container,
       onComplete
