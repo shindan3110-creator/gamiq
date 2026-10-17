@@ -13489,3 +13489,83 @@ STEP 37: DAILY — SWIPE TO THE NEXT GAME
 .dl-overlay{
   overscroll-behavior:contain;
 }
+
+
+
+
+/* ==========================================
+STEP 38: SHARE BUTTONS (LINE / X / COPY)
+========================================== */
+
+.gamiq-share-row{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+
+  width:100%;
+  margin:10px 0 4px;
+}
+
+.gamiq-share-btn{
+  flex:1 1 0;
+  min-width:72px;
+  max-width:130px;
+  min-height:44px;
+
+  padding:0 10px;
+
+  border:1px solid transparent;
+  border-radius:12px;
+
+  font:inherit;
+  font-size:14px;
+  font-weight:1000;
+
+  cursor:pointer;
+}
+
+.gamiq-share-btn.line{
+  background:#06c755;
+  color:#ffffff;
+}
+
+.gamiq-share-btn.x{
+  background:#000000;
+  border-color:rgba(255,255,255,.35);
+  color:#ffffff;
+  font-size:18px;
+}
+
+.gamiq-share-btn.copy,
+.gamiq-share-btn.other{
+  background:rgba(255,255,255,.08);
+  border-color:rgba(255,255,255,.18);
+  color:#e6edf3;
+  font-size:13px;
+}
+
+.dl-share-label{
+  margin-top:2px;
+
+  color:#7c8798;
+
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.14em;
+}
+
+.dl-final .gamiq-share-row{
+  margin-bottom:14px;
+}
+
+
+/* ==========================================
+STEP 39: INSTAGRAM SHARE BUTTON
+========================================== */
+
+.gamiq-share-btn.insta{
+  background:linear-gradient(45deg, #f9ce34, #ee2a7b 55%, #6228d7);
+  color:#ffffff;
+  font-size:13px;
+}
