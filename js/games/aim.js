@@ -1,6 +1,7 @@
 // GAMIQ（ゲーミック） v2 - Aim Games
 
 import { t } from "../i18n.js";
+import { byLevel } from "../difficulty.js";
 
 
 export function createAimGames() {
@@ -31,7 +32,8 @@ export function runAimGame({
     case "bullseye":
       return runBullseye({
         container,
-        onComplete
+        onComplete,
+        level: game.level
       });
 
     default:
@@ -73,9 +75,17 @@ const BE_TARGET_SVG = `
 
 function runBullseye({
   container,
-  onComplete
+  onComplete,
+  level = 1
 }) {
   let active = true;
+
+  /*
+   * DIFFICULTY BY LEVEL (Lv1 = same as before)
+   * Targets are smaller and shrink away faster.
+   */
+  const sizeMul = byLevel(level, 1, 0.8);
+  const lifeMul = byLevel(level, 1, 0.7);
 
   let index = 0;
   let totalPoints = 0;
@@ -130,12 +140,14 @@ function runBullseye({
   /* ---------- HELPERS ---------- */
 
   function baseSize() {
-    return range.clientWidth < 480 ? 104 : 124;
+    return Math.round(
+      (range.clientWidth < 480 ? 104 : 124) * sizeMul
+    );
   }
 
   function lifeTime() {
     // 1.9s at the start -> 1.25s at the end
-    return 1900 - (index / BE_TARGETS) * 650;
+    return (1900 - (index / BE_TARGETS) * 650) * lifeMul;
   }
 
   function updateHud() {
