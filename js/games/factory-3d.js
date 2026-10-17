@@ -6,9 +6,10 @@ import { sfx } from "../sound.js";
 export async function runFactory3D({ container, onComplete, level = 1 }) {
   if (!container) return () => {};
 
-  // 3 stages: 3 gates, then 4 gates, then 5 gates.
+  // 3 stages: 2 gates, then 3 gates, then 4 gates.
+  // (Step 31-1: was 3/4/5 — shorter run, same 3 battles.)
   // Each stage ends with a battle. Survivors move on.
-  const BLOCKS = [3, 4, 5];
+  const BLOCKS = [2, 3, 4];
   const STAGES = BLOCKS.length;
   const TOTAL_GATES = BLOCKS.reduce((sum, n) => sum + n, 0);
 
@@ -26,8 +27,8 @@ export async function runFactory3D({ container, onComplete, level = 1 }) {
   // Gates come faster at higher levels (less time to think).
   const ROAD_SPEED = byLevel(level, 13.5, 18);
   const HIT_Z = 2;
-  const BATTLE_LENGTH_NORMAL = 4.2;
-  const BATTLE_LENGTH_BOSS = 5.6;
+  const BATTLE_LENGTH_NORMAL = 3.6;
+  const BATTLE_LENGTH_BOSS = 4.8;
   const startTime = performance.now();
 
   let active = true;
@@ -676,7 +677,7 @@ export async function runFactory3D({ container, onComplete, level = 1 }) {
 
     gateRow = {
       pair,
-      z: -34,
+      z: -30,
 
       objects: [
         makeGate(pair[0], LANES[0]),
