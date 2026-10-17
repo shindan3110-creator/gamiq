@@ -71,6 +71,11 @@ import {
 } from "./games/tower.js";
 
 import {
+  createOddOneGames,
+  runOddOneGame
+} from "./games/oddone.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -162,7 +167,8 @@ const gamePool = [
   ...createRhythmGames(),
   ...createSpotGames(),
   ...createCupGames(),
-  ...createTowerGames()
+  ...createTowerGames(),
+  ...createOddOneGames()
 ];
 
 
@@ -1280,6 +1286,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "odd_one_out") {
+    return runOddOneGame({
       game,
       container,
       onComplete
