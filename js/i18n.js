@@ -147,7 +147,7 @@ const STRINGS = {
     "rule.memory_numbers": "REMEMBER THE NUMBERS. TAP 1, 2, 3... IN ORDER!",
     "rule.three_zombie_assault": "SLASH THE ZOMBIES BEFORE THEY REACH YOU!",
     "rule.three_space_blaster": "AIM AND SHOOT DOWN 6 ENEMY SHIPS!",
-    "rule.three_lane_dodge": "DODGE AND JUMP FOR 60 SECONDS!",
+    "rule.three_lane_dodge": "DODGE AND JUMP FOR 40 SECONDS!",
     "rule.three_factory_rush":
       "PICK THE BETTER GATES AND WIN ALL 3 BATTLES!",
     "rule.speed_color_switch":
@@ -341,7 +341,7 @@ const STRINGS = {
     "rule.memory_numbers": "数字の位置を覚えて、1から順番に押せ！",
     "rule.three_zombie_assault": "迫ってくるゾンビを斬れ！",
     "rule.three_space_blaster": "狙いを定めて敵艦を6機撃ち落とせ！",
-    "rule.three_lane_dodge": "60秒間、障害物を避けて走り続けろ！",
+    "rule.three_lane_dodge": "40秒間、障害物を避けて走り続けろ！",
     "rule.three_factory_rush": "良いゲートを選んで軍団を増やし、3回の戦いに勝ち抜け！",
     "rule.speed_color_switch": "文字の「色」か「意味」に合わせて押せ！切り替えに注意！",
     "rule.rhythm_drum_duo": "師匠のリズムを聴いて、同じリズムで叩け！",
