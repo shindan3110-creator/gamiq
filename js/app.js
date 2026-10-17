@@ -59,6 +59,13 @@ import {
   isAdRunning
 } from "./ads.js";
 
+import {
+  getProfile,
+  saveNickname,
+  suggestNickname,
+  NICKNAME_MAX
+} from "./profile.js";
+
 
 /* ==========================================
 APP STATE
@@ -203,12 +210,54 @@ function boot() {
     });
 
 
+  /*
+   * NICKNAME
+   * Saved name is filled in. First time: a random name is
+   * suggested so the player can press PLAY right away.
+   */
+  const nicknameForm =
+    mount.querySelector("[data-nickname-form]");
+
+  const nicknameInput =
+    mount.querySelector("[data-nickname-input]");
+
+  const nicknameError =
+    mount.querySelector("[data-nickname-error]");
+
+  nicknameInput.value =
+    getProfile().nickname || suggestNickname();
+
+  nicknameInput.addEventListener("input", () => {
+    nicknameError.textContent = "";
+    nicknameForm.classList.remove("invalid");
+  });
+
+  // Enter key = PLAY
+  nicknameForm.addEventListener("submit", event => {
+    event.preventDefault();
+    startButton.click();
+  });
+
+
   startButton.addEventListener(
     "click",
     () => {
       if (started) {
         return;
       }
+
+      const saved =
+        saveNickname(nicknameInput.value);
+
+      if (!saved.ok) {
+        nicknameError.textContent = t(saved.error);
+        nicknameForm.classList.add("invalid");
+        nicknameInput.focus();
+        return;
+      }
+
+      nicknameInput.value = saved.value;
+      nicknameInput.blur();
 
       started = true;
 
@@ -355,6 +404,34 @@ function createAppMarkup() {
           <p>
             ${t("start.text")}
           </p>
+
+          <form
+            class="gamiq-nickname"
+            data-nickname-form
+            novalidate
+          >
+            <label for="gamiq-nickname-input">
+              ${t("nick.label")}
+            </label>
+
+            <input
+              id="gamiq-nickname-input"
+              type="text"
+              data-nickname-input
+              maxlength="${NICKNAME_MAX * 2}"
+              autocomplete="nickname"
+              autocapitalize="off"
+              spellcheck="false"
+              enterkeyhint="go"
+              placeholder="${t("nick.placeholder")}"
+            >
+
+            <small
+              class="gamiq-nickname-error"
+              data-nickname-error
+              aria-live="polite"
+            ></small>
+          </form>
 
           <button
             type="button"
