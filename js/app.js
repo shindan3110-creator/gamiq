@@ -1,6 +1,10 @@
 // GAMIQ（ゲーミック） v2 - App Core
 
 import {
+  IS_CRAZYGAMES
+} from "./platform.js";
+
+import {
   GamiqFeed
 } from "./feed.js";
 
@@ -616,9 +620,14 @@ function createAppMarkup() {
           </small>
 
           <nav class="gamiq-start-links" aria-label="Site information">
-            <a href="./about.html">About</a>
-            <a href="./privacy.html">Privacy</a>
-            <a href="./contact.html">Contact</a>
+            ${
+              IS_CRAZYGAMES
+                // CrazyGames: only the privacy policy (no links to other sites with the game)
+                ? `<a href="./privacy.html" target="_blank" rel="noopener">Privacy</a>`
+                : `<a href="./about.html">About</a>
+                   <a href="./privacy.html">Privacy</a>
+                   <a href="./contact.html">Contact</a>`
+            }
           </nav>
 
         </div>
