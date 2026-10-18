@@ -37,7 +37,25 @@ export const PLATFORM = detectPlatform();
 export const IS_CRAZYGAMES = PLATFORM === "crazygames";
 
 // Where the ranking server is.
-export const API_BASE = IS_CRAZYGAMES ? `${OUR_SITE}/api` : "/api";
+// - On our own servers (production, previews, our domain): this server.
+//   (So "?platform=crazygames" tests on a preview still use the preview's
+//    own ranking.)
+// - Anywhere else (the real CrazyGames build): our production server.
+function onOurServer() {
+  try {
+    const host = location.hostname;
+    return (
+      host === "localhost" ||
+      host.endsWith(".shindan3110.workers.dev") ||
+      host === "playgamiq.com" ||
+      host.endsWith(".playgamiq.com")
+    );
+  } catch (error) {
+    return false;
+  }
+}
+
+export const API_BASE = onOurServer() ? "/api" : `${OUR_SITE}/api`;
 
 // For CSS: <html class="platform-crazygames">
 try {
