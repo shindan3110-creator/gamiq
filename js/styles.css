@@ -13569,3 +13569,38 @@ STEP 39: INSTAGRAM SHARE BUTTON
   color:#ffffff;
   font-size:13px;
 }
+
+
+
+/* ==========================================
+STEP 41: iPHONE SAFARI FIXES (daily screen)
+========================================== */
+
+/* The daily game card fits the space that is really visible.
+   (Before: "100vh" is taller than the screen on iPhone Safari,
+   so the title and the bottom button were cut off.) */
+.dl-card .gamiq-game-shell{
+  height:min(680px, 100%);
+  min-height:0;
+}
+
+/* Keep clear of the iPhone home bar / Safari toolbar */
+.dl-bar{
+  padding-top:env(safe-area-inset-top);
+  height:calc(56px + env(safe-area-inset-top));
+}
+
+.dl-stage{
+  padding-bottom:env(safe-area-inset-bottom);
+}
+
+.dl-panel{
+  padding-bottom:calc(40px + env(safe-area-inset-bottom));
+}
+
+/* Normal game screen on phones: same safety space at the bottom */
+@media (max-width: 820px){
+  .gamiq-feed-card{
+    padding-bottom:max(6px, env(safe-area-inset-bottom));
+  }
+}
