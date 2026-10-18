@@ -14,8 +14,7 @@ import { t } from "./i18n.js";
 import { todayKey, msUntilReset } from "./score.js";
 import { sfx } from "./sound.js";
 import { submitChallenge } from "./api.js";
-import { rankText, createShareButtons, buildDailyImage } from "./share.js";
-import { getProfile } from "./profile.js";
+import { rankText, createShareButtons, skillLine } from "./share.js";
 
 const STORAGE_KEY = "gamiq_v2_daily";
 
@@ -143,18 +142,14 @@ export function dailyStatus() {
   };
 }
 
-function squareFor(score) {
-  if (score >= 80) return "🟩";
-  if (score >= 50) return "🟨";
-  return "🟥";
-}
 
 export function dailyShareText(record = loadRecord()) {
   const total = record.results.reduce((sum, r) => sum + (r.score || 0), 0);
 
+  // One line per game: "⚡ 🟩🟩🟩🟩⬜ 80　反射" (genre only, no game name = no spoilers)
   const squares = record.results
-    .map(r => `${SKILL_ICON[r.skill] || ""}${squareFor(r.score || 0)}`)
-    .join(" ");
+    .map(r => skillLine(r.skill, r.score || 0))
+    .join("\n");
 
   const url = `${location.origin}${location.pathname}`;
 
@@ -661,14 +656,6 @@ export class GamiqDaily {
       createShareButtons({
         getText: () => dailyShareText(this.record),
         withOther: true,
-        getImage: () =>
-          buildDailyImage({
-            number: this.number,
-            total,
-            max: DAILY_GAMES * 100,
-            nickname: getProfile().nickname,
-            rows: results.map(r => ({ icon: SKILL_ICON[r.skill] || "", score: r.score || 0 }))
-          }),
         onShare: method =>
           this.analytics?.send?.("daily_share", {
             daily_no: this.number,
