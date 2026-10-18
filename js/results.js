@@ -277,12 +277,6 @@ export class GamiqResults {
             nickname: getProfile().nickname,
             rank: this.lastRankText
           }),
-        getImage: () =>
-          buildShareImage({
-            summary: this.scoreEngine.getSummary(),
-            nickname: getProfile().nickname,
-            rank: this.lastRankText
-          }),
         onShare: method =>
           track("share_result", {
             share_method: method,
