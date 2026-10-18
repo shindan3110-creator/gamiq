@@ -89,9 +89,38 @@ export function shareAbilities(summary) {
 SHARE TEXT
 ========================================== */
 
+const SKILL_ICONS = {
+  REFLEX: "⚡",
+  SPEED: "💨",
+  AIM: "🎯",
+  LOGIC: "🧩",
+  MEMORY: "🧠"
+};
+
+/**
+ * One easy-to-read line for a score (0-100):
+ * "⚡ 🟩🟩🟩🟩⬜ 80　反射"
+ * 5 boxes = 100 points. Green 80+, yellow 50+, red below 50.
+ */
+export function skillLine(skill, score) {
+  const value = Math.max(0, Math.min(100, Math.round(Number(score) || 0)));
+  const filled = Math.round(value / 20);
+  const box = value >= 80 ? "🟩" : value >= 50 ? "🟨" : "🟥";
+
+  // Bars first so they line up; the genre name comes last.
+  return `${SKILL_ICONS[skill] || "🎮"} ${box.repeat(filled)}${"⬜".repeat(5 - filled)} ` +
+    `${value}　${t(`skillName.${skill}`, null, skill)}`;
+}
+
 export function buildShareText({ summary, nickname, rank }) {
   const gamiq = summary?.gamiq ?? "---";
   const title = titleFor(summary?.gamiq);
+
+  const abilities = shareAbilities(summary);
+
+  const skillLines = SKILLS
+    .filter(skill => Number.isFinite(abilities[skill]))
+    .map(skill => skillLine(skill, abilities[skill]));
 
   const lines = [
     title
@@ -101,11 +130,12 @@ export function buildShareText({ summary, nickname, rank }) {
       level: summary?.level ?? 1,
       rank: rank || t("share.noRank")
     }),
+    ...(skillLines.length ? ["", ...skillLines, ""] : [""]),
     t("share.line3"),
     shareUrl()
   ];
 
-  return lines.filter(Boolean).join("\n");
+  return lines.join("\n");
 }
 
 function shareUrl() {
@@ -365,10 +395,9 @@ One row of buttons. Each opens the app or site directly.
  * @param {() => string} options.getText   text to share (includes the URL)
  * @param {(method: string) => void} [options.onShare]  for analytics
  * @param {boolean} [options.withOther]    add "OTHER" (phone share sheet)
- * @param {() => Promise<Blob>} [options.getImage]  adds an Instagram button
  * @returns {HTMLElement}
  */
-export function createShareButtons({ getText, onShare, withOther = false, getImage = null }) {
+export function createShareButtons({ getText, onShare, withOther = false }) {
   const row = document.createElement("div");
   row.className = "gamiq-share-row";
 
@@ -391,60 +420,6 @@ export function createShareButtons({ getText, onShare, withOther = false, getIma
   const open = url => {
     window.open(url, "_blank", "noopener");
   };
-
-  /*
-   * INSTAGRAM
-   * Instagram has no "share link" for websites. The only way is
-   * to share an IMAGE: on phones the share sheet shows Instagram
-   * (Stories / Feed / DM). Not shown on PC.
-   */
-  // Phones only. On a PC there is no Instagram app to open,
-  // so the button is not shown at all.
-  if (getImage && isPhone()) {
-    add("instagram", "Instagram", "insta", async button => {
-      const original = button.textContent;
-
-      let blob = null;
-
-      try {
-        blob = await getImage();
-      } catch (error) {
-        blob = null;
-      }
-
-      if (!blob) {
-        button.textContent = t("share.failed");
-        setTimeout(() => { button.textContent = original; }, 1800);
-        return;
-      }
-
-      const file = new File([blob], "gamiq.png", { type: "image/png" });
-
-      if (navigator.canShare?.({ files: [file] })) {
-        try {
-          await navigator.share({ files: [file] });
-        } catch (error) {
-          // cancelled
-        }
-        return;
-      }
-
-      // PC etc.: save the image so it can be posted from the app.
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-
-      link.href = url;
-      link.download = "gamiq.png";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      setTimeout(() => URL.revokeObjectURL(url), 2000);
-
-      button.textContent = t("share.imageSaved");
-      setTimeout(() => { button.textContent = original; }, 2500);
-    });
-  }
 
   add("line", "LINE", "line", () => {
     open(`https://line.me/R/share?text=${encodeURIComponent(getText())}`);
@@ -482,124 +457,4 @@ export function createShareButtons({ getText, onShare, withOther = false, getIma
   }
 
   return row;
-}
-
-
-/* ==========================================
-DAILY CHALLENGE IMAGE (1080 x 1920, story size)
-No game names = no spoilers.
-========================================== */
-
-export async function buildDailyImage({ number, total, max, rows, nickname }) {
-  const w = 1080;
-  const h = 1920;
-
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-
-  const g = canvas.getContext("2d");
-
-  const font = (weight, px) =>
-    `${weight} ${px}px -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif`;
-
-  const bg = g.createLinearGradient(0, 0, 0, h);
-  bg.addColorStop(0, "#0d2018");
-  bg.addColorStop(1, "#04070c");
-  g.fillStyle = bg;
-  g.fillRect(0, 0, w, h);
-
-  const glow = g.createRadialGradient(w / 2, 620, 40, w / 2, 620, 620);
-  glow.addColorStop(0, "rgba(124,255,178,.18)");
-  glow.addColorStop(1, "rgba(124,255,178,0)");
-  g.fillStyle = glow;
-  g.fillRect(0, 0, w, h);
-
-  g.textAlign = "center";
-  g.textBaseline = "alphabetic";
-
-  g.fillStyle = "#ffffff";
-  g.font = font(900, 96);
-  g.fillText("GAMIQ", w / 2, 250);
-
-  g.fillStyle = "#7cffb2";
-  g.font = font(900, 46);
-  g.fillText(`DAILY #${number}`, w / 2, 340);
-
-  if (nickname) {
-    g.fillStyle = "#9aa5b5";
-    g.font = font(800, 38);
-    g.fillText(nickname, w / 2, 420);
-  }
-
-  g.fillStyle = "#ffffff";
-  g.font = font(900, 260);
-  g.fillText(String(total), w / 2, 730);
-
-  g.fillStyle = "#7c8798";
-  g.font = font(900, 56);
-  g.fillText(`/ ${max}`, w / 2, 820);
-
-  // One row per game: icon + bar + score
-  const top = 960;
-  const rowH = 128;
-
-  rows.forEach((row, i) => {
-    const y = top + i * rowH;
-    const color = row.score >= 80 ? "#3fb950" : row.score >= 50 ? "#e3b341" : "#f85149";
-
-    g.fillStyle = "rgba(255,255,255,.06)";
-    roundRect(g, 120, y, w - 240, 100, 24);
-    g.fill();
-
-    g.textAlign = "left";
-    g.font = font(400, 58);
-    g.fillStyle = "#ffffff";
-    g.fillText(row.icon, 160, y + 72);
-
-    g.fillStyle = "rgba(255,255,255,.1)";
-    roundRect(g, 270, y + 38, 520, 26, 13);
-    g.fill();
-
-    g.fillStyle = color;
-    roundRect(g, 270, y + 38, Math.max(26, 520 * row.score / 100), 26, 13);
-    g.fill();
-
-    g.textAlign = "right";
-    g.fillStyle = "#ffffff";
-    g.font = font(900, 56);
-    g.fillText(String(row.score), w - 160, y + 72);
-  });
-
-  g.textAlign = "center";
-  g.fillStyle = "#cfd6e2";
-  g.font = font(900, 44);
-  g.fillText(t("share.dailyImageCta"), w / 2, 1680);
-
-  g.fillStyle = "#7cffb2";
-  g.font = font(800, 36);
-  g.fillText(location.host, w / 2, 1750);
-
-  return new Promise(resolve => canvas.toBlob(resolve, "image/png"));
-}
-
-function roundRect(g, x, y, width, height, r) {
-  g.beginPath();
-  g.moveTo(x + r, y);
-  g.arcTo(x + width, y, x + width, y + height, r);
-  g.arcTo(x + width, y + height, x, y + height, r);
-  g.arcTo(x, y + height, x, y, r);
-  g.arcTo(x, y, x + width, y, r);
-  g.closePath();
-}
-
-
-function isPhone() {
-  if (navigator.userAgentData && typeof navigator.userAgentData.mobile === "boolean") {
-    return navigator.userAgentData.mobile;
-  }
-
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-    // iPadOS reports itself as a Mac
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 }
