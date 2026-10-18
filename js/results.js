@@ -5,6 +5,7 @@ import { getProfile } from "./profile.js";
 import { fetchRanking } from "./api.js";
 import { titleFor, rankText, shareResult, createShareButtons, buildShareText, buildShareImage } from "./share.js";
 import { track } from "./analytics.js";
+import { IS_CRAZYGAMES } from "./platform.js";
 
 export class GamiqResults {
   constructor({
@@ -269,7 +270,12 @@ export class GamiqResults {
       overlay.querySelector("[data-results-share-note]");
 
     // LINE / X / COPY buttons (text + link)
-    overlay.querySelector("[data-results-share-row]").replaceWith(
+    // CrazyGames: no sharing (links to our own site are not allowed there)
+    if (IS_CRAZYGAMES) {
+      overlay.querySelector("[data-results-share]")?.remove();
+    }
+
+    overlay.querySelector("[data-results-share-row]").replaceWith(IS_CRAZYGAMES ? document.createElement("span") :
       createShareButtons({
         getText: () =>
           buildShareText({
