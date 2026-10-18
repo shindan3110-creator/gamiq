@@ -6,8 +6,7 @@
 // - Network errors never stop the game.
 
 import { getProfile } from "./profile.js";
-
-const API_BASE = "/api";
+import { API_BASE } from "./platform.js";
 
 // What we already sent today, so we don't send the same score again.
 const SENT_KEY = "gamiq_v2_sent";
