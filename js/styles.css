@@ -13604,3 +13604,26 @@ STEP 41: iPHONE SAFARI FIXES (daily screen)
     padding-bottom:max(6px, env(safe-area-inset-bottom));
   }
 }
+
+
+
+/* ==========================================
+STEP 42: CRAZYGAMES BUILD
+========================================== */
+
+/* No share button there: the ranking button takes the full width */
+.platform-crazygames .gamiq-results-actions{
+  grid-template-columns:1fr;
+}
+
+/* CrazyGames asks for this: no text selection / magnifier on mobile */
+.platform-crazygames body{
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+}
+
+.platform-crazygames input{
+  -webkit-user-select:text;
+  user-select:text;
+}
