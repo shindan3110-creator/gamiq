@@ -14,6 +14,7 @@ import { t } from "./i18n.js";
 import { todayKey, msUntilReset } from "./score.js";
 import { sfx } from "./sound.js";
 import { submitChallenge } from "./api.js";
+import { IS_CRAZYGAMES } from "./platform.js";
 import { rankText, createShareButtons, skillLine } from "./share.js";
 
 const STORAGE_KEY = "gamiq_v2_daily";
@@ -637,12 +638,12 @@ export class GamiqDaily {
           `).join("")}
         </div>
 
-        <pre class="dl-share-preview">${escapeHtml(dailyShareText(this.record))}</pre>
+        ${IS_CRAZYGAMES ? "" : `<pre class="dl-share-preview">${escapeHtml(dailyShareText(this.record))}</pre>`}
 
         <div class="dl-rank" data-dl-rank>${t("daily.rankSending")}</div>
 
-        <div class="dl-share-label">${t("daily.share")}</div>
-        <div data-dl-share-row></div>
+        ${IS_CRAZYGAMES ? "" : `<div class="dl-share-label">${t("daily.share")}</div>
+        <div data-dl-share-row></div>`}
 
         <button type="button" class="dl-rank-button" data-dl-ranking>${t("daily.rankButton")}</button>
 
@@ -652,7 +653,7 @@ export class GamiqDaily {
       </div>
     `;
 
-    this.stage.querySelector("[data-dl-share-row]").replaceWith(
+    this.stage.querySelector("[data-dl-share-row]")?.replaceWith(
       createShareButtons({
         getText: () => dailyShareText(this.record),
         withOther: true,
