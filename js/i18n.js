@@ -64,7 +64,7 @@ const STRINGS = {
     "daily.rankSending": "Sending your result to the ranking...",
     "daily.rankFailed": "Couldn't reach the ranking. It will be sent next time you open this.",
     "daily.rankButton": "🏆 DAILY RANKING",
-    "daily.shareText": "GAMIQ Daily #{n}\n{total}/{max}\n{squares}\n{url}",
+    "daily.shareText": "🎮 GAMIQ Daily #{n}\nScore: {total} / {max}\n\n{squares}\n\nSame 5 games for everyone today. What's your score?\n{url}",
 
     /* ---------- NICKNAME ---------- */
     "nick.label": "NICKNAME",
@@ -117,9 +117,14 @@ const STRINGS = {
     "share.topPercent": "TOP {p}%",
     "share.rankOf": "#{rank} of {total} players",
     "share.noRank": "not ranked yet",
-    "share.line1": "My GAMIQ is {gamiq} — {title} 🎮",
-    "share.line1NoTitle": "My GAMIQ is {gamiq} 🎮",
-    "share.line2": "Lv {level} · Today: {rank}",
+    "share.line1": "🎮 My GAMIQ is {gamiq} — {title}",
+    "share.line1NoTitle": "🎮 My GAMIQ is {gamiq}",
+    "share.line2": "Level {level} · Today's ranking: {rank}",
+    "skillName.REFLEX": "REFLEX",
+    "skillName.SPEED": "SPEED",
+    "skillName.AIM": "AIM",
+    "skillName.LOGIC": "LOGIC",
+    "skillName.MEMORY": "MEMORY",
     "share.line3": "Can you beat me? Random mini-games measure your real gaming skill.",
     "share.footer": "Random mini-games. Real gaming skill.",
     "share.downloaded": "Image saved and text copied. Paste it anywhere!",
@@ -127,8 +132,6 @@ const STRINGS = {
     "share.copy": "COPY",
     "share.copied": "COPIED!",
     "share.other": "OTHER",
-    "share.imageSaved": "IMAGE SAVED",
-    "share.dailyImageCta": "Same 5 games for everyone. Can you beat me?",
 
     /* ---------- RANKING ---------- */
     "rank.title": "RANKING",
@@ -300,7 +303,7 @@ const STRINGS = {
     "daily.rankSending": "ランキングに結果を送っています…",
     "daily.rankFailed": "ランキングに送れませんでした。次に開いたときにもう一度送ります。",
     "daily.rankButton": "🏆 デイリーランキング",
-    "daily.shareText": "GAMIQ デイリー #{n}\n{total}/{max}\n{squares}\n{url}",
+    "daily.shareText": "🎮 GAMIQ デイリー #{n}\nスコア：{total}点 / {max}点\n\n{squares}\n\n今日の5ゲームは全員同じ。君は何点？\n{url}",
 
     /* ---------- NICKNAME ---------- */
     "nick.label": "ニックネーム",
@@ -353,9 +356,14 @@ const STRINGS = {
     "share.topPercent": "上位{p}%",
     "share.rankOf": "{total}人中 {rank}位",
     "share.noRank": "ランキング外",
-    "share.line1": "私のGAMIQは {gamiq}（{title}）🎮",
-    "share.line1NoTitle": "私のGAMIQは {gamiq} 🎮",
-    "share.line2": "Lv{level}・今日のランキング：{rank}",
+    "share.line1": "🎮 私のGAMIQは {gamiq}（{title}）",
+    "share.line1NoTitle": "🎮 私のGAMIQは {gamiq}",
+    "share.line2": "レベル{level}・今日のランキング：{rank}",
+    "skillName.REFLEX": "反射",
+    "skillName.SPEED": "スピード",
+    "skillName.AIM": "エイム",
+    "skillName.LOGIC": "ロジック",
+    "skillName.MEMORY": "記憶",
     "share.line3": "ランダムなミニゲームで本当のゲーム力を測定。君は超えられる？",
     "share.footer": "未知のゲームで、本当のゲーム力を測れ。",
     "share.downloaded": "画像を保存し、文章をコピーしました。好きな場所に貼り付けてください！",
@@ -363,8 +371,6 @@ const STRINGS = {
     "share.copy": "コピー",
     "share.copied": "コピーしました！",
     "share.other": "その他",
-    "share.imageSaved": "画像を保存しました",
-    "share.dailyImageCta": "今日の5ゲームは全員同じ。君は超えられる？",
 
     /* ---------- RANKING ---------- */
     "rank.title": "ランキング",
