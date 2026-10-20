@@ -6,6 +6,7 @@ import { fetchRanking } from "./api.js";
 import { titleFor, rankText, shareResult, createShareButtons, buildShareText, buildShareImage } from "./share.js";
 import { track } from "./analytics.js";
 import { IS_CRAZYGAMES } from "./platform.js";
+import { adBox, fillAds } from "./adslots.js";
 
 export class GamiqResults {
   constructor({
@@ -236,6 +237,8 @@ export class GamiqResults {
           ${t("results.continue")}
         </button>
 
+        <div data-results-ad></div>
+
       </div>
     `;
 
@@ -243,6 +246,9 @@ export class GamiqResults {
     document.body.appendChild(
       overlay
     );
+
+    // Ad at the very bottom (away from the buttons). Off until AdSense.
+    overlay.querySelector("[data-results-ad]").replaceWith(adBox("results"));
 
 
     const continueButton =
@@ -584,6 +590,8 @@ export class GamiqResults {
             "[data-results-continue]"
           )
           ?.focus();
+
+        fillAds(overlay);
 
       }
     );
