@@ -12,7 +12,11 @@ import {
   goFx
 } from "./juice.js";
 
+import { initRails } from "./adslots.js";
+
 initJuice();
+
+initRails();
 
 import {
   GamiqFeed
