@@ -5,6 +5,11 @@ import {
 } from "./platform.js";
 
 import {
+  tapFx,
+  celebrate
+} from "./juice.js";
+
+import {
   GamiqFeed
 } from "./feed.js";
 
@@ -643,7 +648,30 @@ RANDOM GAME
 ========================================== */
 
 
+// Very first game for a new player: one of the flashiest games,
+// so the first few seconds look good. After that: fully random.
+const SHOWCASE_IDS = [
+  "reflex_quick_draw",
+  "reflex_ninja_counter",
+  "aim_tower_stack"
+];
+
+let firstPickDone = false;
+
 function getNextGame() {
+  if (!firstPickDone) {
+    firstPickDone = true;
+
+    if (scoreEngine.played === 0) {
+      const showcase =
+        gamePool.filter(game => SHOWCASE_IDS.includes(game.id));
+
+      if (showcase.length) {
+        return randomizer.pick(showcase, scoreEngine.getAbilityCounts());
+      }
+    }
+  }
+
   return randomizer.pick(
     gamePool,
     scoreEngine.getAbilityCounts()
@@ -856,6 +884,9 @@ async function enterGame(
   ) {
     return;
   }
+
+  // Ring effect where the player taps (all games)
+  tapFx(host);
 
 
   completeOverlay?.classList.remove(
@@ -1455,6 +1486,11 @@ function showCardComplete(
     "error",
     error
   );
+
+  // Count-up + rating word + particles
+  if (!error && Number.isFinite(score)) {
+    celebrate(card, score);
+  }
 
 
   // LEVEL UP banner
