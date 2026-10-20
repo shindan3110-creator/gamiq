@@ -55,7 +55,9 @@ function onOurServer() {
   }
 }
 
-export const API_BASE = onOurServer() ? "/api" : `${OUR_SITE}/api`;
+export const ON_OUR_SERVER = onOurServer();
+
+export const API_BASE = ON_OUR_SERVER ? "/api" : `${OUR_SITE}/api`;
 
 // For CSS: <html class="platform-crazygames">
 try {
