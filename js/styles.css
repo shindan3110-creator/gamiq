@@ -14151,3 +14151,30 @@ STEP 48: AD BOXES
     right:calc((100vw - 760px) / 4 - 150px);
   }
 }
+
+
+
+/* ==========================================
+STEP 48-2: PC ad boxes also on shorter screens
+(MacBook etc.: the browser area is only ~750px tall)
+========================================== */
+
+@media (min-width:1240px) and (min-height:700px){
+  .gq-ad-rail{
+    display:flex;
+  }
+}
+
+@media (min-width:1600px) and (min-height:700px){
+  .gq-ad-rail .gq-ad-body{
+    width:300px;
+  }
+
+  .gq-ad-rail-left{
+    left:calc((100vw - 760px) / 4 - 150px);
+  }
+
+  .gq-ad-rail-right{
+    right:calc((100vw - 760px) / 4 - 150px);
+  }
+}
