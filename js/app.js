@@ -698,6 +698,10 @@ function renderGameCard(
   card.dataset.gameId =
     game.id;
 
+  // Genre color for the card frame (see STEP 45 in styles.css)
+  card.dataset.skill =
+    game.skill;
+
   card.innerHTML = `
     <div class="gamiq-game-shell">
 
