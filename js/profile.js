@@ -1,166 +1,269 @@
-// GAMIQ（ゲーミック） v2 - Player Profile (nickname)
+// GAMIQ（ゲーミック） v2 - Randomizer
 //
-// - No login. The player only types a nickname.
-// - A random player ID is made once per browser, so two people
-//   with the same nickname are still different players
-//   (used by the ranking later).
-// - Saved in this browser only (localStorage).
-//   The nickname is NOT reset every day (only the score is).
+// The last games played are remembered in the browser,
+// so after a reload the same games do not come right back.
 
-const PROFILE_KEY = "gamiq_v2_profile";
+const RECENT_KEY = "gamiq_recent_games";
 
-export const NICKNAME_MIN = 2;
-export const NICKNAME_MAX = 12;
-
-// Letters (any language), numbers, space, _ - .
-const ALLOWED = /^[\p{L}\p{N} _.\-]+$/u;
-
-// Very small client-side filter. The server will check again later.
-// (Short words like "sex" are left out on purpose: they would also
-//  block normal names such as "Essex".)
-const BLOCKED_WORDS = [
-  "fuck", "shit", "bitch", "cunt", "nigger", "nigga", "faggot",
-  "nazi", "hitler", "porn",
-  "admin", "gamiq", "official", "crazygames",
-  "死ね", "殺す", "ちんこ", "まんこ", "セックス"
-];
-
-const SUGGEST_WORDS = [
-  "Ninja", "Falcon", "Comet", "Tiger", "Pixel", "Rocket",
-  "Shadow", "Blaze", "Nova", "Viper", "Echo", "Raven"
-];
-
-
-export function getProfile() {
-  let data = null;
-
+function loadRecent() {
   try {
-    data = JSON.parse(
-      window.localStorage.getItem(PROFILE_KEY) || "null"
-    );
+    const list = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
+    return Array.isArray(list) ? list.filter(item => item && item.id) : [];
   } catch (error) {
-    data = null;
+    return [];
   }
-
-  const profile = {
-    playerId:
-      typeof data?.playerId === "string" && data.playerId.length >= 8
-        ? data.playerId
-        : makePlayerId(),
-
-    nickname:
-      typeof data?.nickname === "string" &&
-      validateNickname(data.nickname).ok
-        ? data.nickname
-        : ""
-  };
-
-  // Make sure the player ID is stored right away.
-  if (!data || data.playerId !== profile.playerId) {
-    writeProfile(profile);
-  }
-
-  return profile;
 }
 
-
-/**
- * Check a nickname.
- * @returns {{ok: true, value: string} | {ok: false, error: string}}
- *   error is an i18n key.
- */
-export function validateNickname(raw) {
-  const value =
-    String(raw ?? "")
-      .normalize("NFKC")
-      .replace(/\s+/g, " ")
-      .trim();
-
-  const length = [...value].length;
-
-  if (length < NICKNAME_MIN) {
-    return { ok: false, error: "nick.errorShort" };
-  }
-
-  if (length > NICKNAME_MAX) {
-    return { ok: false, error: "nick.errorLong" };
-  }
-
-  if (!ALLOWED.test(value)) {
-    return { ok: false, error: "nick.errorChars" };
-  }
-
-  const lower =
-    value.toLowerCase().replace(/[ _.\-]/g, "");
-
-  if (BLOCKED_WORDS.some(word => lower.includes(word))) {
-    return { ok: false, error: "nick.errorBlocked" };
-  }
-
-  return { ok: true, value };
-}
-
-
-export function saveNickname(raw) {
-  const result = validateNickname(raw);
-
-  if (!result.ok) {
-    return result;
-  }
-
-  const profile = getProfile();
-
-  profile.nickname = result.value;
-
-  writeProfile(profile);
-
-  return result;
-}
-
-
-export function suggestNickname() {
-  const word =
-    SUGGEST_WORDS[
-      Math.floor(Math.random() * SUGGEST_WORDS.length)
-    ];
-
-  const number =
-    Math.floor(100 + Math.random() * 900);
-
-  return `${word}${number}`;
-}
-
-
-/* ==========================================
-INTERNAL
-========================================== */
-
-function writeProfile(profile) {
+function saveRecent(list) {
   try {
-    window.localStorage.setItem(
-      PROFILE_KEY,
-      JSON.stringify({
-        playerId: profile.playerId,
-        nickname: profile.nickname,
-        savedAt: Date.now()
-      })
-    );
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list));
   } catch (error) {
-    // Private mode etc. The game still works.
+    // ignore (private mode etc.)
   }
 }
 
-function makePlayerId() {
-  try {
-    if (window.crypto?.randomUUID) {
-      return window.crypto.randomUUID();
+export class GamiqRandomizer {
+  constructor() {
+    // 直近履歴として保持する件数
+    this.maxHistory = 8;
+
+    this.history = loadRecent().slice(-this.maxHistory);
+  }
+
+
+  pick(
+    gamePool,
+    abilityCounts = {}
+  ) {
+    if (
+      !Array.isArray(gamePool) ||
+      gamePool.length === 0
+    ) {
+      throw new Error(
+        "gamePool is empty"
+      );
     }
-  } catch (error) {
-    // fall through
+
+
+    /* ==========================================
+    RECENT HISTORY
+    ========================================== */
+
+    const recentGames =
+      this.history.slice(-3);
+
+    const recentTwo =
+      this.history.slice(-2);
+
+
+    /* ==========================================
+    PRIMARY FILTER
+    ========================================== */
+
+    let candidates =
+      gamePool.filter(
+        game => {
+
+          // 同一ゲームの連続感を防止
+          const sameGameRecently =
+            recentGames.some(
+              item =>
+                item.id ===
+                game.id
+            );
+
+
+          // 同じゲームTYPEが3連続しない
+          const sameTypeRecently =
+            recentTwo.length >= 2 &&
+            recentTwo.every(
+              item =>
+                item.type ===
+                game.type
+            );
+
+
+          // 同じテーマが3連続しない
+          const sameThemeRecently =
+            recentTwo.length >= 2 &&
+            recentTwo.every(
+              item =>
+                item.theme ===
+                game.theme
+            );
+
+
+          return (
+            !sameGameRecently &&
+            !sameTypeRecently &&
+            !sameThemeRecently
+          );
+        }
+      );
+
+
+    /* ==========================================
+    FALLBACK
+    ========================================== */
+
+    // 条件が厳しすぎて候補ゼロなら
+    // 同一ゲームだけ避ける
+    if (
+      candidates.length === 0
+    ) {
+      const lastGame =
+        this.history.at(-1);
+
+
+      candidates =
+        gamePool.filter(
+          game =>
+            game.id !==
+            lastGame?.id
+        );
+    }
+
+
+    // それでもゼロなら全ゲームを許可
+    if (
+      candidates.length === 0
+    ) {
+      candidates =
+        [...gamePool];
+    }
+
+
+    /* ==========================================
+    WEIGHTS
+    ========================================== */
+
+    const weightedPool = [];
+
+
+    candidates.forEach(
+      game => {
+
+        // Fully random: no genre gets extra weight
+        // (it does not matter if a genre is "missing").
+        // Only back-to-back repeats are made a little rarer below.
+        let weight = 10;
+
+
+
+        const previous =
+          this.history.at(-1);
+
+
+        // 同じ能力が連続する確率を軽く下げる
+        if (
+          previous?.skill ===
+          game.skill
+        ) {
+          weight -= 3;
+        }
+
+
+        // 同じテーマも軽く下げる
+        if (
+          previous?.theme ===
+          game.theme
+        ) {
+          weight -= 2;
+        }
+
+
+        // 同じタイプも軽く下げる
+        if (
+          previous?.type ===
+          game.type
+        ) {
+          weight -= 3;
+        }
+
+
+        weight =
+          Math.max(
+            1,
+            weight
+          );
+
+
+        for (
+          let i = 0;
+          i < weight;
+          i++
+        ) {
+          weightedPool.push(
+            game
+          );
+        }
+      }
+    );
+
+
+    /* ==========================================
+    RANDOM PICK
+    ========================================== */
+
+    const selected =
+      weightedPool[
+        Math.floor(
+          Math.random() *
+          weightedPool.length
+        )
+      ];
+
+
+    /* ==========================================
+    HISTORY
+    ========================================== */
+
+    this.history.push({
+      id:
+        selected.id,
+
+      type:
+        selected.type,
+
+      theme:
+        selected.theme,
+
+      skill:
+        selected.skill
+    });
+
+
+    if (
+      this.history.length >
+      this.maxHistory
+    ) {
+      this.history.shift();
+    }
+
+    saveRecent(this.history);
+
+
+    return selected;
   }
 
-  return (
-    Date.now().toString(36) +
-    Math.random().toString(36).slice(2, 12)
-  );
+
+  /* ==========================================
+  RESET
+  ========================================== */
+
+  reset() {
+    this.history = [];
+    saveRecent(this.history);
+  }
+
+
+  /* ==========================================
+  DEBUG
+  ========================================== */
+
+  getHistory() {
+    return [
+      ...this.history
+    ];
+  }
 }
