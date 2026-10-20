@@ -15,6 +15,7 @@ import { todayKey, msUntilReset } from "./score.js";
 import { sfx } from "./sound.js";
 import { submitChallenge } from "./api.js";
 import { IS_CRAZYGAMES } from "./platform.js";
+import { tapFx, celebrate } from "./juice.js";
 import { rankText, createShareButtons, skillLine } from "./share.js";
 
 const STORAGE_KEY = "gamiq_v2_daily";
@@ -472,6 +473,8 @@ export class GamiqDaily {
     }
 
     const host = card.querySelector("[data-game-host]");
+
+    tapFx(host);
     const rule = card.querySelector("[data-rule-overlay]");
 
     // Rule reading time (same as the normal feed)
@@ -515,6 +518,8 @@ export class GamiqDaily {
       const scoreEl = card.querySelector("[data-complete-score]");
 
       if (scoreEl) scoreEl.textContent = String(score);
+
+      if (!safety) celebrate(card, score);
 
       requestAnimationFrame(() => overlay?.classList.add("show"));
 
