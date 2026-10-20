@@ -526,6 +526,14 @@ const SOUNDS = {
  * @param {*} option      extra value for some sounds (note index)
  */
 export function sfx(name, option) {
+  // Tell the visual effects (juice.js) what just happened.
+  // Sent even when the sound is muted.
+  try {
+    window.dispatchEvent(new CustomEvent("gamiq:sfx", { detail: name }));
+  } catch (error) {
+    // ignore
+  }
+
   try {
     const audio = canPlay();
 
