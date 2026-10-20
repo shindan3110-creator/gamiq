@@ -17,6 +17,8 @@ const REDUCED =
 TAP RIPPLE
 ========================================== */
 
+let lastTap = null;
+
 export function tapFx(host) {
   if (!host || host.dataset.tapFx) return;
 
@@ -35,6 +37,8 @@ export function tapFx(host) {
       ring.style.top = `${event.clientY - rect.top}px`;
 
       host.appendChild(ring);
+
+      lastTap = { host, x: event.clientX - rect.left, y: event.clientY - rect.top, at: performance.now() };
 
       setTimeout(() => ring.remove(), 450);
     },
@@ -149,4 +153,124 @@ function burst(overlay, from, rating) {
   }
 
   setTimeout(() => layer.remove(), 1300);
+}
+
+
+/* ==========================================
+HIT / MISS EFFECTS
+The games already play a sound at the right moment
+("good", "bad", "slashHit"...). sound.js tells us the name,
+and we add a matching visual effect where the player tapped.
+========================================== */
+
+const GOOD_SOUNDS = new Set([
+  "good", "pop", "slashHit", "explosion", "impact", "boost", "wood"
+]);
+const BIG_SOUNDS = new Set(["perfect"]);
+const BAD_SOUNDS = new Set(["bad", "hurt", "crash", "bonk", "gunshotFar"]);
+
+let juiceReady = false;
+let lastFx = 0;
+
+export function initJuice() {
+  if (juiceReady) return;
+
+  juiceReady = true;
+
+  window.addEventListener("gamiq:sfx", event => {
+    const name = event.detail;
+
+    if (REDUCED) return;
+
+    const now = performance.now();
+    if (now - lastFx < 70) return;
+
+    if (GOOD_SOUNDS.has(name)) {
+      lastFx = now;
+      spark(false, name);
+    } else if (BIG_SOUNDS.has(name)) {
+      lastFx = now;
+      spark(true);
+    } else if (BAD_SOUNDS.has(name)) {
+      lastFx = now;
+      hurt();
+    }
+  });
+}
+
+function activeHost() {
+  return (
+    document.querySelector(".dl-overlay.show .dl-card [data-game-host]") ||
+    document.querySelector(".gamiq-feed-card.current [data-game-host]")
+  );
+}
+
+function spark(big, name) {
+  const host = activeHost();
+  if (!host) return;
+
+  // 3D games play "impact" on every bullet hit: too much there.
+  if (name === "impact" && host.querySelector("canvas")) return;
+
+  // Where: the last tap in this game (if recent), else the middle.
+  let x = host.clientWidth / 2;
+  let y = host.clientHeight / 2;
+
+  if (lastTap && lastTap.host === host && performance.now() - lastTap.at < 1500) {
+    x = lastTap.x;
+    y = lastTap.y;
+  }
+
+  const layer = document.createElement("div");
+  layer.className = "jx-burst jx-hit";
+  host.appendChild(layer);
+
+  const colors = big ? COLORS.perfect : COLORS.great;
+  const count = big ? 22 : 10;
+
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement("i");
+    const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
+    const dist = (big ? 70 : 40) + Math.random() * (big ? 70 : 35);
+    const size = 4 + Math.random() * (big ? 6 : 4);
+
+    p.style.left = `${x}px`;
+    p.style.top = `${y}px`;
+    p.style.width = `${size}px`;
+    p.style.height = `${size}px`;
+    p.style.borderRadius = "50%";
+    p.style.background = colors[i % colors.length];
+    p.style.setProperty("--dx", `${Math.cos(angle) * dist}px`);
+    p.style.setProperty("--dy", `${Math.sin(angle) * dist - 60}px`);
+    p.style.setProperty("--rot", "0deg");
+
+    layer.appendChild(p);
+  }
+
+  // A soft flash of light where it happened
+  const glow = document.createElement("span");
+  glow.className = big ? "jx-glow big" : "jx-glow";
+  glow.style.left = `${x}px`;
+  glow.style.top = `${y}px`;
+  layer.appendChild(glow);
+
+  setTimeout(() => layer.remove(), 900);
+}
+
+function hurt() {
+  const host = activeHost();
+  if (!host) return;
+
+  // Red edges + a short shake of the game area
+  const flash = document.createElement("span");
+  flash.className = "jx-hurt";
+  host.appendChild(flash);
+  setTimeout(() => flash.remove(), 420);
+
+  host.classList.remove("jx-shake");
+  void host.offsetWidth;
+  host.classList.add("jx-shake");
+  setTimeout(() => host.classList.remove("jx-shake"), 360);
+
+  navigator.vibrate?.(30);
 }
