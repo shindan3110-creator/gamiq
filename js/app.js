@@ -6,8 +6,11 @@ import {
 
 import {
   tapFx,
-  celebrate
+  celebrate,
+  initJuice
 } from "./juice.js";
+
+initJuice();
 
 import {
   GamiqFeed
