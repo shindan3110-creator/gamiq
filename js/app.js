@@ -7,7 +7,9 @@ import {
 import {
   tapFx,
   celebrate,
-  initJuice
+  initJuice,
+  ruleTimer,
+  goFx
 } from "./juice.js";
 
 initJuice();
@@ -906,6 +908,13 @@ async function enterGame(
 
   host.innerHTML = "";
 
+  // The very first game of this visit gets a bigger "GO!"
+  const firstGame =
+    scoreEngine.played === 0 &&
+    !previousGame;
+
+  ruleTimer(ruleOverlay, 1800);
+
 
   /*
    * RULEを読む時間
@@ -935,6 +944,8 @@ async function enterGame(
   ruleOverlay.classList.add(
     "hide"
   );
+
+  goFx(card, firstGame);
 
 
   analytics.miniGameStart(
