@@ -13935,3 +13935,112 @@ STEP 46: HIT / MISS EFFECTS (all games)
 @media (prefers-reduced-motion: reduce){
   .jx-shake{ animation:none; }
 }
+
+
+/* ==========================================
+STEP 47: RULE TIMER + "GO!"
+========================================== */
+
+/* Genre label + rule text slide in */
+.gamiq-rule-overlay span{
+  color:var(--genre, #55eaff);
+}
+
+.gamiq-rule-overlay.jx-rule-in span{
+  animation:jxRuleIn .35s ease-out both;
+}
+
+.gamiq-rule-overlay.jx-rule-in strong{
+  animation:jxRuleIn .45s .08s cubic-bezier(.2,1.4,.4,1) both;
+}
+
+@keyframes jxRuleIn{
+  from{ opacity:0; transform:translateY(14px) scale(.96); }
+  to{ opacity:1; transform:none; }
+}
+
+/* Bar that fills up until the game starts */
+.jx-rule-bar{
+  position:relative;
+  display:block;
+
+  width:min(220px, 60%);
+  height:4px;
+  margin-top:22px;
+
+  border-radius:999px;
+
+  background:rgba(255,255,255,.12);
+
+  overflow:hidden;
+}
+
+.jx-rule-bar::after{
+  content:"";
+
+  position:absolute;
+  inset:0;
+
+  border-radius:inherit;
+
+  background:var(--genre, #55eaff);
+  box-shadow:0 0 12px var(--genre, #55eaff);
+
+  transform-origin:left center;
+
+  animation:jxRuleBar var(--ms, 1800ms) linear forwards;
+}
+
+@keyframes jxRuleBar{
+  from{ transform:scaleX(0); }
+  to{ transform:scaleX(1); }
+}
+
+/* GO! */
+.jx-go{
+  position:absolute;
+  inset:0;
+  z-index:78;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  pointer-events:none;
+}
+
+.jx-go b{
+  color:#fff;
+
+  font-size:clamp(54px, 14vw, 96px);
+  font-weight:1000;
+  font-style:italic;
+  letter-spacing:.02em;
+
+  text-shadow:
+    0 0 18px var(--genre, #55eaff),
+    0 0 42px var(--genre, #55eaff),
+    0 4px 0 rgba(0,0,0,.35);
+
+  animation:jxGo .75s cubic-bezier(.2,1.3,.4,1) forwards;
+}
+
+.jx-go.big b{
+  font-size:clamp(70px, 20vw, 130px);
+}
+
+@keyframes jxGo{
+  0%{ opacity:0; transform:scale(2.2); }
+  25%{ opacity:1; transform:scale(.92); }
+  40%{ transform:scale(1.04); }
+  70%{ opacity:1; transform:scale(1); }
+  100%{ opacity:0; transform:scale(1.25); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .jx-go b,
+  .gamiq-rule-overlay.jx-rule-in span,
+  .gamiq-rule-overlay.jx-rule-in strong{
+    animation-duration:.01s;
+  }
+}
