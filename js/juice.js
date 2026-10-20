@@ -274,3 +274,78 @@ function hurt() {
 
   navigator.vibrate?.(30);
 }
+
+
+/* ==========================================
+RULE TIMER + "GO!"
+While the rule is shown, a bar fills up so the player
+knows when the game starts. Then a big "GO!" flashes.
+========================================== */
+
+export function ruleTimer(overlay, ms) {
+  if (!overlay) return;
+
+  overlay.querySelector(".jx-rule-bar")?.remove();
+
+  // Replay the entrance animation of the rule text
+  overlay.classList.remove("jx-rule-in");
+  void overlay.offsetWidth;
+  overlay.classList.add("jx-rule-in");
+
+  const bar = document.createElement("i");
+  bar.className = "jx-rule-bar";
+  bar.style.setProperty("--ms", `${ms}ms`);
+  overlay.appendChild(bar);
+}
+
+// Games where the player must WAIT for a signal ("DRAW!").
+// A "GO!" here could make them shoot too early.
+const NO_GO = new Set(["reflex_quick_draw"]);
+
+export function goFx(card, big = false) {
+  if (NO_GO.has(card?.dataset.gameId)) return;
+
+  // Not inside the game area: the game is drawn there right after
+  // and would wipe it out. Use the frame around it instead.
+  const host = card?.querySelector("[data-game-host]")?.parentElement;
+  if (!host) return;
+
+  const go = document.createElement("div");
+  go.className = big ? "jx-go big" : "jx-go";
+  go.innerHTML = "<b>GO!</b>";
+  host.appendChild(go);
+
+  setTimeout(() => go.remove(), 800);
+
+  if (REDUCED || !big) return;
+
+  // First game: a ring of sparks around the GO!
+  const layer = document.createElement("div");
+  layer.className = "jx-burst jx-hit";
+  host.appendChild(layer);
+
+  const x = host.clientWidth / 2;
+  const y = host.clientHeight / 2;
+  const count = 26;
+
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement("i");
+    const angle = (i / count) * Math.PI * 2;
+    const dist = 110 + Math.random() * 60;
+    const size = 5 + Math.random() * 5;
+
+    p.style.left = `${x}px`;
+    p.style.top = `${y}px`;
+    p.style.width = `${size}px`;
+    p.style.height = `${size}px`;
+    p.style.borderRadius = "50%";
+    p.style.background = COLORS.perfect[i % COLORS.perfect.length];
+    p.style.setProperty("--dx", `${Math.cos(angle) * dist}px`);
+    p.style.setProperty("--dy", `${Math.sin(angle) * dist}px`);
+    p.style.setProperty("--rot", "0deg");
+
+    layer.appendChild(p);
+  }
+
+  setTimeout(() => layer.remove(), 1000);
+}
