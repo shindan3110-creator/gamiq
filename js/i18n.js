@@ -210,6 +210,14 @@ const STRINGS = {
     "odd.wrong": "WRONG! -1.5s",
     "odd.timeUp": "TIME UP! {n} FOUND",
 
+    /* ---------- IN-GAME: BLIND STOP ---------- */
+    "rule.reflex_blind_stop": "STOP THE WATCH EXACTLY ON TIME. THE NUMBERS WILL VANISH!",
+    "sw.wait": "WAIT...",
+    "sw.ready": "READY...",
+    "sw.next": "NEXT ROUND",
+    "sw.done": "FINISH!",
+    "sw.timeout": "TOO LATE!",
+
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "TAP ANYWHERE (or SPACE) TO DROP",
     "tower.great": "GREAT!",
@@ -443,6 +451,14 @@ const STRINGS = {
     "odd.found": "見つけた！",
     "odd.wrong": "ちがう！ -1.5秒",
     "odd.timeUp": "タイムアップ！ {n}個 見つけた",
+
+    /* ---------- IN-GAME: BLIND STOP ---------- */
+    "rule.reflex_blind_stop": "目標の秒数ぴったりで止めろ！途中から数字が消えるぞ！",
+    "sw.wait": "まって…",
+    "sw.ready": "よーい…",
+    "sw.next": "次のラウンド",
+    "sw.done": "おわり！",
+    "sw.timeout": "遅すぎ！",
 
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "どこでもタップ（スペースキーでもOK）で落とす",
