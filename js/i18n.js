@@ -231,6 +231,17 @@ const STRINGS = {
     "cm.clear": "ALL PAIRS FOUND!",
     "cm.timeUp": "TIME UP! {n} PAIRS",
 
+    /* ---------- IN-GAME: PERFECT CIRCLE ---------- */
+    "rule.aim_perfect_circle": "DRAW A PERFECT CIRCLE AROUND THE DOT IN ONE STROKE!",
+    "pc.hint": "DRAW A CIRCLE AROUND THE DOT",
+    "pc.again": "ONE MORE TIME!",
+    "pc.notClosed": "GO ALL THE WAY AROUND!",
+    "pc.tooSmall": "TOO SMALL!",
+    "pc.perfect": "PERFECT CIRCLE!",
+    "pc.great": "GREAT!",
+    "pc.good": "NOT BAD",
+    "pc.bad": "KEEP TRYING",
+
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "TAP ANYWHERE (or SPACE) TO DROP",
     "tower.great": "GREAT!",
@@ -485,6 +496,17 @@ const STRINGS = {
     "cm.find": "ペアを探せ",
     "cm.clear": "全部そろった！",
     "cm.timeUp": "タイムアップ！ {n}ペア",
+
+    /* ---------- IN-GAME: PERFECT CIRCLE ---------- */
+    "rule.aim_perfect_circle": "点のまわりに、ひと筆で完璧な円を描け！",
+    "pc.hint": "点のまわりに円を描こう",
+    "pc.again": "もう1回！",
+    "pc.notClosed": "ちゃんと一周して！",
+    "pc.tooSmall": "小さすぎ！",
+    "pc.perfect": "ほぼ真円！",
+    "pc.great": "うまい！",
+    "pc.good": "まあまあ",
+    "pc.bad": "いびつ…",
 
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "どこでもタップ（スペースキーでもOK）で落とす",
