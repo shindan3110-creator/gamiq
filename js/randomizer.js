@@ -1,11 +1,33 @@
 // GAMIQ（ゲーミック） v2 - Randomizer
+//
+// The last games played are remembered in the browser,
+// so after a reload the same games do not come right back.
+
+const RECENT_KEY = "gamiq_recent_games";
+
+function loadRecent() {
+  try {
+    const list = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
+    return Array.isArray(list) ? list.filter(item => item && item.id) : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveRecent(list) {
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+  } catch (error) {
+    // ignore (private mode etc.)
+  }
+}
 
 export class GamiqRandomizer {
   constructor() {
-    this.history = [];
-
     // 直近履歴として保持する件数
     this.maxHistory = 8;
+
+    this.history = loadRecent().slice(-this.maxHistory);
   }
 
 
@@ -218,6 +240,8 @@ export class GamiqRandomizer {
       this.history.shift();
     }
 
+    saveRecent(this.history);
+
 
     return selected;
   }
@@ -229,6 +253,7 @@ export class GamiqRandomizer {
 
   reset() {
     this.history = [];
+    saveRecent(this.history);
   }
 
 
