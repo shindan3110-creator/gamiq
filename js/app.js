@@ -124,6 +124,11 @@ import {
 } from "./games/pk.js";
 
 import {
+  createDarumaGames,
+  runDarumaGame
+} from "./games/daruma.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -221,7 +226,8 @@ const gamePool = [
   ...createEggGames(),
   ...createCardMatchGames(),
   ...createCircleGames(),
-  ...createPkGames()
+  ...createPkGames(),
+  ...createDarumaGames()
 ];
 
 
@@ -1445,6 +1451,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "daruma") {
+    return runDarumaGame({
       game,
       container,
       onComplete
