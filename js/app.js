@@ -114,6 +114,11 @@ import {
 } from "./games/cardmatch.js";
 
 import {
+  createCircleGames,
+  runCircleGame
+} from "./games/circle.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -209,7 +214,8 @@ const gamePool = [
   ...createOddOneGames(),
   ...createStopwatchGames(),
   ...createEggGames(),
-  ...createCardMatchGames()
+  ...createCardMatchGames(),
+  ...createCircleGames()
 ];
 
 
@@ -1433,6 +1439,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "perfect_circle") {
+    return runCircleGame({
       game,
       container,
       onComplete
