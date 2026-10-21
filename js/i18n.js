@@ -248,6 +248,15 @@ const STRINGS = {
     "pk.goal": "GOAL...",
     "pk.early": "TOO EARLY!",
 
+    /* ---------- IN-GAME: RED LIGHT (DARUMA) ---------- */
+    "rule.reflex_daruma": "HOLD TO WALK. FREEZE WHEN THE ONI TURNS AROUND!",
+    "daruma.chant": "GREEN |LIGHT, |GREEN |LIGHT... |RED |LIGHT!",
+    "daruma.hint": "HOLD THE SCREEN TO WALK",
+    "daruma.caught": "MOVED! BACK YOU GO",
+    "daruma.touch": "TOUCH! YOU MADE IT!",
+    "daruma.out": "OUT!",
+    "daruma.timeUp": "TIME UP!",
+
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "TAP ANYWHERE (or SPACE) TO DROP",
     "tower.great": "GREAT!",
@@ -519,6 +528,15 @@ const STRINGS = {
     "pk.save": "セーブ！",
     "pk.goal": "ゴール…",
     "pk.early": "早すぎ！",
+
+    /* ---------- IN-GAME: RED LIGHT (DARUMA) ---------- */
+    "rule.reflex_daruma": "長押しで前に進め！鬼が振り向いたら止まれ！",
+    "daruma.chant": "だ|る|ま|さ|ん|が|こ|ろ|ん|だ！",
+    "daruma.hint": "画面を長押しで進む",
+    "daruma.caught": "動いた！ 戻れ！",
+    "daruma.touch": "タッチ！ 到着！",
+    "daruma.out": "アウト！",
+    "daruma.timeUp": "タイムアップ！",
 
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "どこでもタップ（スペースキーでもOK）で落とす",
