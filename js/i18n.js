@@ -218,6 +218,11 @@ const STRINGS = {
     "sw.done": "FINISH!",
     "sw.timeout": "TOO LATE!",
 
+    /* ---------- IN-GAME: EGG SMASH ---------- */
+    "rule.speed_egg_smash": "TAP LIKE CRAZY! SMASH AS MANY EGGS AS YOU CAN!",
+    "egg.hint": "TAP TAP TAP!",
+    "egg.timeUp": "TIME UP! {n} EGGS",
+
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "TAP ANYWHERE (or SPACE) TO DROP",
     "tower.great": "GREAT!",
@@ -459,6 +464,11 @@ const STRINGS = {
     "sw.next": "次のラウンド",
     "sw.done": "おわり！",
     "sw.timeout": "遅すぎ！",
+
+    /* ---------- IN-GAME: EGG SMASH ---------- */
+    "rule.speed_egg_smash": "とにかく連打！15秒で卵を何個割れるか！",
+    "egg.hint": "連打！連打！",
+    "egg.timeUp": "タイムアップ！ {n}個 割った",
 
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "どこでもタップ（スペースキーでもOK）で落とす",
