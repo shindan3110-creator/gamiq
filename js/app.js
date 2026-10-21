@@ -104,6 +104,11 @@ import {
 } from "./games/stopwatch.js";
 
 import {
+  createEggGames,
+  runEggGame
+} from "./games/egg.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -197,7 +202,8 @@ const gamePool = [
   ...createCupGames(),
   ...createTowerGames(),
   ...createOddOneGames(),
-  ...createStopwatchGames()
+  ...createStopwatchGames(),
+  ...createEggGames()
 ];
 
 
@@ -1421,6 +1427,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "egg_smash") {
+    return runEggGame({
       game,
       container,
       onComplete
