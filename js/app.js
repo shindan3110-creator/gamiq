@@ -119,6 +119,11 @@ import {
 } from "./games/circle.js";
 
 import {
+  createPkGames,
+  runPkGame
+} from "./games/pk.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -215,7 +220,8 @@ const gamePool = [
   ...createStopwatchGames(),
   ...createEggGames(),
   ...createCardMatchGames(),
-  ...createCircleGames()
+  ...createCircleGames(),
+  ...createPkGames()
 ];
 
 
@@ -1439,6 +1445,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "pk_keeper") {
+    return runPkGame({
       game,
       container,
       onComplete
