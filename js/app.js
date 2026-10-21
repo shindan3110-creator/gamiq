@@ -109,6 +109,11 @@ import {
 } from "./games/egg.js";
 
 import {
+  createCardMatchGames,
+  runCardMatchGame
+} from "./games/cardmatch.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -203,7 +208,8 @@ const gamePool = [
   ...createTowerGames(),
   ...createOddOneGames(),
   ...createStopwatchGames(),
-  ...createEggGames()
+  ...createEggGames(),
+  ...createCardMatchGames()
 ];
 
 
@@ -1427,6 +1433,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "card_match") {
+    return runCardMatchGame({
       game,
       container,
       onComplete
