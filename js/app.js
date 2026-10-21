@@ -99,6 +99,11 @@ import {
 } from "./games/oddone.js";
 
 import {
+  createStopwatchGames,
+  runStopwatchGame
+} from "./games/stopwatch.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -191,7 +196,8 @@ const gamePool = [
   ...createSpotGames(),
   ...createCupGames(),
   ...createTowerGames(),
-  ...createOddOneGames()
+  ...createOddOneGames(),
+  ...createStopwatchGames()
 ];
 
 
@@ -1415,6 +1421,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "blind_stop") {
+    return runStopwatchGame({
       game,
       container,
       onComplete
