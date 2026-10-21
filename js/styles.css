@@ -14178,3 +14178,299 @@ STEP 48-2: PC ad boxes also on shorter screens
     right:calc((100vw - 760px) / 4 - 150px);
   }
 }
+
+
+
+/* ==========================================
+STEP 50: NEW GAME - BLIND STOP (stopwatch)
+========================================== */
+
+.sw-game{
+  width:100%;
+  height:100%;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.sw-hud{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.sw-hud > div{
+  padding:7px 4px;
+
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.03);
+
+  text-align:center;
+}
+
+.sw-hud span{
+  display:block;
+  margin-bottom:2px;
+
+  color:#7c8798;
+
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.14em;
+}
+
+.sw-hud strong{
+  color:#fff;
+  font-size:18px;
+}
+
+/* Lab console */
+.sw-stage{
+  position:relative;
+  flex:1;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(10px, 3vh, 22px);
+
+  border-radius:18px;
+  overflow:hidden;
+
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 26px),
+    radial-gradient(circle at 50% 45%, #18324a 0%, #0b1622 60%, #060b12 100%);
+
+  box-shadow:inset 0 0 0 1px rgba(95,239,255,.12);
+
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+
+.sw-target{
+  text-align:center;
+}
+
+.sw-target span{
+  display:block;
+
+  color:var(--genre, #ffd76a);
+
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:.28em;
+}
+
+.sw-target strong{
+  color:#fff;
+
+  font-size:clamp(26px, 7vw, 40px);
+  font-weight:1000;
+  font-variant-numeric:tabular-nums;
+}
+
+.sw-target strong::after{
+  content:"s";
+  margin-left:2px;
+
+  color:rgba(255,255,255,.5);
+  font-size:.55em;
+}
+
+/* The watch face */
+.sw-face{
+  position:relative;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:min(78%, 360px);
+  aspect-ratio:2.2 / 1;
+
+  border:2px solid rgba(95,239,255,.35);
+  border-radius:22px;
+
+  background:linear-gradient(180deg, #02070c, #061420);
+
+  box-shadow:
+    0 0 0 6px rgba(255,255,255,.03),
+    0 0 30px rgba(95,239,255,.15),
+    inset 0 0 24px rgba(95,239,255,.12);
+
+  transition:border-color .2s, box-shadow .2s;
+}
+
+.sw-digits,
+.sw-blind{
+  color:#5fefff;
+
+  font-family:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size:clamp(48px, 15vw, 92px);
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.02em;
+
+  text-shadow:0 0 18px rgba(95,239,255,.6);
+
+  transition:opacity .25s, filter .25s;
+}
+
+.sw-blind{
+  position:absolute;
+
+  color:rgba(255,255,255,.22);
+  text-shadow:none;
+
+  opacity:0;
+}
+
+/* Numbers vanish */
+.sw-face.hidden .sw-digits{
+  opacity:0;
+  filter:blur(10px);
+}
+
+.sw-face.hidden .sw-blind{
+  opacity:1;
+  animation:swBlink 1.2s ease-in-out infinite;
+}
+
+@keyframes swBlink{
+  50%{ opacity:.45; }
+}
+
+.sw-face.hidden{
+  border-color:rgba(255,255,255,.15);
+  box-shadow:0 0 0 6px rgba(255,255,255,.03), inset 0 0 24px rgba(0,0,0,.6);
+}
+
+/* After stopping */
+.sw-face.stopped{ animation:swStop .3s ease-out; }
+
+@keyframes swStop{
+  0%{ transform:scale(1.06); }
+  100%{ transform:scale(1); }
+}
+
+.sw-face.perfect{ border-color:#ffd76a; box-shadow:0 0 36px rgba(255,215,106,.55), inset 0 0 24px rgba(255,215,106,.2); }
+.sw-face.perfect .sw-digits{ color:#ffd76a; text-shadow:0 0 22px rgba(255,215,106,.8); }
+.sw-face.great{ border-color:#7cffb2; }
+.sw-face.great .sw-digits{ color:#7cffb2; text-shadow:0 0 18px rgba(124,255,178,.6); }
+.sw-face.good .sw-digits{ color:#ffffff; text-shadow:none; }
+.sw-face.miss{ border-color:#ff5a5f; }
+.sw-face.miss .sw-digits{ color:#ff5a5f; text-shadow:0 0 18px rgba(255,90,95,.5); }
+
+.sw-result{
+  min-height:44px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  color:#fff;
+}
+
+.sw-result b{
+  font-size:clamp(20px, 5vw, 28px);
+  font-weight:1000;
+  font-style:italic;
+  letter-spacing:.04em;
+
+  animation:swPop .35s cubic-bezier(.2,1.5,.4,1);
+}
+
+.sw-result span{
+  color:rgba(255,255,255,.7);
+
+  font-size:14px;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+}
+
+.sw-result.perfect b{ color:#ffd76a; }
+.sw-result.great b{ color:#7cffb2; }
+.sw-result.good b{ color:#5fefff; }
+.sw-result.miss b{ color:#ff5a5f; }
+
+@keyframes swPop{
+  from{ transform:scale(1.6); opacity:0; }
+  to{ transform:scale(1); opacity:1; }
+}
+
+.sw-dots{
+  display:flex;
+  gap:8px;
+}
+
+.sw-dots i{
+  width:10px;
+  height:10px;
+
+  border:1px solid rgba(255,255,255,.3);
+  border-radius:50%;
+}
+
+.sw-dots i.perfect{ background:#ffd76a; border-color:#ffd76a; }
+.sw-dots i.great{ background:#7cffb2; border-color:#7cffb2; }
+.sw-dots i.good{ background:#5fefff; border-color:#5fefff; }
+.sw-dots i.miss{ background:#ff5a5f; border-color:#ff5a5f; }
+
+/* Big STOP button */
+.sw-button{
+  min-height:64px;
+
+  border:0;
+  border-radius:16px;
+
+  background:linear-gradient(180deg, #ff6b6b, #e23c4a);
+  box-shadow:0 6px 0 #9e1f2c, 0 10px 24px rgba(226,60,74,.35);
+
+  color:#fff;
+
+  font-size:22px;
+  font-weight:1000;
+  letter-spacing:.2em;
+
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+
+  transition:transform .06s, box-shadow .06s, filter .2s;
+}
+
+.sw-button:active:not(:disabled){
+  transform:translateY(5px);
+  box-shadow:0 1px 0 #9e1f2c, 0 4px 12px rgba(226,60,74,.35);
+}
+
+.sw-button:disabled{
+  filter:grayscale(.85) brightness(.6);
+  cursor:default;
+
+  font-size:16px;
+  letter-spacing:.12em;
+}
+
+/* Short screens (phone sideways): make everything fit */
+@media (max-height:520px){
+  .sw-stage{ gap:4px; }
+  .sw-target span{ font-size:8px; }
+  .sw-target strong{ font-size:20px; }
+  .sw-face{ aspect-ratio:auto; padding:2px 28px; border-radius:14px; }
+  .sw-digits, .sw-blind{ font-size:44px; }
+  .sw-result{ min-height:34px; }
+  .sw-result b{ font-size:17px; }
+  .sw-result span{ font-size:11px; }
+  .sw-dots{ display:none; }
+  .sw-button{ min-height:46px; font-size:18px; }
+}
