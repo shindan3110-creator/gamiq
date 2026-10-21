@@ -14973,3 +14973,180 @@ STEP 52: NEW GAME - CARD MATCH (神経衰弱)
 @keyframes cmDone2{
   40%{ transform:scale(1.12); opacity:1; }
 }
+
+
+/* ==========================================
+STEP 53: NEW GAME - PERFECT CIRCLE
+========================================== */
+
+.pc-game{
+  width:100%;
+  height:100%;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.pc-hud{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+}
+
+.pc-hud > div{
+  padding:7px 4px;
+
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.03);
+
+  text-align:center;
+}
+
+.pc-hud span{
+  display:block;
+  margin-bottom:2px;
+
+  color:#7c8798;
+
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.14em;
+}
+
+.pc-hud strong{
+  color:#fff;
+  font-size:18px;
+}
+
+.pc-hud strong.danger{ color:#ff5a5f; }
+
+/* Drawing board: dark sketch paper */
+.pc-stage{
+  position:relative;
+  flex:1;
+  min-height:0;
+
+  border-radius:18px;
+  overflow:hidden;
+
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 20%, rgba(255,107,107,.05) 20% 20.4%, transparent 20.4% 36%, rgba(255,107,107,.05) 36% 36.4%, transparent 36.4%),
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 24px 24px,
+    radial-gradient(circle at 50% 40%, #232a3a, #121621 70%);
+
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+
+  /* Drawing must not scroll the page */
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+
+  cursor:crosshair;
+}
+
+.pc-canvas{
+  position:absolute;
+  inset:0;
+
+  pointer-events:none;
+}
+
+.pc-dot{
+  position:absolute;
+  left:50%;
+  top:50%;
+
+  width:12px;
+  height:12px;
+  margin:-6px 0 0 -6px;
+
+  border-radius:50%;
+
+  background:var(--genre, #ff6b6b);
+  box-shadow:0 0 0 5px rgba(255,107,107,.18), 0 0 16px var(--genre, #ff6b6b);
+
+  pointer-events:none;
+}
+
+.pc-score{
+  position:absolute;
+  left:0;
+  right:0;
+  top:50%;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  transform:translateY(-50%);
+
+  pointer-events:none;
+}
+
+.pc-score b{
+  color:#fff;
+
+  font-size:clamp(40px, 12vw, 64px);
+  font-weight:1000;
+  font-variant-numeric:tabular-nums;
+
+  text-shadow:0 0 20px rgba(0,0,0,.8), 0 3px 0 rgba(0,0,0,.4);
+
+  animation:pcPop .4s cubic-bezier(.2,1.5,.4,1);
+}
+
+.pc-score b small{
+  margin-left:2px;
+  font-size:.45em;
+}
+
+.pc-score span{
+  margin-top:2px;
+  padding:3px 12px;
+
+  border-radius:999px;
+
+  background:rgba(0,0,0,.55);
+
+  color:#fff;
+
+  font-size:13px;
+  font-weight:1000;
+  letter-spacing:.06em;
+}
+
+.pc-score.perfect b{ color:#ffd76a; }
+.pc-score.great b{ color:#7cffb2; }
+.pc-score.good b{ color:#5fefff; }
+.pc-score.bad b{ color:#ff6b6b; }
+
+@keyframes pcPop{
+  from{ transform:scale(1.7); opacity:0; }
+  to{ transform:scale(1); opacity:1; }
+}
+
+.pc-hint{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:16px;
+
+  color:rgba(255,255,255,.6);
+
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-align:center;
+
+  pointer-events:none;
+
+  transition:opacity .2s;
+}
+
+.pc-hint.hide{ opacity:0; }
