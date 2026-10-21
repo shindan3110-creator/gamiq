@@ -223,6 +223,14 @@ const STRINGS = {
     "egg.hint": "TAP TAP TAP!",
     "egg.timeUp": "TIME UP! {n} EGGS",
 
+    /* ---------- IN-GAME: CARD MATCH ---------- */
+    "rule.memory_card_match": "REMEMBER THE CARDS, THEN FIND ALL THE PAIRS!",
+    "cm.look": "REMEMBER!",
+    "cm.go": "TURN!",
+    "cm.find": "FIND THE PAIRS",
+    "cm.clear": "ALL PAIRS FOUND!",
+    "cm.timeUp": "TIME UP! {n} PAIRS",
+
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "TAP ANYWHERE (or SPACE) TO DROP",
     "tower.great": "GREAT!",
@@ -469,6 +477,14 @@ const STRINGS = {
     "rule.speed_egg_smash": "とにかく連打！15秒で卵を何個割れるか！",
     "egg.hint": "連打！連打！",
     "egg.timeUp": "タイムアップ！ {n}個 割った",
+
+    /* ---------- IN-GAME: CARD MATCH ---------- */
+    "rule.memory_card_match": "最初にカードを覚えろ！そのあと同じ絵のペアを全部そろえろ！",
+    "cm.look": "覚えて！",
+    "cm.go": "裏返すぞ！",
+    "cm.find": "ペアを探せ",
+    "cm.clear": "全部そろった！",
+    "cm.timeUp": "タイムアップ！ {n}ペア",
 
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "どこでもタップ（スペースキーでもOK）で落とす",
