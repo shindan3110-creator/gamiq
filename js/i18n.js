@@ -242,6 +242,12 @@ const STRINGS = {
     "pc.good": "NOT BAD",
     "pc.bad": "KEEP TRYING",
 
+    /* ---------- IN-GAME: PK KEEPER ---------- */
+    "rule.reflex_pk_keeper": "DIVE LEFT OR RIGHT WHEN THE BALL IS KICKED. DON'T GO EARLY!",
+    "pk.save": "SAVE!",
+    "pk.goal": "GOAL...",
+    "pk.early": "TOO EARLY!",
+
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "TAP ANYWHERE (or SPACE) TO DROP",
     "tower.great": "GREAT!",
@@ -507,6 +513,12 @@ const STRINGS = {
     "pc.great": "うまい！",
     "pc.good": "まあまあ",
     "pc.bad": "いびつ…",
+
+    /* ---------- IN-GAME: PK KEEPER ---------- */
+    "rule.reflex_pk_keeper": "蹴った瞬間に左右へ飛べ！早く動くと逆を突かれるぞ！",
+    "pk.save": "セーブ！",
+    "pk.goal": "ゴール…",
+    "pk.early": "早すぎ！",
 
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "どこでもタップ（スペースキーでもOK）で落とす",
