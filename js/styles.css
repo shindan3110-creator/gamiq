@@ -15536,3 +15536,329 @@ STEP 54: NEW GAME - PK KEEPER
 }
 
 .pk-gloves span:first-child{ transform:none; }
+
+
+/* ==========================================
+STEP 55: NEW GAME - RED LIGHT (だるまさんがころんだ)
+========================================== */
+
+.dr-game{
+  width:100%;
+  height:100%;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.dr-hud{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+}
+
+.dr-hud > div{
+  padding:7px 4px;
+
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.03);
+
+  text-align:center;
+}
+
+.dr-hud span{
+  display:block;
+  margin-bottom:2px;
+
+  color:#7c8798;
+
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.14em;
+}
+
+.dr-hud strong{
+  color:#fff;
+  font-size:18px;
+}
+
+.dr-hud strong[data-dr-lives]{ color:#ff6b8a; letter-spacing:.1em; }
+.dr-hud strong.danger{ color:#ff5a5f; }
+
+/* Evening park */
+.dr-stage{
+  position:relative;
+  flex:1;
+  min-height:0;
+
+  border-radius:18px;
+  overflow:hidden;
+
+  cursor:pointer;
+  touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+}
+
+.dr-sky{
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(circle at 78% 30%, #ffe9a8 0 18px, rgba(255,200,120,.35) 19px 60px, transparent 120px),
+    linear-gradient(180deg, #3b2a6b 0%, #c65c7a 45%, #ffad6b 70%, #ffd08a 100%);
+}
+
+.dr-ground{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:30%;
+
+  background:
+    repeating-linear-gradient(90deg, rgba(0,0,0,.05) 0 2px, transparent 2px 30px),
+    linear-gradient(180deg, #c9a26b, #a5804f);
+
+  box-shadow:0 -6px 0 #6b8f3a;
+}
+
+.dr-tree{
+  position:absolute;
+  right:4%;
+  bottom:26%;
+
+  width:16%;
+  height:58%;
+
+  background:linear-gradient(90deg, #4a2e1a, #6b4426 50%, #4a2e1a);
+  border-radius:8px 8px 0 0;
+}
+
+.dr-tree::before{
+  content:"";
+
+  position:absolute;
+  left:-90%;
+  right:-90%;
+  top:-40%;
+  height:70%;
+
+  border-radius:50%;
+
+  background:radial-gradient(circle at 40% 40%, #3f7a35, #24502a 70%);
+  box-shadow:-30px 20px 0 -6px #2f6630, 30px 24px 0 -8px #2f6630;
+}
+
+/* Oni */
+.dr-oni{
+  position:absolute;
+  right:22%;
+  bottom:24%;
+  z-index:2;
+
+  height:34%;
+  aspect-ratio:60 / 100;
+}
+
+.dr-oni svg{
+  width:100%;
+  height:100%;
+  overflow:visible;
+}
+
+.dr-oni-face{ display:none; }
+
+.dr-oni.look .dr-oni-face{ display:inline; }
+.dr-oni.look .dr-oni-back{ display:none; }
+
+.dr-oni.turning{ animation:drTurn .18s ease-out; }
+
+@keyframes drTurn{
+  0%{ transform:scaleX(.2); }
+  100%{ transform:scaleX(1); }
+}
+
+/* Fake glance: a little twitch */
+.dr-oni.glance{ animation:drGlance .26s ease; }
+
+@keyframes drGlance{
+  40%{ transform:rotate(-8deg) translateX(-4px); }
+}
+
+.dr-eye{
+  position:absolute;
+  left:50%;
+  top:-34%;
+
+  color:#ff3b4f;
+
+  font-size:clamp(26px, 7vw, 40px);
+  font-weight:1000;
+
+  transform:translateX(-50%) scale(0);
+
+  text-shadow:0 2px 0 #fff;
+}
+
+.dr-oni.look .dr-eye{ animation:drEye .25s cubic-bezier(.2,1.6,.4,1) forwards; }
+
+@keyframes drEye{
+  to{ transform:translateX(-50%) scale(1); }
+}
+
+.dr-oni.tagged{ animation:drTagged .5s ease; }
+
+@keyframes drTagged{
+  30%{ transform:translateX(8px) rotate(6deg); }
+}
+
+/* Chant bubble */
+.dr-bubble{
+  position:absolute;
+  right:6%;
+  top:8%;
+  z-index:3;
+
+  max-width:70%;
+  min-height:1.4em;
+  padding:8px 14px;
+
+  border-radius:14px;
+
+  background:rgba(255,255,255,.94);
+  box-shadow:0 6px 16px rgba(0,0,0,.25);
+
+  color:#2b1a0f;
+
+  font-size:clamp(18px, 5.5vw, 28px);
+  font-weight:1000;
+  letter-spacing:.04em;
+  white-space:nowrap;
+
+  opacity:0;
+  transition:opacity .15s;
+}
+
+.dr-bubble.show{ opacity:1; }
+
+.dr-oni.look ~ .dr-bubble,
+.dr-stage:has(.dr-oni.look) .dr-bubble{
+  color:#e23c4a;
+}
+
+/* Player */
+.dr-player{
+  position:absolute;
+  bottom:24%;
+  z-index:2;
+
+  height:28%;
+  aspect-ratio:50 / 90;
+
+  transition:left .06s linear;
+}
+
+.dr-player svg{
+  width:100%;
+  height:100%;
+  overflow:visible;
+}
+
+.dr-leg-a,
+.dr-leg-b,
+.dr-arm{
+  transform-box:fill-box;
+  transform-origin:50% 0;
+}
+
+.dr-player.walk .dr-leg-a{ animation:drLeg .28s ease-in-out infinite alternate; }
+.dr-player.walk .dr-leg-b{ animation:drLeg .28s ease-in-out infinite alternate-reverse; }
+.dr-player.walk .dr-arm{ animation:drLeg .28s ease-in-out infinite alternate-reverse; }
+.dr-player.walk svg{ animation:drBob .28s ease-in-out infinite alternate; }
+
+@keyframes drLeg{
+  from{ transform:rotate(24deg); }
+  to{ transform:rotate(-24deg); }
+}
+
+@keyframes drBob{
+  to{ transform:translateY(-3%); }
+}
+
+.dr-player.caught{
+  transition:left .5s cubic-bezier(.3,1.3,.5,1);
+  filter:drop-shadow(0 0 10px rgba(255,60,80,.9));
+}
+
+.dr-player.win svg{ animation:drWin .5s ease infinite alternate; }
+
+@keyframes drWin{
+  to{ transform:translateY(-12%); }
+}
+
+.dr-call{
+  position:absolute;
+  left:0;
+  right:0;
+  top:34%;
+  z-index:5;
+
+  color:#fff;
+
+  font-size:clamp(24px, 7vw, 40px);
+  font-weight:1000;
+  font-style:italic;
+  text-align:center;
+
+  text-shadow:0 3px 0 rgba(0,0,0,.35), 0 0 16px rgba(0,0,0,.5);
+
+  opacity:0;
+
+  pointer-events:none;
+}
+
+.dr-call.show{ animation:drCall 1s ease-out forwards; }
+.dr-call.good{ color:#7cffb2; }
+.dr-call.bad{ color:#ff6b6b; }
+
+@keyframes drCall{
+  0%{ opacity:0; transform:scale(1.7); }
+  20%{ opacity:1; transform:scale(1); }
+  80%{ opacity:1; }
+  100%{ opacity:0; }
+}
+
+.dr-hint{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:8%;
+  z-index:4;
+
+  color:#fff;
+
+  font-size:14px;
+  font-weight:1000;
+  letter-spacing:.06em;
+  text-align:center;
+
+  text-shadow:0 2px 4px rgba(0,0,0,.5);
+
+  animation:eggHint .6s ease-in-out infinite alternate;
+
+  transition:opacity .2s;
+
+  pointer-events:none;
+}
+
+.dr-hint.hide{ opacity:0; }
+
+/* Narrow screens: smaller people so there is room to walk */
+.dr-oni{ height:min(34%, 30vw); }
+.dr-player{ height:min(28%, 25vw); }
