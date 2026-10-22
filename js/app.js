@@ -139,6 +139,11 @@ import {
 } from "./games/basket.js";
 
 import {
+  createColorMixGames,
+  runColorMixGame
+} from "./games/colormix.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -239,7 +244,8 @@ const gamePool = [
   ...createPkGames(),
   ...createDarumaGames(),
   ...createSortGames(),
-  ...createBasketGames()
+  ...createBasketGames(),
+  ...createColorMixGames()
 ];
 
 
@@ -1463,6 +1469,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "color_mix") {
+    return runColorMixGame({
       game,
       container,
       onComplete
