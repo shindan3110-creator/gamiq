@@ -8,6 +8,7 @@
 //   Phones: the share sheet. Otherwise: image download + text copy.
 
 import { t, LANG } from "./i18n.js";
+import { OUR_SITE, ON_OUR_SERVER } from "./platform.js";
 
 const SKILLS = ["REFLEX", "SPEED", "AIM", "LOGIC", "MEMORY"];
 
@@ -138,8 +139,14 @@ export function buildShareText({ summary, nickname, rank }) {
   return lines.join("\n");
 }
 
+// The address to share: always the official site
+// (also when playing on the old/test address). Local tests keep their own.
+export function siteOrigin() {
+  return ON_OUR_SERVER && !/localhost/.test(location.hostname) ? OUR_SITE : location.origin;
+}
+
 function shareUrl() {
-  const url = new URL(window.location.origin + window.location.pathname);
+  const url = new URL(`${siteOrigin()}/`);
 
   if (LANG) {
     url.searchParams.set("lang", LANG);
