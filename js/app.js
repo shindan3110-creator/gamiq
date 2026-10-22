@@ -144,6 +144,11 @@ import {
 } from "./games/colormix.js";
 
 import {
+  createBeatSwipeGames,
+  runBeatSwipeGame
+} from "./games/beatswipe.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -245,7 +250,8 @@ const gamePool = [
   ...createDarumaGames(),
   ...createSortGames(),
   ...createBasketGames(),
-  ...createColorMixGames()
+  ...createColorMixGames(),
+  ...createBeatSwipeGames()
 ];
 
 
@@ -1469,6 +1475,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "beat_swipe") {
+    return runBeatSwipeGame({
       game,
       container,
       onComplete
