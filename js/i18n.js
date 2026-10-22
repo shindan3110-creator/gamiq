@@ -268,6 +268,12 @@ const STRINGS = {
     "sort.sweet": "SWEETS",
     "sort.meal": "MEALS",
 
+    /* ---------- IN-GAME: HOOP SHOT ---------- */
+    "rule.aim_hoop_shot": "PULL BACK AND LET GO TO SHOOT. MAKE AS MANY AS YOU CAN!",
+    "hs.hint": "DRAG DOWN, THEN LET GO",
+    "hs.in": "NICE!",
+    "hs.miss": "MISS",
+
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "TAP ANYWHERE (or SPACE) TO DROP",
     "tower.great": "GREAT!",
@@ -559,6 +565,12 @@ const STRINGS = {
     "sort.odd": "奇数",
     "sort.sweet": "おやつ",
     "sort.meal": "ごはん",
+
+    /* ---------- IN-GAME: HOOP SHOT ---------- */
+    "rule.aim_hoop_shot": "引っぱって離してシュート！10球で何本決められるか！",
+    "hs.hint": "下に引っぱって、離す",
+    "hs.in": "ナイス！",
+    "hs.miss": "ミス",
 
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "どこでもタップ（スペースキーでもOK）で落とす",
