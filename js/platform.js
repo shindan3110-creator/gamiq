@@ -13,7 +13,8 @@
 // The CrazyGames zip sets window.GAMIQ_PLATFORM = "crazygames" in index.html.
 // As a safety net, CrazyGames addresses are also detected.
 
-const OUR_SITE = "https://gamiq.shindan3110.workers.dev";
+// Our official website (the address people share)
+export const OUR_SITE = "https://playgamiq.com";
 
 function detectPlatform() {
   try {
