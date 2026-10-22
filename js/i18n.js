@@ -257,6 +257,17 @@ const STRINGS = {
     "daruma.out": "OUT!",
     "daruma.timeUp": "TIME UP!",
 
+    /* ---------- IN-GAME: SORT RUSH ---------- */
+    "rule.speed_sort_rush": "SORT THE ITEMS LEFT OR RIGHT. THE BELT GETS FASTER!",
+    "sort.fruit": "FRUIT",
+    "sort.veg": "VEGGIE",
+    "sort.land": "LAND",
+    "sort.sea": "SEA",
+    "sort.even": "EVEN",
+    "sort.odd": "ODD",
+    "sort.sweet": "SWEETS",
+    "sort.meal": "MEALS",
+
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "TAP ANYWHERE (or SPACE) TO DROP",
     "tower.great": "GREAT!",
@@ -537,6 +548,17 @@ const STRINGS = {
     "daruma.touch": "タッチ！ 到着！",
     "daruma.out": "アウト！",
     "daruma.timeUp": "タイムアップ！",
+
+    /* ---------- IN-GAME: SORT RUSH ---------- */
+    "rule.speed_sort_rush": "流れてくる物を左右に仕分けろ！ベルトはどんどん速くなる！",
+    "sort.fruit": "くだもの",
+    "sort.veg": "やさい",
+    "sort.land": "陸の動物",
+    "sort.sea": "海の生き物",
+    "sort.even": "偶数",
+    "sort.odd": "奇数",
+    "sort.sweet": "おやつ",
+    "sort.meal": "ごはん",
 
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "どこでもタップ（スペースキーでもOK）で落とす",
