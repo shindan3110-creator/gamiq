@@ -15862,3 +15862,295 @@ STEP 55: NEW GAME - RED LIGHT (だるまさんがころんだ)
 /* Narrow screens: smaller people so there is room to walk */
 .dr-oni{ height:min(34%, 30vw); }
 .dr-player{ height:min(28%, 25vw); }
+
+
+/* ==========================================
+STEP 56: NEW GAME - SORT RUSH (factory conveyor)
+========================================== */
+
+.sr-game{
+  width:100%;
+  height:100%;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.sr-hud{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+}
+
+.sr-hud > div{
+  padding:7px 4px;
+
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.03);
+
+  text-align:center;
+}
+
+.sr-hud span{
+  display:block;
+  margin-bottom:2px;
+
+  color:#7c8798;
+
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.14em;
+}
+
+.sr-hud strong{
+  color:#fff;
+  font-size:18px;
+}
+
+.sr-hud strong.danger{ color:#ff5a5f; }
+
+/* Factory floor */
+.sr-stage{
+  position:relative;
+  flex:1;
+  min-height:0;
+
+  border-radius:18px;
+  overflow:hidden;
+
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,220,150,.18), transparent 55%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.025) 0 2px, transparent 2px 12px),
+    linear-gradient(180deg, #2b3038, #1b1f26);
+
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+
+/* The belt */
+.sr-belt{
+  position:absolute;
+  left:50%;
+  top:0;
+  bottom:30%;
+
+  width:min(34%, 130px);
+
+  transform:translateX(-50%);
+
+  border-left:6px solid #8a939e;
+  border-right:6px solid #8a939e;
+
+  background:#15181d;
+
+  box-shadow:0 0 0 2px #0b0d10, 0 10px 30px rgba(0,0,0,.5);
+
+  overflow:hidden;
+}
+
+.sr-belt i{
+  position:absolute;
+  inset:-40px 0 0;
+
+  background:repeating-linear-gradient(180deg, #2a2f36 0 18px, #1d2127 18px 40px);
+
+  animation:srBelt var(--belt-speed, .6s) linear infinite;
+}
+
+.sr-belt.stop i{ animation-play-state:paused; }
+
+@keyframes srBelt{
+  from{ transform:translateY(0); }
+  to{ transform:translateY(40px); }
+}
+
+/* End of the belt: hazard stripes */
+.sr-gate{
+  position:absolute;
+  left:50%;
+  bottom:30%;
+
+  width:min(40%, 150px);
+  height:12px;
+
+  transform:translate(-50%, 50%);
+
+  border-radius:3px;
+
+  background:repeating-linear-gradient(45deg, #ffd23f 0 10px, #1b1b1b 10px 20px);
+
+  box-shadow:0 0 12px rgba(255,210,63,.4);
+}
+
+/* Items (cardboard boxes) */
+.sr-item{
+  position:absolute;
+  left:50%;
+  top:0;
+  z-index:2;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:var(--size, 64px);
+  height:var(--size, 64px);
+
+  border-radius:10px;
+
+  background:linear-gradient(160deg, #e2b77c, #c48f4e);
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.12), 0 6px 10px rgba(0,0,0,.4);
+
+  font-size:calc(var(--size, 64px) * .58);
+  line-height:1;
+
+  pointer-events:none;
+  will-change:transform;
+}
+
+.sr-item.num{
+  color:#2b1a0f;
+
+  font-size:calc(var(--size, 64px) * .5);
+  font-weight:1000;
+}
+
+.sr-item.fly-ok,
+.sr-item.fly-bad,
+.sr-item.drop{
+  transition:transform .4s ease-in, opacity .4s ease-in;
+  opacity:0;
+}
+
+.sr-item.fly-ok.to-left,
+.sr-item.fly-bad.to-left{ transform:translate(calc(-50% - 38vw), 120%) rotate(-40deg) scale(.6) !important; }
+
+.sr-item.fly-ok.to-right,
+.sr-item.fly-bad.to-right{ transform:translate(calc(-50% + 38vw), 120%) rotate(40deg) scale(.6) !important; }
+
+.sr-item.drop{
+  transform:translate(-50%, 900px) rotate(25deg) !important;
+  filter:grayscale(1);
+}
+
+/* Boxes on each side */
+.sr-bin{
+  position:absolute;
+  bottom:4%;
+
+  width:40%;
+  height:22%;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+
+  border:3px solid rgba(255,255,255,.18);
+  border-radius:14px;
+
+  background:linear-gradient(180deg, #3a414c, #262b33);
+
+  box-shadow:inset 0 -8px 0 rgba(0,0,0,.25);
+
+  pointer-events:none;
+}
+
+.sr-bin.left{ left:4%; }
+.sr-bin.right{ right:4%; }
+
+.sr-bin b{
+  font-size:clamp(26px, 7vw, 40px);
+  line-height:1;
+}
+
+.sr-bin b.num{
+  color:#ffd23f;
+  font-weight:1000;
+}
+
+.sr-bin span{
+  color:#fff;
+
+  font-size:clamp(12px, 3.4vw, 16px);
+  font-weight:1000;
+  letter-spacing:.06em;
+}
+
+.sr-bin.hit{ animation:srHit .25s ease; border-color:#7cffb2; }
+.sr-bin.bad{ animation:srBad .3s ease; border-color:#ff5a5f; }
+
+@keyframes srHit{
+  40%{ transform:scale(1.06); box-shadow:0 0 22px rgba(124,255,178,.6); }
+}
+
+@keyframes srBad{
+  25%{ transform:translateX(-6px); }
+  75%{ transform:translateX(6px); }
+}
+
+.sr-arrow{
+  position:absolute;
+  top:40%;
+
+  color:rgba(255,255,255,.18);
+
+  font-size:28px;
+
+  pointer-events:none;
+}
+
+.sr-arrow.left{ left:8%; }
+.sr-arrow.right{ right:8%; }
+
+.sr-pop{
+  position:absolute;
+  left:0;
+  right:0;
+  top:30%;
+  z-index:4;
+
+  color:#fff;
+
+  font-size:clamp(22px, 6vw, 34px);
+  font-weight:1000;
+  font-style:italic;
+  text-align:center;
+
+  text-shadow:0 3px 0 rgba(0,0,0,.4);
+
+  opacity:0;
+
+  pointer-events:none;
+}
+
+.sr-pop.show{ animation:drCall .8s ease-out forwards; }
+.sr-pop.good{ color:#ffd76a; }
+.sr-pop.bad{ color:#ff5a5f; }
+
+/* Phone sideways: smaller boxes */
+@media (max-height:520px){
+  .sr-belt{ bottom:24%; }
+  .sr-gate{ bottom:24%; }
+  .sr-bin{ height:20%; width:30%; flex-direction:row; gap:8px; }
+}
+
+/* Bin color only flashes, then goes back */
+.sr-bin.hit,
+.sr-bin.bad{ border-color:rgba(255,255,255,.18); }
+
+@keyframes srHit{
+  40%{ transform:scale(1.06); border-color:#7cffb2; box-shadow:0 0 22px rgba(124,255,178,.6); }
+}
+
+@keyframes srBad{
+  25%{ transform:translateX(-6px); border-color:#ff5a5f; }
+  75%{ transform:translateX(6px); border-color:#ff5a5f; }
+}
