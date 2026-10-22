@@ -16593,3 +16593,251 @@ STEP 58: NEW GAME - COLOR MIX (color memory)
 @media (max-height:520px){
   .cx-swatch span{ color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.6); }
 }
+
+
+
+/* ==========================================
+STEP 59: NEW GAME - BEAT SWIPE (rhythm)
+========================================== */
+
+.bs-game{
+  width:100%;
+  height:100%;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.bs-hud{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+}
+
+.bs-hud > div{
+  padding:7px 4px;
+
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.03);
+
+  text-align:center;
+}
+
+.bs-hud span{
+  display:block;
+  margin-bottom:2px;
+
+  color:#7c8798;
+
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.14em;
+}
+
+.bs-hud strong{
+  color:#fff;
+  font-size:18px;
+}
+
+/* Night club */
+.bs-stage{
+  position:relative;
+  flex:1;
+  min-height:0;
+
+  display:flex;
+  justify-content:center;
+
+  border-radius:18px;
+  overflow:hidden;
+
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255,126,182,.35), transparent 40%),
+    radial-gradient(circle at 80% 15%, rgba(95,239,255,.3), transparent 40%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 1px, transparent 1px 40px),
+    linear-gradient(180deg, #170a2b, #0b0716);
+
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+
+  cursor:pointer;
+}
+
+.bs-lane{
+  position:relative;
+
+  width:min(46%, 190px);
+  height:100%;
+
+  border-left:2px solid rgba(255,126,182,.35);
+  border-right:2px solid rgba(255,126,182,.35);
+
+  background:linear-gradient(180deg, transparent, rgba(255,126,182,.08));
+}
+
+.bs-lane.pulse{ animation:bsPulse .2s ease-out; }
+
+@keyframes bsPulse{
+  0%{ background-color:rgba(255,126,182,.12); }
+  100%{ background-color:transparent; }
+}
+
+.bs-ring{
+  position:absolute;
+  left:50%;
+  top:82%;
+
+  width:min(78%, 120px);
+  aspect-ratio:1;
+
+  border:4px solid rgba(255,255,255,.8);
+  border-radius:50%;
+
+  transform:translate(-50%, -50%);
+
+  box-shadow:0 0 18px rgba(255,126,182,.55), inset 0 0 18px rgba(255,126,182,.35);
+}
+
+.bs-ring.flash{ animation:bsFlash .25s ease-out; }
+
+@keyframes bsFlash{
+  0%{ transform:translate(-50%, -50%) scale(1.18); border-color:#ffd76a; box-shadow:0 0 30px rgba(255,215,106,.9); }
+  100%{ transform:translate(-50%, -50%) scale(1); }
+}
+
+/* Notes */
+.bs-note{
+  position:absolute;
+  left:50%;
+  top:0;
+  z-index:2;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:min(64%, 96px);
+  aspect-ratio:1;
+
+  border-radius:50%;
+
+  will-change:transform;
+  pointer-events:none;
+}
+
+.bs-note.tap{
+  background:radial-gradient(circle at 35% 30%, #fff, #ff7eb6 45%, #c2357a);
+  box-shadow:0 0 16px rgba(255,126,182,.8);
+}
+
+.bs-note.tap i{
+  width:30%;
+  aspect-ratio:1;
+  border-radius:50%;
+  background:#fff;
+}
+
+.bs-note.arrow{
+  border-radius:22%;
+
+  background:linear-gradient(160deg, #5fefff, #2a8bd6);
+  box-shadow:0 0 16px rgba(95,239,255,.75);
+}
+
+.bs-note.arrow b{
+  color:#fff;
+
+  font-size:clamp(34px, 10vw, 58px);
+  font-weight:1000;
+  line-height:1;
+
+  text-shadow:0 2px 0 rgba(0,0,0,.25);
+}
+
+.bs-note.hit{
+  animation:bsHit .25s ease-out forwards;
+}
+
+@keyframes bsHit{
+  to{ opacity:0; filter:brightness(2); scale:1.5; }
+}
+
+.bs-note.missed{
+  opacity:.25;
+  filter:grayscale(1);
+  transition:opacity .2s;
+}
+
+/* Judge text */
+.bs-judge{
+  position:absolute;
+  left:0;
+  right:0;
+  top:38%;
+  z-index:4;
+
+  color:#fff;
+
+  font-size:clamp(26px, 8vw, 44px);
+  font-weight:1000;
+  font-style:italic;
+  text-align:center;
+
+  text-shadow:0 3px 0 rgba(0,0,0,.4), 0 0 16px rgba(0,0,0,.5);
+
+  opacity:0;
+  pointer-events:none;
+}
+
+.bs-judge.show{ animation:bsJudge .5s ease-out forwards; }
+.bs-judge.perfect{ color:#ffd76a; }
+.bs-judge.great{ color:#7cffb2; }
+.bs-judge.good{ color:#5fefff; }
+.bs-judge.miss,
+.bs-judge.wrong{ color:#ff6b6b; }
+.bs-judge.count{ font-size:clamp(46px, 14vw, 80px); font-style:normal; }
+.bs-judge.end{ animation:none; opacity:1; font-size:clamp(20px, 6vw, 30px); }
+
+@keyframes bsJudge{
+  0%{ opacity:0; transform:scale(1.5); }
+  25%{ opacity:1; transform:scale(1); }
+  75%{ opacity:1; }
+  100%{ opacity:0; }
+}
+
+.bs-hint{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:3%;
+  z-index:4;
+
+  color:rgba(255,255,255,.75);
+
+  font-size:13px;
+  font-weight:1000;
+  letter-spacing:.06em;
+  text-align:center;
+
+  transition:opacity .3s;
+  pointer-events:none;
+}
+
+.bs-hint.hide{ opacity:0; }
+
+/* Phone sideways: smaller notes */
+@media (max-height:520px){
+  .bs-note{ width:min(64%, 62px); }
+  .bs-note.arrow b{ font-size:34px; }
+  .bs-ring{ width:min(78%, 78px); }
+}
+
+/* Notes a bit smaller so fast songs do not pile up */
+.bs-note{ width:min(50%, 74px); }
+.bs-note.arrow b{ font-size:clamp(30px, 8vw, 46px); }
