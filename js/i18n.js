@@ -243,7 +243,8 @@ const STRINGS = {
     "pc.bad": "KEEP TRYING",
 
     /* ---------- IN-GAME: PK KEEPER ---------- */
-    "rule.reflex_pk_keeper": "DIVE LEFT OR RIGHT WHEN THE BALL IS KICKED. DON'T GO EARLY!",
+    "rule.reflex_pk_keeper": "TAP WHERE THE BALL GOES, RIGHT WHEN IT IS KICKED. DON'T GO EARLY!",
+    "pk.hint": "TAP THE GOAL WHERE THE BALL GOES",
     "pk.save": "SAVE!",
     "pk.goal": "GOAL...",
     "pk.early": "TOO EARLY!",
@@ -566,7 +567,8 @@ const STRINGS = {
     "pc.bad": "いびつ…",
 
     /* ---------- IN-GAME: PK KEEPER ---------- */
-    "rule.reflex_pk_keeper": "蹴った瞬間に左右へ飛べ！早く動くと逆を突かれるぞ！",
+    "rule.reflex_pk_keeper": "蹴った瞬間に、ボールが飛ぶ場所をタップ！早く動くと逆を突かれるぞ！",
+    "pk.hint": "ボールが来る場所をタップ",
     "pk.save": "セーブ！",
     "pk.goal": "ゴール…",
     "pk.early": "早すぎ！",
