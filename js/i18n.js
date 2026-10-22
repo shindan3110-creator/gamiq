@@ -274,6 +274,25 @@ const STRINGS = {
     "hs.in": "NICE!",
     "hs.miss": "MISS",
 
+    /* ---------- IN-GAME: COLOR MIX ---------- */
+    "rule.memory_color_mix": "REMEMBER THE COLOR, THEN MIX IT WITH THE PAINTS!",
+    "cx.sample": "SAMPLE",
+    "cx.yours": "YOURS",
+    "cx.look": "REMEMBER THIS COLOR!",
+    "cx.mix": "TAP THE PAINTS TO MIX IT",
+    "cx.full": "PALETTE IS FULL. RESET?",
+    "cx.reset": "RESET",
+    "cx.done": "DONE!",
+    "cx.red": "RED",
+    "cx.yellow": "YELLOW",
+    "cx.blue": "BLUE",
+    "cx.white": "WHITE",
+    "cx.black": "BLACK",
+    "cx.perfect": "AMAZING EYE!",
+    "cx.good": "CLOSE!",
+    "cx.bad": "NOT QUITE",
+    "cx.timeUp": "TIME UP!",
+
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "TAP ANYWHERE (or SPACE) TO DROP",
     "tower.great": "GREAT!",
@@ -571,6 +590,25 @@ const STRINGS = {
     "hs.hint": "下に引っぱって、離す",
     "hs.in": "ナイス！",
     "hs.miss": "ミス",
+
+    /* ---------- IN-GAME: COLOR MIX ---------- */
+    "rule.memory_color_mix": "見本の色を覚えて、絵の具を混ぜて同じ色を作れ！",
+    "cx.sample": "見本",
+    "cx.yours": "あなたの色",
+    "cx.look": "この色を覚えて！",
+    "cx.mix": "絵の具をタップして混ぜよう",
+    "cx.full": "パレットがいっぱい。やり直す？",
+    "cx.reset": "やり直し",
+    "cx.done": "できた！",
+    "cx.red": "赤",
+    "cx.yellow": "黄",
+    "cx.blue": "青",
+    "cx.white": "白",
+    "cx.black": "黒",
+    "cx.perfect": "すごい色彩感覚！",
+    "cx.good": "おしい！",
+    "cx.bad": "ちょっと違う…",
+    "cx.timeUp": "タイムアップ！",
 
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "どこでもタップ（スペースキーでもOK）で落とす",
