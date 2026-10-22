@@ -293,6 +293,12 @@ const STRINGS = {
     "cx.bad": "NOT QUITE",
     "cx.timeUp": "TIME UP!",
 
+    /* ---------- IN-GAME: BEAT SWIPE ---------- */
+    "rule.speed_beat_swipe": "TAP THE DOTS, SWIPE THE ARROWS — RIGHT ON THE BEAT!",
+    "bs.hint": "● = TAP   ↑↓←→ = SWIPE",
+    "bs.wrong": "WRONG WAY",
+    "bs.end": "BEST COMBO {n}",
+
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "TAP ANYWHERE (or SPACE) TO DROP",
     "tower.great": "GREAT!",
@@ -609,6 +615,12 @@ const STRINGS = {
     "cx.good": "おしい！",
     "cx.bad": "ちょっと違う…",
     "cx.timeUp": "タイムアップ！",
+
+    /* ---------- IN-GAME: BEAT SWIPE ---------- */
+    "rule.speed_beat_swipe": "リズムに合わせて、●はタップ、矢印はその方向へスワイプ！",
+    "bs.hint": "● ＝ タップ　↑↓←→ ＝ スワイプ",
+    "bs.wrong": "向きが違う！",
+    "bs.end": "最大コンボ {n}",
 
     /* ---------- IN-GAME: TOWER STACK ---------- */
     "tower.hint": "どこでもタップ（スペースキーでもOK）で落とす",
