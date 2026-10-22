@@ -16286,3 +16286,310 @@ STEP 57: NEW GAME - HOOP SHOT (basketball)
 }
 
 .hs-hint.hide{ opacity:0; }
+
+
+
+
+  /* ==========================================
+STEP 58: NEW GAME - COLOR MIX (color memory)
+========================================== */
+
+.cx-game{
+  width:100%;
+  height:100%;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.cx-hud{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+}
+
+.cx-hud > div{
+  padding:7px 4px;
+
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.03);
+
+  text-align:center;
+}
+
+.cx-hud span{
+  display:block;
+  margin-bottom:2px;
+
+  color:#7c8798;
+
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.14em;
+}
+
+.cx-hud strong{
+  color:#fff;
+  font-size:18px;
+}
+
+.cx-hud strong.danger{ color:#ff5a5f; }
+
+/* Atelier: warm canvas + wooden table */
+.cx-stage{
+  position:relative;
+  flex:1;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-evenly;
+  gap:8px;
+
+  padding:12px;
+
+  border-radius:18px;
+
+  background:
+    linear-gradient(180deg, transparent 0 62%, #8c5a33 62%, #6e4426 100%),
+    radial-gradient(circle at 50% 30%, #fbf3e4, #ead9bd 70%);
+}
+
+.cx-swatches{
+  display:flex;
+  gap:clamp(14px, 6vw, 40px);
+}
+
+.cx-swatch{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+
+.cx-swatch span{
+  color:#5a3d22;
+
+  font-size:12px;
+  font-weight:1000;
+  letter-spacing:.08em;
+}
+
+.cx-target,
+.cx-mine{
+  width:clamp(90px, 28vw, 150px);
+  aspect-ratio:1;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:6px solid #fff;
+  border-radius:50%;
+
+  background:var(--color, #ddd);
+
+  box-shadow:0 8px 18px rgba(80,50,20,.3), inset 0 -10px 18px rgba(0,0,0,.12);
+
+  transition:background .25s ease;
+}
+
+.cx-target.hidden{
+  background:repeating-linear-gradient(45deg, #d9ccb6 0 8px, #cdbfa6 8px 16px);
+}
+
+.cx-target b{
+  color:#8c6f4d;
+
+  font-size:clamp(34px, 10vw, 54px);
+  font-weight:1000;
+}
+
+.cx-target.show{ animation:cxPop .3s ease-out; }
+
+@keyframes cxPop{
+  from{ transform:scale(.85); }
+  to{ transform:scale(1); }
+}
+
+.cx-mine.empty{
+  background:repeating-linear-gradient(-45deg, #f5efe4 0 8px, #ece3d3 8px 16px);
+}
+
+.cx-mine.drip{ animation:cxDrip .25s ease; }
+
+@keyframes cxDrip{
+  40%{ transform:scale(1.07); }
+}
+
+.cx-message{
+  min-height:22px;
+
+  color:#5a3d22;
+
+  font-size:14px;
+  font-weight:1000;
+  text-align:center;
+}
+
+.cx-message.result b{ font-size:22px; margin-right:4px; }
+.cx-message.perfect b{ color:#d18a00; }
+.cx-message.good b{ color:#1f9a57; }
+.cx-message.bad b{ color:#d63a46; }
+
+.cx-bar{
+  width:min(60%, 260px);
+  height:6px;
+
+  border-radius:999px;
+
+  background:rgba(90,61,34,.2);
+
+  overflow:hidden;
+}
+
+.cx-bar i{
+  display:block;
+  height:100%;
+
+  background:#d18a00;
+
+  transform-origin:left center;
+  transform:scaleX(0);
+}
+
+/* Paint tubes */
+.cx-paints{
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:8px;
+
+  width:100%;
+  max-width:460px;
+}
+
+.cx-paint{
+  position:relative;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+
+  padding:8px 2px 6px;
+
+  border:0;
+  border-radius:12px;
+
+  background:rgba(255,255,255,.12);
+
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+
+  transition:transform .08s;
+}
+
+.cx-paint:active:not(:disabled){ transform:scale(.92); }
+.cx-paint:disabled{ opacity:.45; cursor:default; }
+
+.cx-paint i{
+  width:clamp(34px, 10vw, 50px);
+  aspect-ratio:1;
+
+  border:3px solid rgba(255,255,255,.85);
+  border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+
+  background:var(--paint);
+
+  box-shadow:0 4px 8px rgba(0,0,0,.3), inset -4px -6px 8px rgba(0,0,0,.15);
+}
+
+.cx-paint span{
+  color:#fff;
+
+  font-size:11px;
+  font-weight:1000;
+
+  text-shadow:0 1px 2px rgba(0,0,0,.5);
+}
+
+.cx-paint b{
+  position:absolute;
+  top:2px;
+  right:6px;
+
+  min-width:18px;
+
+  border-radius:999px;
+
+  background:#fff;
+
+  color:#2b1a0f;
+
+  font-size:11px;
+  font-weight:1000;
+}
+
+.cx-paint b:empty{ display:none; }
+
+.cx-actions{
+  display:flex;
+  gap:10px;
+
+  width:100%;
+  max-width:460px;
+}
+
+.cx-actions button{
+  flex:1;
+  min-height:46px;
+
+  border:0;
+  border-radius:12px;
+
+  font-size:15px;
+  font-weight:1000;
+
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+.cx-actions button:disabled{ opacity:.45; cursor:default; }
+
+.cx-reset{
+  background:rgba(255,255,255,.85);
+  color:#5a3d22;
+}
+
+.cx-done{
+  background:linear-gradient(180deg, #ffd76a, #f0a92b);
+  color:#3a2306;
+  box-shadow:0 4px 0 #b97a12;
+}
+
+/* Phone sideways: put the colors next to the paints */
+@media (max-height:520px){
+  .cx-stage{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    grid-template-rows:auto auto auto auto;
+    align-content:center;
+    column-gap:16px;
+    row-gap:6px;
+  }
+
+  .cx-swatches{ grid-row:1 / 5; align-self:center; }
+  .cx-target, .cx-mine{ width:min(22vh, 110px); border-width:4px; }
+  .cx-paint i{ width:min(8vh, 40px); }
+  .cx-actions button{ min-height:38px; }
+}
+
+@media (max-height:520px){
+  .cx-swatch span{ color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.6); }
+}
