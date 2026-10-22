@@ -1,14 +1,17 @@
-// GAMIQ（ゲーミック） v2 - PK Keeper
+// GAMIQ（ゲーミック） v2 - PK Keeper (TV view)
 //
 // PK KEEPER
-// - You are the goalkeeper. 8 penalty kicks.
-// - When the ball is kicked, dive LEFT or RIGHT (tap that side).
+// - You are the goalkeeper. 8 penalty kicks, seen like on TV
+//   (from behind the kicker).
+// - When the ball is kicked, TAP the part of the goal it is going to.
+//   6 spots: left / middle / right x high / low.
 // - Dive too early and the kicker shoots the other way!
-// - Higher level: faster shots, fake kicks, and shots down
-//   the middle (stay still to save those).
+// - The kicker is not a robot: run-up speed changes, sometimes a
+//   stop ("paradinha"), and the body leans to one side before the kick.
+//   Low level: the lean tells the truth. High level: it can lie.
 
 import { t } from "../i18n.js";
-import { byLevel } from "../difficulty.js";
+import { byLevel, safeLevel } from "../difficulty.js";
 import { sfx } from "../sound.js";
 
 export function createPkGames() {
@@ -17,10 +20,10 @@ export function createPkGames() {
       id: "reflex_pk_keeper",
       type: "pk_keeper",
       title: "PK KEEPER",
-      rule: "DIVE LEFT OR RIGHT WHEN THE BALL IS KICKED. DON'T GO EARLY!",
+      rule: "TAP WHERE THE BALL GOES, RIGHT WHEN IT IS KICKED. DON'T GO EARLY!",
       skill: "REFLEX",
       theme: "stadium",
-      duration: 25000
+      duration: 30000
     }
   ];
 }
@@ -39,37 +42,60 @@ export function runPkGame({ game, container, onComplete }) {
 
 
 /* ==========================================
-GAME
+GOAL & SPOTS (in % of the stage)
 ========================================== */
 
+const GOAL = { left: 13, right: 87, top: 24, bottom: 50 };
+
+const COLS = ["L", "C", "R"];
+const ROWS = ["T", "B"];
+
+// Where the ball ends up for each spot
+const SPOT_X = { L: 25, C: 50, R: 75 };
+const SPOT_Y = { T: 31, B: 44 };
+
 const KICKS = 8;
+
+function pick(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+
+/* ==========================================
+GAME
+========================================== */
 
 function runPkKeeper({ container, onComplete, level = 1 }) {
   /*
    * DIFFICULTY BY LEVEL
-   *   ball flight time: 700ms (Lv1) -> 380ms (Lv10)
-   *   fake kicks: never -> 45% of kicks
-   *   shots down the middle: never -> 25%
+   *   ball flight time: 760ms (Lv1) -> 430ms (Lv10)
+   *   save also counts if only the side is right (high/low wrong): Lv1-3
+   *   stop in the run-up (paradinha): 15% -> 45%
+   *   the lean before the kick is a lie: never -> 50%
+   *   fake kick (leg swings, no ball): never -> 30%
    */
-  const travelMs = byLevel(level, 700, 380);
-  const fakeRate = byLevel(level, 0, 0.45);
-  const middleRate = byLevel(level, 0, 0.25);
+  const lv = safeLevel(level);
+  const travelMs = byLevel(level, 760, 430);
+  const sideIsEnough = lv <= 3;
+  const stopRate = byLevel(level, 0.15, 0.45);
+  const lieRate = byLevel(level, 0, 0.5);
+  const fakeRate = byLevel(level, 0, 0.3);
 
   let finished = false;
   let kick = 0;
   let phase = "wait"; // wait | runup | flying | result
-  let dive = null; // "L" | "R" | null
+  let dive = null; // { col, row }
   let diveAt = 0;
   let kickedAt = 0;
-  let target = null;
+  let target = null; // { col, row }
   let timers = [];
 
   const results = [];
 
   container.innerHTML = `
-    <div class="pk-game">
+    <div class="pk2-game">
 
-      <div class="pk-hud">
+      <div class="pk2-hud">
         <div>
           <span>KICK</span>
           <strong data-pk-kick>1 / ${KICKS}</strong>
@@ -80,53 +106,71 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
         </div>
       </div>
 
-      <div class="pk-stage" data-pk-stage>
+      <div class="pk2-stage" data-pk-stage>
 
-        <div class="pk-crowd"></div>
-        <div class="pk-field"></div>
-        <i class="pk-spot"></i>
+        <div class="pk2-crowd"></div>
+        <div class="pk2-pitch"></div>
 
-        <div class="pk-kicker" data-pk-kicker>
-          <svg viewBox="0 0 60 110" aria-hidden="true">
-            <ellipse cx="30" cy="106" rx="16" ry="3" fill="rgba(0,0,0,.3)"/>
-            <g class="pk-leg-l"><rect x="20" y="66" width="8" height="34" rx="4" fill="#f1c7a0"/><rect x="18" y="94" width="12" height="8" rx="3" fill="#1d1d1d"/></g>
-            <g class="pk-leg-r"><rect x="32" y="66" width="8" height="34" rx="4" fill="#f1c7a0"/><rect x="30" y="94" width="12" height="8" rx="3" fill="#1d1d1d"/></g>
-            <rect x="17" y="58" width="26" height="14" rx="4" fill="#ffffff"/>
-            <rect x="15" y="28" width="30" height="34" rx="9" fill="#e23c4a"/>
-            <text x="30" y="52" text-anchor="middle" font-size="14" font-weight="900" fill="#fff">10</text>
-            <rect x="8" y="30" width="8" height="26" rx="4" fill="#e23c4a"/>
-            <rect x="44" y="30" width="8" height="26" rx="4" fill="#e23c4a"/>
-            <circle cx="30" cy="17" r="11" fill="#f1c7a0"/>
-            <path d="M19 15 Q20 4 30 5 Q41 4 41 15 Q36 9 30 10 Q24 9 19 15 Z" fill="#2b1a0f"/>
+        <div class="pk2-goal" style="left:${GOAL.left}%;right:${100 - GOAL.right}%;top:${GOAL.top}%;bottom:${100 - GOAL.bottom}%">
+          <div class="pk2-net"></div>
+          <div class="pk2-zones">
+            ${ROWS.map(r => COLS.map(c => `<i data-zone="${c}${r}"></i>`).join("")).join("")}
+          </div>
+        </div>
+
+        <div class="pk2-keeper" data-pk-keeper>
+          <svg viewBox="0 0 80 100" aria-hidden="true">
+            <ellipse cx="40" cy="97" rx="18" ry="3" fill="rgba(0,0,0,.3)"/>
+            <rect x="29" y="64" width="9" height="31" rx="4" fill="#1d1d1d"/>
+            <rect x="42" y="64" width="9" height="31" rx="4" fill="#1d1d1d"/>
+            <rect x="26" y="58" width="28" height="14" rx="4" fill="#222b3a"/>
+            <rect x="24" y="30" width="32" height="32" rx="9" fill="#ffd23f"/>
+            <rect x="34" y="40" width="12" height="4" rx="2" fill="#1d1d1d" opacity=".35"/>
+            <g class="pk2-arm-l"><rect x="10" y="22" width="9" height="26" rx="4" fill="#ffd23f" transform="rotate(35 18 34)"/><circle cx="10" cy="22" r="6.5" fill="#7cffb2"/></g>
+            <g class="pk2-arm-r"><rect x="61" y="22" width="9" height="26" rx="4" fill="#ffd23f" transform="rotate(-35 62 34)"/><circle cx="70" cy="22" r="6.5" fill="#7cffb2"/></g>
+            <circle cx="40" cy="20" r="11" fill="#f1c7a0"/>
+            <path d="M29 18 Q30 7 40 8 Q50 7 51 18 Q46 12 40 13 Q34 12 29 18 Z" fill="#2b1a0f"/>
+            <circle cx="36" cy="20" r="1.6" fill="#1d1a16"/>
+            <circle cx="44" cy="20" r="1.6" fill="#1d1a16"/>
           </svg>
         </div>
 
-        <div class="pk-ball" data-pk-ball>⚽</div>
+        <i class="pk2-spot"></i>
+        <div class="pk2-ball" data-pk-ball></div>
 
-        <div class="pk-post left"></div>
-        <div class="pk-post right"></div>
-        <div class="pk-bar"></div>
-
-        <div class="pk-gloves" data-pk-gloves>
-          <span>🧤</span>
+        <div class="pk2-kicker" data-pk-kicker>
+          <svg viewBox="0 0 70 120" aria-hidden="true">
+            <ellipse cx="35" cy="116" rx="20" ry="4" fill="rgba(0,0,0,.3)"/>
+            <g class="pk2-leg-l"><rect x="22" y="72" width="11" height="40" rx="5" fill="#f1c7a0"/><rect x="20" y="104" width="15" height="9" rx="4" fill="#111"/></g>
+            <g class="pk2-leg-r"><rect x="37" y="72" width="11" height="40" rx="5" fill="#f1c7a0"/><rect x="35" y="104" width="15" height="9" rx="4" fill="#111"/></g>
+            <rect x="19" y="64" width="32" height="16" rx="5" fill="#ffffff"/>
+            <g class="pk2-body">
+              <g class="pk2-k-arm-l"><rect x="6" y="32" width="10" height="30" rx="5" fill="#e23c4a"/></g>
+              <g class="pk2-k-arm-r"><rect x="54" y="32" width="10" height="30" rx="5" fill="#e23c4a"/></g>
+              <rect x="15" y="28" width="40" height="40" rx="11" fill="#e23c4a"/>
+              <text x="35" y="56" text-anchor="middle" font-size="18" font-weight="900" fill="#fff">10</text>
+              <circle cx="35" cy="17" r="12" fill="#2b1a0f"/>
+              <rect x="27" y="26" width="16" height="4" rx="2" fill="#d9a87e"/>
+            </g>
+          </svg>
         </div>
 
-        <div class="pk-call" data-pk-call></div>
-
-        <div class="pk-tap left" aria-hidden="true">◀</div>
-        <div class="pk-tap right" aria-hidden="true">▶</div>
+        <div class="pk2-call" data-pk-call></div>
+        <div class="pk2-hint" data-pk-hint>${t("pk.hint")}</div>
       </div>
 
     </div>
   `;
 
   const stage = container.querySelector("[data-pk-stage]");
+  const keeper = container.querySelector("[data-pk-keeper]");
   const kicker = container.querySelector("[data-pk-kicker]");
   const ball = container.querySelector("[data-pk-ball]");
-  const gloves = container.querySelector("[data-pk-gloves]");
   const callEl = container.querySelector("[data-pk-call]");
+  const hintEl = container.querySelector("[data-pk-hint]");
   const kickEl = container.querySelector("[data-pk-kick]");
   const savesEl = container.querySelector("[data-pk-saves]");
+  const zones = [...container.querySelectorAll("[data-zone]")];
 
   function later(fn, ms) {
     const id = setTimeout(() => {
@@ -134,24 +178,82 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
     }, ms);
 
     timers.push(id);
+    return id;
   }
 
   function call(text, kind = "") {
-    callEl.className = `pk-call show ${kind}`;
+    callEl.className = "pk2-call";
+    void callEl.offsetWidth;
+    callEl.className = `pk2-call show ${kind}`;
     callEl.textContent = text;
   }
 
 
-  /* ---------- ONE KICK ---------- */
+  /* ---------- KEEPER ---------- */
 
-  function setBall(x, y, size, ms) {
-    ball.style.transition = ms
-      ? `left ${ms}ms linear, top ${ms}ms cubic-bezier(.3,0,.7,1), font-size ${ms}ms ease-in, transform ${ms}ms linear`
-      : "none";
-    ball.style.left = `${x}%`;
-    ball.style.top = `${y}%`;
-    ball.style.fontSize = `${size}px`;
+  function placeKeeper(spot) {
+    // Standing in the middle of the goal, or diving to a spot
+    if (!spot) {
+      keeper.style.transform = "translate(-50%, -100%)";
+      keeper.className = "pk2-keeper";
+      return;
+    }
+
+    const dx = (SPOT_X[spot.col] - 50) * 0.9;
+    const dy = spot.row === "T" ? -9 : 2;
+    const rot = spot.col === "L" ? -70 : spot.col === "R" ? 70 : 0;
+
+    keeper.className = `pk2-keeper dive ${spot.col === "C" ? (spot.row === "T" ? "jump" : "crouch") : ""}`;
+    keeper.style.transform = `translate(calc(-50% + ${dx}cqw), calc(-100% + ${dy}cqh)) rotate(${rot}deg)`;
   }
+
+
+  /* ---------- BALL ---------- */
+
+  let ballAnim = null;
+
+  function resetBall() {
+    ballAnim?.cancel();
+    ballAnim = null;
+
+    ball.className = "pk2-ball";
+    ball.style.left = "50%";
+    ball.style.top = "82%";
+    ball.style.transform = "translate(-50%, -50%) scale(1)";
+  }
+
+  function flyBall(spot, ms) {
+    const sw = stage.clientWidth;
+    const sh = stage.clientHeight;
+
+    const x0 = sw * 0.5;
+    const y0 = sh * 0.82;
+    const x1 = (sw * SPOT_X[spot.col]) / 100 + (Math.random() - 0.5) * sw * 0.05;
+    const y1 = (sh * SPOT_Y[spot.row]) / 100 + (Math.random() - 0.5) * sh * 0.02;
+
+    // A little curve
+    const bend = (Math.random() - 0.5) * sw * 0.14;
+    const frames = [];
+
+    for (let i = 0; i <= 10; i++) {
+      const p = i / 10;
+      const x = x0 + (x1 - x0) * p + bend * Math.sin(Math.PI * p);
+      const y = y0 + (y1 - y0) * p - sh * 0.04 * Math.sin(Math.PI * p);
+      const s = 1 - 0.5 * p; // smaller as it goes away
+
+      frames.push({
+        transform: `translate(${x - x0}px, ${y - y0}px) translate(-50%, -50%) scale(${s}) rotate(${p * 720}deg)`
+      });
+    }
+
+    ball.style.left = "50%";
+    ball.style.top = "82%";
+
+    ballAnim = ball.animate(frames, { duration: ms, easing: "linear", fill: "forwards" });
+  }
+
+
+  /* ---------- ONE KICK ---------- */
 
   function startKick() {
     phase = "runup";
@@ -159,61 +261,68 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
     target = null;
 
     kickEl.textContent = `${kick + 1} / ${KICKS}`;
-    callEl.className = "pk-call";
-
-    // Reset everything
+    callEl.className = "pk2-call";
     stage.classList.remove("goal", "saved");
-    gloves.className = "pk-gloves";
-    kicker.className = "pk-kicker";
-    ball.style.transform = "rotate(0deg)";
-    ball.classList.remove("away");
-    setBall(50, 52, 16, 0);
+    zones.forEach(z => z.classList.remove("chosen", "shot"));
 
+    placeKeeper(null);
+    resetBall();
+
+    // Decide the real shot now (it may change if you dive early)
+    target = { col: pick(COLS), row: pick(ROWS) };
+
+    // Body lean before the kick: truth, or a lie at higher levels
+    const lie = target.col !== "C" && Math.random() < lieRate;
+    const leanCol = lie ? (target.col === "L" ? "R" : "L") : target.col;
+
+    // Run-up: walk in from behind, speed changes every time
+    kicker.className = "pk2-kicker";
+    kicker.style.setProperty("--run", `${600 + Math.random() * 700}ms`);
     void kicker.offsetWidth;
     kicker.classList.add("run");
 
-    // Run-up time is random so you can't just count
-    const runup = 700 + Math.random() * 700;
-    const fake = Math.random() < fakeRate;
+    const runup = parseFloat(kicker.style.getPropertyValue("--run"));
+    let at = runup;
 
-    if (fake) {
+    // Paradinha: a short stop just before the ball
+    if (Math.random() < stopRate) {
+      later(() => kicker.classList.add("pause"), at - 120);
+      at += 350 + Math.random() * 350;
+      later(() => kicker.classList.remove("pause"), at - 140);
+    }
+
+    // The lean shows a moment before the kick
+    later(() => {
+      kicker.classList.add(leanCol === "L" ? "lean-l" : leanCol === "R" ? "lean-r" : "lean-c");
+    }, at - 260);
+
+    // Fake kick: leg swings, no ball
+    if (Math.random() < fakeRate) {
       later(() => {
-        // Leg swings... but no ball!
         kicker.classList.add("fake");
         sfx("whoosh");
-
-        later(shoot, 380 + Math.random() * 250);
-      }, runup);
-    } else {
-      later(shoot, runup);
+      }, at);
+      later(() => kicker.classList.remove("fake"), at + 260);
+      at += 520 + Math.random() * 250;
     }
+
+    later(shoot, at);
   }
 
   function shoot() {
     phase = "flying";
     kickedAt = performance.now();
 
-    kicker.classList.remove("fake");
     kicker.classList.add("kick");
 
     // Dived too early: the kicker sees it and shoots the other way
     if (dive) {
-      target = dive === "L" ? "R" : "L";
-    } else {
-      const r = Math.random();
-      target = r < middleRate ? "C" : Math.random() < 0.5 ? "L" : "R";
+      const away = dive.col === "L" ? "R" : dive.col === "R" ? "L" : pick(["L", "R"]);
+      target = { col: away, row: pick(ROWS) };
     }
 
     sfx("thud");
-
-    const x = target === "L" ? 17 : target === "R" ? 83 : 50;
-    const y = target === "C" ? 66 : 60 + Math.random() * 10;
-
-    ball.style.transform = `rotate(${target === "L" ? -540 : 540}deg)`;
-    // Ball size at the end: fits the screen (phones sideways are short)
-    const big = Math.round(Math.min(92, stage.clientHeight * 0.2, stage.clientWidth * 0.24));
-
-    setBall(x, y, big, travelMs);
+    flyBall(target, travelMs);
 
     later(arrive, travelMs);
   }
@@ -221,16 +330,20 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
   function arrive() {
     phase = "result";
 
-    const saved =
-      (target === "C" && !dive) ||
-      (dive === target && diveAt >= kickedAt);
+    const early = dive && diveAt < kickedAt;
+
+    const rightSide = dive && dive.col === target.col;
+    const rightHeight = dive && dive.row === target.row;
+
+    const saved = !early && rightSide && (rightHeight || sideIsEnough);
+
+    container.querySelector(`[data-zone="${target.col}${target.row}"]`)?.classList.add("shot");
 
     let points = 0;
 
     if (saved) {
-      // Faster reaction = more points (stay-still saves get full points)
-      const rt = dive ? diveAt - kickedAt : 0;
-      const quick = dive ? clamp((travelMs - rt) / (travelMs - 180), 0, 1) : 1;
+      const rt = diveAt - kickedAt;
+      const quick = clamp((travelMs - rt) / (travelMs - 180), 0, 1);
 
       points = Math.round(60 + quick * 40);
 
@@ -241,12 +354,13 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
       sfx(points >= 90 ? "perfect" : "impact");
     } else {
       stage.classList.add("goal");
+      ball.classList.add("in");
 
-      call(dive && diveAt < kickedAt ? t("pk.early") : t("pk.goal"), "bad");
+      call(early ? t("pk.early") : t("pk.goal"), "bad");
       sfx("bad");
     }
 
-    results.push({ saved, points, target, early: dive && diveAt < kickedAt });
+    results.push({ saved, points, early });
     savesEl.textContent = String(results.filter(r => r.saved).length);
 
     kick++;
@@ -254,42 +368,40 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
     later(() => {
       if (kick < KICKS) startKick();
       else finish();
-    }, 1200);
+    }, 1300);
   }
 
 
-  /* ---------- INPUT ---------- */
+  /* ---------- INPUT: tap the goal ---------- */
 
-  function doDive(side) {
-    if (finished || dive) return;
-    if (phase !== "runup" && phase !== "flying") return;
+  function spotFromPoint(event) {
+    const rect = stage.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
 
-    dive = side;
-    diveAt = performance.now();
+    const third = (GOAL.right - GOAL.left) / 3;
+    const col = x < GOAL.left + third ? "L" : x < GOAL.left + third * 2 ? "C" : "R";
+    const row = y < (GOAL.top + GOAL.bottom) / 2 ? "T" : "B";
 
-    gloves.classList.add(side === "L" ? "dive-l" : "dive-r");
+    return { col, row };
   }
 
   function onPointer(event) {
     event.preventDefault();
 
-    const rect = stage.getBoundingClientRect();
-    doDive(event.clientX - rect.left < rect.width / 2 ? "L" : "R");
+    if (finished || dive) return;
+    if (phase !== "runup" && phase !== "flying") return;
+
+    dive = spotFromPoint(event);
+    diveAt = performance.now();
+
+    hintEl.classList.add("hide");
+
+    container.querySelector(`[data-zone="${dive.col}${dive.row}"]`)?.classList.add("chosen");
+    placeKeeper(dive);
   }
 
   stage.addEventListener("pointerdown", onPointer);
-
-  function onKey(event) {
-    if (event.code === "ArrowLeft" || event.code === "KeyA") {
-      event.preventDefault();
-      doDive("L");
-    } else if (event.code === "ArrowRight" || event.code === "KeyD") {
-      event.preventDefault();
-      doDive("R");
-    }
-  }
-
-  window.addEventListener("keydown", onKey);
 
 
   /* ---------- FINISH ---------- */
@@ -298,9 +410,7 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
     if (finished) return;
 
     finished = true;
-
     timers.forEach(clearTimeout);
-    window.removeEventListener("keydown", onKey);
 
     const total = results.reduce((sum, r) => sum + r.points, 0);
     const score = Math.round(total / KICKS);
@@ -315,7 +425,7 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
         adapt: Math.round(clamp(40 + (saves / KICKS) * 40 + (1 - early / KICKS) * 20 - early * 3, 0, 100)),
 
         meta: {
-          success: saves >= Math.ceil(KICKS * 0.6),
+          success: saves >= Math.ceil(KICKS * 0.5),
           saves,
           kicks: KICKS,
           early
@@ -327,14 +437,15 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
 
   /* ---------- START ---------- */
 
-  later(startKick, 300);
+  placeKeeper(null);
+  resetBall();
+  later(startKick, 600);
 
 
   return () => {
     finished = true;
-
     timers.forEach(clearTimeout);
-    window.removeEventListener("keydown", onKey);
+    ballAnim?.cancel();
   };
 }
 
