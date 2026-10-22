@@ -16,7 +16,7 @@ import { sfx } from "./sound.js";
 import { submitChallenge } from "./api.js";
 import { IS_CRAZYGAMES } from "./platform.js";
 import { tapFx, celebrate, ruleTimer, goFx } from "./juice.js";
-import { rankText, createShareButtons, skillLine } from "./share.js";
+import { rankText, createShareButtons, skillLine, siteOrigin } from "./share.js";
 
 const STORAGE_KEY = "gamiq_v2_daily";
 
@@ -153,7 +153,7 @@ export function dailyShareText(record = loadRecord()) {
     .map(r => skillLine(r.skill, r.score || 0))
     .join("\n");
 
-  const url = `${location.origin}${location.pathname}`;
+  const url = `${siteOrigin()}/`;
 
   return t("daily.shareText", {
     n: dailyNumber(record.day),
