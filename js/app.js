@@ -134,6 +134,11 @@ import {
 } from "./games/sort.js";
 
 import {
+  createBasketGames,
+  runBasketGame
+} from "./games/basket.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -233,7 +238,8 @@ const gamePool = [
   ...createCircleGames(),
   ...createPkGames(),
   ...createDarumaGames(),
-  ...createSortGames()
+  ...createSortGames(),
+  ...createBasketGames()
 ];
 
 
@@ -1457,6 +1463,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "hoop_shot") {
+    return runBasketGame({
       game,
       container,
       onComplete
