@@ -16841,3 +16841,382 @@ STEP 59: NEW GAME - BEAT SWIPE (rhythm)
 /* Notes a bit smaller so fast songs do not pile up */
 .bs-note{ width:min(50%, 74px); }
 .bs-note.arrow b{ font-size:clamp(30px, 8vw, 46px); }
+
+
+/* ==========================================
+STEP 61: PK KEEPER - NEW TV VIEW (pk2-)
+(the old .pk- styles are no longer used)
+========================================== */
+
+.pk2-game{
+  width:100%;
+  height:100%;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.pk2-hud{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.pk2-hud > div{
+  padding:7px 4px;
+
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.03);
+
+  text-align:center;
+}
+
+.pk2-hud span{
+  display:block;
+  margin-bottom:2px;
+
+  color:#7c8798;
+
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.14em;
+}
+
+.pk2-hud strong{
+  color:#fff;
+  font-size:18px;
+}
+
+.pk2-stage{
+  position:relative;
+  flex:1;
+  min-height:0;
+
+  border-radius:18px;
+  overflow:hidden;
+
+  container-type:size;
+
+  background:#0d1b2e;
+
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+
+/* Stand with crowd and lights */
+.pk2-crowd{
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:36%;
+
+  background:
+    radial-gradient(circle at 12% 6%, rgba(255,255,230,.95) 0 3px, rgba(255,255,200,.25) 4px 28px, transparent 56px),
+    radial-gradient(circle at 88% 6%, rgba(255,255,230,.95) 0 3px, rgba(255,255,200,.25) 4px 28px, transparent 56px),
+    radial-gradient(circle, rgba(255,255,255,.2) 1.2px, transparent 1.6px) 0 0 / 8px 8px,
+    linear-gradient(180deg, #0d1b2e 0%, #1c2c45 70%, #2a3a57 100%);
+}
+
+.pk2-crowd::after{
+  content:"";
+
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:8px;
+
+  background:linear-gradient(90deg, #ffd76a, #ff6b6b, #5fefff, #7cffb2, #ffd76a);
+  opacity:.8;
+}
+
+/* Pitch with stripes, getting wider toward you */
+.pk2-pitch{
+  position:absolute;
+  left:0;
+  right:0;
+  top:36%;
+  bottom:0;
+
+  background:
+    repeating-linear-gradient(180deg, #2f8f46 0 10%, #2a8040 10% 20%);
+}
+
+.pk2-pitch::before{
+  /* Penalty box */
+  content:"";
+
+  position:absolute;
+  left:-10%;
+  right:-10%;
+  top:20%;
+  bottom:-10%;
+
+  border:3px solid rgba(255,255,255,.75);
+  border-bottom:0;
+
+  clip-path:polygon(18% 0, 82% 0, 100% 100%, 0 100%);
+}
+
+.pk2-spot{
+  position:absolute;
+  left:50%;
+  top:82%;
+
+  width:10px;
+  height:5px;
+  margin:-2px 0 0 -5px;
+
+  border-radius:50%;
+
+  background:#fff;
+}
+
+/* Goal */
+.pk2-goal{
+  position:absolute;
+  z-index:1;
+
+  border:6px solid #fff;
+  border-bottom:0;
+  border-radius:3px 3px 0 0;
+
+  box-shadow:0 0 14px rgba(0,0,0,.35);
+}
+
+.pk2-net{
+  position:absolute;
+  inset:0;
+
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,.22) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,.22) 0 1px, transparent 1px 9px),
+    rgba(10,20,30,.35);
+}
+
+.pk2-stage.goal .pk2-net{ animation:pk2Net .5s ease; }
+
+@keyframes pk2Net{
+  30%{ transform:scale(1.03, 1.05); filter:brightness(1.6); }
+}
+
+/* 6 spots (only seen as a flash) */
+.pk2-zones{
+  position:absolute;
+  inset:0;
+
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  grid-template-rows:repeat(2, 1fr);
+}
+
+.pk2-zones i{
+  border:1px dashed rgba(255,255,255,.12);
+}
+
+.pk2-zones i.chosen{ background:rgba(95,239,255,.18); }
+.pk2-zones i.shot{ background:rgba(255,90,95,.22); }
+.pk2-stage.saved .pk2-zones i.shot{ background:rgba(124,255,178,.28); }
+
+/* Goalkeeper */
+.pk2-keeper{
+  position:absolute;
+  left:50%;
+  top:50%;
+  z-index:2;
+
+  height:22%;
+  aspect-ratio:80 / 100;
+
+  transform:translate(-50%, -100%);
+  transform-origin:50% 80%;
+
+  transition:transform .2s cubic-bezier(.2,1.1,.4,1);
+
+  animation:pk2Ready .5s ease-in-out infinite alternate;
+}
+
+.pk2-keeper svg{
+  width:100%;
+  height:100%;
+  overflow:visible;
+}
+
+@keyframes pk2Ready{
+  to{ translate:0 -2%; }
+}
+
+.pk2-keeper.dive{ animation:none; }
+.pk2-keeper.crouch svg{ transform:scaleY(.8) translateY(12%); }
+
+.pk2-stage.saved .pk2-keeper svg{ filter:drop-shadow(0 0 10px rgba(124,255,178,.9)); }
+
+/* Kicker (seen from behind) */
+.pk2-kicker{
+  position:absolute;
+  left:50%;
+  top:100%;
+  z-index:4;
+
+  height:30%;
+  aspect-ratio:70 / 120;
+
+  transform:translate(-160%, -86%) scale(1.1);
+  transform-origin:50% 100%;
+}
+
+.pk2-kicker svg{
+  width:100%;
+  height:100%;
+  overflow:visible;
+}
+
+.pk2-kicker.run{
+  animation:pk2Run var(--run, 900ms) ease-in forwards;
+}
+
+@keyframes pk2Run{
+  from{ transform:translate(-200%, -70%) scale(1.15); }
+  to{ transform:translate(-95%, -86%) scale(1); }
+}
+
+.pk2-kicker.pause{ animation-play-state:paused; }
+
+.pk2-leg-l,
+.pk2-leg-r,
+.pk2-k-arm-l,
+.pk2-k-arm-r,
+.pk2-body{
+  transform-box:fill-box;
+  transform-origin:50% 0;
+}
+
+.pk2-body{ transform-origin:50% 100%; transition:transform .2s ease; }
+
+.pk2-kicker.run .pk2-leg-l{ animation:pk2Step .24s ease-in-out infinite alternate; }
+.pk2-kicker.run .pk2-leg-r{ animation:pk2Step .24s ease-in-out infinite alternate-reverse; }
+.pk2-kicker.run .pk2-k-arm-l{ animation:pk2Step .24s ease-in-out infinite alternate-reverse; }
+.pk2-kicker.run .pk2-k-arm-r{ animation:pk2Step .24s ease-in-out infinite alternate; }
+
+.pk2-kicker.pause .pk2-leg-l,
+.pk2-kicker.pause .pk2-leg-r,
+.pk2-kicker.pause .pk2-k-arm-l,
+.pk2-kicker.pause .pk2-k-arm-r{ animation-play-state:paused; }
+
+@keyframes pk2Step{
+  from{ transform:rotate(18deg); }
+  to{ transform:rotate(-18deg); }
+}
+
+/* Lean before the kick (a hint... or a trick) */
+.pk2-kicker.lean-l .pk2-body{ transform:rotate(-12deg); }
+.pk2-kicker.lean-r .pk2-body{ transform:rotate(12deg); }
+.pk2-kicker.lean-c .pk2-body{ transform:rotate(0deg) scaleY(.96); }
+
+.pk2-kicker.kick .pk2-leg-l,
+.pk2-kicker.kick .pk2-leg-r,
+.pk2-kicker.kick .pk2-k-arm-l,
+.pk2-kicker.kick .pk2-k-arm-r,
+.pk2-kicker.fake .pk2-leg-l,
+.pk2-kicker.fake .pk2-leg-r{ animation:none; }
+
+.pk2-kicker.kick .pk2-leg-r,
+.pk2-kicker.fake .pk2-leg-r{ transform:rotate(-55deg); transition:transform .1s ease; }
+.pk2-kicker.kick .pk2-k-arm-l{ transform:rotate(60deg); }
+
+/* Ball */
+.pk2-ball{
+  position:absolute;
+  left:50%;
+  top:82%;
+  z-index:3;
+
+  width:clamp(22px, 7cqw, 38px);
+  aspect-ratio:1;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle at 50% 50%, #1d1d1d 0 18%, transparent 19%),
+    radial-gradient(circle at 18% 30%, #1d1d1d 0 12%, transparent 13%),
+    radial-gradient(circle at 82% 30%, #1d1d1d 0 12%, transparent 13%),
+    radial-gradient(circle at 30% 85%, #1d1d1d 0 12%, transparent 13%),
+    radial-gradient(circle at 70% 85%, #1d1d1d 0 12%, transparent 13%),
+    radial-gradient(circle at 35% 30%, #ffffff, #d9d9d9);
+
+  box-shadow:0 4px 6px rgba(0,0,0,.4);
+
+  transform:translate(-50%, -50%);
+
+  pointer-events:none;
+}
+
+.pk2-ball.away{ opacity:0; transition:opacity .45s ease .1s; }
+
+/* Messages */
+.pk2-stage.goal::after{
+  content:"";
+
+  position:absolute;
+  inset:0;
+  z-index:6;
+
+  background:rgba(255,60,70,.22);
+
+  animation:pkGoal .5s ease-out forwards;
+
+  pointer-events:none;
+}
+
+.pk2-call{
+  position:absolute;
+  left:0;
+  right:0;
+  top:8%;
+  z-index:7;
+
+  color:#fff;
+
+  font-size:clamp(30px, 9vw, 52px);
+  font-weight:1000;
+  font-style:italic;
+  text-align:center;
+
+  text-shadow:0 4px 0 rgba(0,0,0,.35), 0 0 20px rgba(0,0,0,.6);
+
+  opacity:0;
+  pointer-events:none;
+}
+
+.pk2-call.show{ animation:pkCall .9s ease-out forwards; }
+.pk2-call.good{ color:#7cffb2; }
+.pk2-call.bad{ color:#ff6b6b; }
+
+.pk2-hint{
+  position:absolute;
+  left:0;
+  right:0;
+  top:53%;
+  z-index:5;
+
+  color:#fff;
+
+  font-size:13px;
+  font-weight:1000;
+  letter-spacing:.05em;
+  text-align:center;
+
+  text-shadow:0 2px 4px rgba(0,0,0,.6);
+
+  transition:opacity .2s;
+  pointer-events:none;
+}
+
+.pk2-hint.hide{ opacity:0; }
