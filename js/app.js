@@ -129,6 +129,11 @@ import {
 } from "./games/daruma.js";
 
 import {
+  createSortGames,
+  runSortGame
+} from "./games/sort.js";
+
+import {
   t
 } from "./i18n.js";
 
@@ -227,7 +232,8 @@ const gamePool = [
   ...createCardMatchGames(),
   ...createCircleGames(),
   ...createPkGames(),
-  ...createDarumaGames()
+  ...createDarumaGames(),
+  ...createSortGames()
 ];
 
 
@@ -1451,6 +1457,15 @@ function runSelectedGame({
     )
   ) {
     return runAimGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "sort_rush") {
+    return runSortGame({
       game,
       container,
       onComplete
