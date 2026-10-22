@@ -18,7 +18,7 @@ import { LANG } from "./i18n.js";
 
 export const ADS_CONFIG = {
   // "ca-pub-xxxxxxxxxxxxxxxx" (from AdSense)
-  client: "",
+  client: "ca-pub-6898056372113472",
 
   // Ad unit numbers (AdSense > Ads > By ad unit)
   slots: {
@@ -45,6 +45,12 @@ let scriptAdded = false;
 
 function addScript() {
   if (scriptAdded || !REAL) return;
+
+  // Already on the page? (only one AdSense script per page)
+  if (document.querySelector('script[src*="adsbygoogle.js"]')) {
+    scriptAdded = true;
+    return;
+  }
 
   scriptAdded = true;
 
@@ -84,8 +90,13 @@ export function fillAds(root = document) {
     const slot = ADS_CONFIG.slots[name];
 
     if (!REAL || !slot) {
-      // Test view: just show the size of the box
-      body.innerHTML = `<span class="gq-ad-test">AD ${name}<br>${body.offsetWidth} × ${body.offsetHeight || "auto"}</span>`;
+      if (testMode) {
+        // Test view: just show the size of the box
+        body.innerHTML = `<span class="gq-ad-test">AD ${name}<br>${body.offsetWidth} × ${body.offsetHeight || "auto"}</span>`;
+      } else {
+        // No ad unit yet (AdSense review): show nothing
+        box.style.display = "none";
+      }
       return;
     }
 
@@ -122,6 +133,9 @@ export function fillAds(root = document) {
  */
 export function initRails() {
   if (!ADS_ON) return;
+
+  // The AdSense code must be on the page (also during the review)
+  addScript();
 
   ["left", "right"].forEach(side => {
     const box = adBox("rail");
