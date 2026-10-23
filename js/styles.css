@@ -17344,3 +17344,26 @@ body:has(.gamiq-results-overlay.show){
 
 .gq-info-links a{ color:#8c97a8; text-decoration:none; }
 .gq-info-links a:hover{ color:#61eaff; }
+
+
+
+
+/* ==========================================
+STEP 65: links to the game list / test pages
+(in the text below the start screen)
+========================================== */
+
+.gq-info-pages{
+  margin-top:28px !important;
+}
+
+.gq-info-pages a{
+  padding:8px 14px;
+
+  border:1px solid rgba(97,234,255,.35);
+  border-radius:999px;
+
+  color:#61eaff !important;
+
+  font-weight:800;
+}
