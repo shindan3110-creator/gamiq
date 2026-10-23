@@ -149,7 +149,8 @@ import {
 } from "./games/beatswipe.js";
 
 import {
-  t
+  t,
+  LANG
 } from "./i18n.js";
 
 import {
@@ -702,9 +703,9 @@ function createAppMarkup() {
               IS_CRAZYGAMES
                 // CrazyGames: only the privacy policy (no links to other sites with the game)
                 ? `<a href="./privacy.html" target="_blank" rel="noopener">Privacy</a>`
-                : `<a href="./about.html">About</a>
-                   <a href="./privacy.html">Privacy</a>
-                   <a href="./contact.html">Contact</a>`
+                : `<a href="/about?lang=${LANG}">About</a>
+                   <a href="/privacy?lang=${LANG}">Privacy</a>
+                   <a href="/contact?lang=${LANG}">Contact</a>`
             }
           </nav>
 
