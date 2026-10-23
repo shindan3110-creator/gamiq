@@ -15,18 +15,58 @@
   </url>
 
   <url>
-    <loc>https://playgamiq.com/about.html</loc>
+    <loc>https://playgamiq.com/about</loc>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://playgamiq.com/privacy.html</loc>
+    <loc>https://playgamiq.com/privacy</loc>
     <priority>0.4</priority>
   </url>
 
   <url>
-    <loc>https://playgamiq.com/contact.html</loc>
+    <loc>https://playgamiq.com/contact</loc>
     <priority>0.4</priority>
+  </url>
+
+  <url>
+    <loc>https://playgamiq.com/games</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://playgamiq.com/ja/games</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://playgamiq.com/reaction-time-test</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://playgamiq.com/ja/reaction-time-test</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://playgamiq.com/aim-trainer</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://playgamiq.com/ja/aim-trainer</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://playgamiq.com/memory-test</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://playgamiq.com/ja/memory-test</loc>
+    <priority>0.8</priority>
   </url>
 
 </urlset>

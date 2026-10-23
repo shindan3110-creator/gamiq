@@ -29,6 +29,10 @@
 
 - [Play GAMIQ (English)](https://playgamiq.com/)
 - [Play GAMIQ (Japanese)](https://playgamiq.com/ja/)
-- [About GAMIQ](https://playgamiq.com/about.html)
-- [Privacy policy](https://playgamiq.com/privacy.html)
-- [Contact](https://playgamiq.com/contact.html)
+- [All 30 mini-games](https://playgamiq.com/games) / [日本語](https://playgamiq.com/ja/games)
+- [Reaction time test](https://playgamiq.com/reaction-time-test) / [反射神経テスト](https://playgamiq.com/ja/reaction-time-test)
+- [Aim trainer](https://playgamiq.com/aim-trainer) / [エイム練習](https://playgamiq.com/ja/aim-trainer)
+- [Memory test](https://playgamiq.com/memory-test) / [記憶力テスト](https://playgamiq.com/ja/memory-test)
+- [About GAMIQ](https://playgamiq.com/about)
+- [Privacy policy](https://playgamiq.com/privacy)
+- [Contact](https://playgamiq.com/contact)
