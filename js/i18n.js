@@ -682,6 +682,15 @@ function detectLanguage() {
     // Ignore and fall back to the browser language.
   }
 
+  // The Japanese page (playgamiq.com/ja/)
+  try {
+    if (/^\/ja(\/|$)/.test(window.location.pathname)) {
+      return "ja";
+    }
+  } catch (error) {
+    // ignore
+  }
+
   const browserLanguages =
     navigator.languages?.length
       ? navigator.languages
