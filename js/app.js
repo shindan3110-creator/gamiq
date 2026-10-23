@@ -492,6 +492,10 @@ function boot() {
         "hidden"
       );
 
+      // Playing: lock the page (the text below the start screen is hidden)
+      document.documentElement.classList.add("gq-playing");
+      window.scrollTo(0, 0);
+
       analytics.gameStart({
         source:
           "start_screen"
