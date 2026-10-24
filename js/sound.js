@@ -411,6 +411,13 @@ const SOUNDS = {
     noise(audio, { filter: "bandpass", freq: 1200, q: 3, length: 0.05, volume: 0.15 });
   },
 
+  // Block slides fast and stops: sharp "shupa!"
+  swish(audio) {
+    noise(audio, { filter: "bandpass", freq: 5200, to: 1400, q: 1.8, length: 0.09, volume: 0.32, attack: 0.004 });
+    noise(audio, { filter: "highpass", freq: 6500, length: 0.03, volume: 0.12 });
+    tone(audio, { type: "triangle", freq: 900, to: 420, start: 0.075, length: 0.05, volume: 0.16 });
+  },
+
   // Small mechanical click (rotate a pipe, etc.)
   click(audio) {
     tone(audio, { type: "square", freq: 1800, length: 0.03, volume: 0.06 });

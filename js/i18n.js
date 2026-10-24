@@ -168,8 +168,8 @@ const STRINGS = {
     "ghost.find": "FIND THE GHOSTS!",
 
     /* ---------- IN-GAME: BLOCK ESCAPE ---------- */
-    "block.hintClick": "Click a block, then click an arrow to move it",
-    "block.hintSwipe": "Swipe the blocks. Get the red one out to the right!",
+    "block.hintClick": "Drag the blocks to slide them. Get the red one out!",
+    "block.hintSwipe": "Drag the blocks to slide them. Get the red one out!",
     "block.moveLeft": "Move left",
     "block.moveRight": "Move right",
     "block.moveUp": "Move up",
@@ -497,8 +497,8 @@ const STRINGS = {
     "ghost.find": "おばけを見つけろ！",
 
     /* ---------- IN-GAME: BLOCK ESCAPE ---------- */
-    "block.hintClick": "ブロックをクリック → 矢印をクリックして移動",
-    "block.hintSwipe": "ブロックをスワイプして、赤いブロックを右へ",
+    "block.hintClick": "ブロックをドラッグしてスーッと動かそう。赤を右へ！",
+    "block.hintSwipe": "ブロックをドラッグしてスーッと動かそう。赤を右へ！",
     "block.moveLeft": "左へ移動",
     "block.moveRight": "右へ移動",
     "block.moveUp": "上へ移動",
