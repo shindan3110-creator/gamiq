@@ -51,9 +51,9 @@ function runBlindStop({ container, onComplete, level = 1 }) {
    *   target time: 3-6s (Lv1) -> 8-20s (Lv10)
    *   numbers visible for: 60% of the target (Lv1) -> 20% (Lv10)
    */
-  const minTarget = byLevel(level, 3, 8);
-  const maxTarget = byLevel(level, 6, 20);
-  const visibleRate = byLevel(level, 0.6, 0.2);
+  const minTarget = Math.min(10, byLevel(level, 3, 8));
+  const maxTarget = Math.min(22, byLevel(level, 6, 20));
+  const visibleRate = Math.max(0.06, byLevel(level, 0.6, 0.2));
 
   let finished = false;
   let round = 0;

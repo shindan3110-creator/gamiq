@@ -53,7 +53,7 @@ function runHoopShot({ container, onComplete, level = 1 }) {
    */
   const moveAmp = byLevel(level, 0, 0.28);
   const moveSpeed = byLevel(level, 0, 1.2);
-  const guideSec = byLevel(level, 0.2, 0.08);
+  const guideSec = Math.max(0.02, byLevel(level, 0.2, 0.08));
 
   let finished = false;
   let frame = 0;

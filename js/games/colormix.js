@@ -120,7 +120,7 @@ function runColorMix({ container, onComplete, level = 1 }) {
    *   drops of each: 1-3 (Lv1-7) -> 1-4 (Lv8-10)
    */
   const lv = safeLevel(level);
-  const showMs = byLevel(level, 2600, 1200);
+  const showMs = Math.max(450, byLevel(level, 2600, 1200));
   const paintCount = lv <= 4 ? 2 : 3;
   const maxDrops = lv <= 7 ? 3 : 4;
 

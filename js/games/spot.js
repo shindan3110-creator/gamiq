@@ -345,8 +345,8 @@ function runSpotDifference({
    *   subtle changes: rare -> common
    *   time: 30s (+3s per extra difference)
    */
-  const diffCount = byLevelInt(level, 3, 6);
-  const thingCount = byLevelInt(level, 10, 16);
+  const diffCount = Math.min(7, byLevelInt(level, 3, 6));
+  const thingCount = Math.min(18, byLevelInt(level, 10, 16));
   const subtle = byLevel(level, 0.1, 0.75);
   const timeLimit = Math.round(byLevel(level, 30000, 32000) + (diffCount - 3) * 2500);
 

@@ -120,16 +120,16 @@ function runNinjaCounter({
    * - Friends / fakes / bamboo feints come earlier and more often.
    */
   const waitBase = byLevel(level, 650, 430);
-  const showBase = byLevel(level, 850, 560);
-  const showMin = byLevel(level, 460, 340);
+  const showBase = Math.max(380, byLevel(level, 850, 560));
+  const showMin = Math.max(260, byLevel(level, 460, 340));
 
-  const friendFrom = byLevelInt(level, 3, 1);
+  const friendFrom = Math.max(0, byLevelInt(level, 3, 1));
   const friendRate = byLevel(level, 0.18, 0.26);
 
-  const fakeFrom = byLevelInt(level, 6, 3);
+  const fakeFrom = Math.max(1, byLevelInt(level, 6, 3));
   const fakeRate = byLevel(level, 0.11, 0.17);
 
-  const feintFrom = byLevelInt(level, 2, 0);
+  const feintFrom = Math.max(0, byLevelInt(level, 2, 0));
   const feintRate = byLevel(level, 0.35, 0.55);
 
   let round = 0;
@@ -2591,8 +2591,8 @@ function runFriendOrFoe({
   const foeSpeedMul = byLevel(level, 1, 1.6);
   const foeSizeMul = byLevel(level, 1, 0.8);
   const foeLifeMul = byLevel(level, 1, 0.75);
-  const foeEnemyRate = byLevel(level, 0.72, 0.6);
-  const foeMaxFriends = byLevelInt(level, 2, 3);
+  const foeEnemyRate = Math.max(0.5, byLevel(level, 0.72, 0.6));
+  const foeMaxFriends = Math.min(4, byLevelInt(level, 2, 3));
 
   let active = true;
 

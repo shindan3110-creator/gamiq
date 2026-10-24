@@ -75,9 +75,9 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
    *   fake kick (leg swings, no ball): never -> 30%
    */
   const lv = safeLevel(level);
-  const travelMs = byLevel(level, 760, 430);
-  const stopRate = byLevel(level, 0.15, 0.45);
-  const lieRate = byLevel(level, 0, 0.5);
+  const travelMs = Math.max(250, byLevel(level, 760, 430));
+  const stopRate = Math.min(0.6, byLevel(level, 0.15, 0.45));
+  const lieRate = Math.min(0.75, byLevel(level, 0, 0.5));
   const fakeRate = byLevel(level, 0, 0.3);
 
   let finished = false;

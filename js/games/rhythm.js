@@ -99,7 +99,7 @@ function runDrumDuo({
   const slotMs = barMs / SLOTS;
 
   const offbeatRate = byLevel(level, 0, 0.55);
-  const maxNotes = byLevelInt(level, 4, 6);
+  const maxNotes = Math.min(7, byLevelInt(level, 4, 6));
 
   const perfectWindow = byLevel(level, 75, 50);
   const goodWindow = byLevel(level, 150, 100);

@@ -55,8 +55,8 @@ function runDaruma({ container, onComplete, level = 1 }) {
    *   oni looks for: 0.9-1.4s (Lv1) -> 0.8-2.2s (Lv10)
    *   fake glances (no danger, just to scare you): 0% -> 30%
    */
-  const graceMs = byLevel(level, 320, 150);
-  const speedSpread = byLevel(level, 0.15, 0.75);
+  const graceMs = Math.max(60, byLevel(level, 320, 150));
+  const speedSpread = Math.min(0.85, byLevel(level, 0.15, 0.75));
   const lookMin = byLevel(level, 900, 800);
   const lookMax = byLevel(level, 1400, 2200);
   const fakeRate = byLevel(level, 0, 0.3);

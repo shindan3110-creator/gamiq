@@ -639,9 +639,9 @@ const ESCAPE_SIZE = 6;
 
 function createRandomEscapeBoard(level = 1) {
   // Shortest solution: Lv1 6-12 moves (5 blocks) -> Lv10 11-22 moves (10 blocks)
-  const minMoves = byLevelInt(level, 6, 11);
-  const maxMoves = byLevelInt(level, 12, 22);
-  const blockCount = byLevelInt(level, 5, 10);
+  const minMoves = Math.min(12, byLevelInt(level, 6, 11));
+  const maxMoves = Math.min(24, byLevelInt(level, 12, 22));
+  const blockCount = Math.min(11, byLevelInt(level, 5, 10));
 
   // Never freeze the game for long: stop after 300ms
   // and use the closest board found.
@@ -894,8 +894,8 @@ function pipeMask(tile) {
 function createPipeBoard(level = 1) {
   // Longer pipe paths at higher levels.
   //   Lv1: 7-11 tiles   Lv10: 10-14 tiles
-  const minPath = byLevelInt(level, 7, 10);
-  const maxPath = byLevelInt(level, 11, 14);
+  const minPath = Math.min(11, byLevelInt(level, 7, 10));
+  const maxPath = Math.min(14, byLevelInt(level, 11, 14));
 
   // Random path from the left edge to the right edge.
   for (let attempt = 0; attempt < 200; attempt++) {
@@ -973,7 +973,7 @@ function createPipeBoard(level = 1) {
 function buildPipeTiles(path, level = 1) {
   // Chance that a path tile starts in a WRONG rotation:
   // Lv1 85% -> Lv10 100%
-  const scrambleRate = byLevel(level, 0.85, 1);
+  const scrambleRate = Math.min(1, byLevel(level, 0.85, 1));
 
   const tiles = [];
 

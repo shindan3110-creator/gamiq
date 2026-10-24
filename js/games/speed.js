@@ -77,9 +77,9 @@ function runColorSwitch({
    * - COLOR / WORD switches more often (Lv1: every 3-5, Lv10: every 1-3)
    * - The 4 buttons sometimes change places (Lv1: never, Lv10: 60%)
    */
-  const switchMin = byLevelInt(level, 3, 1);
-  const switchMax = byLevelInt(level, 5, 3);
-  const shuffleRate = byLevel(level, 0, 0.6);
+  const switchMin = Math.max(1, byLevelInt(level, 3, 1));
+  const switchMax = Math.max(2, byLevelInt(level, 5, 3));
+  const shuffleRate = Math.min(0.9, byLevel(level, 0, 0.6));
 
   let mode = "color";
   let answersUntilSwitch = randomInt(switchMin, switchMax);

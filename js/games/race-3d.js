@@ -38,7 +38,7 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
   const startSpeed = byLevel(level, 28, 38);
   const spawnBase = byLevel(level, 1.0, 0.8);
   const spawnMin = byLevel(level, 0.55, 0.45);
-  const doubleFrom = byLevel(level, 8, 3);
+  const doubleFrom = Math.max(1, byLevel(level, 8, 3));
   const doubleRate = byLevel(level, 0.15, 0.25);
   const doubleMax = byLevel(level, 0.45, 0.6);
 

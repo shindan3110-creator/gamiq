@@ -51,8 +51,8 @@ function runPerfectCircle({ container, onComplete, level = 1 }) {
    *   roundness for a full score: 90% (Lv1) -> 96% (Lv10)
    *   smallest circle allowed: 22% -> 34% of the drawing area
    */
-  const fullAt = byLevel(level, 90, 96);
-  const minSizeRate = byLevel(level, 0.22, 0.34);
+  const fullAt = Math.min(98.5, byLevel(level, 90, 96));
+  const minSizeRate = Math.min(0.4, byLevel(level, 0.22, 0.34));
 
   let finished = false;
   let drawing = false;

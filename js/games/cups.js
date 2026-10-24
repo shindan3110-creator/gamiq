@@ -68,9 +68,9 @@ function runCupShuffle({
    *   swaps: 7 -> 16 (more in later rounds)
    *   swap speed: 300ms -> 120ms (faster than before)
    */
-  const cupCount = byLevelInt(level, 3, 5);
+  const cupCount = Math.min(6, byLevelInt(level, 3, 5));
   const baseSwaps = byLevelInt(level, 7, 16);
-  const swapMs = Math.round(byLevel(level, 300, 120));
+  const swapMs = Math.max(85, Math.round(byLevel(level, 300, 120)));
 
   let active = true;
   let round = 0;
