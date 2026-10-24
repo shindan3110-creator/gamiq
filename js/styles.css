@@ -17367,3 +17367,67 @@ STEP 65: links to the game list / test pages
 
   font-weight:800;
 }
+
+
+
+/* ==========================================
+STEP 66: GAME FIXES
+========================================== */
+
+/* PK KEEPER: natural dive (the dive itself is animated in pk.js) */
+.pk2-keeper{
+  transition:none;
+}
+
+/* Waiting for the kick: weight shifts side to side */
+.pk2-keeper:not(.dive) svg{
+  animation:pk2Sway 1.1s ease-in-out infinite alternate;
+}
+
+@keyframes pk2Sway{
+  0%{ transform:translateX(-6%) rotate(-2deg); }
+  100%{ transform:translateX(6%) rotate(2deg); }
+}
+
+/* Arms reach out over the head when diving */
+.pk2-arm-l,
+.pk2-arm-r{
+  transform-box:view-box;
+  transition:transform .12s ease-out;
+}
+
+.pk2-arm-l{ transform-origin:26px 34px; }
+.pk2-arm-r{ transform-origin:54px 34px; }
+
+.pk2-keeper.reach .pk2-arm-l{ transform:rotate(28deg) translateY(-6px); }
+.pk2-keeper.reach .pk2-arm-r{ transform:rotate(-28deg) translateY(-6px); }
+
+.pk2-keeper.crouch .pk2-arm-l{ transform:rotate(-120deg); }
+.pk2-keeper.crouch .pk2-arm-r{ transform:rotate(120deg); }
+
+.pk2-keeper.crouch svg{ transform:none; }
+
+/* BLOCK ESCAPE: drag to slide */
+.block-escape-game .puzzle-block{
+  touch-action:none;
+  cursor:grab;
+}
+
+.block-escape-game .puzzle-block.dragging{
+  z-index:5;
+  cursor:grabbing;
+  transition:none !important;
+  filter:brightness(1.12);
+  box-shadow:0 10px 22px rgba(0,0,0,.45);
+}
+
+.block-escape-game .puzzle-direction{ display:none; }
+
+/* LANE PANIC: the cat moves instantly */
+.lane-player{
+  transition:left .06s ease-out, transform .1s ease;
+}
+
+.lane-panic-controls button{
+  touch-action:manipulation;
+}
