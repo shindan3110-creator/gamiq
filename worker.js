@@ -20,11 +20,13 @@
 //        + total = number of players on that ranking
 //
 // Days are UTC (reset at 0:00 UTC = 9:00 Japan).
-// RANKING SCORE = GAMIQ x (1 + 0.15 x (level - 1))
+// RANKING SCORE = GAMIQ x LEVEL_MULT[level]
+// Lv1-5: +0.15 per level. Lv6-10 (hell zone): bigger steps.
 
 const GAMES_PER_LEVEL = 25;
 const MAX_LEVEL = 10;
-const LEVEL_BONUS = 0.15;
+const LEVEL_BONUS = 0.15; // old formula (still accepted)
+const LEVEL_MULT = [1, 1.15, 1.3, 1.45, 1.6, 1.8, 2.05, 2.35, 2.7, 3.1];
 
 const MIN_GAMES_FOR_RANK = 5;
 const TOP_LIMIT = 50;
@@ -281,9 +283,14 @@ function validateScore(body) {
   }
 
   // Ranking score must match the formula.
-  const expected = Math.round(gamiq * (1 + LEVEL_BONUS * (level - 1)));
+  const expected = Math.round(gamiq * LEVEL_MULT[level - 1]);
+  // Old formula: for players whose page was loaded before the update.
+  const expectedOld = Math.round(gamiq * (1 + LEVEL_BONUS * (level - 1)));
 
-  if (Math.abs(expected - rankScore) > 1) {
+  if (
+    Math.abs(expected - rankScore) > 1 &&
+    Math.abs(expectedOld - rankScore) > 1
+  ) {
     return { ok: false, error: "bad_rank_score" };
   }
 
