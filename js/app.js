@@ -27,7 +27,8 @@ import {
 } from "./randomizer.js";
 
 import {
-  GamiqScore
+  GamiqScore,
+  GAMES_PER_LEVEL
 } from "./score.js";
 
 import {
@@ -746,10 +747,77 @@ function getNextGame() {
     }
   }
 
+  // After 25 games in a level, only the genres that still
+  // need games (5 each) are picked.
+  const onlySkills =
+    scoreEngine.levelPlayed >= GAMES_PER_LEVEL
+      ? scoreEngine.getMissingSkills()
+      : [];
+
   return randomizer.pick(
     gamePool,
-    scoreEngine.getAbilityCounts()
+    scoreEngine.getAbilityCounts(),
+    onlySkills
   );
+}
+
+
+/* ==========================================
+LEVEL UP: AUTO NEXT
+After a level up the next game starts by itself
+after a short countdown (swipe = start right away).
+Stops if the player opens the results or ranking.
+========================================== */
+
+const LEVELUP_AUTO_SECONDS = 3;
+
+function startLevelUpAutoNext(card) {
+  const label =
+    card.querySelector("[data-levelup-auto]");
+
+  let left = LEVELUP_AUTO_SECONDS;
+
+  // The game this level up belongs to.
+  const token = activeRunToken;
+
+  const panelOpen = () =>
+    !!document.querySelector(
+      ".gamiq-results-overlay.show, .gamiq-ranking-overlay.show"
+    );
+
+  const tick = () => {
+    // Already moved on (swiped), or the card is gone.
+    if (
+      !feedController ||
+      feedController.currentCard !== card ||
+      !card.isConnected ||
+      activeRunToken !== token
+    ) {
+      return;
+    }
+
+    // Results / ranking open: wait, do not jump away.
+    if (panelOpen()) {
+      if (label) label.textContent = "";
+      return;
+    }
+
+    if (left <= 0) {
+      if (label) label.textContent = "";
+      feedController.advance();
+      return;
+    }
+
+    if (label) {
+      label.textContent = t("levelup.auto", { n: left });
+    }
+
+    left--;
+    setTimeout(tick, 1000);
+  };
+
+  // Let the jingle and the count-up play first.
+  setTimeout(tick, 900);
 }
 
 
@@ -1181,6 +1249,9 @@ async function enterGame(
           ...levelUp,
           played: summary.played
         });
+
+        // Keep the flow going: the next game starts by itself.
+        startLevelUpAutoNext(card);
       }
 
 
@@ -1191,9 +1262,8 @@ async function enterGame(
        *   so new players are never interrupted early.
        *   The ad SDK itself limits how often ads really show.
        */
-      if (levelUp) {
-        requestBreakAd("level_up");
-      } else if (summary.levelHistory.length > 0) {
+      // No ad on level up: that moment must not stop the flow.
+      if (!levelUp && summary.levelHistory.length > 0) {
         requestBreakAd("game_end");
       }
     };
@@ -1697,6 +1767,7 @@ function showCardComplete(
               : t("levelup.next", { level: levelUp.nextLevel })
           )}
         </span>
+        <span class="gamiq-levelup-auto" data-levelup-auto></span>
       `;
 
       levelUpElement.hidden = false;
