@@ -11,7 +11,8 @@
 // - Records last ONE DAY. Everything resets at 0:00 UTC
 //   (9:00 in Japan).
 //
-// RANKING SCORE = GAMIQ x (1 + 0.15 x (level - 1))
+// RANKING SCORE = GAMIQ x LEVEL_MULT[level]
+// Lv1-5: +0.15 per level. Lv6-10 (hell zone): bigger steps.
 
 const STORAGE_KEY = "gamiq_v2_record";
 const STORAGE_VERSION = 2;
@@ -19,7 +20,7 @@ const STORAGE_VERSION = 2;
 export const GAMES_PER_LEVEL = 25;
 export const MAX_LEVEL = 10;
 
-const LEVEL_BONUS = 0.15;
+export const LEVEL_MULT = [1, 1.15, 1.3, 1.45, 1.6, 1.8, 2.05, 2.35, 2.7, 3.1];
 
 // The ranking score is only counted after this many games
 // in a level (too few games = too much luck).
@@ -56,8 +57,9 @@ export function rankScoreFor(gamiq, level) {
     return null;
   }
 
+  const lv = clampInt(level, 1, MAX_LEVEL, 1);
   return Math.round(
-    gamiq * (1 + LEVEL_BONUS * (level - 1))
+    gamiq * LEVEL_MULT[lv - 1]
   );
 }
 

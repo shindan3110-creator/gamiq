@@ -1,12 +1,14 @@
 // GAMIQ（ゲーミック） v2 - Difficulty by Level
 //
 // Lv1  = the normal difficulty (same as before levels existed)
-// Lv10 = the hardest
-// In between it goes up evenly.
+// Lv1-5 = goes up gently.
+// Lv6-10 = "HELL ZONE": goes past the old Lv10 values
+//          (Lv8 is about the old Lv10, Lv10 is 1.6x further).
 //
 // Usage in a game:
-//   const d = levelFactor(level);          // 0 at Lv1 ... 1 at Lv10
-//   const showMs = byLevel(level, 850, 560); // 850ms at Lv1 -> 560ms at Lv10
+//   const d = levelFactor(level);            // 0 at Lv1 ... 1.6 at Lv10
+//   const showMs = byLevel(level, 850, 560); // 850ms at Lv1 -> 560ms at "old Lv10"
+//   Values can go past the Lv10 number, so games clamp where needed.
 
 export const MAX_DIFFICULTY_LEVEL = 10;
 
@@ -20,12 +22,15 @@ export function safeLevel(level) {
   return Math.max(1, Math.min(MAX_DIFFICULTY_LEVEL, number));
 }
 
-// 0 at Lv1, 1 at Lv10
+// How far along the difficulty is at each level.
+// 1.0 = the old Lv10. Lv6+ goes beyond it.
+const LEVEL_CURVE = [0, 0.1, 0.2, 0.3, 0.42, 0.62, 0.85, 1.08, 1.32, 1.6];
+
 export function levelFactor(level) {
-  return (safeLevel(level) - 1) / (MAX_DIFFICULTY_LEVEL - 1);
+  return LEVEL_CURVE[safeLevel(level) - 1];
 }
 
-// Value at Lv1 -> value at Lv10 (straight line)
+// Value at Lv1 -> value at "old Lv10" (goes further at Lv8-10)
 export function byLevel(level, atLevel1, atLevel10) {
   const t = levelFactor(level);
 
