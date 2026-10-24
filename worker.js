@@ -274,7 +274,7 @@ function validateScore(body) {
 
   if (
     level === null || level < 1 || level > MAX_LEVEL ||
-    levelPlayed === null || levelPlayed < 0 || levelPlayed > GAMES_PER_LEVEL ||
+    levelPlayed === null || levelPlayed < 0 || levelPlayed > 999 ||
     played === null || played < MIN_GAMES_FOR_RANK || played > 2000 ||
     gamiq === null || gamiq < 300 || gamiq > 1000 ||
     rankScore === null
