@@ -365,7 +365,8 @@ function runSortRush({ container, onComplete, level = 1 }) {
     const handled = correct + wrong + dropped;
     const accuracy = handled ? correct / handled : 0;
 
-    const score = accuracy * 100;
+    // Squared: 95% right = 90 pts, 90% = 81, 80% = 64
+    const score = accuracy * accuracy * 100;
 
     setTimeout(() => {
       onComplete?.({

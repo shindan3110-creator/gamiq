@@ -383,6 +383,9 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
       call(t("pk.save"), "good");
       sfx(points >= 90 ? "perfect" : "impact");
     } else {
+      // Right side, wrong height: a little credit for reading the kicker.
+      if (!early && rightSide) points = 20;
+
       stage.classList.add("goal");
       ball.classList.add("in");
 

@@ -47,11 +47,11 @@ function runEggSmash({ container, onComplete, level = 1 }) {
   /*
    * DIFFICULTY BY LEVEL
    *   taps per egg: 6 (Lv1) -> 11 (Lv10)
-   *   eggs for a full score: 10 -> 9
+   *   eggs for a full score: 14 -> 12
    *   (Lv1 needs about 4 taps/second, Lv10 about 6.6)
    */
   const baseHp = byLevel(level, 6, 11);
-  const goal = byLevelInt(level, 10, 9);
+  const goal = byLevelInt(level, 14, 12);
 
   let finished = false;
   let started = false;

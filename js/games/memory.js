@@ -364,8 +364,8 @@ function runSequenceMemory({
     const score =
       success
         ? clamp(
-            85 +
-            sequenceLength * 2.5 -
+            68 +
+            sequenceLength * 4 -
             Math.max(
               0,
               elapsed - 3500
@@ -680,8 +680,8 @@ function runPositionMemory({
     const score =
       clamp(
         accuracy *
-        100 -
-        wrong * 5 -
+        Math.min(100, 70 + targetCount * 4) -
+        wrong * 6 -
         Math.max(
           0,
           elapsed - 3500
@@ -1000,8 +1000,8 @@ function runNumberMemory({
     const score =
       success
         ? clamp(
-            90 +
-            numberCount * 2 -
+            70 +
+            numberCount * 4 -
             Math.max(
               0,
               elapsed - 4200
