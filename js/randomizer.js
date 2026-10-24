@@ -33,7 +33,8 @@ export class GamiqRandomizer {
 
   pick(
     gamePool,
-    abilityCounts = {}
+    abilityCounts = {},
+    onlySkills = []
   ) {
     if (
       !Array.isArray(gamePool) ||
@@ -55,6 +56,25 @@ export class GamiqRandomizer {
     const recentTwo =
       this.history.slice(-2);
 
+
+    /* ==========================================
+    LEVEL FINISH
+    After 25 games, only genres that still need
+    games (fewer than 5 in this level) come up,
+    so the level does not drag on.
+    ========================================== */
+
+    if (
+      Array.isArray(onlySkills) &&
+      onlySkills.length > 0
+    ) {
+      const needed =
+        gamePool.filter(game => onlySkills.includes(game.skill));
+
+      if (needed.length > 0) {
+        gamePool = needed;
+      }
+    }
 
     /* ==========================================
     PRIMARY FILTER
