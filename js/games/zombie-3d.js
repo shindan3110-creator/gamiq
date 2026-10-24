@@ -55,8 +55,8 @@ export async function runZombie3D({
    * DIFFICULTY BY LEVEL (Lv1 = same as before)
    * Zombies come faster, and speed up more after each kill.
    */
-  const zombieBaseSpeed = byLevel(level, 3.7, 5.4);
-  const zombieSpeedStep = byLevel(level, 0.4, 0.55);
+  const zombieBaseSpeed = byLevel(level, 5.2, 8.0);
+  const zombieSpeedStep = byLevel(level, 0.55, 0.8);
 
   let spawning = false;
 
@@ -348,23 +348,136 @@ export async function runZombie3D({
   MATERIALS
   ========================================== */
 
+  /*
+   * Rotten look, drawn on small canvases (no image files needed).
+   * Creepy, but no realistic blood or wounds.
+   */
+  function canvasTexture(draw, size = 128) {
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+
+    const g = canvas.getContext("2d");
+    draw(g, size);
+
+    const texture = new T.CanvasTexture(canvas);
+    texture.colorSpace = T.SRGBColorSpace;
+    return texture;
+  }
+
+  function blotches(g, size, colors, count, maxR) {
+    for (let i = 0; i < count; i++) {
+      g.fillStyle = colors[i % colors.length];
+      g.globalAlpha = 0.25 + Math.random() * 0.45;
+      g.beginPath();
+      g.ellipse(Math.random() * size, Math.random() * size, 3 + Math.random() * maxR, 2 + Math.random() * maxR * 0.7, Math.random() * 3, 0, Math.PI * 2);
+      g.fill();
+    }
+
+    g.globalAlpha = 1;
+  }
+
+  // Grey-green rotting skin with bruises and dark veins
+  const skinTexture = canvasTexture((g, n) => {
+    g.fillStyle = "#7c8a68";
+    g.fillRect(0, 0, n, n);
+
+    blotches(g, n, ["#5b6b4a", "#4a3f45", "#8f9a72", "#3e4a34"], 40, 14);
+
+    g.strokeStyle = "rgba(40,30,50,.55)";
+    g.lineWidth = 1.4;
+
+    for (let i = 0; i < 7; i++) {
+      g.beginPath();
+      let x = Math.random() * n;
+      let y = Math.random() * n;
+      g.moveTo(x, y);
+
+      for (let k = 0; k < 5; k++) {
+        x += (Math.random() - 0.5) * 30;
+        y += Math.random() * 22;
+        g.lineTo(x, y);
+      }
+
+      g.stroke();
+    }
+  });
+
+  // Face: sunken dark eye sockets, open jaw with crooked teeth
+  const faceTexture = canvasTexture((g, n) => {
+    g.drawImage(skinTexture.image, 0, 0);
+
+    g.fillStyle = "rgba(20,14,22,.9)";
+    g.beginPath(); g.ellipse(n * 0.3, n * 0.4, 17, 14, 0.2, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.ellipse(n * 0.7, n * 0.42, 15, 13, -0.2, 0, Math.PI * 2); g.fill();
+
+    // Mouth
+    g.fillStyle = "#1a0d10";
+    g.beginPath();
+    g.moveTo(n * 0.24, n * 0.68);
+    g.quadraticCurveTo(n * 0.5, n * 0.62, n * 0.78, n * 0.7);
+    g.quadraticCurveTo(n * 0.55, n * 0.95, n * 0.26, n * 0.8);
+    g.closePath();
+    g.fill();
+
+    g.fillStyle = "#d8cfa4";
+    for (let i = 0; i < 6; i++) {
+      const x = n * (0.3 + i * 0.08);
+      g.fillRect(x, n * 0.665 + (i % 2) * 2, 6, 7 + (i % 3) * 3);
+    }
+  });
+
+  // Torn, stained shirt
+  const shirtTexture = canvasTexture((g, n) => {
+    g.fillStyle = "#3d4640";
+    g.fillRect(0, 0, n, n);
+
+    blotches(g, n, ["#2a2622", "#4b3a2c", "#55322e"], 26, 16);
+
+    // Rips
+    g.fillStyle = "#6c775c";
+    for (let i = 0; i < 5; i++) {
+      const x = Math.random() * n;
+      const y = n * 0.4 + Math.random() * n * 0.6;
+      g.beginPath();
+      g.moveTo(x, y);
+      g.lineTo(x + 6 + Math.random() * 10, y + 18 + Math.random() * 14);
+      g.lineTo(x - 4 - Math.random() * 8, y + 16 + Math.random() * 10);
+      g.closePath();
+      g.fill();
+    }
+  });
+
   const skinMaterial =
     new T.MeshStandardMaterial({
       color:
-        0x76a969,
+        0xffffff,
+
+      map:
+        skinTexture,
 
       roughness:
-        0.82
+        0.9
+    });
+
+  const faceMaterial =
+    new T.MeshStandardMaterial({
+      color: 0xffffff,
+      map: faceTexture,
+      roughness: 0.9
     });
 
 
   const shirtMaterial =
     new T.MeshStandardMaterial({
       color:
-        0x33413b,
+        0xffffff,
+
+      map:
+        shirtTexture,
 
       roughness:
-        0.9
+        0.95
     });
 
 
@@ -421,6 +534,10 @@ export async function runZombie3D({
     torso.position.y =
       0.35;
 
+    // Hunched forward
+    torso.rotation.x =
+      0.22;
+
 
     torso.castShadow =
       true;
@@ -450,12 +567,26 @@ export async function runZombie3D({
           0.9
         ),
 
-        skinMaterial.clone()
+        [
+          skinMaterial.clone(),
+          skinMaterial.clone(),
+          skinMaterial.clone(),
+          skinMaterial.clone(),
+          faceMaterial.clone(),
+          skinMaterial.clone()
+        ]
       );
 
 
-    head.position.y =
-      1.85;
+    head.position.set(
+      0,
+      1.8,
+      0.28
+    );
+
+    // Head hangs to one side
+    head.rotation.z =
+      (Math.random() < 0.5 ? -1 : 1) * (0.12 + Math.random() * 0.12);
 
 
     head.castShadow =
@@ -491,9 +622,9 @@ export async function runZombie3D({
 
 
     leftEye.position.set(
-      -0.2,
-      1.96,
-      0.47
+      -0.22,
+      1.9,
+      0.74
     );
 
 
@@ -517,27 +648,36 @@ export async function runZombie3D({
 
     /* arms */
 
+    // Pivot at the shoulder, so the arms can reach forward
+    const armGeometry =
+      new T.BoxGeometry(
+        0.38,
+        1.8,
+        0.38
+      );
+
+    armGeometry.translate(0, -0.85, 0);
+
     const leftArm =
       new T.Mesh(
-        new T.BoxGeometry(
-          0.4,
-          1.8,
-          0.4
-        ),
+        armGeometry,
 
         skinMaterial.clone()
       );
 
 
     leftArm.position.set(
-      -0.95,
-      0.55,
-      0
+      -0.92,
+      1.15,
+      0.1
     );
 
 
-    leftArm.rotation.z =
-      -0.28;
+    leftArm.rotation.set(
+      -1.35,
+      0,
+      -0.08
+    );
 
 
     leftArm.userData.zombiePart =
@@ -563,7 +703,7 @@ export async function runZombie3D({
 
 
     rightArm.rotation.z =
-      0.28;
+      0.08;
 
 
     rightArm.userData.zombiePart =
@@ -799,19 +939,22 @@ export async function runZombie3D({
 
 
       if (parts) {
+        // Arms reaching toward you, swaying
         parts.leftArm.rotation.x =
+          -1.35 +
           Math.sin(
             elapsed * 7
           ) *
-          0.42;
+          0.18;
 
 
         parts.rightArm.rotation.x =
+          -1.35 +
           Math.sin(
             elapsed * 7 +
             Math.PI
           ) *
-          0.42;
+          0.18;
 
 
         parts.leftLeg.rotation.x =
@@ -1495,18 +1638,18 @@ export async function runZombie3D({
           object.material;
 
 
+        // The head has one material per side (an array)
+        const flash = material => {
+          const copy = material.clone();
+          copy.emissive = new T.Color(0xffffff);
+          copy.emissiveIntensity = 2.5;
+          return copy;
+        };
+
         object.material =
-          original.clone();
-
-
-        object.material.emissive =
-          new T.Color(
-            0xffffff
-          );
-
-
-        object.material.emissiveIntensity =
-          2.5;
+          Array.isArray(original)
+            ? original.map(flash)
+            : flash(original);
 
 
         changed.push({

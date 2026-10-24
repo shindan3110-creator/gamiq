@@ -204,40 +204,14 @@ function runBlockEscape({ game, container, onComplete }) {
         element.classList.add("target");
       }
 
-      if (desktopControls) {
-        const selected = selectedId === block.id;
+      // PC: a clicked block can also be moved with the arrow keys
+      const selected = desktopControls && selectedId === block.id;
+      element.classList.toggle("selected", selected);
 
-        element.classList.toggle("selected", selected);
-        element.setAttribute("aria-pressed", String(selected));
-
-        element.addEventListener("click", () => {
-          if (!active) return;
-
-          selectedId = block.id;
-          renderBlocks();
-        });
-
-      } else {
-        attachSwipe(element, block);
-      }
+      // Phone and PC: drag the block, it slides as far as you pull it
+      attachDrag(element, block);
 
       board.appendChild(element);
-    }
-
-    // Show movement buttons only for the selected block.
-    // Only legal directions are shown.
-    if (
-      desktopControls &&
-      selectedId !== null &&
-      active
-    ) {
-      const selected = boardData.blocks.find(
-        block => block.id === selectedId
-      );
-
-      if (selected) {
-        renderDirections(selected);
-      }
     }
   }
 
@@ -285,71 +259,95 @@ function runBlockEscape({ game, container, onComplete }) {
   }
 
   /* ==========================================
-  MOBILE SWIPE
+  DRAG (phone and PC)
+  The block follows your finger / mouse and slides
+  several squares at once. Letting go snaps it to the grid.
   ========================================== */
 
-  function attachSwipe(element, block) {
-    let swipe = null;
+  function cellPitch() {
+    const style = getComputedStyle(board);
+    const pad = parseFloat(style.paddingLeft) || 0;
+    const gap = parseFloat(style.columnGap) || 0;
+    return (board.clientWidth - pad * 2 + gap) / size;
+  }
+
+  // How many squares the block can slide each way
+  function freeRange(block) {
+    const horizontal = block.w > block.h;
+    let back = 0;
+    let forward = 0;
+
+    while (canMove(block, block.x - (horizontal ? back + 1 : 0), block.y - (horizontal ? 0 : back + 1))) back++;
+    while (canMove(block, block.x + (horizontal ? forward + 1 : 0), block.y + (horizontal ? 0 : forward + 1))) forward++;
+
+    return { back, forward };
+  }
+
+  function attachDrag(element, block) {
+    let drag = null;
 
     element.addEventListener("pointerdown", event => {
       if (!active) return;
 
-      swipe = {
+      event.preventDefault();
+      element.setPointerCapture?.(event.pointerId);
+
+      drag = {
         id: event.pointerId,
         x: event.clientX,
-        y: event.clientY
+        y: event.clientY,
+        pitch: cellPitch(),
+        range: freeRange(block),
+        horizontal: block.w > block.h,
+        offset: 0
       };
 
-      element.setPointerCapture?.(
-        event.pointerId
-      );
+      element.classList.add("dragging");
     });
 
-    element.addEventListener("pointerup", event => {
-      if (
-        !active ||
-        !swipe ||
-        swipe.id !== event.pointerId
-      ) {
+    element.addEventListener("pointermove", event => {
+      if (!drag || drag.id !== event.pointerId) return;
+
+      const raw = drag.horizontal ? event.clientX - drag.x : event.clientY - drag.y;
+
+      // A little rubber band at the ends
+      const min = -drag.range.back * drag.pitch;
+      const max = drag.range.forward * drag.pitch;
+      const offset = raw < min ? min + (raw - min) * 0.15 : raw > max ? max + (raw - max) * 0.15 : raw;
+
+      drag.offset = offset;
+      element.style.transform = drag.horizontal ? `translateX(${offset}px)` : `translateY(${offset}px)`;
+    });
+
+    const end = event => {
+      if (!drag || drag.id !== event.pointerId) return;
+
+      const d = drag;
+      drag = null;
+
+      element.classList.remove("dragging");
+
+      const steps = Math.max(-d.range.back, Math.min(d.range.forward, Math.round(d.offset / d.pitch)));
+
+      if (steps === 0) {
+        element.style.transform = "";
+
+        // Just a click: select it (PC arrow keys)
+        if (desktopControls && Math.abs(d.offset) < 4) {
+          selectedId = block.id;
+          renderBlocks();
+        }
         return;
       }
 
-      const dx = event.clientX - swipe.x;
-      const dy = event.clientY - swipe.y;
+      // Where it was let go, compared with where it snaps to
+      const leftover = d.offset - steps * d.pitch;
 
-      swipe = null;
+      slideBlock(block, d.horizontal ? steps : 0, d.horizontal ? 0 : steps, leftover, d.horizontal);
+    };
 
-      if (block.w > block.h) {
-        // Horizontal block
-        if (
-          Math.abs(dx) >= 22 &&
-          Math.abs(dx) > Math.abs(dy)
-        ) {
-          moveBlock(
-            block,
-            dx > 0 ? 1 : -1,
-            0
-          );
-        }
-
-      } else {
-        // Vertical block
-        if (
-          Math.abs(dy) >= 22 &&
-          Math.abs(dy) > Math.abs(dx)
-        ) {
-          moveBlock(
-            block,
-            0,
-            dy > 0 ? 1 : -1
-          );
-        }
-      }
-    });
-
-    element.addEventListener("pointercancel", () => {
-      swipe = null;
-    });
+    element.addEventListener("pointerup", end);
+    element.addEventListener("pointercancel", end);
   }
 
   /* ==========================================
@@ -391,6 +389,39 @@ function runBlockEscape({ game, container, onComplete }) {
     });
   }
 
+  // Move several squares at once (one drag = one move)
+  function slideBlock(block, dx, dy, leftover = 0, horizontal = true) {
+    if (!active) return;
+
+    block.x += dx;
+    block.y += dy;
+
+    moves++;
+    movesDisplay.textContent = String(moves);
+
+    // Sharp "shupa!"
+    sfx("swish");
+
+    if (block.target && block.x + block.w > size) {
+      finishSuccess();
+      return;
+    }
+
+    selectedId = desktopControls ? block.id : selectedId;
+    renderBlocks();
+
+    // Finish the slide smoothly from where it was let go
+    const element = board.querySelector(`[data-id="${block.id}"]`);
+
+    if (element && leftover) {
+      element.style.transition = "none";
+      element.style.transform = horizontal ? `translateX(${leftover}px)` : `translateY(${leftover}px)`;
+      void element.offsetWidth;
+      element.style.transition = "transform .12s cubic-bezier(.2,.9,.3,1)";
+      element.style.transform = "";
+    }
+  }
+
   function moveBlock(block, dx, dy) {
     if (!active) return;
 
@@ -406,8 +437,7 @@ function runBlockEscape({ game, container, onComplete }) {
 
     moves++;
 
-    // Wooden block slides: "koto"
-    sfx("wood");
+    sfx("swish");
     movesDisplay.textContent = String(moves);
 
     if (

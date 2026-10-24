@@ -35,7 +35,7 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
    * - Obstacles come more often
    * - "Two lanes blocked" starts earlier and happens more
    */
-  const startSpeed = byLevel(level, 21, 27);
+  const startSpeed = byLevel(level, 28, 38);
   const spawnBase = byLevel(level, 1.0, 0.8);
   const spawnMin = byLevel(level, 0.55, 0.45);
   const doubleFrom = byLevel(level, 8, 3);
@@ -605,7 +605,7 @@ export async function runRace3D({ container, onComplete, level = 1 }) {
     );
 
     // Faster base speed: you have to stay focused from the start.
-    const baseSpeed = startSpeed + Math.min(9, rt / 6);
+    const baseSpeed = startSpeed + Math.min(12, rt / 4.5);
 
     const factor =
       slowLeft > 0 ? 0.65 :

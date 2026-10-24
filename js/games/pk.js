@@ -69,14 +69,13 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
   /*
    * DIFFICULTY BY LEVEL
    *   ball flight time: 760ms (Lv1) -> 430ms (Lv10)
-   *   save also counts if only the side is right (high/low wrong): Lv1-3
+   *   left/right AND high/low must both be right to save
    *   stop in the run-up (paradinha): 15% -> 45%
    *   the lean before the kick is a lie: never -> 50%
    *   fake kick (leg swings, no ball): never -> 30%
    */
   const lv = safeLevel(level);
   const travelMs = byLevel(level, 760, 430);
-  const sideIsEnough = lv <= 3;
   const stopRate = byLevel(level, 0.15, 0.45);
   const lieRate = byLevel(level, 0, 0.5);
   const fakeRate = byLevel(level, 0, 0.3);
@@ -191,20 +190,51 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
 
   /* ---------- KEEPER ---------- */
 
+  let diveAnim = null;
+
+  // Keeper pose: x/y in % of the stage, rotation in degrees
+  const pose = (x, y, r = 0, sy = 1) =>
+    `translate(calc(-50% + ${x}cqw), calc(-100% + ${y}cqh)) rotate(${r}deg) scaleY(${sy})`;
+
   function placeKeeper(spot) {
-    // Standing in the middle of the goal, or diving to a spot
+    diveAnim?.cancel();
+    diveAnim = null;
+
+    // Standing in the middle of the goal, ready
     if (!spot) {
-      keeper.style.transform = "translate(-50%, -100%)";
+      keeper.style.transform = pose(0, 0);
       keeper.className = "pk2-keeper";
       return;
     }
 
-    const dx = (SPOT_X[spot.col] - 50) * 0.9;
-    const dy = spot.row === "T" ? -9 : 2;
-    const rot = spot.col === "L" ? -70 : spot.col === "R" ? 70 : 0;
+    keeper.className = `pk2-keeper dive reach ${spot.col === "C" ? (spot.row === "T" ? "jump" : "crouch") : `side-${spot.col}`}`;
 
-    keeper.className = `pk2-keeper dive ${spot.col === "C" ? (spot.row === "T" ? "jump" : "crouch") : ""}`;
-    keeper.style.transform = `translate(calc(-50% + ${dx}cqw), calc(-100% + ${dy}cqh)) rotate(${rot}deg)`;
+    let frames;
+
+    if (spot.col === "C") {
+      frames = spot.row === "T"
+        // Straight up: small squat, then jump with both arms up
+        ? [pose(0, 0), pose(0, 1.5, 0, 0.88), pose(0, -11, 0, 1.04), pose(0, -9)]
+        // Low middle: drop down to block
+        : [pose(0, 0), pose(0, 2, 0, 0.8), pose(0, 3, 0, 0.72)];
+    } else {
+      const dir = spot.col === "L" ? -1 : 1;
+      const x = dir * 16;
+
+      frames = spot.row === "T"
+        // High: push off, fly up in an arc, body almost flat in the air
+        ? [pose(0, 0), pose(dir * 1.5, 1.5, 0, 0.88), pose(x * 0.55, -15, dir * 45), pose(x, -12, dir * 80)]
+        // Low: push off low and slide along the ground
+        : [pose(0, 0), pose(dir * 1.5, 1.5, 0, 0.88), pose(x * 0.6, -5, dir * 55), pose(x, -3, dir * 92)];
+    }
+
+    // Fast but readable: about a quarter of a second
+    const ms = Math.round(Math.min(320, Math.max(220, travelMs * 0.55)));
+
+    diveAnim = keeper.animate(
+      frames.map((transform, i) => ({ transform, offset: frames.length === 3 ? [0, 0.25, 1][i] : [0, 0.14, 0.6, 1][i] })),
+      { duration: ms, easing: "cubic-bezier(.25,.8,.35,1)", fill: "forwards" }
+    );
   }
 
 
@@ -335,7 +365,7 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
     const rightSide = dive && dive.col === target.col;
     const rightHeight = dive && dive.row === target.row;
 
-    const saved = !early && rightSide && (rightHeight || sideIsEnough);
+    const saved = !early && rightSide && rightHeight;
 
     container.querySelector(`[data-zone="${target.col}${target.row}"]`)?.classList.add("shot");
 
@@ -446,6 +476,7 @@ function runPkKeeper({ container, onComplete, level = 1 }) {
     finished = true;
     timers.forEach(clearTimeout);
     ballAnim?.cancel();
+    diveAnim?.cancel();
   };
 }
 

@@ -2291,10 +2291,9 @@ function runLanePanic({
   function changeLane(
     direction
   ) {
-    if (
-      !active ||
-      safeLane === null
-    ) {
+    // You can always move (also right after a round),
+    // so the cat reacts at once.
+    if (!active) {
       return;
     }
 
@@ -2307,7 +2306,13 @@ function runLanePanic({
 
     sfx("click");
 
+    player.classList.remove("lane-safe", "lane-crash");
+
     updatePlayer();
+
+    if (safeLane === null) {
+      return;
+    }
 
     // Reaction = time until you first reach the safe lane.
     if (

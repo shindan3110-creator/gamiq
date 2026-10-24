@@ -175,32 +175,63 @@ function runPerfectCircle({ container, onComplete, level = 1 }) {
 
     const mean = meanRadius();
 
-    ctx.lineWidth = 6;
+    drawSegments(1, mean);
+    drawnUpTo = points.length;
+  }
+
+  // Draw the line from point "from" to the end.
+  // A wide soft line + a thin bright line gives a glow
+  // (canvas shadowBlur is very slow on phones, so it is not used).
+  function drawSegments(from, mean) {
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.shadowBlur = 12;
 
-    for (let i = 1; i < points.length; i++) {
+    for (let i = Math.max(1, from); i < points.length; i++) {
       const a = points[i - 1];
       const b = points[i];
       const color = colorFor(b.r, points.length > 8 ? mean : 0);
 
       ctx.strokeStyle = color;
-      ctx.shadowColor = color;
+
+      ctx.globalAlpha = 0.22;
+      ctx.lineWidth = 14;
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+
+      ctx.globalAlpha = 1;
+      ctx.lineWidth = 6;
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
       ctx.stroke();
     }
 
-    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+  }
+
+  // While drawing: only add the new part, once per frame
+  let drawnUpTo = 0;
+  let drawFrame = 0;
+
+  function drawNew() {
+    drawFrame = 0;
+    if (points.length < 2) return;
+
+    drawSegments(Math.max(1, drawnUpTo), meanRadius());
+    drawnUpTo = points.length;
   }
 
 
   /* ---------- DRAWING ---------- */
 
+  // The stage position is read once per stroke (reading it for
+  // every point made phones slow)
+  let stageRect = null;
+
   function local(event) {
-    const rect = stage.getBoundingClientRect();
+    const rect = stageRect || stage.getBoundingClientRect();
     return { x: event.clientX - rect.left, y: event.clientY - rect.top };
   }
 
@@ -231,6 +262,8 @@ function runPerfectCircle({ container, onComplete, level = 1 }) {
 
     points = [];
     angleSum = 0;
+    drawnUpTo = 0;
+    stageRect = stage.getBoundingClientRect();
 
     scoreEl.className = "pc-score";
     scoreEl.textContent = "";
@@ -249,7 +282,7 @@ function runPerfectCircle({ container, onComplete, level = 1 }) {
     const list = event.getCoalescedEvents?.() || [event];
     list.forEach(addPoint);
 
-    redraw();
+    if (!drawFrame) drawFrame = requestAnimationFrame(drawNew);
 
     // A full turn: finish this circle automatically
     if (Math.abs(angleSum) >= Math.PI * 2 * 1.04) {
@@ -265,6 +298,10 @@ function runPerfectCircle({ container, onComplete, level = 1 }) {
   }
 
   stage.addEventListener("pointerdown", onDown);
+
+  // iPhone Safari: make sure the page never scrolls while drawing
+  const stopScroll = event => event.preventDefault();
+  stage.addEventListener("touchmove", stopScroll, { passive: false });
   stage.addEventListener("pointermove", onMove);
   stage.addEventListener("pointerup", onUp);
   stage.addEventListener("pointercancel", onUp);
@@ -275,6 +312,10 @@ function runPerfectCircle({ container, onComplete, level = 1 }) {
   function endStroke() {
     drawing = false;
     locked = true;
+    stageRect = null;
+
+    cancelAnimationFrame(drawFrame);
+    drawFrame = 0;
 
     const mean = meanRadius();
     const minR = Math.min(width, height) * minSizeRate;

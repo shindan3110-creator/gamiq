@@ -65,12 +65,12 @@ function runCupShuffle({
   /*
    * DIFFICULTY BY LEVEL
    *   cups:  3 -> 5
-   *   swaps: 5 -> 14 (more in later rounds)
-   *   swap speed: 450ms -> 200ms
+   *   swaps: 7 -> 16 (more in later rounds)
+   *   swap speed: 300ms -> 120ms (faster than before)
    */
   const cupCount = byLevelInt(level, 3, 5);
-  const baseSwaps = byLevelInt(level, 5, 12);
-  const swapMs = Math.round(byLevel(level, 450, 200));
+  const baseSwaps = byLevelInt(level, 7, 16);
+  const swapMs = Math.round(byLevel(level, 300, 120));
 
   let active = true;
   let round = 0;
@@ -242,7 +242,7 @@ function runCupShuffle({
       cups[cupB].classList.remove("arc-back");
 
       shuffle(remaining - 1);
-    }, swapMs + 40);
+    }, swapMs + 15);
   }
 
   function askPick() {
