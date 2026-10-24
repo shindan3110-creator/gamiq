@@ -98,7 +98,7 @@ const STRINGS = {
     "time.hours": "{h}h {m}m",
     "results.level": "LEVEL",
     "results.toLevelUp":
-      "{games} more games to fix your Lv {level} GAMIQ",
+      "{games} more games to fix your Lv {level} GAMIQ (5 per genre)",
     "results.history": "TODAY'S LEVELS",
     "results.resetNote": "Records reset every day at 0:00 UTC.",
 
@@ -155,7 +155,8 @@ const STRINGS = {
 
     /* ---------- LEVEL UP ---------- */
     "levelup.title": "LEVEL {level} CLEAR!",
-    "levelup.next": "NEXT: LV {level} — measuring starts again",
+    "levelup.next": "LV {level} UNLOCKED — it gets faster!",
+    "levelup.auto": "Next game in {n}…",
     "levelup.max": "MAX LEVEL! Measuring again at Lv 10",
 
     /* ---------- IN-GAME: MEMORY ---------- */
@@ -427,7 +428,7 @@ const STRINGS = {
     "time.hours": "{h}時間{m}分",
     "results.level": "レベル",
     "results.toLevelUp":
-      "あと{games}ゲームで Lv{level} のGAMIQが確定",
+      "あと最低{games}ゲームで Lv{level} のGAMIQが確定（各ジャンル5回）",
     "results.history": "今日のレベル記録",
     "results.resetNote": "記録は毎日 日本時間9:00（UTC 0:00）にリセットされます。",
 
@@ -484,7 +485,8 @@ const STRINGS = {
 
     /* ---------- LEVEL UP ---------- */
     "levelup.title": "LEVEL {level} クリア！",
-    "levelup.next": "次は Lv{level}：測定精度0%から再スタート",
+    "levelup.next": "Lv{level} 解放！ここからもっと速くなる",
+    "levelup.auto": "{n}秒後に次のゲームへ…",
     "levelup.max": "最高レベル到達！Lv10で再測定します",
 
     /* ---------- IN-GAME: MEMORY ---------- */
