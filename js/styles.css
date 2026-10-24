@@ -17431,3 +17431,23 @@ STEP 66: GAME FIXES
 .lane-panic-controls button{
   touch-action:manipulation;
 }
+
+
+
+/* ==========================================
+   STEP 69: LEVEL UP AUTO NEXT
+   ========================================== */
+.gamiq-levelup-auto{
+  display:block;
+  margin-top:8px;
+  color:#ffd76a;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.06em;
+  animation:gqAutoPulse 1s ease-in-out infinite;
+}
+.gamiq-levelup-auto:empty{ display:none; }
+@keyframes gqAutoPulse{
+  0%,100%{ opacity:1; }
+  50%{ opacity:.55; }
+}
