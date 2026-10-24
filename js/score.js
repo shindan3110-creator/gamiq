@@ -1,10 +1,12 @@
 // GAMIQ（ゲーミック） v2 - Score Engine
 //
 // LEVEL SYSTEM (Step 19)
-// - Every level measures your GAMIQ from 25 games
-//   (5 genres x 5 games as the baseline; games are fully random,
-//   so some genres may come more often - that is fine).
-// - CONFIDENCE goes up evenly: 25 games = 100%.
+// - Every level measures your GAMIQ with AT LEAST 5 games
+//   in EACH of the 5 genres (so 25 games or more).
+//   Games are random, so a genre can come more often;
+//   extra games still count, but CONFIDENCE only rises
+//   for genres that still need games.
+// - CONFIDENCE = sum of min(games, 5) per genre / 25.
 // - At 100%: the level's GAMIQ is fixed, you level up,
 //   and measuring starts again from 0% at the next level.
 // - Max level is 10. After Lv10 you keep re-measuring at Lv10.
@@ -18,6 +20,10 @@ const STORAGE_KEY = "gamiq_v2_record";
 const STORAGE_VERSION = 2;
 
 export const GAMES_PER_LEVEL = 25;
+// Each genre needs this many games before the level is fixed.
+export const GAMES_PER_SKILL = 5;
+// Safety cap for stored scores per genre.
+const MAX_STORED_PER_SKILL = 200;
 export const MAX_LEVEL = 10;
 
 export const LEVEL_MULT = [1, 1.15, 1.3, 1.45, 1.6, 1.8, 2.05, 2.35, 2.7, 3.1];
@@ -163,7 +169,7 @@ export class GamiqScore {
           this.skills[skill] = values
             .map(Number)
             .filter(Number.isFinite)
-            .slice(-GAMES_PER_LEVEL);
+            .slice(-MAX_STORED_PER_SKILL);
         }
       }
 
@@ -171,7 +177,7 @@ export class GamiqScore {
         clampInt(data.level, 1, MAX_LEVEL, 1);
 
       this.levelPlayed =
-        clampInt(data.levelPlayed, 0, GAMES_PER_LEVEL - 1, 0);
+        clampInt(data.levelPlayed, 0, 999, 0);
 
       this.levelHistory =
         Array.isArray(data.levelHistory)
@@ -308,7 +314,7 @@ export class GamiqScore {
 
     let levelUp = null;
 
-    if (this.levelPlayed >= GAMES_PER_LEVEL) {
+    if (this.isLevelComplete()) {
       levelUp = this.finishLevel();
     }
 
@@ -450,12 +456,35 @@ export class GamiqScore {
     );
   }
 
-  // Even steps: 25 games = 100%.
+  // Games that still count toward the level (max 5 per genre).
+  getMeasuredGames() {
+    return SKILLS.reduce(
+      (sum, skill) =>
+        sum + Math.min(GAMES_PER_SKILL, this.skills[skill].length),
+      0
+    );
+  }
+
+  // Every genre has at least 5 games.
+  isLevelComplete() {
+    return SKILLS.every(
+      skill => this.skills[skill].length >= GAMES_PER_SKILL
+    );
+  }
+
+  // Genres that still need games (for the randomizer).
+  getMissingSkills() {
+    return SKILLS.filter(
+      skill => this.skills[skill].length < GAMES_PER_SKILL
+    );
+  }
+
+  // 5 games in each genre = 100%.
   getConfidence() {
     return Math.min(
       100,
       Math.round(
-        (this.levelPlayed / GAMES_PER_LEVEL) * 100
+        (this.getMeasuredGames() / GAMES_PER_LEVEL) * 100
       )
     );
   }
@@ -472,7 +501,7 @@ export class GamiqScore {
       maxLevel: MAX_LEVEL,
       levelPlayed: this.levelPlayed,
       gamesPerLevel: GAMES_PER_LEVEL,
-      gamesToLevelUp: GAMES_PER_LEVEL - this.levelPlayed,
+      gamesToLevelUp: GAMES_PER_LEVEL - this.getMeasuredGames(),
 
       levelHistory: [...this.levelHistory],
 
