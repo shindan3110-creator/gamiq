@@ -733,9 +733,75 @@ const SHOWCASE_IDS = [
 
 let firstPickDone = false;
 
+
+/*
+ * START LINK  (?start=pk)
+ * A link can choose the FIRST game, e.g. from a promo video:
+ *   https://playgamiq.com/?start=pk
+ * After that game everything is random as usual.
+ * The full game id works too (?start=reflex_pk_keeper).
+ */
+const START_ALIASES = {
+  bullseye: "aim_bullseye",
+  hoop: "aim_hoop_shot",
+  beat: "speed_beat_swipe",
+  cards: "memory_card_match",
+  circle: "aim_perfect_circle",
+  colormix: "memory_color_mix",
+  cups: "memory_cup_shuffle",
+  redlight: "reflex_daruma",
+  egg: "speed_egg_smash",
+  flash: "memory_sequence",
+  ghost: "memory_positions",
+  number: "memory_numbers",
+  odd: "logic_odd_one_out",
+  pk: "reflex_pk_keeper",
+  block: "puzzle_block_escape",
+  pipe: "puzzle_pipe_connect",
+  ninja: "reflex_ninja_counter",
+  draw: "reflex_quick_draw",
+  lane: "reflex_lane_panic",
+  foe: "reflex_friend_foe",
+  drum: "rhythm_drum_duo",
+  sort: "speed_sort_rush",
+  color: "speed_color_switch",
+  spot: "spot_difference",
+  stop: "reflex_blind_stop",
+  zombie: "three_zombie_assault",
+  space: "three_space_blaster",
+  rush: "three_lane_dodge",
+  army: "three_factory_rush",
+  tower: "aim_tower_stack"
+};
+
+function getStartGame() {
+  try {
+    const raw = (
+      new URLSearchParams(window.location.search).get("start") || ""
+    ).trim().toLowerCase();
+
+    if (!raw) {
+      return null;
+    }
+
+    const id = START_ALIASES[raw] || raw;
+
+    return gamePool.find(game => game.id === id) || null;
+  } catch (error) {
+    return null;
+  }
+}
+
 function getNextGame() {
   if (!firstPickDone) {
     firstPickDone = true;
+
+    const startGame = getStartGame();
+
+    if (startGame) {
+      // pick() from a pool of one = this game, saved in the history.
+      return randomizer.pick([startGame], scoreEngine.getAbilityCounts());
+    }
 
     if (scoreEngine.played === 0) {
       const showcase =
