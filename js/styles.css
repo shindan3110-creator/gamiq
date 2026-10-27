@@ -17451,3 +17451,127 @@ STEP 66: GAME FIXES
   0%,100%{ opacity:1; }
   50%{ opacity:.55; }
 }
+
+
+
+/* ==========================================
+   STEP 71: SOLO CHALLENGE (?start=xx&solo=1)
+   ========================================== */
+.gamiq-card-complete.gq-solo-done{
+  pointer-events:auto;
+  background:rgba(4,7,12,.92);
+}
+.gq-solo{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  width:min(92%,380px);
+  text-align:center;
+}
+.gq-solo-game{
+  color:#ffd76a;
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.14em;
+}
+.gq-solo-score{
+  color:#fff;
+  font-size:min(26vw,110px);
+  font-weight:900;
+  line-height:1;
+  letter-spacing:-.04em;
+}
+.gq-solo-score span{
+  font-size:.32em;
+  margin-left:4px;
+  letter-spacing:0;
+}
+.gq-solo-medal{
+  padding:8px 22px;
+  border:2px solid currentColor;
+  border-radius:999px;
+  font-size:20px;
+  font-weight:900;
+}
+.gq-solo-medal.gold{ color:#ffd76a; }
+.gq-solo-medal.silver{ color:#d7e0ea; }
+.gq-solo-medal.bronze{ color:#f0a070; }
+.gq-solo-medal.try{ color:#9aa5b5; }
+.gq-solo-detail{
+  color:#c9d3df;
+  font-size:16px;
+  font-weight:800;
+}
+.gq-solo-ask{
+  margin:4px 0 6px;
+  color:#5fefff;
+  font-size:17px;
+  font-weight:900;
+}
+.gq-solo-btn{
+  width:100%;
+  padding:14px 16px;
+  border:0;
+  border-radius:14px;
+  font:inherit;
+  font-size:16px;
+  font-weight:900;
+  cursor:pointer;
+}
+.gq-solo-btn.main{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  margin-top:4px;
+  padding:16px;
+  background:linear-gradient(180deg,#b7f9ff,#5bdff1);
+  color:#031014;
+  font-size:18px;
+  box-shadow:0 5px 0 #2aa7b8,0 12px 26px rgba(95,239,255,.25);
+}
+.gq-solo-btn.main small{
+  font-size:12px;
+  font-weight:800;
+  opacity:.75;
+}
+.gq-solo-btn.share{
+  flex:1;
+  padding:12px 8px;
+  background:rgba(95,239,255,.12);
+  border:1px solid rgba(95,239,255,.45);
+  color:#5fefff;
+  font-size:14px;
+}
+.gq-solo-skill{
+  color:#9aa5b5;
+  font-size:13px;
+  font-weight:800;
+}
+.gq-solo-btn.x{
+  flex:1;
+  padding:12px 8px;
+  background:#ffffff;
+  color:#000;
+  font-size:14px;
+}
+.gq-solo-row{
+  display:flex;
+  gap:8px;
+  width:100%;
+}
+.gq-solo-btn.sub{
+  padding:10px 8px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+  color:#e6edf5;
+  font-size:14px;
+}
+.gq-solo-note{
+  min-height:1em;
+  color:#9aa5b5;
+  font-size:12px;
+  font-weight:700;
+}
+.gq-solo-done .gamiq-swipe-next{ display:none; }
