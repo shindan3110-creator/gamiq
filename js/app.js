@@ -36,7 +36,8 @@ import {
 } from "./results.js";
 
 import {
-  GamiqAnalytics
+  GamiqAnalytics,
+  track
 } from "./analytics.js";
 
 import {
@@ -177,6 +178,15 @@ import {
 import {
   titleFor
 } from "./share.js";
+
+import {
+  isSoloLink,
+  soloMedal,
+  soloDetail,
+  soloUrl,
+  shareSoloImage,
+  postSoloOnX
+} from "./solo.js";
 
 import {
   getProfile,
@@ -528,6 +538,12 @@ function boot() {
 
 
   updateLiveStatus();
+
+  // SOLO CHALLENGE: no name screen, the game starts right away.
+  if (isSoloLink() && getStartGame()) {
+    document.documentElement.classList.add("gq-solo-mode");
+    startButton.click();
+  }
 }
 
 
@@ -792,6 +808,15 @@ function getStartGame() {
   }
 }
 
+// SOLO CHALLENGE (?start=pk&solo=1): the first game only, once.
+let soloUsed = false;
+
+function startKeyFor(game) {
+  const key =
+    Object.keys(START_ALIASES).find(k => START_ALIASES[k] === game.id);
+  return key || game.id;
+}
+
 function getNextGame() {
   if (!firstPickDone) {
     firstPickDone = true;
@@ -1036,6 +1061,16 @@ async function enterGame(
   const runToken =
     ++activeRunToken;
 
+  // Solo challenge: only the very first game of a ?solo=1 link
+  const isSolo =
+    !soloUsed &&
+    isSoloLink() &&
+    game.id === getStartGame()?.id;
+
+  if (isSolo) {
+    soloUsed = true;
+  }
+
   cleanupCurrentGame();
 
   previousGame =
@@ -1235,6 +1270,22 @@ async function enterGame(
        * It is not added to GAMIQ.
        */
 
+      // SOLO CHALLENGE: own result card, not added to today's record.
+      if (isSolo && !safetyTimeout) {
+        currentFinished = true;
+        setResultsLocked(false);
+
+        sfx(success ? "clear" : "fail");
+
+        track("solo_complete", {
+          game_id: game.id,
+          game_score: score
+        });
+
+        showSoloResult(card, game, score, result?.meta);
+        return;
+      }
+
       let levelUp = null;
 
       if (!safetyTimeout) {
@@ -1390,7 +1441,8 @@ async function enterGame(
         // The current level is passed to the game for its difficulty.
         game: {
           ...game,
-          level: scoreEngine.level
+          // Solo challenge: always Lv1, so everybody plays the same game.
+          level: isSolo ? 1 : scoreEngine.level
         },
         container:
           host,
@@ -1852,6 +1904,84 @@ function showCardComplete(
       );
     }
   );
+}
+
+
+/* ==========================================
+SOLO CHALLENGE RESULT
+========================================== */
+
+function showSoloResult(card, game, score, meta) {
+  const overlay =
+    card.querySelector("[data-card-complete]");
+
+  if (!overlay) {
+    return;
+  }
+
+  const medal = soloMedal(score);
+  const detail = soloDetail(game, meta);
+  const data = {
+    game,
+    score,
+    medal,
+    detail,
+    url: soloUrl(startKeyFor(game))
+  };
+
+  overlay.classList.add("gq-solo-done");
+  overlay.innerHTML = `
+    <div class="gq-solo" data-solo>
+      <div class="gq-solo-game">${escapeHtml(game.title)}</div>
+      <div class="gq-solo-score">${score}<span>${escapeHtml(t("solo.pts"))}</span></div>
+      <div class="gq-solo-medal ${medal}">${escapeHtml(t(`solo.medal.${medal}`))}</div>
+      ${detail ? `<div class="gq-solo-detail">${escapeHtml(detail)}</div>` : ""}
+      <div class="gq-solo-skill">${escapeHtml(t("solo.skillLine", { skill: game.skill, name: t(`skillName.${game.skill}`) }))}</div>
+      <div class="gq-solo-ask">${escapeHtml(t("solo.shareLine2"))}</div>
+      <div class="gq-solo-row">
+        <button type="button" class="gq-solo-btn share" data-solo-image>📸 ${escapeHtml(t("solo.shareImage"))}</button>
+        <button type="button" class="gq-solo-btn x" data-solo-x>𝕏 ${escapeHtml(t("solo.postX"))}</button>
+      </div>
+      <button type="button" class="gq-solo-btn sub" data-solo-retry>↻ ${escapeHtml(t("solo.retry"))}</button>
+      <button type="button" class="gq-solo-btn main" data-solo-more>
+        🧠 ${escapeHtml(t("solo.more"))}
+        <small>${escapeHtml(t("solo.moreSub"))}</small>
+      </button>
+      <div class="gq-solo-note" data-solo-note></div>
+    </div>
+  `;
+
+  const panel = overlay.querySelector("[data-solo]");
+  const note = overlay.querySelector("[data-solo-note]");
+
+  // Taps on the buttons must not start a swipe.
+  panel.addEventListener("pointerdown", event => event.stopPropagation());
+
+  overlay.querySelector("[data-solo-image]").addEventListener("click", async () => {
+    track("solo_share", { game_id: game.id, share_method: "image" });
+    const res = await shareSoloImage(data);
+    if (res === "downloaded") note.textContent = t("solo.saved");
+  });
+
+  overlay.querySelector("[data-solo-x]").addEventListener("click", () => {
+    track("solo_share", { game_id: game.id, share_method: "x" });
+    postSoloOnX(data);
+  });
+
+  overlay.querySelector("[data-solo-retry]").addEventListener("click", () => {
+    track("solo_retry", { game_id: game.id });
+    window.location.reload();
+  });
+
+  overlay.querySelector("[data-solo-more]").addEventListener("click", () => {
+    track("solo_more", { game_id: game.id });
+    document.documentElement.classList.remove("gq-solo-mode");
+    feedController?.advance();
+  });
+
+  requestAnimationFrame(() => {
+    overlay.classList.add("show");
+  });
 }
 
 
