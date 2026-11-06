@@ -65,7 +65,18 @@ function runBeatSwipe({ container, onComplete, level = 1 }) {
   const bpm = byLevel(level, 96, 140);
   const beatMs = 60000 / bpm;
   const approachMs = byLevel(level, 1700, 1350);
-  const arrowRate = Math.min(0.95, byLevel(level, 0.45, 0.8));
+  // PC (mouse + keyboard): arrows only, played with the arrow keys.
+  // Phone: taps and swipes mixed.
+  let keyboardMode = false;
+  try {
+    keyboardMode = window.matchMedia("(pointer: fine)").matches;
+  } catch (error) {
+    keyboardMode = false;
+  }
+
+  const arrowRate = keyboardMode
+    ? 1
+    : Math.min(0.95, byLevel(level, 0.45, 0.8));
   const halfRate = byLevel(level, 0, 0.35);
 
   const BEATS = Math.round(byLevel(level, 28, 40));
@@ -133,7 +144,7 @@ function runBeatSwipe({ container, onComplete, level = 1 }) {
         </div>
 
         <div class="bs-judge" data-bs-judge></div>
-        <div class="bs-hint" data-bs-hint>${t("bs.hint")}</div>
+        <div class="bs-hint" data-bs-hint>${t(keyboardMode ? "bs.hintKeys" : "bs.hint")}</div>
       </div>
 
     </div>
