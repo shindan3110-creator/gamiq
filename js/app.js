@@ -165,6 +165,11 @@ import {
 } from "./api.js";
 
 import {
+  logPlay,
+  logLeave
+} from "./plays.js";
+
+import {
   initSound,
   sfx,
   isMuted,
@@ -220,6 +225,12 @@ let activeSafetyTimer =
 
 let activeRunToken =
   0;
+
+// Play data (plays.js): what to report if the page is closed.
+let lastPlayInfo = null;
+let leaveSent = false;
+let currentGameStartedAt = 0;
+let currentIsSolo = false;
 
 let currentFinished =
   false;
@@ -1196,6 +1207,12 @@ async function enterGame(
   const gameStartedAt =
     performance.now();
 
+  currentGameStartedAt =
+    gameStartedAt;
+
+  currentIsSolo =
+    isSolo;
+
 
   let completed =
     false;
@@ -1263,6 +1280,25 @@ async function enterGame(
           "boolean"
           ? result.meta.success
           : score >= 60;
+
+
+      // Anonymous play data (real averages, "top X%" later)
+      if (!safetyTimeout) {
+        logPlay({
+          game,
+          level: isSolo ? 1 : scoreEngine.level,
+          score,
+          success,
+          ms: playMs,
+          solo: isSolo
+        });
+
+        lastPlayInfo = {
+          game,
+          level: isSolo ? 1 : scoreEngine.level,
+          solo: isSolo
+        };
+      }
 
 
       /*
@@ -2177,6 +2213,41 @@ function escapeHtml(
 /* ==========================================
 PAGE CLEANUP
 ========================================== */
+
+/*
+ * Leaving the site: tell the play data which game it was.
+ * quit = left DURING a game, exit = left right AFTER a game.
+ */
+
+window.addEventListener("pagehide", () => {
+  if (leaveSent || !currentGame || !currentGameStartedAt) {
+    return;
+  }
+
+  leaveSent = true;
+
+  if (!currentFinished) {
+    logLeave({
+      game: currentGame,
+      level: currentIsSolo ? 1 : scoreEngine.level,
+      solo: currentIsSolo,
+      ms: performance.now() - currentGameStartedAt,
+      outcome: "quit"
+    });
+  } else if (lastPlayInfo) {
+    logLeave({
+      ...lastPlayInfo,
+      outcome: "exit"
+    });
+  }
+});
+
+// Coming back from the back/forward cache counts as a new visit.
+window.addEventListener("pageshow", event => {
+  if (event.persisted) {
+    leaveSent = false;
+  }
+});
 
 window.addEventListener(
   "beforeunload",
