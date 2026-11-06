@@ -267,7 +267,7 @@ const STRINGS = {
 
     /* ---------- IN-GAME: RED LIGHT (DARUMA) ---------- */
     "rule.reflex_daruma": "HOLD TO WALK. FREEZE WHEN THE ONI TURNS AROUND!",
-    "daruma.chant": "GREEN |LIGHT, |GREEN |LIGHT... |RED |LIGHT!",
+    "daruma.chant": "GREEN |LIGHT, |GREEN |LIGHT, |ONE, |TWO, |THREE... |RED |LIGHT!",
     "daruma.hint": "HOLD THE SCREEN TO WALK",
     "daruma.caught": "MOVED! BACK YOU GO",
     "daruma.touch": "TOUCH! YOU MADE IT!",
