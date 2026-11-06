@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>GAMIQ プレイデータ</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#05070b; --panel:#0d141e; --line:#1d2836; --text:#e6edf5; --sub:#8a96a8;
+    --cyan:#5fefff; --gold:#ffd76a; --red:#ff6b7a; --green:#6dfa9b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;font-size:14px}
+  .wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+  h1{font-size:22px;margin:0 0 4px}
+  h1 span{color:var(--cyan)}
+  .note{color:var(--sub);font-size:12px;line-height:1.7;margin:0 0 16px}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .bar button{background:var(--panel);color:var(--text);border:1px solid var(--line);
+    border-radius:999px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}
+  .bar button.on{border-color:var(--cyan);color:var(--cyan)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .card b{display:block;font-size:24px;margin-top:4px}
+  .card small{color:var(--sub);font-size:12px;font-weight:700}
+  .tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+  table{width:100%;border-collapse:collapse;min-width:820px}
+  th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  th{color:var(--sub);font-size:12px;font-weight:800;cursor:pointer;position:sticky;top:0;background:var(--panel)}
+  th:first-child,td:first-child{text-align:left}
+  td.name b{display:block}
+  td.name small{color:var(--sub);font-size:11px}
+  .hi{color:var(--red);font-weight:800}
+  .ok{color:var(--green);font-weight:800}
+  .hist{display:inline-flex;gap:1px;align-items:flex-end;height:22px;vertical-align:middle}
+  .hist i{display:block;width:5px;background:var(--cyan);opacity:.85;border-radius:1px}
+  .empty{padding:30px;text-align:center;color:var(--sub)}
+  h2{font-size:15px;margin:26px 0 8px}
+  .legend{color:var(--sub);font-size:12px;line-height:1.8;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>GAM<span>IQ</span> プレイデータ</h1>
+  <p class="note">
+    実際に遊ばれたゲームの記録です（匿名・ニックネームなし）。<br>
+    「途中でやめた」= ゲーム中にページを閉じた回数。「ここで帰った」= このゲームを最後に帰った回数。
+  </p>
+
+  <div class="bar" id="days">
+    <button data-d="1">今日</button>
+    <button data-d="7">7日</button>
+    <button data-d="30" class="on">30日</button>
+    <button data-d="90">90日</button>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr>
+          <th data-k="title">ゲーム</th>
+          <th data-k="done">プレイ数</th>
+          <th data-k="avg_score">平均点</th>
+          <th data-k="clear_rate">クリア率</th>
+          <th data-k="avg_sec">平均秒数</th>
+          <th data-k="quit">途中でやめた</th>
+          <th data-k="quit_rate">やめた率</th>
+          <th data-k="exits">ここで帰った</th>
+          <th data-k="sp_rate">スマホ</th>
+          <th data-k="done_solo">1ゲーム挑戦</th>
+          <th>点数の分布</th>
+        </tr>
+      </thead>
+      <tbody id="rows"><tr><td class="empty" colspan="11">読み込み中…</td></tr></tbody>
+    </table>
+  </div>
+
+  <p class="legend">
+    ・やめた率 = 途中でやめた ÷（プレイ数 + 途中でやめた）。<span class="hi">赤字</span>は15%以上。<br>
+    ・点数の分布 = 0〜9点、10〜19点…90〜100点に何人いたか（左が低い点）。<br>
+    ・見出しを押すと並べ替えできます。
+  </p>
+
+  <h2>日ごとのプレイ数</h2>
+  <div class="tablebox">
+    <table style="min-width:0">
+      <thead><tr><th>日付（UTC）</th><th>プレイ数</th><th>途中でやめた</th></tr></thead>
+      <tbody id="daily"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const TITLES = {"memory_sequence":"FLASH ORDER","memory_positions":"GHOST GRID","memory_numbers":"NUMBER TRACE","logic_odd_one_out":"ODD ONE OUT","aim_perfect_circle":"PERFECT CIRCLE","speed_color_switch":"COLOR SWITCH","speed_egg_smash":"EGG SMASH","speed_beat_swipe":"BEAT SWIPE","reflex_pk_keeper":"PK KEEPER","speed_sort_rush":"SORT RUSH","aim_hoop_shot":"HOOP SHOT","reflex_ninja_counter":"NINJA COUNTER","reflex_quick_draw":"QUICK DRAW","reflex_lane_panic":"LANE PANIC","reflex_friend_foe":"FRIEND OR FOE","reflex_blind_stop":"BLIND STOP","memory_card_match":"CARD MATCH","aim_tower_stack":"TOWER STACK","memory_cup_shuffle":"CUP SHUFFLE","reflex_daruma":"RED LIGHT","aim_bullseye":"BULLSEYE","spot_difference":"SPOT IT!","rhythm_drum_duo":"DRUM DUO","puzzle_block_escape":"BLOCK ESCAPE","puzzle_pipe_connect":"PIPE CONNECT","memory_color_mix":"COLOR MIX","three_zombie_assault":"ZOMBIE ASSAULT","three_space_blaster":"SPACE BLASTER","three_lane_dodge":"RUSH RUN","three_factory_rush":"ARMY GROW"};
+
+let data = null;
+let sortKey = "done";
+let sortDesc = true;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const num = v => (v === null || v === undefined) ? "—" : v;
+
+async function load(days) {
+  $("rows").innerHTML = '<tr><td class="empty" colspan="11">読み込み中…</td></tr>';
+  try {
+    const res = await fetch(`/api/stats?days=${days}`, { cache: "no-store" });
+    data = await res.json();
+    if (!data.ok) throw new Error("bad");
+    render();
+  } catch (e) {
+    $("rows").innerHTML = '<tr><td class="empty" colspan="11">読み込めませんでした。少し待ってから再読み込みしてください。</td></tr>';
+  }
+}
+
+function render() {
+  const hist = {};
+  for (const b of data.buckets) {
+    (hist[b.game_id] ||= Array(10).fill(0))[b.b] = b.n;
+  }
+
+  const rows = data.games.map(g => {
+    const done = g.done || 0, quit = g.quit || 0;
+    return {
+      ...g,
+      title: TITLES[g.game_id] || g.game_id,
+      quit_rate: done + quit ? Math.round(quit / (done + quit) * 1000) / 10 : null,
+      sp_rate: done ? Math.round((g.done_sp || 0) / done * 100) : null,
+      hist: hist[g.game_id] || Array(10).fill(0)
+    };
+  });
+
+  rows.sort((a, b) => {
+    const x = a[sortKey], y = b[sortKey];
+    if (typeof x === "string") return sortDesc ? y.localeCompare(x) : x.localeCompare(y);
+    return sortDesc ? (y ?? -1) - (x ?? -1) : (x ?? -1) - (y ?? -1);
+  });
+
+  const totalDone = rows.reduce((s, r) => s + (r.done || 0), 0);
+  const totalQuit = rows.reduce((s, r) => s + (r.quit || 0), 0);
+  const totalSp = rows.reduce((s, r) => s + (r.done_sp || 0), 0);
+  const avg = totalDone
+    ? Math.round(rows.reduce((s, r) => s + (r.avg_score || 0) * (r.done || 0), 0) / totalDone * 10) / 10
+    : null;
+
+  $("cards").innerHTML = `
+    <div class="card"><small>プレイ数</small><b>${totalDone.toLocaleString()}</b></div>
+    <div class="card"><small>途中でやめた</small><b>${totalQuit.toLocaleString()}</b></div>
+    <div class="card"><small>全体の平均点</small><b>${num(avg)}</b></div>
+    <div class="card"><small>スマホの割合</small><b>${totalDone ? Math.round(totalSp / totalDone * 100) + "%" : "—"}</b></div>
+    <div class="card"><small>遊ばれたゲーム</small><b>${rows.length} / 30</b></div>`;
+
+  if (!rows.length) {
+    $("rows").innerHTML = '<tr><td class="empty" colspan="11">まだデータがありません。遊ばれると、ここに増えていきます。</td></tr>';
+  } else {
+    $("rows").innerHTML = rows.map(r => {
+      const max = Math.max(1, ...r.hist);
+      const bars = r.hist.map(n => `<i style="height:${Math.max(2, n / max * 22)}px" title="${n}"></i>`).join("");
+      return `<tr>
+        <td class="name"><b>${esc(r.title)}</b><small>${esc(r.skill)}</small></td>
+        <td>${num(r.done)}</td>
+        <td>${num(r.avg_score)}</td>
+        <td>${r.clear_rate == null ? "—" : r.clear_rate + "%"}</td>
+        <td>${r.avg_sec == null ? "—" : r.avg_sec + "秒"}</td>
+        <td>${num(r.quit)}</td>
+        <td class="${r.quit_rate >= 15 ? "hi" : ""}">${r.quit_rate == null ? "—" : r.quit_rate + "%"}</td>
+        <td>${num(r.exits)}</td>
+        <td>${r.sp_rate == null ? "—" : r.sp_rate + "%"}</td>
+        <td>${num(r.done_solo)}</td>
+        <td><span class="hist">${bars}</span></td>
+      </tr>`;
+    }).join("");
+  }
+
+  $("daily").innerHTML = (data.daily || []).slice().reverse().map(d =>
+    `<tr><td>${esc(d.day)}</td><td>${d.done || 0}</td><td>${d.quit || 0}</td></tr>`
+  ).join("") || '<tr><td class="empty" colspan="3">—</td></tr>';
+}
+
+$("days").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  document.querySelectorAll("#days button").forEach(x => x.classList.toggle("on", x === b));
+  load(Number(b.dataset.d));
+});
+
+document.querySelector("thead").addEventListener("click", e => {
+  const k = e.target.closest("th")?.dataset.k;
+  if (!k) return;
+  sortDesc = sortKey === k ? !sortDesc : k !== "title";
+  sortKey = k;
+  if (data) render();
+});
+
+load(30);
+</script>
+</body>
+</html>
