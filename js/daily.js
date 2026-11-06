@@ -14,6 +14,7 @@ import { t } from "./i18n.js";
 import { todayKey, msUntilReset } from "./score.js";
 import { sfx } from "./sound.js";
 import { submitChallenge } from "./api.js";
+import { logPlay } from "./plays.js";
 import { IS_CRAZYGAMES } from "./platform.js";
 import { tapFx, celebrate, ruleTimer, goFx } from "./juice.js";
 import { rankText, createShareButtons, skillLine, siteOrigin } from "./share.js";
@@ -490,6 +491,7 @@ export class GamiqDaily {
 
     this.playing = true;
 
+    const startedAt = performance.now();
     let completed = false;
 
     const onComplete = result => {
@@ -517,6 +519,17 @@ export class GamiqDaily {
           : score >= 60;
 
       sfx(success ? "clear" : "fail");
+
+      // Anonymous play data (same as the normal feed)
+      if (!safety) {
+        logPlay({
+          game,
+          level: DAILY_LEVEL,
+          score,
+          success,
+          ms: performance.now() - startedAt
+        });
+      }
 
       const overlay = card.querySelector("[data-card-complete]");
       const scoreEl = card.querySelector("[data-complete-score]");
