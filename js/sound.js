@@ -318,18 +318,19 @@ const SOUNDS = {
   // 2) steel scraping: noise through very narrow filters at the blade's
   //    own pitches + a fluttering "shaaa" (metal rubbing on metal)
   // 3) the ring that stays after the cut
+  // Volume: x0.3 of the first version (high "KIIN" sounds louder to the ear) (it was much louder than the other sounds).
   slashHit(audio) {
-    cut(audio, { freq: 600, to: 1600, q: 1.2, attack: 0.08, hold: 0.02, release: 0.08, volume: 0.4 });
-    cut(audio, { filter: "lowpass", freq: 900, start: 0.03, attack: 0.07, hold: 0.08, release: 0.12, volume: 0.35 });
+    cut(audio, { freq: 600, to: 1600, q: 1.2, attack: 0.08, hold: 0.02, release: 0.08, volume: 0.12 });
+    cut(audio, { filter: "lowpass", freq: 900, start: 0.03, attack: 0.07, hold: 0.08, release: 0.12, volume: 0.11 });
 
     SHAKIN_PARTIALS.forEach(([f, lv]) => {
-      cut(audio, { freq: f, q: 45, start: 0.08, attack: 0.06, hold: 0.22, release: 0.2, volume: 2.4 * lv });
+      cut(audio, { freq: f, q: 45, start: 0.08, attack: 0.06, hold: 0.22, release: 0.2, volume: 0.74 * lv });
     });
-    roughNoise(audio, { freq: 3500, start: 0.08, attack: 0.06, hold: 0.2, release: 0.18, volume: 0.15, rate: 47 });
+    roughNoise(audio, { freq: 3500, start: 0.08, attack: 0.06, hold: 0.2, release: 0.18, volume: 0.046, rate: 47 });
 
     RING_PARTIALS.forEach(([f, lv], i) => {
-      tone(audio, { type: "sine", freq: f, start: 0.2, length: 1.0 - i * 0.04, volume: 0.24 * lv, attack: 0.15 });
-      tone(audio, { type: "sine", freq: f * 1.003, start: 0.2, length: 0.9 - i * 0.04, volume: 0.13 * lv, attack: 0.15 });
+      tone(audio, { type: "sine", freq: f, start: 0.2, length: 1.0 - i * 0.04, volume: 0.074 * lv, attack: 0.15 });
+      tone(audio, { type: "sine", freq: f * 1.003, start: 0.2, length: 0.9 - i * 0.04, volume: 0.04 * lv, attack: 0.15 });
     });
   },
 
