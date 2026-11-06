@@ -85,7 +85,27 @@ const SCHEMA = [
      PRIMARY KEY (day, player_id)
    )`,
   `CREATE INDEX IF NOT EXISTS idx_challenge_rank
-     ON challenge_scores (day, total DESC)`
+     ON challenge_scores (day, total DESC)`,
+  // Anonymous play data: one row per finished / quit game.
+  `CREATE TABLE IF NOT EXISTS plays (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     day TEXT NOT NULL,
+     game_id TEXT NOT NULL,
+     skill TEXT NOT NULL,
+     level INTEGER NOT NULL,
+     score INTEGER NOT NULL,
+     success INTEGER NOT NULL,
+     ms INTEGER NOT NULL,
+     solo INTEGER NOT NULL,
+     device TEXT NOT NULL,
+     lang TEXT NOT NULL,
+     outcome TEXT NOT NULL,
+     created_at INTEGER NOT NULL
+   )`,
+  `CREATE INDEX IF NOT EXISTS idx_plays_game
+     ON plays (game_id, level, outcome)`,
+  `CREATE INDEX IF NOT EXISTS idx_plays_day
+     ON plays (day)`
 ];
 
 let schemaReady = false;
@@ -131,6 +151,14 @@ async function handleApi(request, env, url) {
 
     if (url.pathname === "/api/ranking" && request.method === "GET") {
       return await getRanking(url, env.DB);
+    }
+
+    if (url.pathname === "/api/play" && request.method === "POST") {
+      return await postPlay(request, env.DB);
+    }
+
+    if (url.pathname === "/api/stats" && request.method === "GET") {
+      return await getStats(url, env.DB);
     }
 
     if (url.pathname === "/api/health") {
@@ -600,6 +628,130 @@ function validateNickname(raw) {
 
   return { ok: true, value };
 }
+
+/* ==========================================
+POST /api/play  (anonymous play data)
+========================================== */
+
+const PLAY_SKILLS = ["REFLEX", "SPEED", "AIM", "LOGIC", "MEMORY"];
+const PLAY_OUTCOMES = ["done", "quit", "exit"];
+
+async function postPlay(request, db) {
+  let body;
+
+  try {
+    // sendBeacon sends text/plain, fetch sends JSON: read both as text.
+    body = JSON.parse(await request.text());
+  } catch (error) {
+    return json({ ok: false, error: "bad_json" }, 400);
+  }
+
+  const gameId = String(body?.gameId || "");
+  const skill = String(body?.skill || "");
+  const level = toInt(body?.level);
+  const score = toInt(body?.score);
+  const ms = toInt(body?.ms);
+  const outcome = String(body?.outcome || "");
+
+  if (
+    !/^[a-z0-9_]{3,40}$/.test(gameId) ||
+    !PLAY_SKILLS.includes(skill) ||
+    level === null || level < 1 || level > 10 ||
+    score === null || score < 0 || score > 100 ||
+    ms === null || ms < 0 || ms > 600000 ||
+    !PLAY_OUTCOMES.includes(outcome)
+  ) {
+    return json({ ok: false, error: "bad_play" }, 400);
+  }
+
+  const now = Date.now();
+
+  await db.prepare(
+    `INSERT INTO plays
+       (day, game_id, skill, level, score, success, ms, solo, device, lang, outcome, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  ).bind(
+    todayKey(),
+    gameId,
+    skill,
+    level,
+    score,
+    body?.success ? 1 : 0,
+    ms,
+    body?.solo ? 1 : 0,
+    body?.device === "sp" ? "sp" : "pc",
+    body?.lang === "ja" ? "ja" : "en",
+    outcome,
+    now
+  ).run();
+
+  return json({ ok: true });
+}
+
+
+/* ==========================================
+GET /api/stats?days=30  (totals per game, for the stats page)
+========================================== */
+
+async function getStats(url, db) {
+  const days = Math.max(1, Math.min(365, toInt(url.searchParams.get("days")) || 30));
+  const since = todayKey(new Date(Date.now() - (days - 1) * 86400000));
+
+  const games = await db.prepare(
+    `SELECT game_id, skill,
+       SUM(outcome = 'done') AS done,
+       SUM(outcome = 'quit') AS quit,
+       SUM(outcome = 'exit') AS exits,
+       ROUND(AVG(CASE WHEN outcome = 'done' THEN score END), 1) AS avg_score,
+       ROUND(AVG(CASE WHEN outcome = 'done' THEN success END) * 100, 1) AS clear_rate,
+       ROUND(AVG(CASE WHEN outcome = 'done' THEN ms END) / 1000.0, 1) AS avg_sec,
+       SUM(outcome = 'done' AND device = 'sp') AS done_sp,
+       SUM(outcome = 'done' AND solo = 1) AS done_solo
+     FROM plays
+     WHERE day >= ?
+     GROUP BY game_id, skill
+     ORDER BY done DESC`
+  ).bind(since).all();
+
+  const levels = await db.prepare(
+    `SELECT game_id, level, COUNT(*) AS n,
+       ROUND(AVG(score), 1) AS avg_score
+     FROM plays
+     WHERE day >= ? AND outcome = 'done'
+     GROUP BY game_id, level`
+  ).bind(since).all();
+
+  // Score histogram (0-9, 10-19, ... 90-100) for "top X%" later
+  const buckets = await db.prepare(
+    `SELECT game_id, MIN(score / 10, 9) AS b, COUNT(*) AS n
+     FROM plays
+     WHERE day >= ? AND outcome = 'done'
+     GROUP BY game_id, b`
+  ).bind(since).all();
+
+  const totals = await db.prepare(
+    `SELECT day, SUM(outcome = 'done') AS done, SUM(outcome = 'quit') AS quit
+     FROM plays
+     WHERE day >= ?
+     GROUP BY day
+     ORDER BY day`
+  ).bind(since).all();
+
+  return json(
+    {
+      ok: true,
+      days,
+      since,
+      games: games.results || [],
+      levels: levels.results || [],
+      buckets: buckets.results || [],
+      daily: totals.results || []
+    },
+    200,
+    { "Cache-Control": "public, max-age=60" }
+  );
+}
+
 
 function todayKey(now = new Date()) {
   return now.toISOString().slice(0, 10);
