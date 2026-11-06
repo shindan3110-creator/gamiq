@@ -17620,3 +17620,59 @@ STEP 66: GAME FIXES
   .bs-ring{ width:calc(min(50%, 56px) + 10px); }
   .bs-note.arrow b{ font-size:30px; }
 }
+
+
+
+
+/* ==========================================
+   STEP 76: RED LIGHT - SPEECH BUBBLE
+   Fixed width, text wraps (English never cut off),
+   a tail pointing down to the oni.
+   ========================================== */
+.dr-bubble{
+  right:5%;
+  top:6%;
+  width:min(80%, 340px);
+  max-width:none;
+  min-height:2.6em;
+  padding:10px 16px;
+  border-radius:20px;
+  border:3px solid #2b1a0f;
+  background:#fffdf6;
+  box-shadow:0 6px 0 rgba(0,0,0,.18);
+  font-size:clamp(17px, 4.6vw, 26px);
+  line-height:1.25;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  text-align:left;
+}
+
+/* Tail (border + fill) */
+.dr-bubble::before,
+.dr-bubble::after{
+  content:"";
+  position:absolute;
+  right:20%;
+  width:0;
+  height:0;
+  border-style:solid;
+}
+.dr-bubble::before{
+  bottom:-19px;
+  border-width:19px 12px 0 12px;
+  border-color:#2b1a0f transparent transparent transparent;
+}
+.dr-bubble::after{
+  bottom:-13px;
+  right:calc(20% + 3px);
+  border-width:14px 9px 0 9px;
+  border-color:#fffdf6 transparent transparent transparent;
+}
+
+/* The oni is looking: red alert bubble */
+.dr-stage:has(.dr-oni.look) .dr-bubble{
+  border-color:#e23c4a;
+}
+.dr-stage:has(.dr-oni.look) .dr-bubble::before{
+  border-top-color:#e23c4a;
+}
