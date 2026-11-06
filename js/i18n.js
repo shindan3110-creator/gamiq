@@ -312,7 +312,9 @@ const STRINGS = {
 
     /* ---------- IN-GAME: BEAT SWIPE ---------- */
     "rule.speed_beat_swipe": "TAP THE DOTS, SWIPE THE ARROWS — RIGHT ON THE BEAT!",
+    "rule.speed_beat_swipe.pc": "PRESS THE ARROW KEYS WHEN THE ARROWS HIT THE RING!",
     "bs.hint": "● = TAP   ↑↓←→ = SWIPE",
+    "bs.hintKeys": "Press ↑ ↓ ← → keys on the beat",
     "bs.wrong": "WRONG WAY",
     "bs.end": "BEST COMBO {n}",
 
@@ -652,7 +654,9 @@ const STRINGS = {
 
     /* ---------- IN-GAME: BEAT SWIPE ---------- */
     "rule.speed_beat_swipe": "リズムに合わせて、●はタップ、矢印はその方向へスワイプ！",
+    "rule.speed_beat_swipe.pc": "矢印が輪に重なった瞬間に、同じ向きの矢印キーを押そう！",
     "bs.hint": "● ＝ タップ　↑↓←→ ＝ スワイプ",
+    "bs.hintKeys": "↑↓←→ キーをリズムに合わせて押そう",
     "bs.wrong": "向きが違う！",
     "bs.end": "最大コンボ {n}",
 
