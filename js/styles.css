@@ -17575,3 +17575,48 @@ STEP 66: GAME FIXES
   font-weight:700;
 }
 .gq-solo-done .gamiq-swipe-next{ display:none; }
+
+
+
+/* ==========================================
+   STEP 73: BEAT SWIPE - CLEARER TARGET
+   The ring is now just a little bigger than a note:
+   note fits exactly inside the ring = PERFECT.
+   A line across the lane shows the timing too.
+   All notes are round (arrows too).
+   ========================================== */
+.bs-note{ width:min(50%, 70px); }
+
+.bs-ring{
+  width:calc(min(50%, 70px) + 12px);
+  border:3px solid rgba(255,255,255,.95);
+  box-shadow:0 0 14px rgba(255,126,182,.6), inset 0 0 10px rgba(255,126,182,.35);
+}
+
+/* Timing line through the middle of the ring */
+.bs-lane::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:82%;
+  height:2px;
+  transform:translateY(-50%);
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.55) 15%, rgba(255,255,255,.55) 85%, transparent);
+  pointer-events:none;
+}
+
+.bs-note.arrow{
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #e9fdff, #5fefff 45%, #1f86c9);
+}
+
+.bs-note.arrow b{
+  font-size:clamp(28px, 7.5vw, 42px);
+}
+
+@media (max-height:520px){
+  .bs-note{ width:min(50%, 56px); }
+  .bs-ring{ width:calc(min(50%, 56px) + 10px); }
+  .bs-note.arrow b{ font-size:30px; }
+}
