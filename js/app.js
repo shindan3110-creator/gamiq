@@ -990,13 +990,7 @@ function renderGameCard(
         </span>
 
         <strong>
-          ${escapeHtml(
-            t(
-              `rule.${game.id}`,
-              null,
-              game.rule
-            )
-          )}
+          ${escapeHtml(ruleText(game))}
         </strong>
 
       </div>
@@ -1940,6 +1934,25 @@ function showCardComplete(
       );
     }
   );
+}
+
+
+/* ==========================================
+RULE TEXT
+A game can have a PC-only rule (rule.<id>.pc), e.g. keyboard controls.
+========================================== */
+
+function ruleText(game) {
+  const normal = t(`rule.${game.id}`, null, game.rule);
+
+  let pc = false;
+  try {
+    pc = window.matchMedia("(pointer: fine)").matches;
+  } catch (error) {
+    pc = false;
+  }
+
+  return pc ? t(`rule.${game.id}.pc`, null, normal) : normal;
 }
 
 
