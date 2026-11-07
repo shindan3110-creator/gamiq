@@ -17832,3 +17832,40 @@ STEP 66: GAME FIXES
 .mj-btn.ok{ background:#1fa35b; color:#fff; box-shadow:0 5px 0 #13703d; }
 .mj-btn.ng{ background:#e0394d; color:#fff; box-shadow:0 5px 0 #9c2131; }
 .mj-btn:active, .mj-btn.pressed{ transform:translateY(4px); box-shadow:none; }
+
+
+
+/* ==========================================
+   STEP 81: FRUIT SLICE
+   ========================================== */
+.fs-stage{
+  position:relative;
+  flex:1;
+  min-height:260px;
+  overflow:hidden;
+  border-radius:18px;
+  background:#3b2414;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.fs-canvas{ position:absolute; inset:0; display:block; }
+.fs-message{ z-index:2; text-shadow:0 2px 8px rgba(0,0,0,.6); }
+.fs-hint{
+  position:absolute;
+  left:50%;
+  bottom:12px;
+  transform:translateX(-50%);
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(0,0,0,.55);
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+  pointer-events:none;
+  transition:opacity .3s;
+}
+.fs-hint.hide{ opacity:0; }
