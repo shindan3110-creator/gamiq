@@ -149,6 +149,10 @@ import {
   createCoffeeGames,
   runCoffeeGame
 } from "./games/coffee.js";
+import {
+  createTiptoeGames,
+  runTiptoeGame
+} from "./games/tiptoe.js";
 
 import {
   createEggGames,
@@ -320,6 +324,7 @@ const gamePool = [
   ...createBalanceGames(),
   ...createFishingGames(),
   ...createCoffeeGames(),
+  ...createTiptoeGames(),
   ...createEggGames(),
   ...createCardMatchGames(),
   ...createCircleGames(),
@@ -834,6 +839,7 @@ const START_ALIASES = {
   balance: "reflex_balance",
   fishing: "reflex_fishing",
   coffee: "aim_hand_drip",
+  tiptoe: "speed_tiptoe",
   hoop: "aim_hoop_shot",
   beat: "speed_beat_swipe",
   cards: "memory_card_match",
@@ -1867,6 +1873,14 @@ function runSelectedGame({
     });
   }
 
+
+  if (game.type === "tiptoe") {
+    return runTiptoeGame({
+      game,
+      container,
+      onComplete
+    });
+  }
 
   if (game.type === "hand_drip") {
     return runCoffeeGame({
