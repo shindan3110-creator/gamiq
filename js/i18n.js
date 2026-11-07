@@ -359,7 +359,8 @@ const STRINGS = {
 
     /* ---------- BULLSEYE ---------- */
     "rule.aim_bullseye":
-      "HIT THE CENTER BEFORE THE TARGET SHRINKS AWAY!",
+      "SHOOT THE BUGS EATING THE FIELD! DON'T HIT THE BIRDS!",
+    "bug.bird": "DON'T SHOOT THE BIRDS! -50",
     "be.tooSlow": "TOO SLOW"
   },
 
@@ -700,7 +701,8 @@ const STRINGS = {
     "color.yellow": "きいろ",
 
     /* ---------- BULLSEYE ---------- */
-    "rule.aim_bullseye": "的が小さくなって消える前に、ど真ん中を撃ち抜け！",
+    "rule.aim_bullseye": "畑を荒らす害虫を撃ち落とせ！鳥は撃つな！",
+    "bug.bird": "鳥を撃つな！ -50",
     "be.tooSlow": "おそい！"
   }
 };
