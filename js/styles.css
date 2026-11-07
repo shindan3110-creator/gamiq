@@ -17908,3 +17908,101 @@ STEP 66: GAME FIXES
   transition:opacity .3s;
 }
 .dt-hint.hide{ opacity:0; }
+
+
+
+/* ==========================================
+   STEP 83: JANKEN ORDER
+   ========================================== */
+.jk-stage{
+  position:relative;
+  flex:1;
+  min-height:220px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  overflow:hidden;
+  border-radius:18px;
+  background:radial-gradient(circle at 50% 40%, #2b1d4a, #110b1f 70%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);
+  transition:box-shadow .15s;
+}
+.jk-stage.good{ box-shadow:inset 0 0 0 3px #79f6ab; }
+.jk-stage.bad{ box-shadow:inset 0 0 0 3px #ff5a73; }
+.jk-timebar, .jk-turnbar{
+  position:absolute;
+  left:14px;
+  right:14px;
+  height:6px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  overflow:hidden;
+}
+.jk-timebar{ top:14px; }
+.jk-turnbar{ bottom:14px; }
+.jk-timebar i, .jk-turnbar i{
+  display:block;
+  height:100%;
+  transform-origin:left;
+}
+.jk-timebar i{ background:linear-gradient(90deg,#ffd76a,#ff8a3d); }
+.jk-turnbar i{ background:#ff5a73; }
+.jk-rival{ text-align:center; }
+.jk-rival-label{
+  color:#a99bd1;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.2em;
+}
+.jk-hand{
+  font-size:clamp(70px, 22vw, 120px);
+  line-height:1.1;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.5));
+}
+.jk-hand.pop{ animation:jkPop .18s ease-out; }
+@keyframes jkPop{
+  from{ transform:scale(.6) rotate(-12deg); opacity:.3; }
+  to{ transform:none; opacity:1; }
+}
+.jk-order{
+  padding:8px 22px;
+  border-radius:999px;
+  font-size:clamp(24px, 7.5vw, 38px);
+  font-weight:1000;
+  letter-spacing:.04em;
+  color:#fff;
+}
+.jk-order.win{ background:#e0394d; }
+.jk-order.lose{ background:#2f6fe0; }
+.jk-order.draw{ background:#d9a400; color:#1a1300; }
+.jk-order.notWin{ background:#2f6fe0; outline:3px dashed #e0394d; }
+.jk-order.notLose{ background:#e0394d; outline:3px dashed #2f6fe0; }
+.jk-message{ z-index:2; }
+.jk-buttons{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+}
+.jk-btn{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  padding:12px 4px 10px;
+  border:0;
+  border-radius:16px;
+  background:#f4f1ff;
+  color:#1d1530;
+  font:inherit;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 5px 0 #a99bd1;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.jk-btn b{ font-size:34px; line-height:1.1; }
+.jk-btn small{ font-size:11px; }
+.jk-btn:active, .jk-btn.pressed{ transform:translateY(4px); box-shadow:none; }
+.jk-btn.ans{ background:#79f6ab; box-shadow:0 5px 0 #2f9e60; }
