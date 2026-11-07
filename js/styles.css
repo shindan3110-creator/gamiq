@@ -17738,3 +17738,97 @@ STEP 66: GAME FIXES
   transition:opacity .3s;
 }
 .mz-hint.hide{ opacity:0; }
+
+
+
+/* ==========================================
+   STEP 80: MATH JUDGE
+   ========================================== */
+.mj-stage{
+  position:relative;
+  flex:1;
+  min-height:200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border-radius:18px;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 28px),
+    #12301f;
+  box-shadow:inset 0 0 0 6px #6b4a2b, inset 0 0 0 1px rgba(255,255,255,.07);
+}
+.mj-timebar{
+  position:absolute;
+  left:14px;
+  right:14px;
+  top:14px;
+  height:6px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  overflow:hidden;
+}
+.mj-timebar i{
+  display:block;
+  height:100%;
+  background:linear-gradient(90deg,#ffd76a,#ff8a3d);
+  transform-origin:left;
+}
+.mj-card{
+  position:relative;
+  padding:18px 22px;
+  text-align:center;
+}
+.mj-card.in{ animation:mjIn .16s ease-out; }
+@keyframes mjIn{
+  from{ opacity:0; transform:translateY(10px) scale(.96); }
+  to{ opacity:1; transform:none; }
+}
+.mj-eq{
+  color:#f4f7f2;
+  font-family:"Chalkboard SE","Comic Sans MS","Hiragino Maru Gothic ProN",sans-serif;
+  font-size:clamp(34px, 11vw, 64px);
+  font-weight:900;
+  letter-spacing:.02em;
+  white-space:nowrap;
+}
+.mj-card.good .mj-eq{ color:#79f6ab; }
+.mj-card.bad .mj-eq{ color:#ff6b7a; }
+.mj-card.bad{ animation:mjShake .3s ease; }
+@keyframes mjShake{
+  0%,100%{ transform:translateX(0); }
+  25%{ transform:translateX(-8px); }
+  75%{ transform:translateX(8px); }
+}
+.mj-mark{
+  min-height:1.4em;
+  margin-top:6px;
+  color:#ffd76a;
+  font-size:16px;
+  font-weight:900;
+}
+.mj-message{ z-index:2; }
+.mj-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.mj-btn{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  padding:14px 8px 12px;
+  border:0;
+  border-radius:16px;
+  font:inherit;
+  font-weight:900;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.mj-btn b{ font-size:34px; line-height:1; }
+.mj-btn small{ font-size:12px; opacity:.85; }
+.mj-btn.ok{ background:#1fa35b; color:#fff; box-shadow:0 5px 0 #13703d; }
+.mj-btn.ng{ background:#e0394d; color:#fff; box-shadow:0 5px 0 #9c2131; }
+.mj-btn:active, .mj-btn.pressed{ transform:translateY(4px); box-shadow:none; }
