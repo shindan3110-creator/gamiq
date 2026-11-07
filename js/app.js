@@ -136,6 +136,21 @@ import {
 } from "./games/flashcount.js";
 
 import {
+  createBalanceGames,
+  runBalanceGame
+} from "./games/balance.js";
+
+import {
+  createFishingGames,
+  runFishingGame
+} from "./games/fishing.js";
+
+import {
+  createCoffeeGames,
+  runCoffeeGame
+} from "./games/coffee.js";
+
+import {
   createEggGames,
   runEggGame
 } from "./games/egg.js";
@@ -302,6 +317,9 @@ const gamePool = [
   ...createDartsGames(),
   ...createJankenGames(),
   ...createFlashCountGames(),
+  ...createBalanceGames(),
+  ...createFishingGames(),
+  ...createCoffeeGames(),
   ...createEggGames(),
   ...createCardMatchGames(),
   ...createCircleGames(),
@@ -813,6 +831,9 @@ const START_ALIASES = {
   darts: "aim_darts",
   janken: "speed_janken",
   count: "speed_flash_count",
+  balance: "reflex_balance",
+  fishing: "reflex_fishing",
+  coffee: "aim_hand_drip",
   hoop: "aim_hoop_shot",
   beat: "speed_beat_swipe",
   cards: "memory_card_match",
@@ -1822,6 +1843,33 @@ function runSelectedGame({
 
   if (game.type === "egg_smash") {
     return runEggGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "balance") {
+    return runBalanceGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "fishing") {
+    return runFishingGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "hand_drip") {
+    return runCoffeeGame({
       game,
       container,
       onComplete
