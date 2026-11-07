@@ -111,6 +111,11 @@ import {
 } from "./games/maze.js";
 
 import {
+  createMathJudgeGames,
+  runMathJudgeGame
+} from "./games/mathjudge.js";
+
+import {
   createEggGames,
   runEggGame
 } from "./games/egg.js";
@@ -272,6 +277,7 @@ const gamePool = [
   ...createOddOneGames(),
   ...createStopwatchGames(),
   ...createMazeGames(),
+  ...createMathJudgeGames(),
   ...createEggGames(),
   ...createCardMatchGames(),
   ...createCircleGames(),
@@ -778,6 +784,7 @@ const START_ALIASES = {
   bullseye: "aim_bullseye",
   bug: "aim_bullseye",
   maze: "logic_maze_dash",
+  math: "logic_math_judge",
   hoop: "aim_hoop_shot",
   beat: "speed_beat_swipe",
   cards: "memory_card_match",
@@ -1787,6 +1794,15 @@ function runSelectedGame({
 
   if (game.type === "egg_smash") {
     return runEggGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "math_judge") {
+    return runMathJudgeGame({
       game,
       container,
       onComplete
