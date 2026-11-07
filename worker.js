@@ -119,6 +119,14 @@ export default {
       return handleApi(request, env, url);
     }
 
+    // The old game list pages were removed (how many games there are is a surprise).
+    if (url.pathname === "/games" || url.pathname === "/games.html") {
+      return Response.redirect(`${url.origin}/`, 301);
+    }
+    if (url.pathname === "/ja/games" || url.pathname === "/ja/games.html") {
+      return Response.redirect(`${url.origin}/ja/`, 301);
+    }
+
     // Anything else: normal static files (or their 404).
     return env.ASSETS.fetch(request);
   }
