@@ -770,6 +770,7 @@ let firstPickDone = false;
  */
 const START_ALIASES = {
   bullseye: "aim_bullseye",
+  bug: "aim_bullseye",
   hoop: "aim_hoop_shot",
   beat: "speed_beat_swipe",
   cards: "memory_card_match",
