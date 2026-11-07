@@ -126,6 +126,11 @@ import {
 } from "./games/darts.js";
 
 import {
+  createJankenGames,
+  runJankenGame
+} from "./games/janken.js";
+
+import {
   createEggGames,
   runEggGame
 } from "./games/egg.js";
@@ -290,6 +295,7 @@ const gamePool = [
   ...createMathJudgeGames(),
   ...createFruitGames(),
   ...createDartsGames(),
+  ...createJankenGames(),
   ...createEggGames(),
   ...createCardMatchGames(),
   ...createCircleGames(),
@@ -799,6 +805,7 @@ const START_ALIASES = {
   math: "logic_math_judge",
   fruit: "aim_fruit_slice",
   darts: "aim_darts",
+  janken: "speed_janken",
   hoop: "aim_hoop_shot",
   beat: "speed_beat_swipe",
   cards: "memory_card_match",
@@ -1808,6 +1815,15 @@ function runSelectedGame({
 
   if (game.type === "egg_smash") {
     return runEggGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "janken") {
+    return runJankenGame({
       game,
       container,
       onComplete
