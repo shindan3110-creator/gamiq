@@ -18359,3 +18359,106 @@ STEP 66: GAME FIXES
   font-weight:1000;
   cursor:pointer;
 }
+
+
+
+/* ==========================================
+   STEP 86: TIPTOE (3D)
+   ========================================== */
+.tp-stage{
+  position:relative;
+  flex:1;
+  min-height:320px;
+  overflow:hidden;
+  border-radius:18px;
+  background:#1a1830;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  cursor:pointer;
+}
+.tp-world, .tp-world canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+.tp-noise{
+  position:absolute; left:50%; top:10px; transform:translateX(-50%);
+  display:flex; align-items:center; gap:8px;
+  padding:5px 10px; border-radius:999px; background:rgba(0,0,0,.55);
+  color:#fff; font-size:11px; font-weight:900; white-space:nowrap; pointer-events:none;
+}
+.tp-noise b{ display:block; width:min(150px,38vw); height:10px; border-radius:6px; background:rgba(255,255,255,.2); overflow:hidden; }
+.tp-noise i{ display:block; height:100%; background:#6dfa9b; transform-origin:left; transform:scaleX(0); }
+.tp-noise i.warm{ background:#ffb347; }
+.tp-noise i.hot{ background:#ff4d5e; }
+.tp-state{
+  position:absolute; left:50%; top:42px; transform:translateX(-50%);
+  padding:3px 10px; border-radius:999px; background:rgba(30,40,90,.75);
+  color:#bfe1ff; font-size:12px; font-weight:900; white-space:nowrap; pointer-events:none;
+}
+.tp-state.snore{ background:#2a9d5b; color:#fff; }
+.tp-bubble{
+  position:absolute; transform:translate(-50%,-100%);
+  padding:4px 10px; border-radius:12px; background:#fff; color:#3d6bff;
+  font-size:13px; font-weight:900; white-space:nowrap; pointer-events:none;
+  box-shadow:0 4px 12px rgba(0,0,0,.35);
+}
+.tp-bubble.snore{ color:#2a9d5b; }
+.tp-bubble.uneasy{ color:#ff6a00; font-size:16px; }
+.tp-bubble.hide{ display:none; }
+.tp-speed{
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%);
+  width:min(300px,78%);
+  display:flex; align-items:center; gap:8px;
+  padding:7px 12px; border-radius:999px; background:rgba(0,0,0,.6);
+  color:#fff; font-size:11px; font-weight:900; white-space:nowrap; pointer-events:none;
+}
+.tp-speed b{
+  position:relative; flex:1; height:12px; border-radius:6px;
+  background:#ff4d5e; overflow:visible;
+}
+.tp-speed em{
+  position:absolute; left:0; top:0; bottom:0; border-radius:6px 0 0 6px;
+  background:#2fd66b; transition:width .3s;
+}
+.tp-speed i{
+  position:absolute; top:-5px; width:6px; height:22px; margin-left:-3px;
+  border-radius:3px; background:#fff; box-shadow:0 0 0 2px rgba(0,0,0,.5);
+}
+.tp-speed i.over{ background:#ffd23a; }
+.tp-hint{
+  position:absolute; left:50%; bottom:58px; transform:translateX(-50%);
+  padding:7px 14px; border-radius:999px; background:rgba(0,0,0,.7);
+  color:#fff; font-size:13px; font-weight:900; white-space:nowrap; pointer-events:none;
+  animation:tp-blink 1.2s ease-in-out infinite; transition:opacity .3s;
+}
+.tp-hint.hide{ opacity:0; animation:none; }
+@keyframes tp-blink{ 50%{ opacity:.55; } }
+.tp-pop{
+  position:absolute; left:50%; top:62%; transform:translate(-50%,-50%) scale(.8);
+  color:#fff; font-size:22px; font-weight:900; white-space:nowrap; pointer-events:none;
+  -webkit-text-stroke:4px #fff; paint-order:stroke fill;
+  opacity:0; transition:opacity .15s, transform .15s;
+}
+.tp-pop.show{ opacity:1; transform:translate(-50%,-50%) scale(1); }
+.tp-pop.warn{ color:#ff8a1f; }
+.tp-pop.bad{ color:#ff2d48; font-size:28px; }
+.tp-msg{
+  position:absolute; left:50%; top:30%;
+  transform:translate(-50%,-50%) scale(.9);
+  padding:8px 18px; border-radius:999px; background:rgba(0,0,0,.72);
+  color:#fff; font-size:18px; font-weight:900; white-space:nowrap; pointer-events:none;
+  opacity:0; transition:opacity .2s, transform .2s;
+}
+.tp-msg.show{ opacity:1; transform:translate(-50%,-50%) scale(1); }
+.tp-msg.good{ background:#2a9d5b; }
+.tp-msg.angry{
+  top:24%; padding:12px 22px; background:#e8283c; font-size:28px; letter-spacing:.04em;
+  box-shadow:0 0 0 4px #fff, 0 10px 30px rgba(0,0,0,.5);
+  animation:tp-shout .5s ease-out;
+}
+@keyframes tp-shout{
+  0%{ transform:translate(-50%,-50%) scale(1.8) rotate(-6deg); }
+  60%{ transform:translate(-50%,-50%) scale(.92) rotate(2deg); }
+  100%{ transform:translate(-50%,-50%) scale(1) rotate(0); }
+}
+.tp-state.hide{ display:none; }
