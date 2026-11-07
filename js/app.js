@@ -106,6 +106,11 @@ import {
 } from "./games/stopwatch.js";
 
 import {
+  createMazeGames,
+  runMazeGame
+} from "./games/maze.js";
+
+import {
   createEggGames,
   runEggGame
 } from "./games/egg.js";
@@ -266,6 +271,7 @@ const gamePool = [
   ...createTowerGames(),
   ...createOddOneGames(),
   ...createStopwatchGames(),
+  ...createMazeGames(),
   ...createEggGames(),
   ...createCardMatchGames(),
   ...createCircleGames(),
@@ -771,6 +777,7 @@ let firstPickDone = false;
 const START_ALIASES = {
   bullseye: "aim_bullseye",
   bug: "aim_bullseye",
+  maze: "logic_maze_dash",
   hoop: "aim_hoop_shot",
   beat: "speed_beat_swipe",
   cards: "memory_card_match",
@@ -1780,6 +1787,15 @@ function runSelectedGame({
 
   if (game.type === "egg_smash") {
     return runEggGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "maze_dash") {
+    return runMazeGame({
       game,
       container,
       onComplete
