@@ -313,6 +313,9 @@ const STRINGS = {
     /* ---------- IN-GAME: BEAT SWIPE ---------- */
     "rule.speed_beat_swipe": "TAP THE DOTS, SWIPE THE ARROWS — RIGHT ON THE BEAT!",
     "rule.speed_beat_swipe.pc": "PRESS THE ARROW KEYS WHEN THE ARROWS HIT THE RING!",
+    "rule.logic_maze_dash": "TRACE THE PATH TO THE ★! CLEAR AS MANY MAZES AS YOU CAN!",
+    "rule.logic_maze_dash.pc": "DRAG OR USE THE ARROW KEYS TO REACH THE ★! AS MANY MAZES AS YOU CAN!",
+    "maze.hint": "TRACE FROM THE PINK DOT",
     "bs.hint": "● = TAP   ↑↓←→ = SWIPE",
     "bs.hintKeys": "Press ↑ ↓ ← → keys on the beat",
     "bs.wrong": "WRONG WAY",
@@ -656,6 +659,9 @@ const STRINGS = {
     /* ---------- IN-GAME: BEAT SWIPE ---------- */
     "rule.speed_beat_swipe": "リズムに合わせて、●はタップ、矢印はその方向へスワイプ！",
     "rule.speed_beat_swipe.pc": "矢印が輪に重なった瞬間に、同じ向きの矢印キーを押そう！",
+    "rule.logic_maze_dash": "指でなぞって★までたどり着け！30秒で何個クリアできる？",
+    "rule.logic_maze_dash.pc": "ドラッグか矢印キーで★までたどり着け！30秒で何個クリアできる？",
+    "maze.hint": "ピンクの丸からなぞってスタート",
     "bs.hint": "● ＝ タップ　↑↓←→ ＝ スワイプ",
     "bs.hintKeys": "↑↓←→ キーをリズムに合わせて押そう",
     "bs.wrong": "向きが違う！",
