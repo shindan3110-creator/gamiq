@@ -131,6 +131,11 @@ import {
 } from "./games/janken.js";
 
 import {
+  createFlashCountGames,
+  runFlashCountGame
+} from "./games/flashcount.js";
+
+import {
   createEggGames,
   runEggGame
 } from "./games/egg.js";
@@ -296,6 +301,7 @@ const gamePool = [
   ...createFruitGames(),
   ...createDartsGames(),
   ...createJankenGames(),
+  ...createFlashCountGames(),
   ...createEggGames(),
   ...createCardMatchGames(),
   ...createCircleGames(),
@@ -806,6 +812,7 @@ const START_ALIASES = {
   fruit: "aim_fruit_slice",
   darts: "aim_darts",
   janken: "speed_janken",
+  count: "speed_flash_count",
   hoop: "aim_hoop_shot",
   beat: "speed_beat_swipe",
   cards: "memory_card_match",
@@ -1815,6 +1822,15 @@ function runSelectedGame({
 
   if (game.type === "egg_smash") {
     return runEggGame({
+      game,
+      container,
+      onComplete
+    });
+  }
+
+
+  if (game.type === "flash_count") {
+    return runFlashCountGame({
       game,
       container,
       onComplete
