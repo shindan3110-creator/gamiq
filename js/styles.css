@@ -18462,3 +18462,41 @@ STEP 66: GAME FIXES
   100%{ transform:translate(-50%,-50%) scale(1) rotate(0); }
 }
 .tp-state.hide{ display:none; }
+
+
+
+/* ==========================================
+   STEP 88: ADD TO HOME SCREEN
+   ========================================== */
+.gq-install{
+  position:fixed; left:50%; bottom:calc(14px + env(safe-area-inset-bottom));
+  z-index:9000; width:min(420px, calc(100% - 24px));
+  display:flex; align-items:center; gap:10px;
+  padding:10px 10px 10px 12px; border-radius:18px;
+  background:#101a26; color:#fff;
+  box-shadow:0 0 0 1px rgba(95,239,255,.35), 0 14px 40px rgba(0,0,0,.55);
+  transform:translate(-50%, 140%); transition:transform .3s ease;
+  font-family:inherit;
+}
+.gq-install.show{ transform:translate(-50%, 0); }
+.gq-install img{ width:44px; height:44px; border-radius:11px; flex:none; }
+.gq-install-text{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.gq-install-text b{ font-size:14px; font-weight:900; line-height:1.25; }
+.gq-install-text span{ font-size:12px; color:#9fb0c4; line-height:1.3; }
+.gq-install-add{
+  flex:none; border:0; border-radius:999px; padding:10px 16px;
+  background:#5fefff; color:#04121a; font:inherit; font-size:14px; font-weight:900; cursor:pointer;
+}
+.gq-install-close{
+  flex:none; width:30px; height:30px; border:0; border-radius:50%;
+  background:rgba(255,255,255,.1); color:#cfd8e3; font-size:18px; line-height:1; cursor:pointer;
+}
+.gq-install.howto{ display:block; padding:14px 16px; }
+.gq-install-how b{ display:block; font-size:15px; font-weight:900; margin-bottom:6px; }
+.gq-install-how ol{ margin:0 0 12px; padding-left:20px; font-size:13px; line-height:1.7; color:#dbe5ef; }
+.gq-install-how ol b{ display:inline; font-size:inherit; color:#5fefff; margin:0; }
+.gq-install-how .gq-install-add{ width:100%; }
+.gq-install-arrow{
+  position:absolute; left:50%; bottom:-12px; margin-left:-10px;
+  width:0; height:0; border:10px solid transparent; border-top-color:#101a26; border-bottom:0;
+}
