@@ -175,6 +175,9 @@ function showHowTo() {
       <button type="button" class="gq-install-add" data-close>${t("pwa.ok")}</button>
     </div>
     ${kind === "iosSafari" ? '<i class="gq-install-arrow"></i>' : ""}
+    ${kind === "iosOther" ? '<i class="gq-install-arrow up"></i>' : ""}
   `;
+  // iPhone Chrome etc.: the Share button is at the top of the screen
+  if (kind === "iosOther") cardEl.classList.add("top");
   cardEl.querySelector("[data-close]").addEventListener("click", hideCard);
 }
