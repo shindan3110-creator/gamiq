@@ -115,7 +115,7 @@ function showCard() {
   cardEl = document.createElement("div");
   cardEl.className = "gq-install";
   cardEl.innerHTML = `
-    <img src="/icon-192.png" alt="" width="44" height="44">
+    <img src="/icon-192_1.png" alt="" width="44" height="44">
     <div class="gq-install-text">
       <b>${t("pwa.title")}</b>
       <span>${t("pwa.sub")}</span>
