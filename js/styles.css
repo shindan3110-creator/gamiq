@@ -18500,3 +18500,15 @@ STEP 66: GAME FIXES
   position:absolute; left:50%; bottom:-12px; margin-left:-10px;
   width:0; height:0; border:10px solid transparent; border-top-color:#101a26; border-bottom:0;
 }
+
+
+
+/* STEP 88b: install card at the top (iPhone Chrome) */
+.gq-install.top{
+  top:calc(14px + env(safe-area-inset-top)); bottom:auto;
+  transform:translate(-50%, 0);
+}
+.gq-install-arrow.up{
+  top:-12px; bottom:auto; right:22px; left:auto; margin-left:0;
+  border-top:0; border-bottom:10px solid #101a26;
+}
