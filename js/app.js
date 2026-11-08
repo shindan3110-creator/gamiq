@@ -14,9 +14,13 @@ import {
 
 import { initRails } from "./adslots.js";
 
+import { initInstall, maybeOfferInstall } from "./install.js";
+
 initJuice();
 
 initRails();
+
+initInstall();
 
 import {
   GamiqFeed
@@ -1454,6 +1458,12 @@ async function enterGame(
         safetyTimeout,
         levelUp
       );
+
+
+      // Phones: after a few games, offer "Add to Home Screen".
+      if (!safetyTimeout && !levelUp) {
+        maybeOfferInstall(sessionGames);
+      }
 
 
       // Jingle: level up > clear > fail
